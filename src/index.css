@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 /* Tailwind scans the whole repo by default. Exclude docs/scripts so that any
    hex or class mentioned there (e.g. old accent #2E7DFF in md/ps1) can't leak
@@ -8,24 +8,24 @@
 @source not "../**/*.md";
 
 @theme {
-  /* Typography: Exo 2 + Jura + JetBrains Mono вЂ” РµРґРёРЅС‹Р№ С€СЂРёС„С‚РѕРІРѕР№ СЏР·С‹Рє СЃ Р±РѕС‚РѕРј
-     (bot/card_generator.py: Exo2 РґР»СЏ С‡РёСЃРµР»/Р·Р°РіРѕР»РѕРІРєРѕРІ, Jura РґР»СЏ РїРѕРґРїРёСЃРµР№/С‚РµРєСЃС‚Р°) */
+  /* Typography: Exo 2 + Jura + JetBrains Mono — единый шрифтовой язык с ботом
+     (bot/card_generator.py: Exo2 для чисел/заголовков, Jura для подписей/текста) */
   --font-sans: "Jura", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: "Exo 2", "Jura", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  /* 4-С‚РёСЂРЅР°СЏ СЃС‚Р°С‚СѓСЃРЅР°СЏ СЃРµРјР°РЅС‚РёРєР° вЂ” С‚РѕС‡РЅС‹Рµ hex РёР· bot/card_generator.py (ACCENT_DARK) */
-  --color-status-info: #3B82F6;   /* news вЂ” РЅРµР№С‚СЂР°Р»СЊРЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ */
-  --color-status-danger: #EF4444; /* real_threat вЂ” РєСЂРёС‚РёС‡РЅРѕ/СѓРіСЂРѕР·Р° */
-  --color-status-warn: #FB923C;   /* medium вЂ” СЃСЂРµРґРЅРёР№ СЂРёСЃРє / С‡Р°СЃС‚РёС‡РЅРѕ РіРѕС‚РѕРІРѕ */
-  --color-status-safe: #2DD4BF;   /* safe вЂ” Р±РµР·РѕРїР°СЃРЅРѕ / РіРѕС‚РѕРІРѕ */
+  /* 4-тирная статусная семантика — точные hex из bot/card_generator.py (ACCENT_DARK) */
+  --color-status-info: #3B82F6;   /* news — нейтральная информация */
+  --color-status-danger: #EF4444; /* real_threat — критично/угроза */
+  --color-status-warn: #FB923C;   /* medium — средний риск / частично готово */
+  --color-status-safe: #2DD4BF;   /* safe — безопасно / готово */
 
-  /* РќРµР№С‚СЂР°Р»СЊРЅС‹Рµ РіСЂР°С„РёС‚РѕРІС‹Рµ РїР°РЅРµР»Рё (panel_fill/border_c РёР· bot/card_generator.py) */
+  /* Нейтральные графитовые панели (panel_fill/border_c из bot/card_generator.py) */
   --color-panel: #12141A;
   --color-panel-border: #3C404A;
 
-  /* РўРµРЅРё: С‚РѕР»СЊРєРѕ РґР»СЏ Р°РєС‚РёРІРЅС‹С…/РёРЅС‚РµСЂР°РєС‚РёРІРЅС‹С… РёРЅРґРёРєР°С‚РѕСЂРѕРІ СЃС‚Р°С‚СѓСЃР°, РЅРµ РґР»СЏ СЃС‚Р°С‚РёС‡РЅС‹С… РєР°СЂС‚РѕС‡РµРє.
-     Р‘Р°Р·РѕРІС‹Рµ РѕС‚С‚РµРЅРєРё РїСЂРёРІРµРґРµРЅС‹ Рє 4-С‚РёСЂРЅРѕР№ РїР°Р»РёС‚СЂРµ, Р° РЅРµ Рє РґРµРєРѕСЂР°С‚РёРІРЅРѕРјСѓ СЃРёРЅРµРјСѓ #3B82F6. */
+  /* Тени: только для активных/интерактивных индикаторов статуса, не для статичных карточек.
+     Базовые оттенки приведены к 4-тирной палитре, а не к декоративному синему #3B82F6. */
   --shadow-glow-sm: 0 0 12px rgba(59, 130, 246, 0.15);
   --shadow-glow-md: 0 0 24px rgba(59, 130, 246, 0.2);
   --shadow-glow-lg: 0 0 40px rgba(59, 130, 246, 0.25);
@@ -163,7 +163,7 @@
   justify-content: center;
 }
 
-/* Tablet + Desktop (md: в‰Ґ768px) вЂ” buttons stretch into an equal-width rectangle */
+/* Tablet + Desktop (md: ≥768px) — buttons stretch into an equal-width rectangle */
 @media (min-width: 768px) {
   .footer-btn-rect {
     width: 20rem;
@@ -180,7 +180,7 @@
   }
 }
 
-/* Tablet only (md: 768pxвЂ“1023px) вЂ” single column, centered rectangle */
+/* Tablet only (md: 768px–1023px) — single column, centered rectangle */
 @media (min-width: 768px) and (max-width: 1023px) {
   .footer-grid {
     grid-template-columns: 1fr;

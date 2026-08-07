@@ -55,7 +55,7 @@ export default function DamageCalculator() {
           </p>
         </div>
 
-        <div className="rounded-md bg-[#12141A] border border-white/[0.06] p-6 sm:p-10">
+        <div className="rounded-xl bg-[#12141A] border border-white/[0.06] p-6 sm:p-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
             <div>
               <label htmlFor="calc-calls" className="block font-sans text-sm text-gray-300 mb-3">
@@ -108,7 +108,7 @@ export default function DamageCalculator() {
             </div>
           </div>
 
-          <div className="mt-10 rounded-md border border-[#3B82F6]/20 bg-[#12141A] p-6 sm:p-8 text-center">
+          <div className="mt-10 rounded-xl border border-[#3B82F6]/20 bg-[#12141A] p-6 sm:p-8 text-center">
             <div className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-2">
               {t.damageCalc.resultTitle}
             </div>

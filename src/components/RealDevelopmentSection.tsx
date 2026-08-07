@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { LanguageCode } from "../i18n/languages";
 import { motion, AnimatePresence } from "motion/react";
@@ -65,10 +65,10 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
 
         {/* Tab Controls */}
         {!onlyRoadmap && (
-          <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mb-12 max-w-2xl mx-auto p-1 rounded-md bg-[#0A0A0B] border border-[#3C404A]/50">
+          <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mb-12 max-w-2xl mx-auto p-1 rounded-xl bg-[#0A0A0B] border border-[#3C404A]/50">
             <button
               onClick={() => setActiveTab("awards")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-md font-mono text-xs font-semibold tracking-wide transition-all duration-300 ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs font-semibold tracking-wide transition-all duration-300 ${
                 activeTab === "awards"
                   ? "bg-[#3B82F6] text-white shadow-glow-md"
                   : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.02]"
@@ -80,7 +80,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
             
             <button
               onClick={() => setActiveTab("graph")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-md font-mono text-xs font-semibold tracking-wide transition-all duration-300 ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs font-semibold tracking-wide transition-all duration-300 ${
                 activeTab === "graph"
                   ? "bg-[#3B82F6] text-white shadow-glow-md"
                   : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.02]"
@@ -92,7 +92,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
             
             <button
               onClick={() => setActiveTab("onnx")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-md font-mono text-xs font-semibold tracking-wide transition-all duration-300 ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs font-semibold tracking-wide transition-all duration-300 ${
                 activeTab === "onnx"
                   ? "bg-[#3B82F6] text-white shadow-glow-md"
                   : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.02]"
@@ -119,7 +119,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                 className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
               >
                 {/* Visual Certificate Mockup */}
-                <div className="lg:col-span-5 relative group overflow-hidden rounded-md border border-[#3C404A]/50 shadow-2xl">
+                <div className="lg:col-span-5 relative group overflow-hidden rounded-xl border border-[#3C404A]/50 shadow-2xl">
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-transparent to-transparent opacity-80 z-10" />
                   <picture>
                     <source type="image/webp" srcSet={certImgWebp} />
@@ -127,7 +127,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       src={certImg} 
                       alt="Scientific Certificate" 
                       loading="lazy"
-                      className="w-full h-auto object-cover transform group-hover:scale-[1.05] transition-transform duration-300 rounded-md"
+                      className="w-full h-auto object-cover transform group-hover:scale-[1.05] transition-transform duration-300 rounded-xl"
                       referrerPolicy="no-referrer"
                     />
                   </picture>
@@ -147,7 +147,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                     </p>
                   </div>
 
-                  <div className="p-6 rounded-md bg-[#0A0A0B]/80 border border-[#3C404A]/40 space-y-4">
+                  <div className="p-6 rounded-xl bg-[#0A0A0B]/80 border border-[#3C404A]/40 space-y-4">
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                       <div>
@@ -191,7 +191,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                 className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
               >
                 {/* Graph Image Display */}
-                <div className="lg:col-span-5 relative group overflow-hidden rounded-md border border-[#3C404A]/50 shadow-2xl">
+                <div className="lg:col-span-5 relative group overflow-hidden rounded-xl border border-[#3C404A]/50 shadow-2xl">
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-transparent to-transparent opacity-80 z-10" />
                   <picture>
                     <source type="image/webp" srcSet={graphImgWebp} />
@@ -199,7 +199,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       src={graphImg} 
                       alt="Obsidian Repository Graph" 
                       loading="lazy"
-                      className="w-full h-auto object-cover transform group-hover:scale-[1.05] transition-transform duration-300 rounded-md"
+                      className="w-full h-auto object-cover transform group-hover:scale-[1.05] transition-transform duration-300 rounded-xl"
                       referrerPolicy="no-referrer"
                     />
                   </picture>
@@ -220,12 +220,12 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 rounded-md bg-[#0A0A0B]/80 border border-[#3C404A]/40 text-center">
+                    <div className="p-4 rounded-xl bg-[#0A0A0B]/80 border border-[#3C404A]/40 text-center">
                       <span className="block font-display font-bold text-2xl sm:text-3xl text-cyan-500">74</span>
                       <span className="font-mono text-[10px] text-gray-500 uppercase tracking-widest">{dui.nodes}</span>
                     </div>
                     
-                    <div className="p-4 rounded-md bg-[#0A0A0B]/80 border border-[#3C404A]/40 text-center">
+                    <div className="p-4 rounded-xl bg-[#0A0A0B]/80 border border-[#3C404A]/40 text-center">
                       <span className="block font-display font-bold text-2xl sm:text-3xl text-[#3B82F6]">328</span>
                       <span className="font-mono text-[10px] text-gray-500 uppercase tracking-widest">{dui.conns}</span>
                     </div>
@@ -260,7 +260,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
                   
                   {/* Left Column: Live Model Architecture Inspector Widget */}
-                  <div className="lg:col-span-5 p-6 rounded-md bg-[#0A0A0B] border border-[#3C404A]/60 shadow-2xl relative overflow-hidden flex flex-col justify-between">
+                  <div className="lg:col-span-5 p-6 rounded-xl bg-[#0A0A0B] border border-[#3C404A]/60 shadow-2xl relative overflow-hidden flex flex-col justify-between">
                     <div className="absolute top-0 right-0 w-32 h-[1px] bg-gradient-to-l from-[#3B82F6]/40 to-transparent" />
                     
                     <div>
@@ -281,7 +281,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       </div>
 
                       {/* Inspector Console */}
-                      <div className="space-y-3 font-mono text-[10px] sm:text-xs text-gray-400 bg-black/40 p-4 rounded-md border border-white/[0.02] mb-6">
+                      <div className="space-y-3 font-mono text-[10px] sm:text-xs text-gray-400 bg-black/40 p-4 rounded-xl border border-white/[0.02] mb-6">
                         <div className="flex justify-between">
                           <span className="text-gray-600">&gt;_ onnx.checker.check_model()</span>
                           <span className="text-emerald-500">{onnxConsole.consoleSuccess}</span>
@@ -301,7 +301,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       </div>
 
                       {/* Specifications */}
-                      <div className="p-4 rounded-md bg-[#0A0A0B]/80 border border-[#3C404A]/40">
+                      <div className="p-4 rounded-xl bg-[#0A0A0B]/80 border border-[#3C404A]/40">
                         <h4 className="font-display font-semibold text-xs text-[#F5F5F0] uppercase tracking-wider mb-3">
                           {dui.specs}
                         </h4>
@@ -326,7 +326,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   </div>
 
                   {/* Right Column: Dynamic Neural Tester & Telegram Ticket Portal */}
-                  <div className="lg:col-span-7 flex flex-col justify-between p-6 rounded-md bg-[#0A0A0B] border border-[#3C404A]/60 shadow-2xl relative overflow-hidden">
+                  <div className="lg:col-span-7 flex flex-col justify-between p-6 rounded-xl bg-[#0A0A0B] border border-[#3C404A]/60 shadow-2xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-[1px] bg-gradient-to-l from-[#3B82F6]/40 to-transparent" />
                     
                     <OnnxInteractiveTester language={language} />
@@ -347,7 +347,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
               >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   {/* TN1 Card */}
-                  <div className="p-6 rounded-md bg-[#0A0A0B] border border-emerald-500/30 shadow-glow-success relative flex flex-col justify-between">
+                  <div className="p-6 rounded-xl bg-[#0A0A0B] border border-emerald-500/30 shadow-glow-success relative flex flex-col justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
                         <span className="font-mono text-[10px] sm:text-xs text-emerald-300 uppercase tracking-widest bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
@@ -359,7 +359,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.tn1Desc}
                       </p>
-                      <div className="p-3 bg-black/40 rounded-md border border-emerald-500/10 font-mono text-xs text-emerald-300/90 space-y-1 mb-4">
+                      <div className="p-3 bg-black/40 rounded-xl border border-emerald-500/10 font-mono text-xs text-emerald-300/90 space-y-1 mb-4">
                         <div className="flex justify-between">
                           <span>{rmp.packageLabel}</span>
                           <span className="text-gray-200">com.frauddetector.app</span>
@@ -380,7 +380,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         href="https://github.com/TrustNodeLab"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-md bg-[#3C404A] border border-[#3B82F6]/20 hover:border-[#3B82F6]/50 text-gray-400 hover:text-[#3B82F6] transition-all font-mono text-xs font-semibold w-full justify-center"
+                        className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-[#3C404A] border border-[#3B82F6]/20 hover:border-[#3B82F6]/50 text-gray-400 hover:text-[#3B82F6] transition-all font-mono text-xs font-semibold w-full justify-center"
                       >
                         <SiGithubIcon className="w-3.5 h-3.5" />
                         {rmp.sourceGithub}
@@ -389,7 +389,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   </div>
 
                   {/* TN3 / PHANTOM 2.0 Card */}
-                  <div className="p-6 rounded-md bg-[#0A0A0B] border border-[#3B82F6]/30 shadow-glow-sm relative flex flex-col justify-between">
+                  <div className="p-6 rounded-xl bg-[#0A0A0B] border border-[#3B82F6]/30 shadow-glow-sm relative flex flex-col justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
                         <span className="font-mono text-[10px] sm:text-xs text-[#6FB1FF] uppercase tracking-widest bg-[#0A0A0B]/60 border border-[#3B82F6]/40 px-2.5 py-0.5 rounded-full">
@@ -401,7 +401,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.tn3Desc}
                       </p>
-                      <div className="p-3 bg-black/40 rounded-md border border-[#3B82F6]/10 font-mono text-xs text-gray-200 space-y-1 mb-4">
+                      <div className="p-3 bg-black/40 rounded-xl border border-[#3B82F6]/10 font-mono text-xs text-gray-200 space-y-1 mb-4">
                         <div className="flex justify-between">
                           <span>{rmp.deadlineLabel}</span>
                           <span className="text-[#6FB1FF] font-bold">{rmp.september2026}</span>
@@ -415,7 +415,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   </div>
 
                   {/* KIRA Voice Card */}
-                  <div className="p-6 rounded-md bg-[#0A0A0B] border border-amber-500/30 shadow-glow-warn relative flex flex-col justify-between">
+                  <div className="p-6 rounded-xl bg-[#0A0A0B] border border-amber-500/30 shadow-glow-warn relative flex flex-col justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
                         <span className="font-mono text-[10px] sm:text-xs text-amber-400 uppercase tracking-widest bg-amber-950/60 border border-amber-500/40 px-2.5 py-0.5 rounded-full">
@@ -427,7 +427,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.kiraDesc}
                       </p>
-                      <div className="p-3 bg-black/40 rounded-md border border-amber-500/10 font-mono text-xs text-amber-400 space-y-1 mb-4">
+                      <div className="p-3 bg-black/40 rounded-xl border border-amber-500/10 font-mono text-xs text-amber-400 space-y-1 mb-4">
                         <div className="flex justify-between">
                           <span>{rmp.statusLabel}</span>
                           <span className="font-bold">{rmp.designPhase}</span>
@@ -446,7 +446,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                 </div>
 
                 {/* Security Disclosure Policy */}
-                <div className="p-6 rounded-md bg-[#0A0A0B]/90 border border-emerald-500/20">
+                <div className="p-6 rounded-xl bg-[#0A0A0B]/90 border border-emerald-500/20">
                   <div className="flex items-start gap-3 mb-4">
                     <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                     <div>
@@ -465,7 +465,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       rel="noopener noreferrer"
                       aria-label="Telegram"
                       title="Telegram"
-                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-md bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
+                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-xl bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
                     >
                       <SiTelegramIcon className="w-4 h-4 text-[#3B82F6]" />
                       {rmp.reportTelegram}
@@ -476,7 +476,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       rel="noopener noreferrer"
                       aria-label="VK"
                       title="VK"
-                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-md bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
+                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-xl bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
                     >
                       <SiVkIcon className="w-4 h-4 text-[#3B82F6]" />
                       {rmp.reportVk}
@@ -487,7 +487,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       rel="noopener noreferrer"
                       aria-label="GitHub"
                       title="GitHub"
-                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-md bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
+                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-xl bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
                     >
                       <SiGithubIcon className="w-4 h-4 text-[#3B82F6]" />
                       {rmp.reportGithub}
@@ -496,7 +496,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                 </div>
 
                 {/* Release Milestones Timeline */}
-                <div className="p-6 rounded-md bg-[#0A0A0B]/90 border border-[#3C404A]/50">
+                <div className="p-6 rounded-xl bg-[#0A0A0B]/90 border border-[#3C404A]/50">
                   <div className="flex items-center gap-2.5 mb-5 border-b border-white/[0.04] pb-3">
                     <Milestone className="w-5 h-5 text-[#3B82F6]" />
                     <h4 className="font-display font-bold text-lg text-white">
@@ -555,38 +555,38 @@ interface OnnxDictType {
 
 const ONNX_DICT: Record<LanguageCode, OnnxDictType> = {
   ru: {
-    title: "РРЅС‚РµСЂР°РєС‚РёРІРЅР°СЏ Р›Р°Р±РѕСЂР°С‚РѕСЂРёСЏ РўРµСЃС‚РёСЂРѕРІР°РЅРёСЏ RuBERT",
-    subtitle: "РћС†РµРЅРёС‚Рµ Р»РѕРєР°Р»СЊРЅС‹Р№ РёРЅС„РµСЂРµРЅСЃ РІРµСЃРѕРІ РјРѕРґРµР»Рё rubert_fraud_int8.onnx РІ СЂРµР°Р»СЊРЅРѕРј РІСЂРµРјРµРЅРё.",
-    placeholder: "Р’РІРµРґРёС‚Рµ С‚РµРєСЃС‚ РїРѕРґРѕР·СЂРёС‚РµР»СЊРЅРѕРіРѕ РґРёР°Р»РѕРіР° РёР»Рё РЎРњРЎ РґР»СЏ Р°РЅР°Р»РёР·Р°...",
-    btnRun: "Р—Р°РїСѓСЃС‚РёС‚СЊ РёРЅС„РµСЂРµРЅСЃ РјРѕРґРµР»Рё",
-    btnRunning: "Р’С‹С‡РёСЃР»РµРЅРёРµ РІРµСЃРѕРІ...",
-    resultHeader: "Р’Р«РҐРћР” РЎР•РњРђРќРўРР§Р•РЎРљРћР“Рћ Р”Р•РљРћР”Р•Р Рђ",
-    fraudLabel: "Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РЎРѕС†. РРЅР¶РµРЅРµСЂРёРё (FRAUD):",
-    safeLabel: "Р‘РµР·РѕРїР°СЃРЅС‹Р№ Р”РёР°Р»РѕРі (SAFE):",
-    attentionTitle: "РљР°СЂС‚Р° РІРЅРёРјР°РЅРёСЏ BERT (Р¤Р»Р°РіРё С‚РѕРєРµРЅРѕРІ):",
-    presetTitle: "Р‘С‹СЃС‚СЂС‹Рµ РїСЂРµСЃРµС‚С‹:",
-    feedbackHeader: "вљ пёЏ РћР±РЅР°СЂСѓР¶РёР»Рё РѕС€РёР±РєСѓ РёРЅС„РµСЂРµРЅСЃР°?",
-    feedbackSub: "РџРѕРјРѕРіРёС‚Рµ РѕР±СѓС‡РёС‚СЊ РІРµСЃР° РЅРµР№СЂРѕСЃРµС‚Рё! РћС‚РїСЂР°РІСЊС‚Рµ С‚РёРєРµС‚ РѕР± РѕС€РёР±РєРµ РЅР°РїСЂСЏРјСѓСЋ РІ РєРѕРјР°РЅРґСѓ РїРѕРґРґРµСЂР¶РєРё РІ Telegram.",
-    errType: "РўРёРї РѕС€РёР±РєРё",
-    errFalsePositive: "Р›РѕР¶РЅРѕРµ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёРµ (Р‘РµР·РѕРїР°СЃРЅС‹Р№ С‚РµРєСЃС‚ РїРѕРјРµС‡РµРЅ РєР°Рє СѓРіСЂРѕР·Р°)",
-    errFalseNegative: "РџСЂРѕРїСѓСЃРє СѓРіСЂРѕР·С‹ (РњРѕС€РµРЅРЅРёС‡РµСЃРєРёР№ С‚РµРєСЃС‚ РїРѕСЃС‡РёС‚Р°РЅ Р±РµР·РѕРїР°СЃРЅС‹Рј)",
-    errOther: "Р”СЂСѓРіРѕР№ Р±Р°Рі РєР»Р°СЃСЃРёС„РёРєР°С†РёРё",
-    commentLabel: "Р’Р°С€ РєРѕРјРјРµРЅС‚Р°СЂРёР№ (С‡С‚Рѕ РїРѕС€Р»Рѕ РЅРµ С‚Р°Рє?)",
-    commentPlaceholder: "РЈРєР°Р¶РёС‚Рµ, РЅР°РїСЂРёРјРµСЂ, РєР°РєРёРµ СЃР»РѕРІР° РјРѕРґРµР»СЊ РїРѕСЃС‡РёС‚Р°Р»Р° РєСЂРёС‚РёС‡РЅС‹РјРё...",
-    btnTg: "РћС‚РїСЂР°РІРёС‚СЊ С‚РёРєРµС‚ РІ Telegram",
-    btnCopy: "РЎРєРѕРїРёСЂРѕРІР°С‚СЊ С‚РёРєРµС‚",
-    copied: "РЎРєРѕРїРёСЂРѕРІР°РЅРѕ!",
-    modelStatusSafe: "Р‘Р•Р—РћРџРђРЎРќРђРЇ РЎР•РњРђРќРўРРљРђ",
-    modelStatusSuspicious: "РџРћР”РћР—Р РРўР•Р›Р¬РќРћ",
-    modelStatusFraud: "РњРћРЁР•РќРќРР§Р•РЎРљРР™ РќРђР’Р«Рљ",
-    hideTicketForm: "РЎРєСЂС‹С‚СЊ С‚РёРєРµС‚-С„РѕСЂРјСѓ",
-    ticketSpec: "РЎРџР•Р¦РР¤РРљРђР¦РРЇ Р¤РћР РњРђРўРђ РўРРљР•РўРђ",
-    consoleRootFile: "РљРћР РќР•Р’РћР™ Р¤РђР™Р› РџР РћР•РљРўРђ",
-    consoleSuccess: "РЈРЎРџР•РҐ",
-    consoleQuant: "РљР’РђРќРўРР—РђР¦РРЇ: INT8 (РґРёРЅР°РјРёС‡РµСЃРєР°СЏ)",
-    consoleCompat: "РЎРћР’РњР•РЎРўРРњРћРЎРўР¬: ORT 1.18+",
-    paramValue: "~29.1M (РѕРїС‚РёРјРёР·РёСЂРѕРІР°РЅРѕ)",
-    latencyValue: "<14ms (РЅР° РјРѕР±РёР»СЊРЅРѕРј CPU)",
+    title: "Интерактивная Лаборатория Тестирования RuBERT",
+    subtitle: "Оцените локальный инференс весов модели rubert_fraud_int8.onnx в реальном времени.",
+    placeholder: "Введите текст подозрительного диалога или СМС для анализа...",
+    btnRun: "Запустить инференс модели",
+    btnRunning: "Вычисление весов...",
+    resultHeader: "ВЫХОД СЕМАНТИЧЕСКОГО ДЕКОДЕРА",
+    fraudLabel: "Вероятность Соц. Инженерии (FRAUD):",
+    safeLabel: "Безопасный Диалог (SAFE):",
+    attentionTitle: "Карта внимания BERT (Флаги токенов):",
+    presetTitle: "Быстрые пресеты:",
+    feedbackHeader: "⚠️ Обнаружили ошибку инференса?",
+    feedbackSub: "Помогите обучить веса нейросети! Отправьте тикет об ошибке напрямую в команду поддержки в Telegram.",
+    errType: "Тип ошибки",
+    errFalsePositive: "Ложное срабатывание (Безопасный текст помечен как угроза)",
+    errFalseNegative: "Пропуск угрозы (Мошеннический текст посчитан безопасным)",
+    errOther: "Другой баг классификации",
+    commentLabel: "Ваш комментарий (что пошло не так?)",
+    commentPlaceholder: "Укажите, например, какие слова модель посчитала критичными...",
+    btnTg: "Отправить тикет в Telegram",
+    btnCopy: "Скопировать тикет",
+    copied: "Скопировано!",
+    modelStatusSafe: "БЕЗОПАСНАЯ СЕМАНТИКА",
+    modelStatusSuspicious: "ПОДОЗРИТЕЛЬНО",
+    modelStatusFraud: "МОШЕННИЧЕСКИЙ НАВЫК",
+    hideTicketForm: "Скрыть тикет-форму",
+    ticketSpec: "СПЕЦИФИКАЦИЯ ФОРМАТА ТИКЕТА",
+    consoleRootFile: "КОРНЕВОЙ ФАЙЛ ПРОЕКТА",
+    consoleSuccess: "УСПЕХ",
+    consoleQuant: "КВАНТИЗАЦИЯ: INT8 (динамическая)",
+    consoleCompat: "СОВМЕСТИМОСТЬ: ORT 1.18+",
+    paramValue: "~29.1M (оптимизировано)",
+    latencyValue: "<14ms (на мобильном CPU)",
   },
   en: {
     title: "Interactive RuBERT ONNX Test Lab",
@@ -599,7 +599,7 @@ const ONNX_DICT: Record<LanguageCode, OnnxDictType> = {
     safeLabel: "Safe Dialogue (SAFE):",
     attentionTitle: "BERT Attention Map (Token Flags):",
     presetTitle: "Quick Presets:",
-    feedbackHeader: "вљ пёЏ Found a Classification Error?",
+    feedbackHeader: "⚠️ Found a Classification Error?",
     feedbackSub: "Help train the neural net weights! Report a classification bug ticket directly to our support team in Telegram.",
     errType: "Error Classification",
     errFalsePositive: "False Positive (Safe text flagged as threat)",
@@ -623,333 +623,333 @@ const ONNX_DICT: Record<LanguageCode, OnnxDictType> = {
     latencyValue: "<14ms (on mobile CPU)",
   },
   tr: {
-    title: "EtkileЕџimli RuBERT ONNX Test LaboratuvarД±",
-    subtitle: "rubert_fraud_int8.onnx model aДџД±rlД±klarД±nД±n gerГ§ek zamanlД± yerel Г§Д±karД±mД±nД± deДџerlendirin.",
-    placeholder: "Analiz iГ§in ЕџГјpheli diyalog veya SMS metnini girin...",
-    btnRun: "Model Г‡Д±karД±mД±nД± BaЕџlat",
-    btnRunning: "Г‡Д±karД±m YapД±lД±yor...",
-    resultHeader: "ANLAMSAL DEKODER Г‡IKTI",
-    fraudLabel: "Sosyal MГјhendislik Riski (FRAUD):",
-    safeLabel: "GГјvenli Diyalog (SAFE):",
-    attentionTitle: "BERT Dikkat HaritasД± (Token BayraklarД±):",
-    presetTitle: "HД±zlД± Ећablonlar:",
-    feedbackHeader: "вљ пёЏ SД±nД±flandД±rma HatasД± mД± Buldunuz?",
-    feedbackSub: "Yapay sinir aДџД± aДџД±rlД±klarД±nД± eДџitmeye yardД±mcД± olun! DoДџrudan destek ekibine Telegram Гјzerinden hata bildirimi gГ¶nderin.",
-    errType: "Hata TГјrГј",
-    errFalsePositive: "YanlД±Еџ Pozitif (GГјvenli metin tehdit olarak algД±landД±)",
-    errFalseNegative: "YanlД±Еџ Negatif (Tehdit iГ§eren metin gГјvenli sayД±ldД±)",
-    errOther: "DiДџer sД±nД±flandД±rma hatasД±",
-    commentLabel: "Yorumunuz (ne yanlД±Еџ gitti?)",
-    commentPlaceholder: "Г–rneДџin modelin hangi kelimeleri yanlД±Еџ yorumladД±ДџД±nД± belirtin...",
-    btnTg: "Telegram'a Bildirim GГ¶nder",
+    title: "Etkileşimli RuBERT ONNX Test Laboratuvarı",
+    subtitle: "rubert_fraud_int8.onnx model ağırlıklarının gerçek zamanlı yerel çıkarımını değerlendirin.",
+    placeholder: "Analiz için şüpheli diyalog veya SMS metnini girin...",
+    btnRun: "Model Çıkarımını Başlat",
+    btnRunning: "Çıkarım Yapılıyor...",
+    resultHeader: "ANLAMSAL DEKODER ÇIKTI",
+    fraudLabel: "Sosyal Mühendislik Riski (FRAUD):",
+    safeLabel: "Güvenli Diyalog (SAFE):",
+    attentionTitle: "BERT Dikkat Haritası (Token Bayrakları):",
+    presetTitle: "Hızlı Şablonlar:",
+    feedbackHeader: "⚠️ Sınıflandırma Hatası mı Buldunuz?",
+    feedbackSub: "Yapay sinir ağı ağırlıklarını eğitmeye yardımcı olun! Doğrudan destek ekibine Telegram üzerinden hata bildirimi gönderin.",
+    errType: "Hata Türü",
+    errFalsePositive: "Yanlış Pozitif (Güvenli metin tehdit olarak algılandı)",
+    errFalseNegative: "Yanlış Negatif (Tehdit içeren metin güvenli sayıldı)",
+    errOther: "Diğer sınıflandırma hatası",
+    commentLabel: "Yorumunuz (ne yanlış gitti?)",
+    commentPlaceholder: "Örneğin modelin hangi kelimeleri yanlış yorumladığını belirtin...",
+    btnTg: "Telegram'a Bildirim Gönder",
     btnCopy: "Bildirimi Kopyala",
-    copied: "KopyalandД±!",
-    modelStatusSafe: "GГњVENLД° ANLAM",
-    modelStatusSuspicious: "ЕћГњPHELД° DIALOG",
-    modelStatusFraud: "DOLANDIRICILIK TESPД°TД°",
+    copied: "Kopyalandı!",
+    modelStatusSafe: "GÜVENLİ ANLAM",
+    modelStatusSuspicious: "ŞÜPHELİ DIALOG",
+    modelStatusFraud: "DOLANDIRICILIK TESPİTİ",
     hideTicketForm: "Bildirim Formunu Gizle",
-    ticketSpec: "BД°LET FORMATI",
-    consoleRootFile: "PROJE KГ–K DOSYASI",
-    consoleSuccess: "BAЕћARILI",
-    consoleQuant: "KANTД°ZASYON: INT8 (dinamik)",
+    ticketSpec: "BİLET FORMATI",
+    consoleRootFile: "PROJE KÖK DOSYASI",
+    consoleSuccess: "BAŞARILI",
+    consoleQuant: "KANTİZASYON: INT8 (dinamik)",
     consoleCompat: "UYUMLULUK: ORT 1.18+",
-    paramValue: "~29.1M (optimize edilmiЕџ)",
+    paramValue: "~29.1M (optimize edilmiş)",
     latencyValue: "<14ms (mobil CPU'da)",
   },
   es: {
     title: "Laboratorio de pruebas interactivo RuBERT ONNX",
-    subtitle: "EvalГєa la inferencia local en tiempo real de los pesos del modelo rubert_fraud_int8.onnx.",
-    placeholder: "Introduce texto de diГЎlogo sospechoso o SMS para la clasificaciГіn de seguridad...",
+    subtitle: "Evalúa la inferencia local en tiempo real de los pesos del modelo rubert_fraud_int8.onnx.",
+    placeholder: "Introduce texto de diálogo sospechoso o SMS para la clasificación de seguridad...",
     btnRun: "Ejecutar inferencia del modelo",
     btnRunning: "Calculando pesos...",
-    resultHeader: "SALIDA DEL DECODIFICADOR SEMГЃNTICO",
-    fraudLabel: "Riesgo de IngenierГ­a Social (FRAUD):",
-    safeLabel: "DiГЎlogo seguro (SAFE):",
-    attentionTitle: "Mapa de AtenciГіn BERT (Banderas de Tokens):",
-    presetTitle: "Preajustes rГЎpidos:",
-    feedbackHeader: "вљ пёЏ ВїEncontraste un error de clasificaciГіn?",
-    feedbackSub: "ВЎAyuda a entrenar los pesos de la red neuronal! EnvГ­a un ticket de error de clasificaciГіn directamente a nuestro equipo de soporte en Telegram.",
-    errType: "ClasificaciГіn del error",
+    resultHeader: "SALIDA DEL DECODIFICADOR SEMÁNTICO",
+    fraudLabel: "Riesgo de Ingeniería Social (FRAUD):",
+    safeLabel: "Diálogo seguro (SAFE):",
+    attentionTitle: "Mapa de Atención BERT (Banderas de Tokens):",
+    presetTitle: "Preajustes rápidos:",
+    feedbackHeader: "⚠️ ¿Encontraste un error de clasificación?",
+    feedbackSub: "¡Ayuda a entrenar los pesos de la red neuronal! Envía un ticket de error de clasificación directamente a nuestro equipo de soporte en Telegram.",
+    errType: "Clasificación del error",
     errFalsePositive: "Falso positivo (texto seguro marcado como amenaza)",
     errFalseNegative: "Falso negativo (texto fraudulento marcado como seguro)",
-    errOther: "Otra anomalГ­a de clasificaciГіn",
+    errOther: "Otra anomalía de clasificación",
     commentLabel: "Tus comentarios",
-    commentPlaceholder: "Explica quГ© palabras hicieron que el modelo se comportara mal...",
+    commentPlaceholder: "Explica qué palabras hicieron que el modelo se comportara mal...",
     btnTg: "Enviar ticket a Telegram",
     btnCopy: "Copiar contenido del ticket",
-    copied: "ВЎCopiado!",
-    modelStatusSafe: "SEMГЃNTICA SEGURA",
+    copied: "¡Copiado!",
+    modelStatusSafe: "SEMÁNTICA SEGURA",
     modelStatusSuspicious: "ACTIVIDAD SOSPECHOSA",
-    modelStatusFraud: "SEMГЃNTICA FRAUDULENTA",
+    modelStatusFraud: "SEMÁNTICA FRAUDULENTA",
     hideTicketForm: "Ocultar formulario de ticket",
-    ticketSpec: "ESPECIFICACIГ“N DEL FORMATO DE TICKET",
-    consoleRootFile: "ARCHIVO RAГЌZ DEL PROYECTO",
-    consoleSuccess: "Г‰XITO",
-    consoleQuant: "CUANTIZACIГ“N: INT8 (dinГЎmica)",
+    ticketSpec: "ESPECIFICACIÓN DEL FORMATO DE TICKET",
+    consoleRootFile: "ARCHIVO RAÍZ DEL PROYECTO",
+    consoleSuccess: "ÉXITO",
+    consoleQuant: "CUANTIZACIÓN: INT8 (dinámica)",
     consoleCompat: "COMPATIBILIDAD: ORT 1.18+",
     paramValue: "~29.1M (optimizado)",
-    latencyValue: "<14ms (en CPU mГіvil)",
+    latencyValue: "<14ms (en CPU móvil)",
   },
   zh: {
-    title: "дє¤дє’ејЏ RuBERT ONNX жµ‹иЇ•е®ћйЄЊе®¤",
-    subtitle: "иЇ„дј° rubert_fraud_int8.onnx жЁЎећ‹жќѓй‡Ќзљ„е®ћж—¶жњ¬ењ°жЋЁзђ†гЂ‚",
-    placeholder: "иѕ“е…ҐеЏЇз–‘еЇ№иЇќж–‡жњ¬ж€–зџ­дїЎпјЊиї›иЎЊе®‰е…Ёе€†з±»...",
-    btnRun: "иїђиЎЊжЁЎећ‹жЋЁзђ†",
-    btnRunning: "ж­ЈењЁи®Ўз®—жќѓй‡Ќ...",
-    resultHeader: "иЇ­д№‰и§Јз Ѓе™Ёиѕ“е‡є",
-    fraudLabel: "з¤ѕдјље·ҐзЁ‹йЈЋй™©пј€FRAUDпј‰пјљ",
-    safeLabel: "е®‰е…ЁеЇ№иЇќпј€SAFEпј‰пјљ",
-    attentionTitle: "BERT жіЁж„ЏеЉ›е›ѕпј€д»¤з‰Њж ‡и®°пј‰пјљ",
-    presetTitle: "еї«йЂџйў„и®ѕпјљ",
-    feedbackHeader: "вљ пёЏ еЏ‘зЋ°е€†з±»й”™иЇЇпјџ",
-    feedbackSub: "её®еЉ©и®­з»ѓзҐћз»ЏзЅ‘з»њжќѓй‡ЌпјЃз›ґжЋҐе°†е€†з±»й”™иЇЇзҐЁиЇЃжЉҐе‘Љз»™ж€‘д»¬ењЁ Telegram дёЉзљ„ж”ЇжЊЃе›ўйџгЂ‚",
-    errType: "й”™иЇЇе€†з±»",
-    errFalsePositive: "иЇЇжЉҐпј€е®‰е…Ёж–‡жњ¬иў«ж ‡и®°дёєеЁЃиѓЃпј‰",
-    errFalseNegative: "жјЏжЉҐпј€ж¬єиЇ€ж–‡жњ¬иў«ж ‡и®°дёєе®‰е…Ёпј‰",
-    errOther: "е…¶д»–е€†з±»еј‚еёё",
-    commentLabel: "ж‚Ёзљ„еЏЌй¦€иЇ„и®є",
-    commentPlaceholder: "иЇ·иЇґжЋе“Єдє›иЇЌеЇји‡ґжЁЎећ‹е‡єй”™...",
-    btnTg: "еЏ‘йЂЃзҐЁиЇЃе€° Telegram",
-    btnCopy: "е¤Ќе€¶зҐЁиЇЃе†…е®№",
-    copied: "е·Іе¤Ќе€¶пјЃ",
-    modelStatusSafe: "е®‰е…ЁиЇ­д№‰",
-    modelStatusSuspicious: "еЏЇз–‘жґ»еЉЁ",
-    modelStatusFraud: "ж¬єиЇ€иЇ­д№‰",
-    hideTicketForm: "йљђи—ЏзҐЁиЇЃиЎЁеЌ•",
-    ticketSpec: "зҐЁиЇЃж јејЏи§„иЊѓ",
-    consoleRootFile: "йЎ№з›®ж №ж–‡д»¶",
-    consoleSuccess: "ж€ђеЉџ",
-    consoleQuant: "й‡ЏеЊ–пјљINT8пј€еЉЁжЂЃпј‰",
-    consoleCompat: "е…је®№жЂ§пјљORT 1.18+",
-    paramValue: "~29.1M (е·ІдјеЊ–)",
-    latencyValue: "<14msпј€з§»еЉЁз«Ї CPUпј‰",
+    title: "交互式 RuBERT ONNX 测试实验室",
+    subtitle: "评估 rubert_fraud_int8.onnx 模型权重的实时本地推理。",
+    placeholder: "输入可疑对话文本或短信，进行安全分类...",
+    btnRun: "运行模型推理",
+    btnRunning: "正在计算权重...",
+    resultHeader: "语义解码器输出",
+    fraudLabel: "社会工程风险（FRAUD）：",
+    safeLabel: "安全对话（SAFE）：",
+    attentionTitle: "BERT 注意力图（令牌标记）：",
+    presetTitle: "快速预设：",
+    feedbackHeader: "⚠️ 发现分类错误？",
+    feedbackSub: "帮助训练神经网络权重！直接将分类错误票证报告给我们在 Telegram 上的支持团队。",
+    errType: "错误分类",
+    errFalsePositive: "误报（安全文本被标记为威胁）",
+    errFalseNegative: "漏报（欺诈文本被标记为安全）",
+    errOther: "其他分类异常",
+    commentLabel: "您的反馈评论",
+    commentPlaceholder: "请说明哪些词导致模型出错...",
+    btnTg: "发送票证到 Telegram",
+    btnCopy: "复制票证内容",
+    copied: "已复制！",
+    modelStatusSafe: "安全语义",
+    modelStatusSuspicious: "可疑活动",
+    modelStatusFraud: "欺诈语义",
+    hideTicketForm: "隐藏票证表单",
+    ticketSpec: "票证格式规范",
+    consoleRootFile: "项目根文件",
+    consoleSuccess: "成功",
+    consoleQuant: "量化：INT8（动态）",
+    consoleCompat: "兼容性：ORT 1.18+",
+    paramValue: "~29.1M (已优化)",
+    latencyValue: "<14ms（移动端 CPU）",
   },
   hi: {
-    title: "а¤‡а¤‚а¤џа¤°аҐ€а¤•аҐЌа¤џа¤їа¤µ RuBERT ONNX а¤џаҐ‡а¤ёаҐЌа¤џ а¤ІаҐ€а¤¬",
-    subtitle: "rubert_fraud_int8.onnx а¤®аҐ‰а¤Ўа¤І а¤•аҐ‡ а¤µа¤ња¤ја¤Ё а¤•аҐЂ а¤µа¤ѕа¤ёаҐЌа¤¤а¤µа¤їа¤• а¤ёа¤®а¤Ї а¤®аҐ‡а¤‚ а¤ёаҐЌа¤Ґа¤ѕа¤ЁаҐЂа¤Ї а¤‡а¤ЁаҐЌа¤«а¤ја¤°аҐ‡а¤‚а¤ё а¤•а¤ѕ а¤®аҐ‚а¤ІаҐЌа¤Їа¤ѕа¤‚а¤•а¤Ё а¤•а¤°аҐ‡а¤‚аҐ¤",
-    placeholder: "а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤µа¤°аҐЌа¤—аҐЂа¤•а¤°а¤Ј а¤•аҐ‡ а¤Іа¤їа¤Џ а¤ёа¤‚а¤¦а¤їа¤—аҐЌа¤§ а¤ёа¤‚а¤µа¤ѕа¤¦ а¤Єа¤ѕа¤  а¤Їа¤ѕ SMS а¤¦а¤°аҐЌа¤њ а¤•а¤°аҐ‡а¤‚...",
-    btnRun: "а¤®аҐ‰а¤Ўа¤І а¤‡а¤ЁаҐЌа¤«а¤ја¤°аҐ‡а¤‚а¤ё а¤ља¤Іа¤ѕа¤Џа¤Ѓ",
-    btnRunning: "а¤µа¤ња¤ја¤Ё а¤•аҐЂ а¤—а¤Ја¤Ёа¤ѕ а¤№аҐ‹ а¤°а¤№аҐЂ а¤№аҐ€...",
-    resultHeader: "а¤ёа¤їа¤®аҐ‡а¤‚а¤џа¤їа¤• а¤Ўа¤їа¤•аҐ‹а¤Ўа¤° а¤†а¤‰а¤џа¤ЄаҐЃа¤џ",
-    fraudLabel: "а¤ёа¤ѕа¤®а¤ѕа¤ња¤їа¤• а¤‡а¤‚а¤њаҐЂа¤Ёа¤їа¤Їа¤°а¤їа¤‚а¤— а¤њаҐ‹а¤–а¤їа¤® (FRAUD):",
-    safeLabel: "а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤їа¤¤ а¤ёа¤‚а¤µа¤ѕа¤¦ (SAFE):",
-    attentionTitle: "BERT а¤§аҐЌа¤Їа¤ѕа¤Ё а¤®а¤ѕа¤Ёа¤ља¤їа¤¤аҐЌа¤° (а¤џаҐ‹а¤•а¤Ё а¤«а¤јаҐЌа¤ІаҐ€а¤—):",
-    presetTitle: "а¤¤аҐЌа¤µа¤°а¤їа¤¤ а¤ЄаҐЌа¤°аҐЂа¤ёаҐ‡а¤џ:",
-    feedbackHeader: "вљ пёЏ а¤•аҐ‹а¤€ а¤µа¤°аҐЌа¤—аҐЂа¤•а¤°а¤Ј а¤¤аҐЌа¤°аҐЃа¤џа¤ї а¤®а¤їа¤ІаҐЂ?",
-    feedbackSub: "а¤ЁаҐЌа¤ЇаҐ‚а¤°а¤І а¤ЁаҐ‡а¤џ а¤µа¤ња¤ја¤Ё а¤ЄаҐЌа¤°а¤¶а¤їа¤•аҐЌа¤·а¤їа¤¤ а¤•а¤°а¤ЁаҐ‡ а¤®аҐ‡а¤‚ а¤®а¤¦а¤¦ а¤•а¤°аҐ‡а¤‚! а¤џаҐ‡а¤ІаҐЂа¤—аҐЌа¤°а¤ѕа¤® а¤Єа¤° а¤№а¤®а¤ѕа¤°аҐЂ а¤ёа¤№а¤ѕа¤Їа¤¤а¤ѕ а¤џаҐЂа¤® а¤•аҐ‹ а¤ёаҐЂа¤§аҐ‡ а¤µа¤°аҐЌа¤—аҐЂа¤•а¤°а¤Ј а¤¬а¤— а¤џа¤їа¤•а¤џ а¤°а¤їа¤ЄаҐ‹а¤°аҐЌа¤џ а¤•а¤°аҐ‡а¤‚аҐ¤",
-    errType: "а¤¤аҐЌа¤°аҐЃа¤џа¤ї а¤µа¤°аҐЌа¤—аҐЂа¤•а¤°а¤Ј",
-    errFalsePositive: "а¤—а¤ја¤Іа¤¤ а¤ёа¤•а¤ѕа¤°а¤ѕа¤¤аҐЌа¤®а¤• (а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤їа¤¤ а¤Єа¤ѕа¤  а¤•аҐ‹ а¤–а¤ја¤¤а¤°аҐ‡ а¤•аҐ‡ а¤°аҐ‚а¤Є а¤®аҐ‡а¤‚ а¤ља¤їа¤№аҐЌа¤Ёа¤їа¤¤ а¤•а¤їа¤Їа¤ѕ а¤—а¤Їа¤ѕ)",
-    errFalseNegative: "а¤—а¤ја¤Іа¤¤ а¤Ёа¤•а¤ѕа¤°а¤ѕа¤¤аҐЌа¤®а¤• (а¤§аҐ‹а¤–а¤ѕа¤§а¤Ўа¤јаҐЂ а¤Єа¤ѕа¤  а¤•аҐ‹ а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤їа¤¤ а¤ља¤їа¤№аҐЌа¤Ёа¤їа¤¤ а¤•а¤їа¤Їа¤ѕ а¤—а¤Їа¤ѕ)",
-    errOther: "а¤…а¤ЁаҐЌа¤Ї а¤µа¤°аҐЌа¤—аҐЂа¤•а¤°а¤Ј а¤µа¤їа¤ёа¤‚а¤—а¤¤а¤ї",
-    commentLabel: "а¤†а¤Єа¤•аҐЂ а¤ЄаҐЌа¤°а¤¤а¤їа¤•аҐЌа¤°а¤їа¤Їа¤ѕ а¤џа¤їа¤ЄаҐЌа¤Єа¤Ја¤їа¤Їа¤ѕа¤Ѓ",
-    commentPlaceholder: "а¤¬а¤¤а¤ѕа¤Џа¤Ѓ а¤•а¤ї а¤•а¤їа¤Ё а¤¶а¤¬аҐЌа¤¦аҐ‹а¤‚ а¤ЁаҐ‡ а¤®аҐ‰а¤Ўа¤І а¤•аҐ‹ а¤—а¤ја¤Іа¤¤ а¤µаҐЌа¤Їа¤µа¤№а¤ѕа¤° а¤•а¤°а¤ЁаҐ‡ а¤Єа¤° а¤®а¤ња¤¬аҐ‚а¤° а¤•а¤їа¤Їа¤ѕ...",
-    btnTg: "а¤џаҐ‡а¤ІаҐЂа¤—аҐЌа¤°а¤ѕа¤® а¤Єа¤° а¤џа¤їа¤•а¤џ а¤­аҐ‡а¤њаҐ‡а¤‚",
-    btnCopy: "а¤џа¤їа¤•а¤џ а¤ёа¤ѕа¤®а¤—аҐЌа¤°аҐЂ а¤•аҐ‰а¤ЄаҐЂ а¤•а¤°аҐ‡а¤‚",
-    copied: "а¤•аҐ‰а¤ЄаҐЂ а¤№аҐ‹ а¤—а¤Їа¤ѕ!",
-    modelStatusSafe: "а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤їа¤¤ а¤ёа¤їа¤®аҐ‡а¤‚а¤џа¤їа¤•аҐЌа¤ё",
-    modelStatusSuspicious: "а¤ёа¤‚а¤¦а¤їа¤—аҐЌа¤§ а¤—а¤¤а¤їа¤µа¤їа¤§а¤ї",
-    modelStatusFraud: "а¤§аҐ‹а¤–а¤ѕа¤§а¤Ўа¤јаҐЂ а¤ёа¤їа¤®аҐ‡а¤‚а¤џа¤їа¤•аҐЌа¤ё",
-    hideTicketForm: "а¤џа¤їа¤•а¤џ а¤«а¤јаҐ‰а¤°аҐЌа¤® а¤›аҐЃа¤Єа¤ѕа¤Џа¤Ѓ",
-    ticketSpec: "а¤џа¤їа¤•а¤џ а¤ЄаҐЌа¤°а¤ѕа¤°аҐ‚а¤Є а¤µа¤їа¤Ёа¤їа¤°аҐЌа¤¦аҐ‡а¤¶",
-    consoleRootFile: "а¤ЄаҐЌа¤°аҐ‹а¤њаҐ‡а¤•аҐЌа¤џ а¤°аҐ‚а¤џ а¤«а¤ја¤ѕа¤‡а¤І",
-    consoleSuccess: "а¤ёа¤«а¤Іа¤¤а¤ѕ",
-    consoleQuant: "а¤•аҐЌа¤µа¤ѕа¤‚а¤џа¤ѕа¤‡а¤ња¤јаҐ‡а¤¶а¤Ё: INT8 (а¤Ўа¤ѕа¤Їа¤Ёа¤ѕа¤®а¤їа¤•)",
-    consoleCompat: "а¤ёа¤‚а¤—а¤¤а¤¤а¤ѕ: ORT 1.18+",
-    paramValue: "~29.1M (а¤…а¤ЁаҐЃа¤•аҐ‚а¤Іа¤їа¤¤)",
-    latencyValue: "<14ms (а¤®аҐ‹а¤¬а¤ѕа¤‡а¤І CPU а¤Єа¤°)",
+    title: "इंटरैक्टिव RuBERT ONNX टेस्ट लैब",
+    subtitle: "rubert_fraud_int8.onnx मॉडल के वज़न की वास्तविक समय में स्थानीय इन्फ़रेंस का मूल्यांकन करें।",
+    placeholder: "सुरक्षा वर्गीकरण के लिए संदिग्ध संवाद पाठ या SMS दर्ज करें...",
+    btnRun: "मॉडल इन्फ़रेंस चलाएँ",
+    btnRunning: "वज़न की गणना हो रही है...",
+    resultHeader: "सिमेंटिक डिकोडर आउटपुट",
+    fraudLabel: "सामाजिक इंजीनियरिंग जोखिम (FRAUD):",
+    safeLabel: "सुरक्षित संवाद (SAFE):",
+    attentionTitle: "BERT ध्यान मानचित्र (टोकन फ़्लैग):",
+    presetTitle: "त्वरित प्रीसेट:",
+    feedbackHeader: "⚠️ कोई वर्गीकरण त्रुटि मिली?",
+    feedbackSub: "न्यूरल नेट वज़न प्रशिक्षित करने में मदद करें! टेलीग्राम पर हमारी सहायता टीम को सीधे वर्गीकरण बग टिकट रिपोर्ट करें।",
+    errType: "त्रुटि वर्गीकरण",
+    errFalsePositive: "ग़लत सकारात्मक (सुरक्षित पाठ को ख़तरे के रूप में चिह्नित किया गया)",
+    errFalseNegative: "ग़लत नकारात्मक (धोखाधड़ी पाठ को सुरक्षित चिह्नित किया गया)",
+    errOther: "अन्य वर्गीकरण विसंगति",
+    commentLabel: "आपकी प्रतिक्रिया टिप्पणियाँ",
+    commentPlaceholder: "बताएँ कि किन शब्दों ने मॉडल को ग़लत व्यवहार करने पर मजबूर किया...",
+    btnTg: "टेलीग्राम पर टिकट भेजें",
+    btnCopy: "टिकट सामग्री कॉपी करें",
+    copied: "कॉपी हो गया!",
+    modelStatusSafe: "सुरक्षित सिमेंटिक्स",
+    modelStatusSuspicious: "संदिग्ध गतिविधि",
+    modelStatusFraud: "धोखाधड़ी सिमेंटिक्स",
+    hideTicketForm: "टिकट फ़ॉर्म छुपाएँ",
+    ticketSpec: "टिकट प्रारूप विनिर्देश",
+    consoleRootFile: "प्रोजेक्ट रूट फ़ाइल",
+    consoleSuccess: "सफलता",
+    consoleQuant: "क्वांटाइज़ेशन: INT8 (डायनामिक)",
+    consoleCompat: "संगतता: ORT 1.18+",
+    paramValue: "~29.1M (अनुकूलित)",
+    latencyValue: "<14ms (मोबाइल CPU पर)",
   },
   ar: {
-    title: "Щ…Ш®ШЄШЁШ± Ш§Ш®ШЄШЁШ§Ш± RuBERT ONNX Ш§Щ„ШЄЩЃШ§Ш№Щ„ЩЉ",
-    subtitle: "Щ‚ЩЉЩ‘Щ… Ш§Щ„Ш§ШіШЄШЇЩ„Ш§Щ„ Ш§Щ„Щ…Ш­Щ„ЩЉ ЩЃЩЉ Ш§Щ„Щ€Щ‚ШЄ Ш§Щ„ЩЃШ№Щ„ЩЉ Щ„ШЈЩ€ШІШ§Щ† Щ†Щ…Щ€Ш°Ш¬ rubert_fraud_int8.onnx.",
-    placeholder: "ШЈШЇШ®Щ„ Щ†Шµ Ш­Щ€Ш§Ш± Щ…ШґШЁЩ€Щ‡ ШЈЩ€ Ш±ШіШ§Щ„Ш© SMS Щ„ШЄШµЩ†ЩЉЩЃ Ш§Щ„ШЈЩ…Ш§Щ†...",
-    btnRun: "ШЄШґШєЩЉЩ„ Ш§ШіШЄШЇЩ„Ш§Щ„ Ш§Щ„Щ†Щ…Щ€Ш°Ш¬",
-    btnRunning: "Ш¬Ш§Ш±ЩЌ Ш­ШіШ§ШЁ Ш§Щ„ШЈЩ€ШІШ§Щ†...",
-    resultHeader: "Щ…Ш®Ш±Ш¬Ш§ШЄ Ш§Щ„Щ…ЩЃЩѓЩѓ Ш§Щ„ШЇЩ„Ш§Щ„ЩЉ",
-    fraudLabel: "Ш®Ш·Ш± Ш§Щ„Щ‡Щ†ШЇШіШ© Ш§Щ„Ш§Ш¬ШЄЩ…Ш§Ш№ЩЉШ© (FRAUD):",
-    safeLabel: "Ш­Щ€Ш§Ш± ШўЩ…Щ† (SAFE):",
-    attentionTitle: "Ш®Ш±ЩЉШ·Ш© Ш§Щ†ШЄШЁШ§Щ‡ BERT (ШЈШ№Щ„Ш§Щ… Ш§Щ„Ш±Щ…Щ€ШІ):",
-    presetTitle: "ШҐШ№ШЇШ§ШЇШ§ШЄ ШіШ±ЩЉШ№Ш©:",
-    feedbackHeader: "вљ пёЏ Щ€Ш¬ШЇШЄ Ш®Ш·ШЈ ЩЃЩЉ Ш§Щ„ШЄШµЩ†ЩЉЩЃШџ",
-    feedbackSub: "ШіШ§Ш№ШЇ ЩЃЩЉ ШЄШЇШ±ЩЉШЁ ШЈЩ€ШІШ§Щ† Ш§Щ„ШґШЁЩѓШ© Ш§Щ„Ш№ШµШЁЩЉШ©! ШЈШЁЩ„Шє Ш№Щ† ШЄШ°ЩѓШ±Ш© Ш®Ш·ШЈ ШЄШµЩ†ЩЉЩЃ Щ…ШЁШ§ШґШ±Ш©Щ‹ ШҐЩ„Щ‰ ЩЃШ±ЩЉЩ‚ Ш§Щ„ШЇШ№Щ… Щ„ШЇЩЉЩ†Ш§ Ш№Щ„Щ‰ ШЄЩЉЩ„ЩЉШєШ±Ш§Щ….",
-    errType: "ШЄШµЩ†ЩЉЩЃ Ш§Щ„Ш®Ш·ШЈ",
-    errFalsePositive: "ШҐЩЉШ¬Ш§ШЁЩЉ ЩѓШ§Ш°ШЁ (Щ†Шµ ШўЩ…Щ† Щ€ЩЏШіЩ… ЩѓШЄЩ‡ШЇЩЉШЇ)",
-    errFalseNegative: "ШіЩ„ШЁЩЉ ЩѓШ§Ш°ШЁ (Щ†Шµ Ш§Ш­ШЄЩЉШ§Щ„ЩЉ Щ€ЩЏШіЩ… ЩѓШўЩ…Щ†)",
-    errOther: "ШґШ°Щ€Ш° ШЄШµЩ†ЩЉЩЃ ШўШ®Ш±",
-    commentLabel: "ШЄШ№Щ„ЩЉЩ‚Ш§ШЄЩѓ",
-    commentPlaceholder: "Ш§ШґШ±Ш­ Ш§Щ„ЩѓЩ„Щ…Ш§ШЄ Ш§Щ„ШЄЩЉ Ш¬Ш№Щ„ШЄ Ш§Щ„Щ†Щ…Щ€Ш°Ш¬ ЩЉШЄШµШ±ЩЃ ШЁШґЩѓЩ„ Ш®Ш§Ш·Ш¦...",
-    btnTg: "ШҐШ±ШіШ§Щ„ Ш§Щ„ШЄШ°ЩѓШ±Ш© ШҐЩ„Щ‰ ШЄЩЉЩ„ЩЉШєШ±Ш§Щ…",
-    btnCopy: "Щ†ШіШ® Щ…Ш­ШЄЩ€Щ‰ Ш§Щ„ШЄШ°ЩѓШ±Ш©",
-    copied: "ШЄЩ… Ш§Щ„Щ†ШіШ®!",
-    modelStatusSafe: "ШЇЩ„Ш§Щ„Ш§ШЄ ШўЩ…Щ†Ш©",
-    modelStatusSuspicious: "Щ†ШґШ§Ш· Щ…ШґШЁЩ€Щ‡",
-    modelStatusFraud: "ШЇЩ„Ш§Щ„Ш§ШЄ Ш§Ш­ШЄЩЉШ§Щ„ЩЉШ©",
-    hideTicketForm: "ШҐШ®ЩЃШ§ШЎ Щ†Щ…Щ€Ш°Ш¬ Ш§Щ„ШЄШ°ЩѓШ±Ш©",
-    ticketSpec: "Щ…Щ€Ш§ШµЩЃШ§ШЄ ШЄЩ†ШіЩЉЩ‚ Ш§Щ„ШЄШ°ЩѓШ±Ш©",
-    consoleRootFile: "Щ…Щ„ЩЃ Ш¬Ш°Ш± Ш§Щ„Щ…ШґШ±Щ€Ш№",
-    consoleSuccess: "Щ†Ш¬Ш§Ш­",
-    consoleQuant: "Ш§Щ„Щ‚ЩЉШ§Ші Ш§Щ„ЩѓЩ…ЩЉ: INT8 (ШЇЩЉЩ†Ш§Щ…ЩЉЩѓЩЉ)",
-    consoleCompat: "Ш§Щ„ШЄЩ€Ш§ЩЃЩ‚: ORT 1.18+",
-    paramValue: "~29.1M (Щ…Ш­ШіЩ‘Щ†)",
-    latencyValue: "<14ms (Ш№Щ„Щ‰ Щ…Ш№Ш§Щ„Ш¬ Ш§Щ„Щ‡Ш§ШЄЩЃ)",
+    title: "مختبر اختبار RuBERT ONNX التفاعلي",
+    subtitle: "قيّم الاستدلال المحلي في الوقت الفعلي لأوزان نموذج rubert_fraud_int8.onnx.",
+    placeholder: "أدخل نص حوار مشبوه أو رسالة SMS لتصنيف الأمان...",
+    btnRun: "تشغيل استدلال النموذج",
+    btnRunning: "جارٍ حساب الأوزان...",
+    resultHeader: "مخرجات المفكك الدلالي",
+    fraudLabel: "خطر الهندسة الاجتماعية (FRAUD):",
+    safeLabel: "حوار آمن (SAFE):",
+    attentionTitle: "خريطة انتباه BERT (أعلام الرموز):",
+    presetTitle: "إعدادات سريعة:",
+    feedbackHeader: "⚠️ وجدت خطأ في التصنيف؟",
+    feedbackSub: "ساعد في تدريب أوزان الشبكة العصبية! أبلغ عن تذكرة خطأ تصنيف مباشرةً إلى فريق الدعم لدينا على تيليغرام.",
+    errType: "تصنيف الخطأ",
+    errFalsePositive: "إيجابي كاذب (نص آمن وُسم كتهديد)",
+    errFalseNegative: "سلبي كاذب (نص احتيالي وُسم كآمن)",
+    errOther: "شذوذ تصنيف آخر",
+    commentLabel: "تعليقاتك",
+    commentPlaceholder: "اشرح الكلمات التي جعلت النموذج يتصرف بشكل خاطئ...",
+    btnTg: "إرسال التذكرة إلى تيليغرام",
+    btnCopy: "نسخ محتوى التذكرة",
+    copied: "تم النسخ!",
+    modelStatusSafe: "دلالات آمنة",
+    modelStatusSuspicious: "نشاط مشبوه",
+    modelStatusFraud: "دلالات احتيالية",
+    hideTicketForm: "إخفاء نموذج التذكرة",
+    ticketSpec: "مواصفات تنسيق التذكرة",
+    consoleRootFile: "ملف جذر المشروع",
+    consoleSuccess: "نجاح",
+    consoleQuant: "القياس الكمي: INT8 (ديناميكي)",
+    consoleCompat: "التوافق: ORT 1.18+",
+    paramValue: "~29.1M (محسّن)",
+    latencyValue: "<14ms (على معالج الهاتف)",
   },
   pt: {
-    title: "LaboratГіrio de Teste Interativo RuBERT ONNX",
-    subtitle: "Avalie a inferГЄncia local em tempo real dos pesos do modelo rubert_fraud_int8.onnx.",
-    placeholder: "Digite texto de diГЎlogo suspeito ou SMS para classificaГ§ГЈo de seguranГ§a...",
-    btnRun: "Executar inferГЄncia do modelo",
+    title: "Laboratório de Teste Interativo RuBERT ONNX",
+    subtitle: "Avalie a inferência local em tempo real dos pesos do modelo rubert_fraud_int8.onnx.",
+    placeholder: "Digite texto de diálogo suspeito ou SMS para classificação de segurança...",
+    btnRun: "Executar inferência do modelo",
     btnRunning: "Calculando pesos...",
-    resultHeader: "SAГЌDA DO DECODIFICADOR SEMГ‚NTICO",
+    resultHeader: "SAÍDA DO DECODIFICADOR SEMÂNTICO",
     fraudLabel: "Risco de Engenharia Social (FRAUD):",
-    safeLabel: "DiГЎlogo seguro (SAFE):",
-    attentionTitle: "Mapa de AtenГ§ГЈo BERT (Bandeiras de Tokens):",
-    presetTitle: "PredefiniГ§Гµes rГЎpidas:",
-    feedbackHeader: "вљ пёЏ Encontrou um erro de classificaГ§ГЈo?",
-    feedbackSub: "Ajude a treinar os pesos da rede neural! Envie um ticket de erro de classificaГ§ГЈo diretamente Г  nossa equipe de suporte no Telegram.",
-    errType: "ClassificaГ§ГЈo do Erro",
-    errFalsePositive: "Falso Positivo (texto seguro sinalizado como ameaГ§a)",
+    safeLabel: "Diálogo seguro (SAFE):",
+    attentionTitle: "Mapa de Atenção BERT (Bandeiras de Tokens):",
+    presetTitle: "Predefinições rápidas:",
+    feedbackHeader: "⚠️ Encontrou um erro de classificação?",
+    feedbackSub: "Ajude a treinar os pesos da rede neural! Envie um ticket de erro de classificação diretamente à nossa equipe de suporte no Telegram.",
+    errType: "Classificação do Erro",
+    errFalsePositive: "Falso Positivo (texto seguro sinalizado como ameaça)",
     errFalseNegative: "Falso Negativo (texto fraudulento marcado como seguro)",
-    errOther: "Outra anomalia de classificaГ§ГЈo",
-    commentLabel: "Seus comentГЎrios",
+    errOther: "Outra anomalia de classificação",
+    commentLabel: "Seus comentários",
     commentPlaceholder: "Explique quais palavras fizeram o modelo se comportar mal...",
     btnTg: "Enviar ticket para o Telegram",
-    btnCopy: "Copiar conteГєdo do ticket",
+    btnCopy: "Copiar conteúdo do ticket",
     copied: "Copiado!",
-    modelStatusSafe: "SEMГ‚NTICA SEGURA",
+    modelStatusSafe: "SEMÂNTICA SEGURA",
     modelStatusSuspicious: "ATIVIDADE SUSPEITA",
-    modelStatusFraud: "SEMГ‚NTICA FRAUDULENTA",
-    hideTicketForm: "Ocultar formulГЎrio de ticket",
-    ticketSpec: "ESPECIFICAГ‡ГѓO DO FORMATO DO TICKET",
+    modelStatusFraud: "SEMÂNTICA FRAUDULENTA",
+    hideTicketForm: "Ocultar formulário de ticket",
+    ticketSpec: "ESPECIFICAÇÃO DO FORMATO DO TICKET",
     consoleRootFile: "ARQUIVO RAIZ DO PROJETO",
     consoleSuccess: "SUCESSO",
-    consoleQuant: "QUANTIZAГ‡ГѓO: INT8 (dinГўmica)",
+    consoleQuant: "QUANTIZAÇÃO: INT8 (dinâmica)",
     consoleCompat: "COMPATIBILIDADE: ORT 1.18+",
     paramValue: "~29.1M (otimizado)",
-    latencyValue: "<14ms (em CPU mГіvel)",
+    latencyValue: "<14ms (em CPU móvel)",
   },
   fr: {
     title: "Laboratoire de test interactif RuBERT ONNX",
-    subtitle: "Г‰valuez l'infГ©rence locale en temps rГ©el des poids du modГЁle rubert_fraud_int8.onnx.",
-    placeholder: "Saisissez un texte de dialogue suspect ou un SMS pour la classification de sГ©curitГ©...",
-    btnRun: "ExГ©cuter l'infГ©rence du modГЁle",
+    subtitle: "Évaluez l'inférence locale en temps réel des poids du modèle rubert_fraud_int8.onnx.",
+    placeholder: "Saisissez un texte de dialogue suspect ou un SMS pour la classification de sécurité...",
+    btnRun: "Exécuter l'inférence du modèle",
     btnRunning: "Calcul des poids...",
-    resultHeader: "SORTIE DU DГ‰CODEUR SГ‰MANTIQUE",
-    fraudLabel: "Risque d'ingГ©nierie sociale (FRAUD) :",
-    safeLabel: "Dialogue sГ»r (SAFE) :",
+    resultHeader: "SORTIE DU DÉCODEUR SÉMANTIQUE",
+    fraudLabel: "Risque d'ingénierie sociale (FRAUD) :",
+    safeLabel: "Dialogue sûr (SAFE) :",
     attentionTitle: "Carte d'attention BERT (Drapeaux de jetons) :",
-    presetTitle: "PrГ©sГ©lections rapides :",
-    feedbackHeader: "вљ пёЏ Vous avez trouvГ© une erreur de classification ?",
-    feedbackSub: "Aidez Г  entraГ®ner les poids du rГ©seau neuronal ! Signalez un ticket de bug de classification directement Г  notre Г©quipe de support sur Telegram.",
+    presetTitle: "Présélections rapides :",
+    feedbackHeader: "⚠️ Vous avez trouvé une erreur de classification ?",
+    feedbackSub: "Aidez à entraîner les poids du réseau neuronal ! Signalez un ticket de bug de classification directement à notre équipe de support sur Telegram.",
     errType: "Classification de l'erreur",
-    errFalsePositive: "Faux positif (texte sГ»r signalГ© comme menace)",
-    errFalseNegative: "Faux nГ©gatif (texte frauduleux marquГ© comme sГ»r)",
+    errFalsePositive: "Faux positif (texte sûr signalé comme menace)",
+    errFalseNegative: "Faux négatif (texte frauduleux marqué comme sûr)",
     errOther: "Autre anomalie de classification",
     commentLabel: "Vos commentaires",
-    commentPlaceholder: "Expliquez quels mots ont fait mal se comporter le modГЁle...",
+    commentPlaceholder: "Expliquez quels mots ont fait mal se comporter le modèle...",
     btnTg: "Envoyer le ticket sur Telegram",
     btnCopy: "Copier le contenu du ticket",
-    copied: "CopiГ© !",
-    modelStatusSafe: "SГ‰MANTIQUE SГ›RE",
-    modelStatusSuspicious: "ACTIVITГ‰ SUSPECTE",
-    modelStatusFraud: "SГ‰MANTIQUE FRAUDULEUSE",
+    copied: "Copié !",
+    modelStatusSafe: "SÉMANTIQUE SÛRE",
+    modelStatusSuspicious: "ACTIVITÉ SUSPECTE",
+    modelStatusFraud: "SÉMANTIQUE FRAUDULEUSE",
     hideTicketForm: "Masquer le formulaire de ticket",
-    ticketSpec: "SPГ‰CIFICATION DU FORMAT DE TICKET",
+    ticketSpec: "SPÉCIFICATION DU FORMAT DE TICKET",
     consoleRootFile: "FICHIER RACINE DU PROJET",
-    consoleSuccess: "SUCCГ€S",
+    consoleSuccess: "SUCCÈS",
     consoleQuant: "QUANTIFICATION : INT8 (dynamique)",
-    consoleCompat: "COMPATIBILITГ‰ : ORT 1.18+",
-    paramValue: "~29.1M (optimisГ©)",
+    consoleCompat: "COMPATIBILITÉ : ORT 1.18+",
+    paramValue: "~29.1M (optimisé)",
     latencyValue: "<14ms (sur CPU mobile)",
   },
   de: {
     title: "Interaktives RuBERT-ONNX-Testlabor",
     subtitle: "Bewerten Sie die lokale Echtzeit-Inferenz der Gewichte des Modells rubert_fraud_int8.onnx.",
-    placeholder: "Geben Sie verdГ¤chtigen Dialogtext oder SMS zur Sicherheitsklassifizierung ein...",
-    btnRun: "Modell-Inferenz ausfГјhren",
+    placeholder: "Geben Sie verdächtigen Dialogtext oder SMS zur Sicherheitsklassifizierung ein...",
+    btnRun: "Modell-Inferenz ausführen",
     btnRunning: "Gewichte werden berechnet...",
     resultHeader: "AUSGABE DES SEMANTISCHEN DEKODERS",
     fraudLabel: "Social-Engineering-Risiko (FRAUD):",
     safeLabel: "Sicherer Dialog (SAFE):",
     attentionTitle: "BERT-Aufmerksamkeitskarte (Token-Flags):",
     presetTitle: "Schnelle Voreinstellungen:",
-    feedbackHeader: "вљ пёЏ Einen Klassifizierungsfehler gefunden?",
+    feedbackHeader: "⚠️ Einen Klassifizierungsfehler gefunden?",
     feedbackSub: "Helfen Sie, die Gewichte des neuronalen Netzes zu trainieren! Melden Sie ein Klassifizierungsfehler-Ticket direkt an unser Support-Team in Telegram.",
     errType: "Fehlerklassifizierung",
     errFalsePositive: "Falsch positiv (sicherer Text als Bedrohung markiert)",
-    errFalseNegative: "Falsch negativ (betrГјgerischer Text als sicher markiert)",
+    errFalseNegative: "Falsch negativ (betrügerischer Text als sicher markiert)",
     errOther: "Andere Klassifizierungsanomalie",
     commentLabel: "Ihre Feedback-Kommentare",
-    commentPlaceholder: "ErklГ¤ren Sie, welche WГ¶rter das Modell zu Fehlverhalten veranlasst haben...",
+    commentPlaceholder: "Erklären Sie, welche Wörter das Modell zu Fehlverhalten veranlasst haben...",
     btnTg: "Ticket an Telegram senden",
     btnCopy: "Ticketinhalt kopieren",
     copied: "Kopiert!",
     modelStatusSafe: "SICHERE SEMANTIK",
-    modelStatusSuspicious: "VERDГ„CHTIGE AKTIVITГ„T",
-    modelStatusFraud: "BETRГњGERISCHE SEMANTIK",
+    modelStatusSuspicious: "VERDÄCHTIGE AKTIVITÄT",
+    modelStatusFraud: "BETRÜGERISCHE SEMANTIK",
     hideTicketForm: "Ticketformular ausblenden",
     ticketSpec: "TICKETFORMAT-SPEZIFIKATION",
     consoleRootFile: "PROJEKTROOT-DATEI",
     consoleSuccess: "ERFOLG",
     consoleQuant: "QUANTISIERUNG: INT8 (dynamisch)",
-    consoleCompat: "KOMPATIBILITГ„T: ORT 1.18+",
+    consoleCompat: "KOMPATIBILITÄT: ORT 1.18+",
     paramValue: "~29.1M (optimiert)",
     latencyValue: "<14ms (auf Mobil-CPU)",
   },
   ja: {
-    title: "г‚¤гѓіг‚їгѓ©г‚Їгѓ†г‚Јгѓ– RuBERT ONNX гѓ†г‚№гѓ€гѓ©гѓњ",
-    subtitle: "rubert_fraud_int8.onnx гѓўгѓ‡гѓ«гЃ®й‡ЌгЃїгЃ®гѓЄг‚ўгѓ«г‚їг‚¤гѓ гѓ­гѓјг‚«гѓ«жЋЁи«–г‚’и©•дѕЎгЃ—гЃѕгЃ™гЂ‚",
-    placeholder: "е®‰е…Ёе€†йЎћгЃ®гЃџг‚ЃгЂЃз–‘г‚ЏгЃ—гЃ„еЇѕи©±гѓ†г‚­г‚№гѓ€гЃѕгЃџгЃЇ SMS г‚’е…ҐеЉ›гЃ—гЃ¦гЃЏгЃ гЃ•гЃ„...",
-    btnRun: "гѓўгѓ‡гѓ«жЋЁи«–г‚’е®џиЎЊ",
-    btnRunning: "й‡ЌгЃїг‚’иЁ€з®—дё­...",
-    resultHeader: "ж„Џе‘ігѓ‡г‚ігѓјгѓЂе‡єеЉ›",
-    fraudLabel: "г‚Ѕгѓјг‚·гѓЈгѓ«г‚Ёгѓіг‚ёгѓ‹г‚ўгѓЄгѓіг‚°гѓЄг‚№г‚Їпј€FRAUDпј‰пјљ",
-    safeLabel: "е®‰е…ЁгЃЄеЇѕи©±пј€SAFEпј‰пјљ",
-    attentionTitle: "BERT г‚ўгѓ†гѓіг‚·гѓ§гѓігѓћгѓѓгѓ—пј€гѓ€гѓјг‚Їгѓігѓ•гѓ©г‚°пј‰пјљ",
-    presetTitle: "г‚Їг‚¤гѓѓг‚Їгѓ—гѓЄг‚»гѓѓгѓ€пјљ",
-    feedbackHeader: "вљ пёЏ е€†йЎћг‚Ёгѓ©гѓјгЃЊи¦‹гЃ¤гЃ‹г‚ЉгЃѕгЃ—гЃџгЃ‹пјџ",
-    feedbackSub: "гѓ‹гѓҐгѓјгѓ©гѓ«гѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃ®й‡ЌгЃїгЃ®гѓ€гѓ¬гѓјгѓ‹гѓіг‚°гЃ«гЃ”еЌ”еЉ›гЃЏгЃ гЃ•гЃ„пјЃTelegram гЃ®г‚µгѓќгѓјгѓ€гѓЃгѓјгѓ гЃ«е€†йЎћгѓђг‚°гЃ®гѓЃг‚±гѓѓгѓ€г‚’з›ґжЋҐе ±е‘ЉгЃ—гЃ¦гЃЏгЃ гЃ•гЃ„гЂ‚",
-    errType: "г‚Ёгѓ©гѓје€†йЎћ",
-    errFalsePositive: "иЄ¤ж¤ње‡єпј€е®‰е…ЁгЃЄгѓ†г‚­г‚№гѓ€гЃЊи„…еЁЃгЃЁгЃ—гЃ¦гѓ•гѓ©г‚°д»гЃ‘пј‰",
-    errFalseNegative: "и¦‹йЂѓгЃ—пј€дёЌж­ЈгЃЄгѓ†г‚­г‚№гѓ€гЃЊе®‰е…ЁгЃЁгЃ—гЃ¦гѓћгѓјг‚Їпј‰",
-    errOther: "гЃќгЃ®д»–гЃ®е€†йЎћз•°еёё",
-    commentLabel: "гѓ•г‚Јгѓјгѓ‰гѓђгѓѓг‚Їг‚ігѓЎгѓігѓ€",
-    commentPlaceholder: "гѓўгѓ‡гѓ«гЃЊиЄ¤е‹•дЅњгЃ—гЃџеЋџе› гЃ®еЌиЄћг‚’иЄ¬жЋгЃ—гЃ¦гЃЏгЃ гЃ•гЃ„...",
-    btnTg: "Telegram гЃ«гѓЃг‚±гѓѓгѓ€г‚’йЂЃдїЎ",
-    btnCopy: "гѓЃг‚±гѓѓгѓ€е†…е®№г‚’г‚ігѓ”гѓј",
-    copied: "г‚ігѓ”гѓјгЃ—гЃѕгЃ—гЃџпјЃ",
-    modelStatusSafe: "е®‰е…ЁгЃЄж„Џе‘іи§Јжћђ",
-    modelStatusSuspicious: "дёЌеЇ©гЃЄг‚ўг‚Їгѓ†г‚Јгѓ“гѓ†г‚Ј",
-    modelStatusFraud: "дёЌж­ЈгЃЄж„Џе‘іи§Јжћђ",
-    hideTicketForm: "гѓЃг‚±гѓѓгѓ€гѓ•г‚©гѓјгѓ г‚’йљ гЃ™",
-    ticketSpec: "гѓЃг‚±гѓѓгѓ€еЅўејЏд»•ж§",
-    consoleRootFile: "гѓ—гѓ­г‚ёг‚§г‚Їгѓ€гѓ«гѓјгѓ€гѓ•г‚Ўг‚¤гѓ«",
-    consoleSuccess: "ж€ђеЉџ",
-    consoleQuant: "й‡Џе­ђеЊ–пјљINT8пј€е‹•зљ„пј‰",
-    consoleCompat: "дє’жЏ›жЂ§пјљORT 1.18+",
-    paramValue: "~29.1Mпј€жњЂйЃ©еЊ–жё€гЃїпј‰",
-    latencyValue: "<14msпј€гѓўгѓђг‚¤гѓ«CPUпј‰",
+    title: "インタラクティブ RuBERT ONNX テストラボ",
+    subtitle: "rubert_fraud_int8.onnx モデルの重みのリアルタイムローカル推論を評価します。",
+    placeholder: "安全分類のため、疑わしい対話テキストまたは SMS を入力してください...",
+    btnRun: "モデル推論を実行",
+    btnRunning: "重みを計算中...",
+    resultHeader: "意味デコーダ出力",
+    fraudLabel: "ソーシャルエンジニアリングリスク（FRAUD）：",
+    safeLabel: "安全な対話（SAFE）：",
+    attentionTitle: "BERT アテンションマップ（トークンフラグ）：",
+    presetTitle: "クイックプリセット：",
+    feedbackHeader: "⚠️ 分類エラーが見つかりましたか？",
+    feedbackSub: "ニューラルネットワークの重みのトレーニングにご協力ください！Telegram のサポートチームに分類バグのチケットを直接報告してください。",
+    errType: "エラー分類",
+    errFalsePositive: "誤検出（安全なテキストが脅威としてフラグ付け）",
+    errFalseNegative: "見逃し（不正なテキストが安全としてマーク）",
+    errOther: "その他の分類異常",
+    commentLabel: "フィードバックコメント",
+    commentPlaceholder: "モデルが誤動作した原因の単語を説明してください...",
+    btnTg: "Telegram にチケットを送信",
+    btnCopy: "チケット内容をコピー",
+    copied: "コピーしました！",
+    modelStatusSafe: "安全な意味解析",
+    modelStatusSuspicious: "不審なアクティビティ",
+    modelStatusFraud: "不正な意味解析",
+    hideTicketForm: "チケットフォームを隠す",
+    ticketSpec: "チケット形式仕様",
+    consoleRootFile: "プロジェクトルートファイル",
+    consoleSuccess: "成功",
+    consoleQuant: "量子化：INT8（動的）",
+    consoleCompat: "互換性：ORT 1.18+",
+    paramValue: "~29.1M（最適化済み）",
+    latencyValue: "<14ms（モバイルCPU）",
   },
 };
 
 const ONNX_PRESETS: Record<LanguageCode, OnnxPreset[]> = {
   ru: [
     {
-      label: "Р‘Р°РЅРє (РЈРіСЂРѕР·Р°)",
-      text: "Р’Р°Рј Р·РІРѕРЅСЏС‚ РёР· Р¦РµРЅС‚СЂРѕР±Р°РЅРєР°! РЎСЂРѕС‡РЅРѕ РїРµСЂРµРІРµРґРёС‚Рµ РІСЃРµ СЃСЂРµРґСЃС‚РІР° РЅР° РІСЂРµРјРµРЅРЅСѓСЋ Р±РµР·РѕРїР°СЃРЅСѓСЋ СЏС‡РµР№РєСѓ РґР»СЏ СЃРїР°СЃРµРЅРёСЏ РѕС‚ РЅРµСЃР°РЅРєС†РёРѕРЅРёСЂРѕРІР°РЅРЅРѕРіРѕ РєСЂРµРґРёС‚Р°.",
+      label: "Банк (Угроза)",
+      text: "Вам звонят из Центробанка! Срочно переведите все средства на временную безопасную ячейку для спасения от несанкционированного кредита.",
       isThreat: true,
     },
     {
-      label: "РљСѓСЂСЊРµСЂ (РЈРіСЂРѕР·Р°)",
-      text: "Р’Р°С€Р° РґРѕСЃС‚Р°РІРєР° РїРѕСЃС‹Р»РєРё РїСЂРёРѕСЃС‚Р°РЅРѕРІР»РµРЅР° РёР·-Р·Р° РЅРµРѕРїР»Р°С‚С‹ РїРѕС€Р»РёРЅС‹. РџРµСЂРµР№РґРёС‚Рµ РЅР° СЃР°Р№С‚ tracking-rus-post.net/pay Рё РѕРїР»Р°С‚РёС‚Рµ 15 СЂСѓР±Р»РµР№ РїСЂСЏРјРѕ СЃРµР№С‡Р°СЃ!",
+      label: "Курьер (Угроза)",
+      text: "Ваша доставка посылки приостановлена из-за неоплаты пошлины. Перейдите на сайт tracking-rus-post.net/pay и оплатите 15 рублей прямо сейчас!",
       isThreat: true,
     },
     {
-      label: "Р”РўРџ (РЈРіСЂРѕР·Р°)",
-      text: "РњР°РјР°, РїСЂРёРІРµС‚, СЏ СЃР±РёР» С‡РµР»РѕРІРµРєР° РЅР° РјР°С€РёРЅРµ... РЎСЂРѕС‡РЅРѕ РїРµСЂРµРІРµРґРё 50 С‚С‹СЃСЏС‡ СЂСѓР±Р»РµР№ СЃР»РµРґРѕРІР°С‚РµР»СЋ РЅР° РєР°СЂС‚Сѓ, РёРЅР°С‡Рµ РЅР° РјРµРЅСЏ Р·Р°РєСЂРѕСЋС‚ РґРµР»Рѕ.",
+      label: "ДТП (Угроза)",
+      text: "Мама, привет, я сбил человека на машине... Срочно переведи 50 тысяч рублей следователю на карту, иначе на меня закроют дело.",
       isThreat: true,
     },
     {
-      label: "РћР±С‹С‡РЅС‹Р№ С‡Р°С‚ (Р‘РµР·РѕРїР°СЃРЅРѕ)",
-      text: "РџСЂРёРІРµС‚! Р›РµРєС†РёСЏ РІ Р§РµР»СЏР±РёРЅСЃРєРѕРј СЂР°РґРёРѕС‚РµС…РЅРёС‡РµСЃРєРѕРј С‚РµС…РЅРёРєСѓРјРµ РЅР°С‡РЅРµС‚СЃСЏ Р·Р°РІС‚СЂР° СЂРѕРІРЅРѕ РІ 10 СѓС‚СЂР° РІ Р°СѓРґ. 402. РќРµ Р·Р°Р±СѓРґСЊ РІР·СЏС‚СЊ С‡РµСЂРЅРѕРІРёРє.",
+      label: "Обычный чат (Безопасно)",
+      text: "Привет! Лекция в Челябинском радиотехническом техникуме начнется завтра ровно в 10 утра в ауд. 402. Не забудь взять черновик.",
       isThreat: false,
     },
   ],
@@ -978,198 +978,198 @@ const ONNX_PRESETS: Record<LanguageCode, OnnxPreset[]> = {
   tr: [
     {
       label: "Banka (Tehdit)",
-      text: "Merkez BankasД±'ndan arД±yoruz! Kredi dolandД±rД±cД±lД±ДџД±ndan kurtulmak iГ§in tГјm paranД±zД± acilen geГ§ici gГјvenli hesaba transfer edin.",
+      text: "Merkez Bankası'ndan arıyoruz! Kredi dolandırıcılığından kurtulmak için tüm paranızı acilen geçici güvenli hesaba transfer edin.",
       isThreat: true,
     },
     {
       label: "Kargo (Tehdit)",
-      text: "Kargonuz gГјmrГјk harcД± Г¶denmediДџi iГ§in askД±ya alД±ndД±. Hemen tracking-tr-post.net/pay adresine girip 15 TL Г¶deme yapД±n!",
+      text: "Kargonuz gümrük harcı ödenmediği için askıya alındı. Hemen tracking-tr-post.net/pay adresine girip 15 TL ödeme yapın!",
       isThreat: true,
     },
     {
       label: "Kaza (Tehdit)",
-      text: "Anne, merhaba! Arabayla birine Г§arptД±m... Avukat iГ§in acilen karta 5000 TL gГ¶nderebilir misin yoksa tutuklanacaДџД±m.",
+      text: "Anne, merhaba! Arabayla birine çarptım... Avukat için acilen karta 5000 TL gönderebilir misin yoksa tutuklanacağım.",
       isThreat: true,
     },
     {
-      label: "Normal KonuЕџma (GГјvenli)",
-      text: "Selam! Г‡elyabinsk Radyoteknik Koleji'ndeki aДџ gГјvenliДџi dersi yarД±n saat 10'da baЕџlayacak. NotlarД±nД± unutma.",
+      label: "Normal Konuşma (Güvenli)",
+      text: "Selam! Çelyabinsk Radyoteknik Koleji'ndeki ağ güvenliği dersi yarın saat 10'da başlayacak. Notlarını unutma.",
       isThreat: false,
     },
   ],
   es: [
     {
       label: "Banco (Amenaza)",
-      text: "ВЎHabla Seguridad del Banco Federal! Transfiere inmediatamente tu saldo total a la bГіveda segura temporal para protegerlo del robo.",
+      text: "¡Habla Seguridad del Banco Federal! Transfiere inmediatamente tu saldo total a la bóveda segura temporal para protegerlo del robo.",
       isThreat: true,
     },
     {
       label: "Aduanas (Amenaza)",
-      text: "Tu entrega se ha retrasado. Inicia sesiГіn en trustnode-tracking-secure.com/id203 para pagar la tarifa de procesamiento de $1.50.",
+      text: "Tu entrega se ha retrasado. Inicia sesión en trustnode-tracking-secure.com/id203 para pagar la tarifa de procesamiento de $1.50.",
       isThreat: true,
     },
     {
       label: "Accidente (Amenaza)",
-      text: "MamГЎ, tuve un horrible accidente de coche y herГ­ a alguien. EnvГ­a $2000 inmediatamente a esta tarjeta para el abogado.",
+      text: "Mamá, tuve un horrible accidente de coche y herí a alguien. Envía $2000 inmediatamente a esta tarjeta para el abogado.",
       isThreat: true,
     },
     {
       label: "Conferencia (Seguro)",
-      text: "ВЎHola! La conferencia de seguridad de redes en la universidad ChRT comienza maГ±ana a las 10:00 AM en punto. No olvides tus borradores.",
+      text: "¡Hola! La conferencia de seguridad de redes en la universidad ChRT comienza mañana a las 10:00 AM en punto. No olvides tus borradores.",
       isThreat: false,
     },
   ],
   zh: [
     {
-      label: "й“¶иЎЊпј€еЁЃиѓЃпј‰",
-      text: "иї™й‡ЊжЇиЃ”й‚¦й“¶иЎЊе®‰е…ЁйѓЁй—ЁпјЃз«‹еЌіе°†ж‚Ёзљ„е…ЁйѓЁдЅ™йўќиЅ¬з§»е€°дёґж—¶е®‰е…Ёй‡‘еє“пјЊд»ҐйІиў«з›—гЂ‚",
+      label: "银行（威胁）",
+      text: "这里是联邦银行安全部门！立即将您的全部余额转移到临时安全金库，以防被盗。",
       isThreat: true,
     },
     {
-      label: "жµ·е…іпј€еЁЃиѓЃпј‰",
-      text: "ж‚Ёзљ„еЊ…иЈ№й…ЌйЂЃе·Іе»¶иїџгЂ‚иЇ·з™»еЅ• trustnode-tracking-secure.com/id203 ж”Їд» 1.50 зѕЋе…ѓзљ„ж‰‹з»­иґ№гЂ‚",
+      label: "海关（威胁）",
+      text: "您的包裹配送已延迟。请登录 trustnode-tracking-secure.com/id203 支付 1.50 美元的手续费。",
       isThreat: true,
     },
     {
-      label: "дє‹ж•…пј€еЁЃиѓЃпј‰",
-      text: "е¦€е¦€пјЊж€‘е‡єдє†дёҐй‡Ќзљ„иЅ¦зҐёпјЊж’ћдј¤дє†дєєгЂ‚иЇ·з«‹еЌіеђ‘иї™еј еЌЎж±‡ж¬ѕ 2000 зѕЋе…ѓз»™еѕ‹её€гЂ‚",
+      label: "事故（威胁）",
+      text: "妈妈，我出了严重的车祸，撞伤了人。请立即向这张卡汇款 2000 美元给律师。",
       isThreat: true,
     },
     {
-      label: "и®Іеє§пј€е®‰е…Ёпј‰",
-      text: "дЅ еҐЅпјЃChRT е­¦й™ўзљ„зЅ‘з»ње®‰е…Ёи®Іеє§жЋе¤©дёЉеЌ€ 10 з‚№ж•ґејЂе§‹гЂ‚е€«еїдє†её¦иЌ‰зЁїгЂ‚",
+      label: "讲座（安全）",
+      text: "你好！ChRT 学院的网络安全讲座明天上午 10 点整开始。别忘了带草稿。",
       isThreat: false,
     },
   ],
   hi: [
     {
-      label: "а¤¬аҐ€а¤‚а¤• (а¤–а¤ја¤¤а¤°а¤ѕ)",
-      text: "а¤Їа¤№ а¤ёа¤‚а¤аҐЂа¤Ї а¤¬аҐ€а¤‚а¤• а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤№аҐ€! а¤љаҐ‹а¤°аҐЂ а¤ёаҐ‡ а¤¬а¤ља¤ѕа¤ЁаҐ‡ а¤•аҐ‡ а¤Іа¤їа¤Џ а¤¤аҐЃа¤°а¤‚а¤¤ а¤…а¤Єа¤ЁаҐЂ а¤ЄаҐ‚а¤°аҐЂ а¤°а¤ѕа¤¶а¤ї а¤…а¤ёаҐЌа¤Ґа¤ѕа¤ЇаҐЂ а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤їа¤¤ а¤¤а¤їа¤њаҐ‹а¤°аҐЂ а¤®аҐ‡а¤‚ а¤ёаҐЌа¤Ґа¤ѕа¤Ёа¤ѕа¤‚а¤¤а¤°а¤їа¤¤ а¤•а¤°аҐ‡а¤‚аҐ¤",
+      label: "बैंक (ख़तरा)",
+      text: "यह संघीय बैंक सुरक्षा है! चोरी से बचाने के लिए तुरंत अपनी पूरी राशि अस्थायी सुरक्षित तिजोरी में स्थानांतरित करें।",
       isThreat: true,
     },
     {
-      label: "а¤•а¤ёаҐЌа¤џа¤®аҐЌа¤ё (а¤–а¤ја¤¤а¤°а¤ѕ)",
-      text: "а¤†а¤Єа¤•аҐЂ а¤Ўа¤їа¤ІаҐЂа¤µа¤°аҐЂ а¤®аҐ‡а¤‚ а¤¦аҐ‡а¤°аҐЂ а¤№аҐЃа¤€ а¤№аҐ€аҐ¤ а¤•аҐѓа¤Єа¤Їа¤ѕ $1.50 а¤ЄаҐЌа¤°а¤ёа¤‚а¤ёаҐЌа¤•а¤°а¤Ј а¤¶аҐЃа¤ІаҐЌа¤• а¤•а¤ѕ а¤­аҐЃа¤—а¤¤а¤ѕа¤Ё а¤•а¤°а¤ЁаҐ‡ а¤•аҐ‡ а¤Іа¤їа¤Џ trustnode-tracking-secure.com/id203 а¤Єа¤° а¤ІаҐ‰а¤—а¤їа¤Ё а¤•а¤°аҐ‡а¤‚аҐ¤",
+      label: "कस्टम्स (ख़तरा)",
+      text: "आपकी डिलीवरी में देरी हुई है। कृपया $1.50 प्रसंस्करण शुल्क का भुगतान करने के लिए trustnode-tracking-secure.com/id203 पर लॉगिन करें।",
       isThreat: true,
     },
     {
-      label: "а¤¦аҐЃа¤°аҐЌа¤а¤џа¤Ёа¤ѕ (а¤–а¤ја¤¤а¤°а¤ѕ)",
-      text: "а¤®а¤ѕа¤Ѓ, а¤®аҐ€а¤‚ а¤Џа¤• а¤­а¤Їа¤ѕа¤Ёа¤• а¤•а¤ѕа¤° а¤¦аҐЃа¤°аҐЌа¤а¤џа¤Ёа¤ѕ а¤®аҐ‡а¤‚ а¤«а¤Ѓа¤ё а¤—а¤Їа¤ѕ а¤”а¤° а¤•а¤їа¤ёаҐЂ а¤•аҐ‹ а¤љаҐ‹а¤џ а¤Єа¤№аҐЃа¤Ѓа¤ља¤ѕа¤€аҐ¤ а¤µа¤•аҐЂа¤І а¤•аҐ‡ а¤Іа¤їа¤Џ а¤¤аҐЃа¤°а¤‚а¤¤ а¤‡а¤ё а¤•а¤ѕа¤°аҐЌа¤Ў а¤Єа¤° $2000 а¤­аҐ‡а¤њаҐ‡а¤‚аҐ¤",
+      label: "दुर्घटना (ख़तरा)",
+      text: "माँ, मैं एक भयानक कार दुर्घटना में फँस गया और किसी को चोट पहुँचाई। वकील के लिए तुरंत इस कार्ड पर $2000 भेजें।",
       isThreat: true,
     },
     {
-      label: "а¤µаҐЌа¤Їа¤ѕа¤–аҐЌа¤Їа¤ѕа¤Ё (а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤їа¤¤)",
-      text: "а¤Ёа¤®а¤ёаҐЌа¤¤аҐ‡! ChRT а¤•аҐ‰а¤ІаҐ‡а¤њ а¤®аҐ‡а¤‚ а¤ЁаҐ‡а¤џа¤µа¤°аҐЌа¤• а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤µаҐЌа¤Їа¤ѕа¤–аҐЌа¤Їа¤ѕа¤Ё а¤•а¤І а¤ёаҐЃа¤¬а¤№ а¤ аҐЂа¤• 10:00 а¤¬а¤њаҐ‡ а¤¶аҐЃа¤°аҐ‚ а¤№аҐ‹а¤—а¤ѕаҐ¤ а¤…а¤Єа¤ЁаҐ‡ а¤ЎаҐЌа¤°а¤ѕа¤«а¤јаҐЌа¤џ а¤®а¤¤ а¤­аҐ‚а¤Іа¤Ёа¤ѕаҐ¤",
+      label: "व्याख्यान (सुरक्षित)",
+      text: "नमस्ते! ChRT कॉलेज में नेटवर्क सुरक्षा व्याख्यान कल सुबह ठीक 10:00 बजे शुरू होगा। अपने ड्राफ़्ट मत भूलना।",
       isThreat: false,
     },
   ],
   ar: [
     {
-      label: "ШЁЩ†Щѓ (ШЄЩ‡ШЇЩЉШЇ)",
-      text: "Щ‡Ш°Ш§ ШЈЩ…Щ† Ш§Щ„ШЁЩ†Щѓ Ш§Щ„ЩЃЩЉШЇШ±Ш§Щ„ЩЉ! Ш­Щ€Щ‘Щ„ Ш±ШµЩЉШЇЩѓ Ш§Щ„ЩѓШ§Щ…Щ„ ЩЃЩ€Ш±Ш§Щ‹ ШҐЩ„Щ‰ Ш§Щ„Ш®ШІЩ†Ш© Ш§Щ„ШўЩ…Щ†Ш© Ш§Щ„Щ…Ш¤Щ‚ШЄШ© Щ„Ш­Щ…Ш§ЩЉШЄЩ‡ Щ…Щ† Ш§Щ„ШіШ±Щ‚Ш©.",
+      label: "بنك (تهديد)",
+      text: "هذا أمن البنك الفيدرالي! حوّل رصيدك الكامل فوراً إلى الخزنة الآمنة المؤقتة لحمايته من السرقة.",
       isThreat: true,
     },
     {
-      label: "Ш¬Щ…Ш§Ш±Щѓ (ШЄЩ‡ШЇЩЉШЇ)",
-      text: "ШЄШЈШ®Ш± ШЄШіЩ„ЩЉЩ… Ш·Ш±ШЇЩѓ. ЩЉШ±Ш¬Щ‰ ШЄШіШ¬ЩЉЩ„ Ш§Щ„ШЇШ®Щ€Щ„ ШҐЩ„Щ‰ trustnode-tracking-secure.com/id203 Щ„ШЇЩЃШ№ Ш±ШіЩ€Щ… Ш§Щ„Щ…Ш№Ш§Щ„Ш¬Ш© Ш§Щ„ШЁШ§Щ„ШєШ© 1.50 ШЇЩ€Щ„Ш§Ш±.",
+      label: "جمارك (تهديد)",
+      text: "تأخر تسليم طردك. يرجى تسجيل الدخول إلى trustnode-tracking-secure.com/id203 لدفع رسوم المعالجة البالغة 1.50 دولار.",
       isThreat: true,
     },
     {
-      label: "Ш­Ш§ШЇШ« (ШЄЩ‡ШЇЩЉШЇ)",
-      text: "ШЈЩ…ЩЉШЊ ШЄШ№Ш±Ш¶ШЄ Щ„Ш­Ш§ШЇШ« ШіЩЉШ§Ш±Ш© Щ…Ш±Щ€Ш№ Щ€ШЈШµШЁШЄ ШґШ®ШµШ§Щ‹. ШЈШ±ШіЩ„ 2000 ШЇЩ€Щ„Ш§Ш± ЩЃЩ€Ш±Ш§Щ‹ ШҐЩ„Щ‰ Щ‡Ш°Щ‡ Ш§Щ„ШЁШ·Ш§Щ‚Ш© Щ„Щ„Щ…Ш­Ш§Щ…ЩЉ.",
+      label: "حادث (تهديد)",
+      text: "أمي، تعرضت لحادث سيارة مروع وأصبت شخصاً. أرسل 2000 دولار فوراً إلى هذه البطاقة للمحامي.",
       isThreat: true,
     },
     {
-      label: "Щ…Ш­Ш§Ш¶Ш±Ш© (ШўЩ…Щ†)",
-      text: "Щ…Ш±Ш­ШЁШ§Щ‹! Щ…Ш­Ш§Ш¶Ш±Ш© ШЈЩ…Щ† Ш§Щ„ШґШЁЩѓШ§ШЄ ЩЃЩЉ ЩѓЩ„ЩЉШ© ChRT ШЄШЁШЇШЈ ШєШЇШ§Щ‹ ШµШЁШ§Ш­Ш§Щ‹ ЩЃЩЉ ШЄЩ…Ш§Щ… Ш§Щ„ШіШ§Ш№Ш© 10:00. Щ„Ш§ ШЄЩ†ШіЩЋ Щ…ШіЩ€ШЇШ§ШЄЩѓ.",
+      label: "محاضرة (آمن)",
+      text: "مرحباً! محاضرة أمن الشبكات في كلية ChRT تبدأ غداً صباحاً في تمام الساعة 10:00. لا تنسَ مسوداتك.",
       isThreat: false,
     },
   ],
   pt: [
     {
-      label: "Banco (AmeaГ§a)",
-      text: "Aqui Г© a SeguranГ§a do Banco Federal! Transfira imediatamente seu saldo total para o cofre seguro temporГЎrio para protegГЄ-lo contra roubo.",
+      label: "Banco (Ameaça)",
+      text: "Aqui é a Segurança do Banco Federal! Transfira imediatamente seu saldo total para o cofre seguro temporário para protegê-lo contra roubo.",
       isThreat: true,
     },
     {
-      label: "AlfГўndega (AmeaГ§a)",
-      text: "Sua entrega estГЎ atrasada. Entre em trustnode-tracking-secure.com/id203 para pagar a taxa de processamento de $1,50.",
+      label: "Alfândega (Ameaça)",
+      text: "Sua entrega está atrasada. Entre em trustnode-tracking-secure.com/id203 para pagar a taxa de processamento de $1,50.",
       isThreat: true,
     },
     {
-      label: "Acidente (AmeaГ§a)",
-      text: "MГЈe, sofri um acidente de carro horrГ­vel e machuquei alguГ©m. Envie $2000 imediatamente para este cartГЈo para o advogado.",
+      label: "Acidente (Ameaça)",
+      text: "Mãe, sofri um acidente de carro horrível e machuquei alguém. Envie $2000 imediatamente para este cartão para o advogado.",
       isThreat: true,
     },
     {
       label: "Palestra (Seguro)",
-      text: "OlГЎ! A palestra de seguranГ§a de redes na faculdade ChRT comeГ§a amanhГЈ Г s 10h em ponto. NГЈo esqueГ§a seus rascunhos.",
+      text: "Olá! A palestra de segurança de redes na faculdade ChRT começa amanhã às 10h em ponto. Não esqueça seus rascunhos.",
       isThreat: false,
     },
   ],
   fr: [
     {
       label: "Banque (menace)",
-      text: "Ici la SГ©curitГ© de la Banque FГ©dГ©rale ! TransfГ©rez immГ©diatement votre solde total dans le coffre sГ©curisГ© temporaire pour le protГ©ger du vol.",
+      text: "Ici la Sécurité de la Banque Fédérale ! Transférez immédiatement votre solde total dans le coffre sécurisé temporaire pour le protéger du vol.",
       isThreat: true,
     },
     {
       label: "Douane (menace)",
-      text: "Votre livraison est retardГ©e. Connectez-vous sur trustnode-tracking-secure.com/id203 pour payer les frais de traitement de 1,50 $.",
+      text: "Votre livraison est retardée. Connectez-vous sur trustnode-tracking-secure.com/id203 pour payer les frais de traitement de 1,50 $.",
       isThreat: true,
     },
     {
       label: "Accident (menace)",
-      text: "Maman, j'ai eu un horrible accident de voiture et j'ai blessГ© quelqu'un. Envoyez 2000 $ immГ©diatement sur cette carte pour l'avocat.",
+      text: "Maman, j'ai eu un horrible accident de voiture et j'ai blessé quelqu'un. Envoyez 2000 $ immédiatement sur cette carte pour l'avocat.",
       isThreat: true,
     },
     {
-      label: "ConfГ©rence (sГ»r)",
-      text: "Bonjour ! La confГ©rence sur la sГ©curitГ© des rГ©seaux au collГЁge ChRT commence demain matin Г  10h00 prГ©cises. N'oubliez pas vos brouillons.",
+      label: "Conférence (sûr)",
+      text: "Bonjour ! La conférence sur la sécurité des réseaux au collège ChRT commence demain matin à 10h00 précises. N'oubliez pas vos brouillons.",
       isThreat: false,
     },
   ],
   de: [
     {
       label: "Bank (Bedrohung)",
-      text: "Hier ist die Sicherheitsabteilung der Federal Bank! Гњberweisen Sie sofort Ihr gesamtes Guthaben in das temporГ¤re sichere Tresorfach, um es vor Diebstahl zu schГјtzen.",
+      text: "Hier ist die Sicherheitsabteilung der Federal Bank! Überweisen Sie sofort Ihr gesamtes Guthaben in das temporäre sichere Tresorfach, um es vor Diebstahl zu schützen.",
       isThreat: true,
     },
     {
       label: "Zoll (Bedrohung)",
-      text: "Ihre Lieferung verzГ¶gert sich. Bitte melden Sie sich unter trustnode-tracking-secure.com/id203 an, um die BearbeitungsgebГјhr von 1,50 $ zu zahlen.",
+      text: "Ihre Lieferung verzögert sich. Bitte melden Sie sich unter trustnode-tracking-secure.com/id203 an, um die Bearbeitungsgebühr von 1,50 $ zu zahlen.",
       isThreat: true,
     },
     {
       label: "Unfall (Bedrohung)",
-      text: "Mama, ich hatte einen schrecklichen Autounfall und habe jemanden verletzt. Schicken Sie sofort 2000 $ auf diese Karte fГјr den Anwalt.",
+      text: "Mama, ich hatte einen schrecklichen Autounfall und habe jemanden verletzt. Schicken Sie sofort 2000 $ auf diese Karte für den Anwalt.",
       isThreat: true,
     },
     {
       label: "Vorlesung (Sicher)",
-      text: "Hallo! Die Vorlesung Гјber Netzwerksicherheit am ChRT College beginnt morgen frГјh um genau 10:00 Uhr. Vergessen Sie Ihre EntwГјrfe nicht.",
+      text: "Hallo! Die Vorlesung über Netzwerksicherheit am ChRT College beginnt morgen früh um genau 10:00 Uhr. Vergessen Sie Ihre Entwürfe nicht.",
       isThreat: false,
     },
   ],
   ja: [
     {
-      label: "йЉЂиЎЊпј€и„…еЁЃпј‰",
-      text: "гЃ“гЃЎг‚‰гЃЇйЂЈй‚¦йЉЂиЎЊгЃ®г‚»г‚­гѓҐгѓЄгѓ†г‚ЈгЃ§гЃ™пјЃз›—й›ЈгЃ‹г‚‰дїќи­·гЃ™г‚‹гЃџг‚ЃгЂЃж®‹й«е…ЁйЎЌг‚’з›ґгЃЎгЃ«дёЂж™‚дїќи­·й‡‘еє«гЃёйЂЃй‡‘гЃ—гЃ¦гЃЏгЃ гЃ•гЃ„гЂ‚",
+      label: "銀行（脅威）",
+      text: "こちらは連邦銀行のセキュリティです！盗難から保護するため、残高全額を直ちに一時保護金庫へ送金してください。",
       isThreat: true,
     },
     {
-      label: "зЁЋй–ўпј€и„…еЁЃпј‰",
-      text: "й…ЌйЃ”гЃЊйЃ…г‚ЊгЃ¦гЃ„гЃѕгЃ™гЂ‚trustnode-tracking-secure.com/id203 гЃ«гѓ­г‚°г‚¤гѓігЃ—гЃ¦гЂЃ1.50гѓ‰гѓ«гЃ®е‡¦зђ†ж‰‹ж•°ж–™г‚’гЃЉж”Їж‰•гЃ„гЃЏгЃ гЃ•гЃ„гЂ‚",
+      label: "税関（脅威）",
+      text: "配達が遅れています。trustnode-tracking-secure.com/id203 にログインして、1.50ドルの処理手数料をお支払いください。",
       isThreat: true,
     },
     {
-      label: "дє‹ж•…пј€и„…еЁЃпј‰",
-      text: "гѓћгѓћгЂЃгЃІгЃ©гЃ„дє¤йЂљдє‹ж•…гЃ«йЃ­гЃЈгЃ¦иЄ°гЃ‹г‚’е‚·гЃ¤гЃ‘гЃ¦гЃ—гЃѕгЃЈгЃџгЂ‚ејЃи­·еЈ«гЃ®гЃџг‚ЃгЂЃгЃ™гЃђгЃ«гЃ“гЃ®г‚«гѓјгѓ‰гЃё2000гѓ‰гѓ«йЂЃй‡‘гЃ—гЃ¦гЂ‚",
+      label: "事故（脅威）",
+      text: "ママ、ひどい交通事故に遭って誰かを傷つけてしまった。弁護士のため、すぐにこのカードへ2000ドル送金して。",
       isThreat: true,
     },
     {
-      label: "и¬›зѕ©пј€е®‰е…Ёпј‰",
-      text: "гЃ“г‚“гЃ«гЃЎгЃЇпјЃChRT е¤§е­¦гЃ®гѓЌгѓѓгѓ€гѓЇгѓјг‚Їг‚»г‚­гѓҐгѓЄгѓ†г‚Ји¬›зѕ©гЃЇжЋж—Ґжњќ10ж™‚гЃЎг‚‡гЃ†гЃ©гЃ«е§‹гЃѕг‚ЉгЃѕгЃ™гЂ‚дё‹ж›ёгЃЌг‚’еїг‚ЊгЃЄгЃ„гЃ§гЃЏгЃ гЃ•гЃ„гЂ‚",
+      label: "講義（安全）",
+      text: "こんにちは！ChRT 大学のネットワークセキュリティ講義は明日朝10時ちょうどに始まります。下書きを忘れないでください。",
       isThreat: false,
     },
   ],
@@ -1177,57 +1177,57 @@ const ONNX_PRESETS: Record<LanguageCode, OnnxPreset[]> = {
 
 const ONNX_TRIGGERS: Record<LanguageCode, string[]> = {
   ru: [
-    "С†РµРЅС‚СЂРѕР±Р°РЅРє", "Р±РµР·РѕРїР°СЃРЅ", "СЏС‡РµР№Рє", "РїРµСЂРµРІРµРґРё", "РїРµСЂРµРІРѕРґ", "СЃС‡РµС‚", "РєСЂРµРґРёС‚", "СЃРїР°СЃ", "РєР°СЂС‚Сѓ", "РєРѕРґ", "СЃРјСЃ", "РїР°СЂРѕР»СЊ",
-    "РґРѕСЃС‚Р°РІРє", "РїРѕС€Р»РёРЅ", "РїРѕСЃС‹Р»Рє", "РѕРїР»Р°С‚", "tracking", "СЃР±РёР»", "РґС‚Рї", "Р°РІР°СЂРё", "РїРѕР»РёС†Рё", "РґРµРЅСЊРіРё", "СЂСѓР±Р»", "РІС‹РёРіСЂР°",
-    "СЃРµР№С„РѕРІС‹", "СЃР»РµРґСЃС‚РІРµРЅ",
+    "центробанк", "безопасн", "ячейк", "переведи", "перевод", "счет", "кредит", "спас", "карту", "код", "смс", "пароль",
+    "доставк", "пошлин", "посылк", "оплат", "tracking", "сбил", "дтп", "авари", "полици", "деньги", "рубл", "выигра",
+    "сейфовы", "следствен",
   ],
   en: [
     "treasury", "escrow", "vault", "package", "fee", "accident", "lawyer", "card", "bank", "tracking",
   ],
   tr: [
-    "merkez", "banka", "para", "transfer", "dolandД±rД±cД±lД±k", "kargo", "Г¶deme", "gГјmrГјk",
-    "Г§arptД±m", "avukat", "kart", "tutuklan", "gГ¶nder", "tracking",
+    "merkez", "banka", "para", "transfer", "dolandırıcılık", "kargo", "ödeme", "gümrük",
+    "çarptım", "avukat", "kart", "tutuklan", "gönder", "tracking",
   ],
   es: [
-    "banco", "bГіveda", "robo", "saldo", "tarifa", "pagar", "retrasado",
-    "accidente", "herГ­", "tarjeta", "abogado", "envГ­a", "tracking",
+    "banco", "bóveda", "robo", "saldo", "tarifa", "pagar", "retrasado",
+    "accidente", "herí", "tarjeta", "abogado", "envía", "tracking",
   ],
   zh: [
-    "й“¶иЎЊ", "дЅ™йўќ", "иЅ¬з§»е€°", "й‡‘еє“", "иў«з›—", "еЊ…иЈ№", "е»¶иїџ", "ж”Їд»", "ж‰‹з»­иґ№",
-    "иЅ¦зҐё", "ж’ћдј¤", "ж±‡ж¬ѕ", "еѕ‹её€", "tracking",
+    "银行", "余额", "转移到", "金库", "被盗", "包裹", "延迟", "支付", "手续费",
+    "车祸", "撞伤", "汇款", "律师", "tracking",
   ],
   hi: [
-    "а¤¬аҐ€а¤‚а¤•", "а¤љаҐ‹а¤°аҐЂ", "а¤°а¤ѕа¤¶а¤ї", "а¤¤а¤їа¤њаҐ‹а¤°аҐЂ", "а¤ёаҐЌа¤Ґа¤ѕа¤Ёа¤ѕа¤‚а¤¤а¤°а¤їа¤¤", "а¤Ўа¤їа¤ІаҐЂа¤µа¤°аҐЂ", "а¤¦аҐ‡а¤°аҐЂ",
-    "а¤ЄаҐЌа¤°а¤ёа¤‚а¤ёаҐЌа¤•а¤°а¤Ј", "а¤¶аҐЃа¤ІаҐЌа¤•", "а¤­аҐЃа¤—а¤¤а¤ѕа¤Ё", "а¤¦аҐЃа¤°аҐЌа¤а¤џа¤Ёа¤ѕ", "а¤љаҐ‹а¤џ", "а¤µа¤•аҐЂа¤І", "а¤•а¤ѕа¤°аҐЌа¤Ў", "а¤­аҐ‡а¤њаҐ‡а¤‚", "tracking",
+    "बैंक", "चोरी", "राशि", "तिजोरी", "स्थानांतरित", "डिलीवरी", "देरी",
+    "प्रसंस्करण", "शुल्क", "भुगतान", "दुर्घटना", "चोट", "वकील", "कार्ड", "भेजें", "tracking",
   ],
   ar: [
-    "Ш§Щ„ШЁЩ†Щѓ", "Ш±ШµЩЉШЇЩѓ", "Ш§Щ„Ш®ШІЩ†Ш©", "Ш§Щ„ШіШ±Щ‚Ш©", "Ш­Щ€Щ‘Щ„", "ШЄШЈШ®Ш±", "Ш·Ш±ШЇЩѓ", "ШЇЩЃШ№", "Ш±ШіЩ€Щ…",
-    "Ш§Щ„Щ…Ш№Ш§Щ„Ш¬Ш©", "Ш­Ш§ШЇШ«", "ШЈШµШЁШЄ", "Ш§Щ„ШЁШ·Ш§Щ‚Ш©", "Ш§Щ„Щ…Ш­Ш§Щ…ЩЉ", "ШЈШ±ШіЩ„", "tracking",
+    "البنك", "رصيدك", "الخزنة", "السرقة", "حوّل", "تأخر", "طردك", "دفع", "رسوم",
+    "المعالجة", "حادث", "أصبت", "البطاقة", "المحامي", "أرسل", "tracking",
   ],
   pt: [
     "banco", "transfira", "saldo", "cofre", "roubo", "atrasada", "pagar", "taxa",
-    "processamento", "acidente", "machuquei", "cartГЈo", "advogado", "envie", "tracking",
+    "processamento", "acidente", "machuquei", "cartão", "advogado", "envie", "tracking",
   ],
   fr: [
-    "banque", "transfГ©rez", "solde", "coffre", "vol", "livraison", "retardГ©e", "payer",
-    "frais", "traitement", "accident", "blessГ©", "carte", "avocat", "envoyez", "tracking",
+    "banque", "transférez", "solde", "coffre", "vol", "livraison", "retardée", "payer",
+    "frais", "traitement", "accident", "blessé", "carte", "avocat", "envoyez", "tracking",
   ],
   de: [
-    "bank", "Гјberweisen", "guthaben", "tresorfach", "diebstahl", "lieferung", "verzГ¶gert",
-    "bearbeitungsgebГјhr", "zahlen", "autounfall", "verletzt", "karte", "anwalt", "schicken", "tracking",
+    "bank", "überweisen", "guthaben", "tresorfach", "diebstahl", "lieferung", "verzögert",
+    "bearbeitungsgebühr", "zahlen", "autounfall", "verletzt", "karte", "anwalt", "schicken", "tracking",
   ],
   ja: [
-    "йЉЂиЎЊ", "з›—й›Ј", "ж®‹й«", "й‡‘еє«", "йЂЃй‡‘", "й…ЌйЃ”", "йЃ…г‚Њ", "е‡¦зђ†ж‰‹ж•°ж–™",
-    "ж”Їж‰•гЃ„", "гѓ­г‚°г‚¤гѓі", "дє¤йЂљдє‹ж•…", "е‚·гЃ¤гЃ‘", "ејЃи­·еЈ«", "г‚«гѓјгѓ‰", "tracking",
+    "銀行", "盗難", "残高", "金庫", "送金", "配達", "遅れ", "処理手数料",
+    "支払い", "ログイン", "交通事故", "傷つけ", "弁護士", "カード", "tracking",
   ],
 };
 
 const ONNX_STEPS: Record<LanguageCode, string[]> = {
   ru: [
-    "РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚РѕРєРµРЅРёР·Р°С‚РѕСЂР° BERT...",
-    "РџРѕСЃС‚СЂРѕРµРЅРёРµ РІРµРєС‚РѕСЂРѕРІ СЌРјР±РµРґРґРёРЅРіРѕРІ РґР»СЏ С‚РѕРєРµРЅРѕРІ...",
-    "РРЅС„РµСЂРµРЅСЃ СЃРІРµСЂС‚РѕС‡РЅС‹С… СЃР»РѕРµРІ RuBERT-tiny2 (Dynamic INT8)...",
-    "РџСЂРёРјРµРЅРµРЅРёРµ СЃРѕС„С‚РјР°РєСЃР° Рє Р»РѕРіРёС‚Р°Рј [1, 2]...",
+    "Инициализация токенизатора BERT...",
+    "Построение векторов эмбеддингов для токенов...",
+    "Инференс сверточных слоев RuBERT-tiny2 (Dynamic INT8)...",
+    "Применение софтмакса к логитам [1, 2]...",
   ],
   en: [
     "Initializing BERT Tokenizer...",
@@ -1236,58 +1236,58 @@ const ONNX_STEPS: Record<LanguageCode, string[]> = {
     "Applying softmax to output logits [1, 2]...",
   ],
   tr: [
-    "BERT Tokenizer baЕџlatД±lД±yor...",
-    "Token gГ¶mme vektГ¶rleri oluЕџturuluyor...",
-    "RuBERT-tiny2 katmanlarД±nda Г§Д±karД±m yapД±lД±yor (Dinamik INT8)...",
-    "Logit deДџerlerine [1, 2] Softmax uygulanД±yor...",
+    "BERT Tokenizer başlatılıyor...",
+    "Token gömme vektörleri oluşturuluyor...",
+    "RuBERT-tiny2 katmanlarında çıkarım yapılıyor (Dinamik INT8)...",
+    "Logit değerlerine [1, 2] Softmax uygulanıyor...",
   ],
   es: [
     "Inicializando el tokenizador BERT...",
     "Construyendo vectores de embedding para la secuencia de entrada...",
-    "Ejecutando los pesos de la capa RuBERT-tiny2 (INT8 dinГЎmico)...",
+    "Ejecutando los pesos de la capa RuBERT-tiny2 (INT8 dinámico)...",
     "Aplicando softmax a los logits de salida [1, 2]...",
   ],
   zh: [
-    "ж­ЈењЁе€ќе§‹еЊ– BERT е€†иЇЌе™Ё...",
-    "ж­ЈењЁдёєиѕ“е…ҐеєЏе€—жћ„е»єеµЊе…Ґеђ‘й‡Џ...",
-    "ж­ЈењЁиїђиЎЊ RuBERT-tiny2 е±‚жќѓй‡Ќпј€еЉЁжЂЃ INT8пј‰...",
-    "ж­ЈењЁеЇ№иѕ“е‡є logits [1, 2] еє”з”Ё softmax...",
+    "正在初始化 BERT 分词器...",
+    "正在为输入序列构建嵌入向量...",
+    "正在运行 RuBERT-tiny2 层权重（动态 INT8）...",
+    "正在对输出 logits [1, 2] 应用 softmax...",
   ],
   hi: [
-    "BERT а¤џаҐ‹а¤•а¤Ёа¤ѕа¤‡а¤ња¤ја¤° а¤¶аҐЃа¤°аҐ‚ а¤№аҐ‹ а¤°а¤№а¤ѕ а¤№аҐ€...",
-    "а¤‡а¤Ёа¤ЄаҐЃа¤џ а¤…а¤ЁаҐЃа¤•аҐЌа¤°а¤® а¤•аҐ‡ а¤Іа¤їа¤Џ а¤Џа¤®аҐЌа¤¬аҐ‡а¤Ўа¤їа¤‚а¤— а¤µаҐ‡а¤•аҐЌа¤џа¤° а¤¬а¤Ёа¤ѕа¤Џ а¤ња¤ѕ а¤°а¤№аҐ‡ а¤№аҐ€а¤‚...",
-    "RuBERT-tiny2 а¤Єа¤°а¤¤ а¤µа¤ња¤ја¤Ё а¤ља¤І а¤°а¤№аҐ‡ а¤№аҐ€а¤‚ (а¤Ўа¤ѕа¤Їа¤Ёа¤ѕа¤®а¤їа¤• INT8)...",
-    "а¤†а¤‰а¤џа¤ЄаҐЃа¤џ logits [1, 2] а¤Єа¤° softmax а¤Іа¤ѕа¤—аҐ‚ а¤•а¤їа¤Їа¤ѕ а¤ња¤ѕ а¤°а¤№а¤ѕ а¤№аҐ€...",
+    "BERT टोकनाइज़र शुरू हो रहा है...",
+    "इनपुट अनुक्रम के लिए एम्बेडिंग वेक्टर बनाए जा रहे हैं...",
+    "RuBERT-tiny2 परत वज़न चल रहे हैं (डायनामिक INT8)...",
+    "आउटपुट logits [1, 2] पर softmax लागू किया जा रहा है...",
   ],
   ar: [
-    "Ш¬Ш§Ш±ЩЌ ШЄЩ‡ЩЉШ¦Ш© Щ…Ш­Щ„Щ„ BERT...",
-    "Ш¬Ш§Ш±ЩЌ ШЁЩ†Ш§ШЎ Щ…ШЄШ¬Щ‡Ш§ШЄ Ш§Щ„ШЄШ¶Щ…ЩЉЩ† Щ„ШЄШіЩ„ШіЩ„ Ш§Щ„ШҐШЇШ®Ш§Щ„...",
-    "Ш¬Ш§Ш±ЩЌ ШЄШґШєЩЉЩ„ ШЈЩ€ШІШ§Щ† Ш·ШЁЩ‚Ш© RuBERT-tiny2 (INT8 ШЇЩЉЩ†Ш§Щ…ЩЉЩѓЩЉ)...",
-    "Ш¬Ш§Ш±ЩЌ ШЄШ·ШЁЩЉЩ‚ softmax Ш№Щ„Щ‰ logits Ш§Щ„Щ…Ш®Ш±Ш¬Ш§ШЄ [1, 2]...",
+    "جارٍ تهيئة محلل BERT...",
+    "جارٍ بناء متجهات التضمين لتسلسل الإدخال...",
+    "جارٍ تشغيل أوزان طبقة RuBERT-tiny2 (INT8 ديناميكي)...",
+    "جارٍ تطبيق softmax على logits المخرجات [1, 2]...",
   ],
   pt: [
     "Inicializando o tokenizador BERT...",
-    "Construindo vetores de embedding para a sequГЄncia de entrada...",
-    "Executando pesos da camada RuBERT-tiny2 (INT8 dinГўmico)...",
-    "Aplicando softmax aos logits de saГ­da [1, 2]...",
+    "Construindo vetores de embedding para a sequência de entrada...",
+    "Executando pesos da camada RuBERT-tiny2 (INT8 dinâmico)...",
+    "Aplicando softmax aos logits de saída [1, 2]...",
   ],
   fr: [
     "Initialisation du tokenizer BERT...",
-    "Construction des vecteurs d'embedding pour la sГ©quence d'entrГ©e...",
-    "ExГ©cution des poids de la couche RuBERT-tiny2 (INT8 dynamique)...",
+    "Construction des vecteurs d'embedding pour la séquence d'entrée...",
+    "Exécution des poids de la couche RuBERT-tiny2 (INT8 dynamique)...",
     "Application du softmax aux logits de sortie [1, 2]...",
   ],
   de: [
     "BERT-Tokenizer wird initialisiert...",
-    "Einbettungsvektoren fГјr die Eingabesequenz werden erstellt...",
-    "Gewichte der RuBERT-tiny2-Schicht werden ausgefГјhrt (dynamisches INT8)...",
+    "Einbettungsvektoren für die Eingabesequenz werden erstellt...",
+    "Gewichte der RuBERT-tiny2-Schicht werden ausgeführt (dynamisches INT8)...",
     "Softmax wird auf die Ausgabe-Logits [1, 2] angewendet...",
   ],
   ja: [
-    "BERT гѓ€гѓјг‚ЇгѓЉг‚¤г‚¶гѓјг‚’е€ќжњџеЊ–дё­...",
-    "е…ҐеЉ›г‚·гѓјг‚±гѓіг‚№гЃ®еџ‹г‚ЃиѕјгЃїгѓ™г‚Їгѓ€гѓ«г‚’ж§‹зЇ‰дё­...",
-    "RuBERT-tiny2 гѓ¬г‚¤гѓ¤гѓјгЃ®й‡ЌгЃїг‚’е®џиЎЊдё­пј€е‹•зљ„ INT8пј‰...",
-    "е‡єеЉ›гѓ­г‚ёгѓѓгѓ€ [1, 2] гЃ« softmax г‚’йЃ©з”Ёдё­...",
+    "BERT トークナイザーを初期化中...",
+    "入力シーケンスの埋め込みベクトルを構築中...",
+    "RuBERT-tiny2 レイヤーの重みを実行中（動的 INT8）...",
+    "出力ロジット [1, 2] に softmax を適用中...",
   ],
 };
 
@@ -1295,17 +1295,17 @@ interface OnnxTicketType { id: string; locale: string; errType: string; inputLab
 
 const ONNX_TICKET: Record<LanguageCode, OnnxTicketType> = {
   ru: {
-    id: "ID РўРёРєРµС‚Р°:",
-    locale: "Р›РѕРєР°Р»СЊ:",
-    errType: "РўРёРї РѕС€РёР±РєРё:",
-    inputLabel: "Р’С…РѕРґРЅРѕР№ С‚РµРєСЃС‚ РґРёР°Р»РѕРіР°:",
-    modelEst: "РћС†РµРЅРєР° РјРѕРґРµР»Рё:",
-    fraudLine: "Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ СѓРіСЂРѕР·С‹ (FRAUD):",
-    safeLine: "Р‘РµР·РѕРїР°СЃРЅР°СЏ СЃРµРјР°РЅС‚РёРєР° (SAFE):",
-    commentLabel: "РљРѕРјРјРµРЅС‚Р°СЂРёР№ С‚РµСЃС‚РёСЂРѕРІС‰РёРєР°:",
-    noComment: "Р‘РµР· РєРѕРјРјРµРЅС‚Р°СЂРёСЏ.",
-    footer: "РћС‚РїСЂР°РІР»РµРЅРѕ РёР· СЃРёСЃС‚РµРјС‹ РІРµСЂРёС„РёРєР°С†РёРё TrustNode",
-    inventory: "РРЅРІРµРЅС‚Р°СЂСЊ: rubert_fraud_int8.onnx (INT8 quantized)",
+    id: "ID Тикета:",
+    locale: "Локаль:",
+    errType: "Тип ошибки:",
+    inputLabel: "Входной текст диалога:",
+    modelEst: "Оценка модели:",
+    fraudLine: "Вероятность угрозы (FRAUD):",
+    safeLine: "Безопасная семантика (SAFE):",
+    commentLabel: "Комментарий тестировщика:",
+    noComment: "Без комментария.",
+    footer: "Отправлено из системы верификации TrustNode",
+    inventory: "Инвентарь: rubert_fraud_int8.onnx (INT8 quantized)",
   },
   en: {
     id: "Ticket ID:",
@@ -1321,102 +1321,102 @@ const ONNX_TICKET: Record<LanguageCode, OnnxTicketType> = {
     inventory: "Inventory: rubert_fraud_int8.onnx (INT8 quantized)",
   },
   tr: {
-    id: "Bilet KimliДџi:",
-    locale: "BГ¶lge:",
-    errType: "Hata TГјrГј:",
-    inputLabel: "Diyalog GiriЕџ Metni:",
-    modelEst: "Model DeДџerlendirmesi:",
-    fraudLine: "DolandД±rД±cД±lД±k OlasД±lД±ДџД± (FRAUD):",
-    safeLine: "GГјvenli Anlam (SAFE):",
-    commentLabel: "Test UzmanД± Geri Bildirimi:",
-    noComment: "Yorum yapД±lmadД±.",
-    footer: "TrustNode DoДџrulama Paketinden gГ¶nderildi",
+    id: "Bilet Kimliği:",
+    locale: "Bölge:",
+    errType: "Hata Türü:",
+    inputLabel: "Diyalog Giriş Metni:",
+    modelEst: "Model Değerlendirmesi:",
+    fraudLine: "Dolandırıcılık Olasılığı (FRAUD):",
+    safeLine: "Güvenli Anlam (SAFE):",
+    commentLabel: "Test Uzmanı Geri Bildirimi:",
+    noComment: "Yorum yapılmadı.",
+    footer: "TrustNode Doğrulama Paketinden gönderildi",
     inventory: "Envanter: rubert_fraud_int8.onnx (INT8 quantized)",
   },
   es: {
     id: "ID del Ticket:",
     locale: "Idioma:",
     errType: "Tipo de error:",
-    inputLabel: "Texto de entrada del diГЎlogo:",
-    modelEst: "EstimaciГіn del modelo:",
+    inputLabel: "Texto de entrada del diálogo:",
+    modelEst: "Estimación del modelo:",
     fraudLine: "Probabilidad de fraude (FRAUD):",
-    safeLine: "SemГЎntica segura (SAFE):",
+    safeLine: "Semántica segura (SAFE):",
     commentLabel: "Comentarios del evaluador:",
     noComment: "Sin comentarios.",
-    footer: "Enviado desde el conjunto de verificaciГіn TrustNode",
+    footer: "Enviado desde el conjunto de verificación TrustNode",
     inventory: "Inventario: rubert_fraud_int8.onnx (INT8 cuantizado)",
   },
   zh: {
-    id: "зҐЁиЇЃ IDпјљ",
-    locale: "иЇ­иЁЂзЋЇеўѓпјљ",
-    errType: "й”™иЇЇз±»ећ‹пјљ",
-    inputLabel: "еЇ№иЇќиѕ“е…Ґж–‡жњ¬пјљ",
-    modelEst: "жЁЎећ‹иЇ„дј°пјљ",
-    fraudLine: "ж¬єиЇ€ж¦‚зЋ‡пј€FRAUDпј‰пјљ",
-    safeLine: "е®‰е…ЁиЇ­д№‰пј€SAFEпј‰пјљ",
-    commentLabel: "жµ‹иЇ•иЂ…еЏЌй¦€иЇ„и®єпјљ",
-    noComment: "жњЄжЏђдѕ›иЇ„и®єгЂ‚",
-    footer: "з”± TrustNode йЄЊиЇЃеҐ—д»¶еЏ‘йЂЃ",
-    inventory: "еє“е­пјљrubert_fraud_int8.onnxпј€INT8 й‡ЏеЊ–пј‰",
+    id: "票证 ID：",
+    locale: "语言环境：",
+    errType: "错误类型：",
+    inputLabel: "对话输入文本：",
+    modelEst: "模型评估：",
+    fraudLine: "欺诈概率（FRAUD）：",
+    safeLine: "安全语义（SAFE）：",
+    commentLabel: "测试者反馈评论：",
+    noComment: "未提供评论。",
+    footer: "由 TrustNode 验证套件发送",
+    inventory: "库存：rubert_fraud_int8.onnx（INT8 量化）",
   },
   hi: {
-    id: "а¤џа¤їа¤•а¤џ ID:",
-    locale: "а¤ІаҐ‹а¤•аҐ‡а¤І:",
-    errType: "а¤¤аҐЌа¤°аҐЃа¤џа¤ї а¤ЄаҐЌа¤°а¤•а¤ѕа¤°:",
-    inputLabel: "а¤ёа¤‚а¤µа¤ѕа¤¦ а¤‡а¤Ёа¤ЄаҐЃа¤џ а¤Єа¤ѕа¤ :",
-    modelEst: "а¤®аҐ‰а¤Ўа¤І а¤…а¤ЁаҐЃа¤®а¤ѕа¤Ё:",
-    fraudLine: "а¤§аҐ‹а¤–а¤ѕа¤§а¤Ўа¤јаҐЂ а¤ёа¤‚а¤­а¤ѕа¤µа¤Ёа¤ѕ (FRAUD):",
-    safeLine: "а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤їа¤¤ а¤ёа¤їа¤®аҐ‡а¤‚а¤џа¤їа¤•аҐЌа¤ё (SAFE):",
-    commentLabel: "а¤Єа¤°аҐЂа¤•аҐЌа¤·а¤• а¤ЄаҐЌа¤°а¤¤а¤їа¤•аҐЌа¤°а¤їа¤Їа¤ѕ а¤џа¤їа¤ЄаҐЌа¤Єа¤Ја¤їа¤Їа¤ѕа¤Ѓ:",
-    noComment: "а¤•аҐ‹а¤€ а¤џа¤їа¤ЄаҐЌа¤Єа¤ЈаҐЂ а¤Ёа¤№аҐЂа¤‚ а¤¦аҐЂ а¤—а¤€аҐ¤",
-    footer: "TrustNode а¤ёа¤¤аҐЌа¤Їа¤ѕа¤Єа¤Ё а¤ёаҐЃа¤‡а¤џ а¤ёаҐ‡ а¤­аҐ‡а¤ња¤ѕ а¤—а¤Їа¤ѕ",
-    inventory: "а¤‡а¤ЁаҐЌа¤µаҐ‡а¤‚а¤џа¤°аҐЂ: rubert_fraud_int8.onnx (INT8 а¤•аҐЌа¤µа¤ѕа¤‚а¤џа¤ѕа¤‡а¤ња¤јаҐЌа¤Ў)",
+    id: "टिकट ID:",
+    locale: "लोकेल:",
+    errType: "त्रुटि प्रकार:",
+    inputLabel: "संवाद इनपुट पाठ:",
+    modelEst: "मॉडल अनुमान:",
+    fraudLine: "धोखाधड़ी संभावना (FRAUD):",
+    safeLine: "सुरक्षित सिमेंटिक्स (SAFE):",
+    commentLabel: "परीक्षक प्रतिक्रिया टिप्पणियाँ:",
+    noComment: "कोई टिप्पणी नहीं दी गई।",
+    footer: "TrustNode सत्यापन सुइट से भेजा गया",
+    inventory: "इन्वेंटरी: rubert_fraud_int8.onnx (INT8 क्वांटाइज़्ड)",
   },
   ar: {
-    id: "Щ…Ш№Ш±ЩЃ Ш§Щ„ШЄШ°ЩѓШ±Ш©:",
-    locale: "Ш§Щ„Щ„ШєШ©:",
-    errType: "Щ†Щ€Ш№ Ш§Щ„Ш®Ш·ШЈ:",
-    inputLabel: "Щ†Шµ ШҐШЇШ®Ш§Щ„ Ш§Щ„Ш­Щ€Ш§Ш±:",
-    modelEst: "ШЄЩ‚ШЇЩЉШ± Ш§Щ„Щ†Щ…Щ€Ш°Ш¬:",
-    fraudLine: "Ш§Ш­ШЄЩ…Ш§Щ„ЩЉШ© Ш§Щ„Ш§Ш­ШЄЩЉШ§Щ„ (FRAUD):",
-    safeLine: "ШЇЩ„Ш§Щ„Ш§ШЄ ШўЩ…Щ†Ш© (SAFE):",
-    commentLabel: "ШЄШ№Щ„ЩЉЩ‚Ш§ШЄ Ш§Щ„Щ…Ш®ШЄШЁЩђШ±:",
-    noComment: "Щ„Ш§ ЩЉЩ€Ш¬ШЇ ШЄШ№Щ„ЩЉЩ‚.",
-    footer: "ШЈЩЏШ±ШіЩ„ Щ…Щ† Щ…Ш¬Щ…Щ€Ш№Ш© Ш§Щ„ШЄШ­Щ‚Щ‚ TrustNode",
-    inventory: "Ш§Щ„Щ…Ш®ШІЩ€Щ†: rubert_fraud_int8.onnx (INT8 Щ…ЩѓЩ…Щ‘Щ…)",
+    id: "معرف التذكرة:",
+    locale: "اللغة:",
+    errType: "نوع الخطأ:",
+    inputLabel: "نص إدخال الحوار:",
+    modelEst: "تقدير النموذج:",
+    fraudLine: "احتمالية الاحتيال (FRAUD):",
+    safeLine: "دلالات آمنة (SAFE):",
+    commentLabel: "تعليقات المختبِر:",
+    noComment: "لا يوجد تعليق.",
+    footer: "أُرسل من مجموعة التحقق TrustNode",
+    inventory: "المخزون: rubert_fraud_int8.onnx (INT8 مكمّم)",
   },
   pt: {
     id: "ID do Ticket:",
     locale: "Localidade:",
     errType: "Tipo de Erro:",
-    inputLabel: "Texto de Entrada do DiГЎlogo:",
+    inputLabel: "Texto de Entrada do Diálogo:",
     modelEst: "Estimativa do Modelo:",
     fraudLine: "Probabilidade de Fraude (FRAUD):",
-    safeLine: "SemГўntica Segura (SAFE):",
-    commentLabel: "ComentГЎrios do Testador:",
-    noComment: "Nenhum comentГЎrio.",
-    footer: "Enviado do pacote de verificaГ§ГЈo TrustNode",
-    inventory: "InventГЎrio: rubert_fraud_int8.onnx (INT8 quantizado)",
+    safeLine: "Semântica Segura (SAFE):",
+    commentLabel: "Comentários do Testador:",
+    noComment: "Nenhum comentário.",
+    footer: "Enviado do pacote de verificação TrustNode",
+    inventory: "Inventário: rubert_fraud_int8.onnx (INT8 quantizado)",
   },
   fr: {
     id: "ID du ticket :",
     locale: "Langue :",
     errType: "Type d'erreur :",
-    inputLabel: "Texte d'entrГ©e du dialogue :",
-    modelEst: "Estimation du modГЁle :",
-    fraudLine: "ProbabilitГ© de fraude (FRAUD) :",
-    safeLine: "SГ©mantique sГ»re (SAFE) :",
+    inputLabel: "Texte d'entrée du dialogue :",
+    modelEst: "Estimation du modèle :",
+    fraudLine: "Probabilité de fraude (FRAUD) :",
+    safeLine: "Sémantique sûre (SAFE) :",
     commentLabel: "Commentaires du testeur :",
     noComment: "Aucun commentaire.",
-    footer: "EnvoyГ© depuis la suite de vГ©rification TrustNode",
-    inventory: "Inventaire : rubert_fraud_int8.onnx (quantifiГ© INT8)",
+    footer: "Envoyé depuis la suite de vérification TrustNode",
+    inventory: "Inventaire : rubert_fraud_int8.onnx (quantifié INT8)",
   },
   de: {
     id: "Ticket-ID:",
     locale: "Gebietsschema:",
     errType: "Fehlerart:",
     inputLabel: "Dialog-Eingabetext:",
-    modelEst: "ModellschГ¤tzung:",
+    modelEst: "Modellschätzung:",
     fraudLine: "Betrugswahrscheinlichkeit (FRAUD):",
     safeLine: "Sichere Semantik (SAFE):",
     commentLabel: "Feedback-Kommentare des Testers:",
@@ -1425,17 +1425,17 @@ const ONNX_TICKET: Record<LanguageCode, OnnxTicketType> = {
     inventory: "Inventar: rubert_fraud_int8.onnx (INT8-quantisiert)",
   },
   ja: {
-    id: "гѓЃг‚±гѓѓгѓ€ID:",
-    locale: "гѓ­г‚±гѓјгѓ«:",
-    errType: "г‚Ёгѓ©гѓјгЃ®зЁ®йЎћ:",
-    inputLabel: "еЇѕи©±е…ҐеЉ›гѓ†г‚­г‚№гѓ€:",
-    modelEst: "гѓўгѓ‡гѓ«жЋЁе®љ:",
-    fraudLine: "и©ђж¬єгЃ®зўєзЋ‡пј€FRAUDпј‰:",
-    safeLine: "е®‰е…ЁгЃЄж„Џе‘іи§Јжћђпј€SAFEпј‰:",
-    commentLabel: "гѓ†г‚№г‚їгѓјгЃ®гѓ•г‚Јгѓјгѓ‰гѓђгѓѓг‚Їг‚ігѓЎгѓігѓ€:",
-    noComment: "г‚ігѓЎгѓігѓ€гЃЇгЃ‚г‚ЉгЃѕгЃ›г‚“гЂ‚",
-    footer: "TrustNode ж¤њиЁјг‚№г‚¤гѓјгѓ€гЃ‹г‚‰йЂЃдїЎ",
-    inventory: "ењЁеє«: rubert_fraud_int8.onnxпј€INT8 й‡Џе­ђеЊ–пј‰",
+    id: "チケットID:",
+    locale: "ロケール:",
+    errType: "エラーの種類:",
+    inputLabel: "対話入力テキスト:",
+    modelEst: "モデル推定:",
+    fraudLine: "詐欺の確率（FRAUD）:",
+    safeLine: "安全な意味解析（SAFE）:",
+    commentLabel: "テスターのフィードバックコメント:",
+    noComment: "コメントはありません。",
+    footer: "TrustNode 検証スイートから送信",
+    inventory: "在庫: rubert_fraud_int8.onnx（INT8 量子化）",
   },
 };
 export function OnnxInteractiveTester({ language }: { language: string }) {
@@ -1497,7 +1497,7 @@ export function OnnxInteractiveTester({ language }: { language: string }) {
         let matchCount = 0;
         const foundFlags: string[] = [];
         
-        const textTokens = inputText.split(/[\s,.:;!?"'\-пјЊгЂ‚пјЃгЂЃпјљпј›пј€пј‰]+/);
+        const textTokens = inputText.split(/[\s,.:;!?"'\-，。！、：；（）]+/);
         textTokens.forEach(token => {
           const isFlagged = triggers.some(trigger => token.toLowerCase().includes(trigger));
           if (isFlagged && token.length > 2) {
@@ -1523,7 +1523,7 @@ export function OnnxInteractiveTester({ language }: { language: string }) {
   };
 
     const generateTicketText = () => {
-    return `рџ¤– [TRUSTNODE BERT WEIGHTS TICKET] рџ¤–
+    return `🤖 [TRUSTNODE BERT WEIGHTS TICKET] 🤖
 -----------------------------------------
 ${tkt.id} ${ticketId}
 ${tkt.locale} ${language.toUpperCase()}
@@ -1597,13 +1597,13 @@ ${tkt.inventory}`;
           onChange={(e) => { setInputText(e.target.value); setShowResults(false); }}
           placeholder={dict.placeholder}
           rows={3}
-          className="w-full p-3 bg-black/40 border border-[#3C404A]/80 rounded-md text-xs sm:text-sm font-sans text-gray-200 placeholder-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/70 focus:border-[#3B82F6]/50 resize-none transition"
+          className="w-full p-3 bg-black/40 border border-[#3C404A]/80 rounded-xl text-xs sm:text-sm font-sans text-gray-200 placeholder-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/70 focus:border-[#3B82F6]/50 resize-none transition"
         />
 
         <button
           onClick={handleInference}
           disabled={isTesting || !inputText.trim()}
-          className="w-full py-2.5 rounded-md font-mono text-xs font-bold text-white bg-[#3B82F6] hover:bg-blue-600 shadow-glow-md hover:shadow-glow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-2.5 rounded-xl font-mono text-xs font-bold text-white bg-[#3B82F6] hover:bg-blue-600 shadow-glow-md hover:shadow-glow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {isTesting ? (
             <>
@@ -1621,7 +1621,7 @@ ${tkt.inventory}`;
 
       {/* Animation console */}
       {isTesting && (
-        <div className="p-4 rounded-md bg-black/50 border border-white/[0.03] font-mono text-[10px] text-cyan-400 flex items-center gap-2">
+        <div className="p-4 rounded-xl bg-black/50 border border-white/[0.03] font-mono text-[10px] text-cyan-400 flex items-center gap-2">
           <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#3B82F6]" />
           <span>{testStep}</span>
         </div>
@@ -1638,7 +1638,7 @@ ${tkt.inventory}`;
             className="space-y-4"
           >
             {/* Decoded Output Banner */}
-            <div className="p-4 rounded-md bg-[#0A0A0B] border border-[#3C404A]/50 space-y-3">
+            <div className="p-4 rounded-xl bg-[#0A0A0B] border border-[#3C404A]/50 space-y-3">
               <div className="flex justify-between items-center pb-2 border-b border-[#3C404A]/30">
                 <span className="font-mono text-[9px] text-gray-500 uppercase tracking-widest">{dict.resultHeader}</span>
                 <span className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded ${
@@ -1683,7 +1683,7 @@ ${tkt.inventory}`;
             </div>
 
             {/* Token Attention Visualiser */}
-            <div className="p-4 rounded-md bg-[#0A0A0B]/60 border border-white/[0.02] space-y-2">
+            <div className="p-4 rounded-xl bg-[#0A0A0B]/60 border border-white/[0.02] space-y-2">
               <span className="block font-mono text-[10px] text-gray-500 uppercase tracking-wider">
                 {dict.attentionTitle}
               </span>
@@ -1710,7 +1710,7 @@ ${tkt.inventory}`;
             <div>
               <button
                 onClick={() => setShowFeedback(!showFeedback)}
-                className="flex items-center gap-1.5 font-mono text-[10px] text-gray-400 hover:text-[#3B82F6] transition-all bg-[#3C404A] border border-[#3C404A]/50 px-3 py-1.5 rounded-md"
+                className="flex items-center gap-1.5 font-mono text-[10px] text-gray-400 hover:text-[#3B82F6] transition-all bg-[#3C404A] border border-[#3C404A]/50 px-3 py-1.5 rounded-xl"
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
                 <span>{showFeedback ? dict.hideTicketForm : dict.feedbackHeader}</span>
@@ -1727,7 +1727,7 @@ ${tkt.inventory}`;
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="p-5 rounded-md border border-[#3C404A]/80 bg-[#0A0A0B] space-y-4"
+            className="p-5 rounded-xl border border-[#3C404A]/80 bg-[#0A0A0B] space-y-4"
           >
             <div>
               <h4 className="font-display font-semibold text-xs text-[#F5F5F0]">
@@ -1745,11 +1745,11 @@ ${tkt.inventory}`;
                 <select 
                   value={errorType}
                   onChange={(e) => setErrorType(e.target.value)}
-                  className="w-full bg-[#3C404A] border border-[#3C404A]/80 text-xs text-gray-300 p-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/70 focus:border-[#3B82F6]/50"
+                  className="w-full bg-[#3C404A] border border-[#3C404A]/80 text-xs text-gray-300 p-2.5 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/70 focus:border-[#3B82F6]/50"
                 >
-                  <option value="False Positive (Р›РѕР¶РЅРѕРµ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёРµ)">{dict.errFalsePositive}</option>
-                  <option value="False Negative (РџСЂРѕРїСѓСЃРє СѓРіСЂРѕР·С‹)">{dict.errFalseNegative}</option>
-                  <option value="Other Anomaly (Р”СЂСѓРіРѕР№ Р±Р°Рі)">{dict.errOther}</option>
+                  <option value="False Positive (Ложное срабатывание)">{dict.errFalsePositive}</option>
+                  <option value="False Negative (Пропуск угрозы)">{dict.errFalseNegative}</option>
+                  <option value="Other Anomaly (Другой баг)">{dict.errOther}</option>
                 </select>
               </div>
 
@@ -1760,13 +1760,13 @@ ${tkt.inventory}`;
                   value={feedbackComment}
                   onChange={(e) => setFeedbackComment(e.target.value)}
                   placeholder={dict.commentPlaceholder}
-                  className="w-full bg-[#3C404A] border border-[#3C404A]/80 text-xs text-gray-300 p-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/70 focus:border-[#3B82F6]/50 placeholder-gray-600"
+                  className="w-full bg-[#3C404A] border border-[#3C404A]/80 text-xs text-gray-300 p-2.5 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/70 focus:border-[#3B82F6]/50 placeholder-gray-600"
                 />
               </div>
             </div>
 
             {/* Pre-formatted Ticket Inspection Board */}
-            <div className="p-3 bg-black/60 border border-[#3C404A]/50 rounded-md text-left">
+            <div className="p-3 bg-black/60 border border-[#3C404A]/50 rounded-xl text-left">
               <span className="block font-mono text-[8px] text-[#3B82F6] uppercase tracking-widest mb-1.5">{dict.ticketSpec}</span>
               <pre className="font-mono text-[9px] text-gray-400 whitespace-pre-wrap select-all bg-black/20 p-2 rounded max-h-40 overflow-y-auto">
                 {generateTicketText()}
@@ -1777,7 +1777,7 @@ ${tkt.inventory}`;
             <div className="flex flex-wrap sm:flex-nowrap gap-2">
               <button
                 onClick={handleOpenTelegram}
-                className="flex-1 py-2.5 rounded-md bg-[#3B82F6] hover:bg-blue-600 font-mono text-[11px] font-bold text-white flex items-center justify-center gap-1.5 transition-all shadow-glow-sm"
+                className="flex-1 py-2.5 rounded-xl bg-[#3B82F6] hover:bg-blue-600 font-mono text-[11px] font-bold text-white flex items-center justify-center gap-1.5 transition-all shadow-glow-sm"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{dict.btnTg}</span>
@@ -1785,7 +1785,7 @@ ${tkt.inventory}`;
 
               <button
                 onClick={handleCopyTicket}
-                className="px-4 py-2.5 rounded-md border border-[#3C404A]/60 bg-[#3C404A] hover:border-gray-500 font-mono text-[11px] text-gray-300 hover:text-white flex items-center justify-center gap-1.5 transition-all"
+                className="px-4 py-2.5 rounded-xl border border-[#3C404A]/60 bg-[#3C404A] hover:border-gray-500 font-mono text-[11px] text-gray-300 hover:text-white flex items-center justify-center gap-1.5 transition-all"
               >
                 {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? dict.copied : dict.btnCopy}</span>

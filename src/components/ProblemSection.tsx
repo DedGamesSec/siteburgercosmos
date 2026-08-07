@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { motion, AnimatePresence } from "motion/react";
 import { ShieldAlert, EyeOff, WifiOff, Phone, ServerOff } from "lucide-react";
@@ -8,17 +8,17 @@ const ProblemSection = React.memo(function ProblemSection() {
   const { t, language } = useTranslation();
 
   const SIM_LABELS: Record<string, Record<string, string>> = {
-    ru: { call: "Р’РҐРћР”РЇР©РР™ Р—Р’РћРќРћРљ", alert: "РЈР“Р РћР—Рђ РћР‘РќРђР РЈР–Р•РќРђ", soc: "РђС‚Р°РєР° СЃРѕС†-РёРЅР¶РµРЅРµСЂРёРё", leak: "РЈРўР•Р§РљРђ", messenger: "РўРµР»РµРіСЂР°Рј", cloud: "РћР±Р»Р°РєРѕ", broken: "РЎРўРђРќР”РђР РўРќРђРЇ Р—РђР©РРўРђ РћРўРљР›Р®Р§Р•РќРђ" },
+    ru: { call: "ВХОДЯЩИЙ ЗВОНОК", alert: "УГРОЗА ОБНАРУЖЕНА", soc: "Атака соц-инженерии", leak: "УТЕЧКА", messenger: "Телеграм", cloud: "Облако", broken: "СТАНДАРТНАЯ ЗАЩИТА ОТКЛЮЧЕНА" },
     en: { call: "INCOMING CALL", alert: "ALERT DETECTED", soc: "Social Engineering", leak: "OUTFLOW", messenger: "Messenger", cloud: "Cloud Log", broken: "TRADITIONAL SECURITY BROKEN" },
-    es: { call: "LLAMADA ENTRANTE", alert: "ALERTA DETECTADA", soc: "IngenierГ­a social", leak: "FUGA", messenger: "MensajerГ­a", cloud: "Nube Log", broken: "SEGURIDAD TRADICIONAL VULNERADA" },
-    zh: { call: "жќҐз”µжѕз¤є", alert: "еЏ‘зЋ°еЁЃиѓЃ", soc: "з¤ѕдє¤е·ҐзЁ‹ж”»е‡»", leak: "ж•°жЌ®е¤–жі„", messenger: "еЌіж—¶йЂљи®Ї", cloud: "дє‘з«Їж—Ґеї—", broken: "дј з»џе®‰е…ЁйІеѕЎе¤±ж•€" },
-    tr: { call: "GELEN ARAMA", alert: "TEHDД°T ALGILANDI", soc: "Sosyal MГјhendislik", leak: "VERД° SIZINTISI", messenger: "MesajlaЕџma", cloud: "Bulut Log", broken: "GELENEKSEL GГњVENLД°K DEVRE DIЕћI" },
-    hi: { call: "а¤†а¤ЁаҐ‡ а¤µа¤ѕа¤ІаҐЂ а¤•аҐ‰а¤І", alert: "а¤љаҐ‡а¤¤а¤ѕа¤µа¤ЁаҐЂ а¤•а¤ѕ а¤Єа¤¤а¤ѕ а¤ља¤Іа¤ѕ", soc: "а¤ёа¤ѕа¤®а¤ѕа¤ња¤їа¤• а¤‡а¤‚а¤њаҐЂа¤Ёа¤їа¤Їа¤°а¤їа¤‚а¤—", leak: "а¤ЎаҐ‡а¤џа¤ѕ а¤ІаҐЂа¤•", messenger: "а¤®аҐ€а¤ёаҐ‡а¤‚а¤ња¤°", cloud: "а¤•аҐЌа¤Іа¤ѕа¤‰а¤Ў а¤ІаҐ‰а¤—", broken: "а¤Єа¤ѕа¤°а¤‚а¤Єа¤°а¤їа¤• а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤µа¤їа¤«а¤І" },
-    ar: { call: "Щ…ЩѓШ§Щ„Щ…Ш© Щ€Ш§Ш±ШЇШ©", alert: "ШЄЩ… Ш§ЩѓШЄШґШ§ЩЃ ШЄЩ‡ШЇЩЉШЇ", soc: "Ш§Щ„Щ‡Щ†ШЇШіШ© Ш§Щ„Ш§Ш¬ШЄЩ…Ш§Ш№ЩЉШ©", leak: "ШЄШіШ±ЩЉШЁ Ш§Щ„ШЁЩЉШ§Щ†Ш§ШЄ", messenger: "Ш§Щ„Щ…Ш±Ш§ШіЩ„Ш©", cloud: "ШіШ¬Щ„ Ш§Щ„ШіШ­Ш§ШЁШ©", broken: "ЩЃШґЩ„ Ш§Щ„ШЈЩ…Ш§Щ† Ш§Щ„ШЄЩ‚Щ„ЩЉШЇЩЉ" },
-    pt: { call: "CHAMADA RECEBIDA", alert: "ALERTA DETECTADO", soc: "Engenharia Social", leak: "VAZAMENTO", messenger: "Mensageiro", cloud: "Nuvem Log", broken: "SEGURANГ‡A TRADICIONAL FALHOU" },
-    fr: { call: "APPEL ENTRANT", alert: "ALERTE DГ‰TECTГ‰E", soc: "IngГ©nierie Sociale", leak: "FUITE", messenger: "Messagerie", cloud: "Journal Cloud", broken: "SГ‰CURITГ‰ TRADITIONNELLE DГ‰FAILLANTE" },
-    de: { call: "EINGEHENDER ANRUF", alert: "ALARM ERKANNT", soc: "Social Engineering", leak: "DATENABFLUSS", messenger: "Messenger", cloud: "Cloud-Log", broken: "HERKГ–MMLICHE SICHERHEIT DEFEKT" },
-    ja: { call: "зќЂдїЎ", alert: "и­¦е‘Љг‚’ж¤њзџҐ", soc: "г‚Ѕгѓјг‚·гѓЈгѓ«г‚Ёгѓіг‚ёгѓ‹г‚ўгѓЄгѓіг‚°", leak: "гѓ‡гѓјг‚їжµЃе‡є", messenger: "гѓЎгѓѓг‚»гѓіг‚ёгѓЈгѓј", cloud: "г‚Їгѓ©г‚¦гѓ‰гѓ­г‚°", broken: "еѕ“жќҐгЃ®г‚»г‚­гѓҐгѓЄгѓ†г‚Јз„ЎеЉ№еЊ–" }
+    es: { call: "LLAMADA ENTRANTE", alert: "ALERTA DETECTADA", soc: "Ingeniería social", leak: "FUGA", messenger: "Mensajería", cloud: "Nube Log", broken: "SEGURIDAD TRADICIONAL VULNERADA" },
+    zh: { call: "来电显示", alert: "发现威胁", soc: "社交工程攻击", leak: "数据外泄", messenger: "即时通讯", cloud: "云端日志", broken: "传统安全防御失效" },
+    tr: { call: "GELEN ARAMA", alert: "TEHDİT ALGILANDI", soc: "Sosyal Mühendislik", leak: "VERİ SIZINTISI", messenger: "Mesajlaşma", cloud: "Bulut Log", broken: "GELENEKSEL GÜVENLİK DEVRE DIŞI" },
+    hi: { call: "आने वाली कॉल", alert: "चेतावनी का पता चला", soc: "सामाजिक इंजीनियरिंग", leak: "डेटा लीक", messenger: "मैसेंजर", cloud: "क्लाउड लॉग", broken: "पारंपरिक सुरक्षा विफल" },
+    ar: { call: "مكالمة واردة", alert: "تم اكتشاف تهديد", soc: "الهندسة الاجتماعية", leak: "تسريب البيانات", messenger: "المراسلة", cloud: "سجل السحابة", broken: "فشل الأمان التقليدي" },
+    pt: { call: "CHAMADA RECEBIDA", alert: "ALERTA DETECTADO", soc: "Engenharia Social", leak: "VAZAMENTO", messenger: "Mensageiro", cloud: "Nuvem Log", broken: "SEGURANÇA TRADICIONAL FALHOU" },
+    fr: { call: "APPEL ENTRANT", alert: "ALERTE DÉTECTÉE", soc: "Ingénierie Sociale", leak: "FUITE", messenger: "Messagerie", cloud: "Journal Cloud", broken: "SÉCURITÉ TRADITIONNELLE DÉFAILLANTE" },
+    de: { call: "EINGEHENDER ANRUF", alert: "ALARM ERKANNT", soc: "Social Engineering", leak: "DATENABFLUSS", messenger: "Messenger", cloud: "Cloud-Log", broken: "HERKÖMMLICHE SICHERHEIT DEFEKT" },
+    ja: { call: "着信", alert: "警告を検知", soc: "ソーシャルエンジニアリング", leak: "データ流出", messenger: "メッセンジャー", cloud: "クラウドログ", broken: "従来のセキュリティ無効化" }
   };
   const sim = SIM_LABELS[language] || SIM_LABELS.en;
   
@@ -60,7 +60,7 @@ const ProblemSection = React.memo(function ProblemSection() {
   // Accent animated panels, one per problem (kept from the old cards)
   const problemVisuals: React.ReactNode[] = [
     // SOCIAL ENGINEERING CALL SPOOFING
-    <div key="v1" className="w-full h-64 sm:h-72 rounded-md overflow-hidden border border-white/[0.04] bg-[#12141A] relative flex flex-col justify-between p-4 font-mono">
+    <div key="v1" className="w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-white/[0.04] bg-[#12141A] relative flex flex-col justify-between p-4 font-mono">
       <div className="flex justify-between items-center text-[12px] text-gray-500 pb-2 border-b border-white/[0.03]">
         <span>SIM_SLOT_01: ACTIVE</span>
         <span className="text-[#3B82F6] font-bold">LTE</span>
@@ -113,7 +113,7 @@ const ProblemSection = React.memo(function ProblemSection() {
     </div>,
 
     // PRIVACY LEAKS TO CLOUD SERVERS
-    <div key="v2" className="w-full h-64 sm:h-72 rounded-md overflow-hidden border border-white/[0.04] bg-[#12141A] relative flex flex-col justify-between p-4 font-mono">
+    <div key="v2" className="w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-white/[0.04] bg-[#12141A] relative flex flex-col justify-between p-4 font-mono">
       <div className="flex justify-between items-center text-[12px] text-gray-500">
         <span>SSL_INSPECTOR: TRANSPARENT</span>
         <span className="text-red-400 font-bold">{sim.leak}</span>
@@ -154,7 +154,7 @@ const ProblemSection = React.memo(function ProblemSection() {
     </div>,
 
     // INERT / OFFLINE WITHOUT NETWORK
-    <div key="v3" className="w-full h-64 sm:h-72 rounded-md overflow-hidden border border-white/[0.04] bg-[#12141A] relative flex flex-col justify-between p-4 font-mono">
+    <div key="v3" className="w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-white/[0.04] bg-[#12141A] relative flex flex-col justify-between p-4 font-mono">
       <div className="flex justify-between items-center text-[12px] text-gray-500">
         <span>CONN: DISCONNECTED</span>
         <span className="text-red-400 font-bold">OFFLINE</span>

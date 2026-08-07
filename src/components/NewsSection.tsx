@@ -180,7 +180,7 @@ export default function NewsSection() {
                 whileInView={ecoMode ? undefined : { opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.2), ease: "easeOut" }}
-                className={`rounded-md border bg-[#12141A] p-5 sm:p-6 ${
+                className={`rounded-xl border bg-[#12141A] p-5 sm:p-6 ${
                   isExpanded ? "border-[#3B82F6]/30" : "border-white/[0.04]"
                 }`}
               >
@@ -192,7 +192,7 @@ export default function NewsSection() {
                 <div className="my-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
                 {item.imageUrl && (
-                  <div className="mb-4 rounded-md overflow-hidden border border-white/[0.04] flex justify-center bg-[#12141A]">
+                  <div className="mb-4 rounded-xl overflow-hidden border border-white/[0.04] flex justify-center bg-[#12141A]">
                     <img
                       src={item.imageUrl}
                       alt=""

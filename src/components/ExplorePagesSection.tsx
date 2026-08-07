@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useNavigation } from "../navigation/NavigationContext";
 import { PAGES_CONFIG } from "../navigation/pages.config";
@@ -22,178 +22,178 @@ type LangDict = Record<LanguageCode, string>;
 
 const PAGE_BADGES: Record<string, LangDict> = {
   home: {
-    ru: "РџРћР РўРђР› РџР›РђРўР¤РћР РњР«", en: "PLATFORM PORTAL", es: "PORTAL DE PLATAFORMA", zh: "е№іеЏ°й—Ёж€·", tr: "PLATFORM PORTALI",
-    hi: "а¤ЄаҐЌа¤ІаҐ‡а¤џа¤«а¤јаҐ‰а¤°аҐЌа¤® а¤ЄаҐ‹а¤°аҐЌа¤џа¤І", ar: "ШЁЩ€Ш§ШЁШ© Ш§Щ„Щ…Щ†ШµШ©", pt: "PORTAL DA PLATAFORMA", fr: "PORTAL PLATEFORME", de: "PLATTFORM-PORTAL", ja: "гѓ—гѓ©гѓѓгѓ€гѓ•г‚©гѓјгѓ гѓќгѓјг‚їгѓ«",
+    ru: "ПОРТАЛ ПЛАТФОРМЫ", en: "PLATFORM PORTAL", es: "PORTAL DE PLATAFORMA", zh: "平台门户", tr: "PLATFORM PORTALI",
+    hi: "प्लेटफ़ॉर्म पोर्टल", ar: "بوابة المنصة", pt: "PORTAL DA PLATAFORMA", fr: "PORTAL PLATEFORME", de: "PLATTFORM-PORTAL", ja: "プラットフォームポータル",
   },
   "how-it-works": {
-    ru: "РЎРРЎРўР•РњРђ PHANTOM", en: "PHANTOM SYSTEM", es: "SISTEMA PHANTOM", zh: "PHANTOM зі»з»џ", tr: "PHANTOM SД°STEMД°",
-    hi: "PHANTOM а¤ЄаҐЌа¤°а¤Ја¤ѕа¤ІаҐЂ", ar: "Щ†ШёШ§Щ… PHANTOM", pt: "SISTEMA PHANTOM", fr: "SYSTГ€ME PHANTOM", de: "PHANTOM-SYSTEM", ja: "PHANTOM г‚·г‚№гѓ†гѓ ",
+    ru: "СИСТЕМА PHANTOM", en: "PHANTOM SYSTEM", es: "SISTEMA PHANTOM", zh: "PHANTOM 系统", tr: "PHANTOM SİSTEMİ",
+    hi: "PHANTOM प्रणाली", ar: "نظام PHANTOM", pt: "SISTEMA PHANTOM", fr: "SYSTÈME PHANTOM", de: "PHANTOM-SYSTEM", ja: "PHANTOM システム",
   },
   tech: {
-    ru: "Р—РђР©РРўРђ Р РђР РҐРРўР•РљРўРЈР Рђ", en: "SECURITY & ARCHITECTURE", es: "SEGURIDAD Y ARQUITECTURA", zh: "е®‰е…ЁдёЋжћ¶жћ„", tr: "GГњVENLД°K VE MД°MARД°",
-    hi: "а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤”а¤° а¤†а¤°аҐЌа¤•а¤їа¤џаҐ‡а¤•аҐЌа¤ља¤°", ar: "Ш§Щ„ШЈЩ…Ш§Щ† Щ€Ш§Щ„ШЁЩ†ЩЉШ©", pt: "SEGURANГ‡A E ARQUITETURA", fr: "SГ‰CURITГ‰ ET ARCHITECTURE", de: "SICHERHEIT & ARCHITEKTUR", ja: "г‚»г‚­гѓҐгѓЄгѓ†г‚ЈгЃЁг‚ўгѓјг‚­гѓ†г‚ЇгѓЃгѓЈ",
+    ru: "ЗАЩИТА И АРХИТЕКТУРА", en: "SECURITY & ARCHITECTURE", es: "SEGURIDAD Y ARQUITECTURA", zh: "安全与架构", tr: "GÜVENLİK VE MİMARİ",
+    hi: "सुरक्षा और आर्किटेक्चर", ar: "الأمان والبنية", pt: "SEGURANÇA E ARQUITETURA", fr: "SÉCURITÉ ET ARCHITECTURE", de: "SICHERHEIT & ARCHITEKTUR", ja: "セキュリティとアーキテクチャ",
   },
   roadmap: {
-    ru: "Р”РћР РћР–РќРђРЇ РљРђР РўРђ", en: "ROADMAP", es: "HOJA DE RUTA", zh: "и·Їзєїе›ѕ", tr: "YOL HARД°TASI",
-    hi: "а¤°аҐ‹а¤Ўа¤®аҐ€а¤Є", ar: "Ш®Ш§Ш±Ш·Ш© Ш§Щ„Ш·Ш±ЩЉЩ‚", pt: "ROTEIRO", fr: "FEUILLE DE ROUTE", de: "FAHRPLAN", ja: "гѓ­гѓјгѓ‰гѓћгѓѓгѓ—",
+    ru: "ДОРОЖНАЯ КАРТА", en: "ROADMAP", es: "HOJA DE RUTA", zh: "路线图", tr: "YOL HARİTASI",
+    hi: "रोडमैप", ar: "خارطة الطريق", pt: "ROTEIRO", fr: "FEUILLE DE ROUTE", de: "FAHRPLAN", ja: "ロードマップ",
   },
   about: {
-    ru: "Р’РђР›РР”РђР¦РРЇ Р РџРђРўР•РќРўР«", en: "VALIDATION & PATENTS", es: "VALIDACIГ“N Y PATENTES", zh: "и®¤иЇЃдёЋдё“е€©", tr: "DOДћRULAMA VE PATENTLER",
-    hi: "а¤®а¤ѕа¤ЁаҐЌа¤Їа¤¤а¤ѕ а¤”а¤° а¤ЄаҐ‡а¤џаҐ‡а¤‚а¤џ", ar: "Ш§Щ„ШЄШ­Щ‚Щ‚ Щ€Ш§Щ„ШЁШ±Ш§ШЎШ§ШЄ", pt: "VALIDAГ‡ГѓO E PATENTES", fr: "VALIDATION ET BREVETS", de: "VALIDIERUNG & PATENTE", ja: "ж¤њиЁјгЃЁз‰№иЁ±",
+    ru: "ВАЛИДАЦИЯ И ПАТЕНТЫ", en: "VALIDATION & PATENTS", es: "VALIDACIÓN Y PATENTES", zh: "认证与专利", tr: "DOĞRULAMA VE PATENTLER",
+    hi: "मान्यता और पेटेंट", ar: "التحقق والبراءات", pt: "VALIDAÇÃO E PATENTES", fr: "VALIDATION ET BREVETS", de: "VALIDIERUNG & PATENTE", ja: "検証と特許",
   },
   comparison: {
-    ru: "Р¤РђРљРўР« Р РљРћРќРљРЈР Р•РќРўР«", en: "FACTS & COMPETITORS", es: "HECHOS Y COMPETIDORES", zh: "дє‹е®ћдёЋз«ће“Ѓ", tr: "GERГ‡EKLER VE RAKД°PLER",
-    hi: "а¤¤а¤ҐаҐЌа¤Ї а¤”а¤° а¤ЄаҐЌа¤°а¤¤а¤їа¤ёаҐЌа¤Єа¤°аҐЌа¤§аҐЂ", ar: "Ш§Щ„Ш­Щ‚Ш§Ш¦Щ‚ Щ€Ш§Щ„Щ…Щ†Ш§ЩЃШіЩ€Щ†", pt: "FATOS E CONCORRENTES", fr: "FAITS ET CONCURRENTS", de: "FAKTEN & KONKURRENZ", ja: "дє‹е®џгЃЁз«¶еђ€",
+    ru: "ФАКТЫ И КОНКУРЕНТЫ", en: "FACTS & COMPETITORS", es: "HECHOS Y COMPETIDORES", zh: "事实与竞品", tr: "GERÇEKLER VE RAKİPLER",
+    hi: "तथ्य और प्रतिस्पर्धी", ar: "الحقائق والمنافسون", pt: "FATOS E CONCORRENTES", fr: "FAITS ET CONCURRENTS", de: "FAKTEN & KONKURRENZ", ja: "事実と競合",
   },
   download: {
-    ru: "РЈРЎРўРђРќРћР’РРўР¬", en: "INSTALL", es: "INSTALAR", zh: "е®‰иЈ…", tr: "KUR",
-    hi: "а¤‡а¤‚а¤ёаҐЌа¤џаҐ‰а¤І а¤•а¤°аҐ‡а¤‚", ar: "ШЄШ«ШЁЩЉШЄ", pt: "INSTALAR", fr: "INSTALLER", de: "INSTALLIEREN", ja: "г‚¤гѓіг‚№гѓ€гѓјгѓ«",
+    ru: "УСТАНОВИТЬ", en: "INSTALL", es: "INSTALAR", zh: "安装", tr: "KUR",
+    hi: "इंस्टॉल करें", ar: "تثبيت", pt: "INSTALAR", fr: "INSTALLER", de: "INSTALLIEREN", ja: "インストール",
   },
   news: {
-    ru: "РќРћР’РћРЎРўР Р РђРќРћРќРЎР«", en: "NEWS & ANNOUNCEMENTS", es: "NOTICIAS Y ANUNCIOS", zh: "ж–°й—»дёЋе…¬е‘Љ", tr: "HABERLER VE DUYURULAR",
-    hi: "а¤ёа¤®а¤ѕа¤ља¤ѕа¤° а¤”а¤° а¤аҐ‹а¤·а¤Ја¤ѕа¤Џа¤Ѓ", ar: "Ш§Щ„ШЈШ®ШЁШ§Ш± Щ€Ш§Щ„ШҐШ№Щ„Ш§Щ†Ш§ШЄ", pt: "NOTГЌCIAS E ANГљNCIOS", fr: "ACTUALITГ‰S ET ANNONCES", de: "NEUIGKEITEN & ANKГњNDIGUNGEN", ja: "гѓ‹гѓҐгѓјг‚№гЃЁгЃЉзџҐг‚‰гЃ›",
+    ru: "НОВОСТИ И АНОНСЫ", en: "NEWS & ANNOUNCEMENTS", es: "NOTICIAS Y ANUNCIOS", zh: "新闻与公告", tr: "HABERLER VE DUYURULAR",
+    hi: "समाचार और घोषणाएँ", ar: "الأخبار والإعلانات", pt: "NOTÍCIAS E ANÚNCIOS", fr: "ACTUALITÉS ET ANNONCES", de: "NEUIGKEITEN & ANKÜNDIGUNGEN", ja: "ニュースとお知らせ",
   },
 };
 
 const PAGE_DESCRIPTIONS: Record<string, LangDict> = {
   home: {
-    ru: "РћР±Р·РѕСЂ РїР»Р°С‚С„РѕСЂРјС‹ TrustNode: Р»РѕРєР°Р»СЊРЅС‹Р№ AI-Р°РЅС‚РёС„СЂРёРґ, Р·Р°С‰РёС‚Р° РєРѕРЅС„РёРґРµРЅС†РёР°Р»СЊРЅРѕСЃС‚Рё Рё РїРѕР»РЅС‹Р№ РєРѕРЅС‚СЂРѕР»СЊ РЅР°Рґ РІР°С€РёРјРё РґР°РЅРЅС‹РјРё.",
+    ru: "Обзор платформы TrustNode: локальный AI-антифрид, защита конфиденциальности и полный контроль над вашими данными.",
     en: "TrustNode platform overview: local AI anti-fraud, privacy protection, and full control over your data.",
-    es: "DescripciГіn general de TrustNode: anti-fraude con IA local, protecciГіn de privacidad y control total de sus datos.",
-    zh: "TrustNode е№іеЏ°ж¦‚и§€пјљжњ¬ењ° AI еЏЌж¬єиЇ€гЂЃйљђз§ЃдїќжЉ¤д»ҐеЏЉеЇ№ж•°жЌ®зљ„е®Ње…ЁжЋЊжЋ§гЂ‚",
-    tr: "TrustNode platforma genel bakД±Еџ: yerel AI dolandД±rД±cД±lД±k korumasД±, gizlilik ve verileriniz Гјzerinde tam kontrol.",
-    hi: "TrustNode а¤ЄаҐЌа¤ІаҐ‡а¤џа¤«а¤јаҐ‰а¤°аҐЌа¤® а¤…а¤µа¤ІаҐ‹а¤•а¤Ё: а¤ёаҐЌа¤Ґа¤ѕа¤ЁаҐЂа¤Ї AI а¤Џа¤‚а¤џаҐЂ-а¤«аҐЌа¤°аҐ‰а¤Ў, а¤—аҐ‹а¤Єа¤ЁаҐЂа¤Їа¤¤а¤ѕ а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤”а¤° а¤†а¤Єа¤•аҐ‡ а¤ЎаҐ‡а¤џа¤ѕ а¤Єа¤° а¤ЄаҐ‚а¤°аҐЌа¤Ј а¤Ёа¤їа¤Їа¤‚а¤¤аҐЌа¤°а¤ЈаҐ¤",
-    ar: "Щ†ШёШ±Ш© Ш№Ш§Щ…Ш© Ш№Щ„Щ‰ Щ…Щ†ШµШ© TrustNode: Щ…ЩѓШ§ЩЃШ­Ш© Ш§Ш­ШЄЩЉШ§Щ„ Щ…Ш­Щ„ЩЉШ© ШЁШ§Щ„Ш°ЩѓШ§ШЎ Ш§Щ„Ш§ШµШ·Щ†Ш§Ш№ЩЉШЊ Ш­Щ…Ш§ЩЉШ© Ш§Щ„Ш®ШµЩ€ШµЩЉШ©ШЊ Щ€ШЄШ­ЩѓЩ… ЩѓШ§Щ…Щ„ ЩЃЩЉ ШЁЩЉШ§Щ†Ш§ШЄЩѓ.",
-    pt: "VisГЈo geral da plataforma TrustNode: antifraude local com IA, proteГ§ГЈo de privacidade e controle total dos seus dados.",
-    fr: "AperГ§u de TrustNode : anti-fraude IA local, protection de la vie privГ©e et contrГґle total de vos donnГ©es.",
-    de: "TrustNode-PlattformГјberblick: lokaler KI-Anti-Fraud, Datenschutz und volle Kontrolle Гјber Ihre Daten.",
-    ja: "TrustNode гѓ—гѓ©гѓѓгѓ€гѓ•г‚©гѓјгѓ ж¦‚и¦Ѓпјљгѓ­гѓјг‚«гѓ«AIдёЌж­ЈйІж­ўгЂЃгѓ—гѓ©г‚¤гѓђг‚·гѓјдїќи­·гЂЃгѓ‡гѓјг‚їгЃ®е®Ње…ЁгЃЄз®Ўзђ†гЂ‚",
+    es: "Descripción general de TrustNode: anti-fraude con IA local, protección de privacidad y control total de sus datos.",
+    zh: "TrustNode 平台概览：本地 AI 反欺诈、隐私保护以及对数据的完全掌控。",
+    tr: "TrustNode platforma genel bakış: yerel AI dolandırıcılık koruması, gizlilik ve verileriniz üzerinde tam kontrol.",
+    hi: "TrustNode प्लेटफ़ॉर्म अवलोकन: स्थानीय AI एंटी-फ्रॉड, गोपनीयता सुरक्षा और आपके डेटा पर पूर्ण नियंत्रण।",
+    ar: "نظرة عامة على منصة TrustNode: مكافحة احتيال محلية بالذكاء الاصطناعي، حماية الخصوصية، وتحكم كامل في بياناتك.",
+    pt: "Visão geral da plataforma TrustNode: antifraude local com IA, proteção de privacidade e controle total dos seus dados.",
+    fr: "Aperçu de TrustNode : anti-fraude IA local, protection de la vie privée et contrôle total de vos données.",
+    de: "TrustNode-Plattformüberblick: lokaler KI-Anti-Fraud, Datenschutz und volle Kontrolle über Ihre Daten.",
+    ja: "TrustNode プラットフォーム概要：ローカルAI不正防止、プライバシー保護、データの完全な管理。",
   },
   "how-it-works": {
-    ru: "РўРµС…РЅРёС‡РµСЃРєР°СЏ РґРµС‚Р°Р»РёР·Р°С†РёСЏ Р·Р°С‰РёС‚РЅРѕРіРѕ РєСѓРїРѕР»Р° PHANTOM 2.0: Р°РєСѓСЃС‚РёС‡РµСЃРєРёР№ Р°РЅР°Р»РёР· Рё ML-РєР»Р°СЃСЃРёС„РёРєР°С†РёСЏ rubert-tiny2 СЂР°Р±РѕС‚Р°СЋС‚ РЅР° СѓСЃС‚СЂРѕР№СЃС‚РІРµ, РѕСЃС‚Р°Р»СЊРЅС‹Рµ СЃР»РѕРё вЂ” РІ СЂР°Р·СЂР°Р±РѕС‚РєРµ (Roadmap).",
+    ru: "Техническая детализация защитного купола PHANTOM 2.0: акустический анализ и ML-классификация rubert-tiny2 работают на устройстве, остальные слои — в разработке (Roadmap).",
     en: "Technical breakdown of the PHANTOM 2.0 security dome: acoustic analysis and rubert-tiny2 ML classification run on-device, while the remaining layers are in development (Roadmap).",
-    es: "Desglose tГ©cnico del domo de seguridad PHANTOM 2.0: el anГЎlisis acГєstico y la clasificaciГіn ML rubert-tiny2 funcionan en el dispositivo, y las capas restantes estГЎn en desarrollo (Roadmap).",
-    zh: "PHANTOM 2.0 йІжЉ¤з©№йЎ¶зљ„жЉЂжњЇи§ЈжћђпјљеЈ°е­¦е€†жћђдёЋ rubert-tiny2 ML е€†з±»ењЁи®ѕе¤‡з«ЇиїђиЎЊпјЊе…¶дЅ™е±‚е¤„дєЋејЂеЏ‘й¶ж®µпј€Roadmapпј‰гЂ‚",
-    tr: "PHANTOM 2.0 gГјvenlik kubbesinin teknik analizi: akustik analiz ve rubert-tiny2 ML sД±nД±flandД±rma cihazda Г§alД±ЕџД±r, kalan katmanlar geliЕџtirme aЕџamasД±ndadД±r (Roadmap).",
-    hi: "PHANTOM 2.0 а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤ЎаҐ‹а¤® а¤•а¤ѕ а¤¤а¤•а¤ЁаҐЂа¤•аҐЂ а¤µа¤їа¤µа¤°а¤Ј: а¤§аҐЌа¤µа¤Ёа¤їа¤• а¤µа¤їа¤¶аҐЌа¤ІаҐ‡а¤·а¤Ј а¤”а¤° rubert-tiny2 ML а¤µа¤°аҐЌа¤—аҐЂа¤•а¤°а¤Ј а¤Ўа¤їа¤µа¤ѕа¤‡а¤ё а¤Єа¤° а¤ља¤Іа¤¤аҐ‡ а¤№аҐ€а¤‚, а¤¶аҐ‡а¤· а¤Єа¤°а¤¤аҐ‡а¤‚ а¤µа¤їа¤•а¤ѕа¤ё а¤®аҐ‡а¤‚ а¤№аҐ€а¤‚ (Roadmap)аҐ¤",
-    ar: "ШЄЩЃШ§ШµЩЉЩ„ ШЄЩ‚Щ†ЩЉШ© Щ„Щ‚ШЁШ© Ш§Щ„Ш­Щ…Ш§ЩЉШ© PHANTOM 2.0: Ш§Щ„ШЄШ­Щ„ЩЉЩ„ Ш§Щ„ШµЩ€ШЄЩЉ Щ€ШЄШµЩ†ЩЉЩЃ Ш§Щ„ШЄШ№Щ„Щ… Ш§Щ„ШўЩ„ЩЉ rubert-tiny2 ЩЉШ№Щ…Щ„Ш§Щ† Ш№Щ„Щ‰ Ш§Щ„Ш¬Щ‡Ш§ШІШЊ ШЁЩЉЩ†Щ…Ш§ Ш§Щ„Ш·ШЁЩ‚Ш§ШЄ Ш§Щ„Щ…ШЄШЁЩ‚ЩЉШ© Щ‚ЩЉШЇ Ш§Щ„ШЄШ·Щ€ЩЉШ± (Roadmap).",
-    pt: "Detalhamento tГ©cnico do domo de seguranГ§a PHANTOM 2.0: a anГЎlise acГєstica e a classificaГ§ГЈo ML rubert-tiny2 rodam no dispositivo, e as demais camadas estГЈo em desenvolvimento (Roadmap).",
-    fr: "Analyse technique du dГґme de sГ©curitГ© PHANTOM 2.0 : l'analyse acoustique et la classification ML rubert-tiny2 fonctionnent sur l'appareil, tandis que les autres couches sont en cours de dГ©veloppement (Roadmap).",
-    de: "Technische AufschlГјsselung der PHANTOM-2.0-Sicherheitskuppel: Akustikanalyse und ML-Klassifikation rubert-tiny2 laufen auf dem GerГ¤t, die Гјbrigen Ebenen befinden sich in Entwicklung (Roadmap).",
-    ja: "PHANTOM 2.0 г‚»г‚­гѓҐгѓЄгѓ†г‚Јгѓ‰гѓјгѓ гЃ®жЉЂиЎ“и§ЈиЄ¬пјљйџійџїи§ЈжћђгЃЁ rubert-tiny2 гЃ®MLе€†йЎћгЃЇз«Їжњ«дёЉгЃ§зЁјеѓЌгЃ—гЂЃгЃќгЃ®д»–гЃ®гѓ¬г‚¤гѓ¤гѓјгЃЇй–‹з™єдё­пј€Roadmapпј‰гЃ§гЃ™гЂ‚",
+    es: "Desglose técnico del domo de seguridad PHANTOM 2.0: el análisis acústico y la clasificación ML rubert-tiny2 funcionan en el dispositivo, y las capas restantes están en desarrollo (Roadmap).",
+    zh: "PHANTOM 2.0 防护穹顶的技术解析：声学分析与 rubert-tiny2 ML 分类在设备端运行，其余层处于开发阶段（Roadmap）。",
+    tr: "PHANTOM 2.0 güvenlik kubbesinin teknik analizi: akustik analiz ve rubert-tiny2 ML sınıflandırma cihazda çalışır, kalan katmanlar geliştirme aşamasındadır (Roadmap).",
+    hi: "PHANTOM 2.0 सुरक्षा डोम का तकनीकी विवरण: ध्वनिक विश्लेषण और rubert-tiny2 ML वर्गीकरण डिवाइस पर चलते हैं, शेष परतें विकास में हैं (Roadmap)।",
+    ar: "تفاصيل تقنية لقبة الحماية PHANTOM 2.0: التحليل الصوتي وتصنيف التعلم الآلي rubert-tiny2 يعملان على الجهاز، بينما الطبقات المتبقية قيد التطوير (Roadmap).",
+    pt: "Detalhamento técnico do domo de segurança PHANTOM 2.0: a análise acústica e a classificação ML rubert-tiny2 rodam no dispositivo, e as demais camadas estão em desenvolvimento (Roadmap).",
+    fr: "Analyse technique du dôme de sécurité PHANTOM 2.0 : l'analyse acoustique et la classification ML rubert-tiny2 fonctionnent sur l'appareil, tandis que les autres couches sont en cours de développement (Roadmap).",
+    de: "Technische Aufschlüsselung der PHANTOM-2.0-Sicherheitskuppel: Akustikanalyse und ML-Klassifikation rubert-tiny2 laufen auf dem Gerät, die übrigen Ebenen befinden sich in Entwicklung (Roadmap).",
+    ja: "PHANTOM 2.0 セキュリティドームの技術解説：音響解析と rubert-tiny2 のML分類は端末上で稼働し、その他のレイヤーは開発中（Roadmap）です。",
   },
   tech: {
-    ru: "Р“Р»СѓР±РѕРєРѕРµ РїРѕРіСЂСѓР¶РµРЅРёРµ РІ Р°СЂС…РёС‚РµРєС‚СѓСЂСѓ Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё, РјРѕР±РёР»СЊРЅС‹Р№ AI-РґРІРёР¶РѕРє ruBERT Рё СЃРёСЃС‚РµРјСѓ РѕР±РЅР°СЂСѓР¶РµРЅРёСЏ РјРѕС€РµРЅРЅРёС‡РµСЃС‚РІР° РІ СЂРµР°Р»СЊРЅРѕРј РІСЂРµРјРµРЅРё.",
+    ru: "Глубокое погружение в архитектуру безопасности, мобильный AI-движок ruBERT и систему обнаружения мошенничества в реальном времени.",
     en: "Deep dive into the security architecture, mobile AI engine ruBERT, and real-time fraud detection system.",
-    es: "AnГЎlisis profundo de la arquitectura de seguridad, el motor de IA mГіvil ruBERT y la detecciГіn de fraude en tiempo real.",
-    zh: "ж·±е…ҐжЋўи®Ёе®‰е…Ёжћ¶жћ„гЂЃз§»еЉЁ AI еј•ж“Ћ ruBERT е’Ње®ћж—¶ж¬єиЇ€жЈЂжµ‹зі»з»џгЂ‚",
-    tr: "GГјvenlik mimarisine, mobil AI motoru ruBERT'e ve gerГ§ek zamanlД± dolandД±rД±cД±lД±k tespit sistemine derinlemesine bir bakД±Еџ.",
-    hi: "а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤†а¤°аҐЌа¤•а¤їа¤џаҐ‡а¤•аҐЌа¤ља¤°, а¤®аҐ‹а¤¬а¤ѕа¤‡а¤І AI а¤‡а¤‚а¤ња¤Ё ruBERT а¤”а¤° а¤°аҐЂа¤Їа¤І-а¤џа¤ѕа¤‡а¤® а¤§аҐ‹а¤–а¤ѕа¤§а¤Ўа¤јаҐЂ а¤Єа¤№а¤ља¤ѕа¤Ё а¤ЄаҐЌа¤°а¤Ја¤ѕа¤ІаҐЂ а¤•аҐЂ а¤—а¤№а¤Ё а¤ёа¤®аҐЂа¤•аҐЌа¤·а¤ѕаҐ¤",
-    ar: "ШЄШ№Щ…Щ‚ ЩЃЩЉ ШЁЩ†ЩЉШ© Ш§Щ„ШЈЩ…Ш§Щ† Щ€Щ…Ш­Ш±Щѓ Ш§Щ„Ш°ЩѓШ§ШЎ Ш§Щ„Ш§ШµШ·Щ†Ш§Ш№ЩЉ Ш§Щ„Щ…Ш­Щ…Щ€Щ„ ruBERT Щ€Щ†ШёШ§Щ… ЩѓШґЩЃ Ш§Щ„Ш§Ш­ШЄЩЉШ§Щ„ ЩЃЩЉ Ш§Щ„Щ€Щ‚ШЄ Ш§Щ„ЩЃШ№Щ„ЩЉ.",
-    pt: "AnГЎlise profunda da arquitetura de seguranГ§a, do mecanismo de IA mГіvel ruBERT e da detecГ§ГЈo de fraudes em tempo real.",
-    fr: "PlongГ©e dans l'architecture de sГ©curitГ©, le moteur IA mobile ruBERT et la dГ©tection de fraude en temps rГ©el.",
+    es: "Análisis profundo de la arquitectura de seguridad, el motor de IA móvil ruBERT y la detección de fraude en tiempo real.",
+    zh: "深入探讨安全架构、移动 AI 引擎 ruBERT 和实时欺诈检测系统。",
+    tr: "Güvenlik mimarisine, mobil AI motoru ruBERT'e ve gerçek zamanlı dolandırıcılık tespit sistemine derinlemesine bir bakış.",
+    hi: "सुरक्षा आर्किटेक्चर, मोबाइल AI इंजन ruBERT और रीयल-टाइम धोखाधड़ी पहचान प्रणाली की गहन समीक्षा।",
+    ar: "تعمق في بنية الأمان ومحرك الذكاء الاصطناعي المحمول ruBERT ونظام كشف الاحتيال في الوقت الفعلي.",
+    pt: "Análise profunda da arquitetura de segurança, do mecanismo de IA móvel ruBERT e da detecção de fraudes em tempo real.",
+    fr: "Plongée dans l'architecture de sécurité, le moteur IA mobile ruBERT et la détection de fraude en temps réel.",
     de: "Tiefer Einblick in die Sicherheitsarchitektur, die mobile KI-Engine ruBERT und die Echtzeit-Betrugserkennung.",
-    ja: "г‚»г‚­гѓҐгѓЄгѓ†г‚Јг‚ўгѓјг‚­гѓ†г‚ЇгѓЃгѓЈгЂЃгѓўгѓђг‚¤гѓ«AIг‚Ёгѓіг‚ёгѓіruBERTгЂЃгѓЄг‚ўгѓ«г‚їг‚¤гѓ и©ђж¬єж¤њзџҐг‚·г‚№гѓ†гѓ г‚’ж·±жЋг‚ЉгЂ‚",
+    ja: "セキュリティアーキテクチャ、モバイルAIエンジンruBERT、リアルタイム詐欺検知システムを深掘り。",
   },
   roadmap: {
-    ru: "РџР»Р°РЅ СЂР°Р·РІРёС‚РёСЏ РїСЂРѕРµРєС‚Р°: РѕС‚ С‚РµРєСѓС‰РµР№ MVP-РІРµСЂСЃРёРё РґРѕ РїРѕР»РЅРѕС†РµРЅРЅРѕР№ СЌРєРѕСЃРёСЃС‚РµРјС‹ СЃ РїСѓР±Р»РёС‡РЅС‹Рј Р°СѓРґРёС‚РѕРј Рё РѕС‚РєСЂС‹С‚С‹Рј API.",
+    ru: "План развития проекта: от текущей MVP-версии до полноценной экосистемы с публичным аудитом и открытым API.",
     en: "Project development plan: from the current MVP to a full ecosystem with public audit and open API.",
-    es: "Plan de desarrollo: desde el MVP actual hasta un ecosistema completo con auditorГ­a pГєblica y API abierta.",
-    zh: "йЎ№з›®еЏ‘е±•и®Ўе€’пјљд»ЋеЅ“е‰Ќзљ„ MVP е€°ж‹Ґжњ‰е…¬е…±е®Ўи®Ўе’ЊејЂж”ѕ API зљ„е®Њж•ґз”џжЂЃзі»з»џгЂ‚",
-    tr: "Proje geliЕџtirme planД±: mevcut MVP'den genel denetimli ve aГ§Д±k API'li tam ekosisteme.",
-    hi: "а¤Єа¤°а¤їа¤ЇаҐ‹а¤ња¤Ёа¤ѕ а¤µа¤їа¤•а¤ѕа¤ё а¤ЇаҐ‹а¤ња¤Ёа¤ѕ: а¤µа¤°аҐЌа¤¤а¤®а¤ѕа¤Ё MVP а¤ёаҐ‡ а¤ёа¤ѕа¤°аҐЌа¤µа¤ња¤Ёа¤їа¤• а¤‘а¤Ўа¤їа¤џ а¤”а¤° а¤“а¤Єа¤Ё API а¤µа¤ѕа¤ІаҐ‡ а¤ЄаҐ‚а¤°аҐЌа¤Ј а¤‡а¤•аҐ‹а¤ёа¤їа¤ёаҐЌа¤џа¤® а¤¤а¤•аҐ¤",
-    ar: "Ш®Ш·Ш© ШЄШ·Щ€ЩЉШ± Ш§Щ„Щ…ШґШ±Щ€Ш№: Щ…Щ† Ш§Щ„Щ†ШіШ®Ш© Ш§Щ„ШЈЩ€Щ„ЩЉШ© Ш§Щ„Ш­Ш§Щ„ЩЉШ© ШҐЩ„Щ‰ Щ†ШёШ§Щ… ШЁЩЉШ¦ЩЉ ЩѓШ§Щ…Щ„ Щ…Ш№ ШЄШЇЩ‚ЩЉЩ‚ Ш№Ш§Щ… Щ€API Щ…ЩЃШЄЩ€Ш­.",
-    pt: "Plano de desenvolvimento do projeto: do MVP atual a um ecossistema completo com auditoria pГєblica e API aberta.",
-    fr: "Plan de dГ©veloppement : du MVP actuel Г  un Г©cosystГЁme complet avec audit public et API ouverte.",
-    de: "Projektentwicklungsplan: vom aktuellen MVP zu einem vollstГ¤ndigen Г–kosystem mit Г¶ffentlichem Audit und offener API.",
-    ja: "гѓ—гѓ­г‚ёг‚§г‚Їгѓ€й–‹з™єиЁ€з”»пјљзЏѕењЁгЃ®MVPгЃ‹г‚‰гЂЃе…¬й–‹з›Јжџ»гЃЁг‚Єгѓјгѓ—гѓіAPIг‚’е‚™гЃ€гЃџе®Ње…ЁгЃЄг‚Ёг‚іг‚·г‚№гѓ†гѓ гЃёгЂ‚",
+    es: "Plan de desarrollo: desde el MVP actual hasta un ecosistema completo con auditoría pública y API abierta.",
+    zh: "项目发展计划：从当前的 MVP 到拥有公共审计和开放 API 的完整生态系统。",
+    tr: "Proje geliştirme planı: mevcut MVP'den genel denetimli ve açık API'li tam ekosisteme.",
+    hi: "परियोजना विकास योजना: वर्तमान MVP से सार्वजनिक ऑडिट और ओपन API वाले पूर्ण इकोसिस्टम तक।",
+    ar: "خطة تطوير المشروع: من النسخة الأولية الحالية إلى نظام بيئي كامل مع تدقيق عام وAPI مفتوح.",
+    pt: "Plano de desenvolvimento do projeto: do MVP atual a um ecossistema completo com auditoria pública e API aberta.",
+    fr: "Plan de développement : du MVP actuel à un écosystème complet avec audit public et API ouverte.",
+    de: "Projektentwicklungsplan: vom aktuellen MVP zu einem vollständigen Ökosystem mit öffentlichem Audit und offener API.",
+    ja: "プロジェクト開発計画：現在のMVPから、公開監査とオープンAPIを備えた完全なエコシステムへ。",
   },
   about: {
-    ru: "РћС„РёС†РёР°Р»СЊРЅС‹Р№ РїР°С‚РµРЅС‚ Р¤РРџРЎ, Р·РѕР»РѕС‚Р°СЏ РјРµРґР°Р»СЊ РЅР° СЂРµРіРёРѕРЅР°Р»СЊРЅРѕРј РќРР , СѓС‡Р°СЃС‚РёРµ РІРѕ РІСЃРµСЂРѕСЃСЃРёР№СЃРєРѕРј С„РёРЅР°Р»Рµ РІ РњРѕСЃРєРІРµ Рё РёСЃС‚РѕСЂРёСЏ СЃРѕР·РґР°РЅРёСЏ РїСЂРѕРµРєС‚Р°.",
+    ru: "Официальный патент ФИПС, золотая медаль на региональном НИР, участие во всероссийском финале в Москве и история создания проекта.",
     en: "Official patent filings, first place in regional IT research, national finals invitation, and our project development journey.",
-    es: "Patentes oficiales, primer lugar en investigaciГіn regional de TI, invitaciГіn a la final nacional y nuestra trayectoria.",
-    zh: "е®ж–№дё“е€©з”іжЉҐгЂЃењ°еЊєдїЎжЃЇжЉЂжњЇз ”з©¶з¬¬дёЂеђЌгЂЃе…Ёе›ЅжЂ»е†іиµ›й‚ЂиЇ·д»ҐеЏЉж€‘д»¬зљ„йЎ№з›®еЏ‘е±•еЋ†зЁ‹гЂ‚",
-    tr: "Resmi patent baЕџvurularД±, bГ¶lgesel BT araЕџtД±rmasД±nda birincilik, ulusal final daveti ve proje geliЕџtirme yolculuДџumuz.",
-    hi: "а¤†а¤§а¤їа¤•а¤ѕа¤°а¤їа¤• а¤ЄаҐ‡а¤џаҐ‡а¤‚а¤џ а¤¦а¤ѕа¤–а¤їа¤І, а¤•аҐЌа¤·аҐ‡а¤¤аҐЌа¤°аҐЂа¤Ї а¤†а¤€а¤џаҐЂ а¤…а¤ЁаҐЃа¤ёа¤‚а¤§а¤ѕа¤Ё а¤®аҐ‡а¤‚ а¤ЄаҐЌа¤°а¤Ґа¤® а¤ёаҐЌа¤Ґа¤ѕа¤Ё, а¤°а¤ѕа¤·аҐЌа¤џаҐЌа¤°аҐЂа¤Ї а¤«а¤ѕа¤‡а¤Ёа¤І а¤†а¤®а¤‚а¤¤аҐЌа¤°а¤Ј а¤”а¤° а¤№а¤®а¤ѕа¤°аҐЂ а¤Єа¤°а¤їа¤ЇаҐ‹а¤ња¤Ёа¤ѕ а¤Їа¤ѕа¤¤аҐЌа¤°а¤ѕаҐ¤",
-    ar: "Щ…Щ„ЩЃШ§ШЄ ШЁШ±Ш§ШЎШ§ШЄ Ш§Ш®ШЄШ±Ш§Ш№ Ш±ШіЩ…ЩЉШ©ШЊ Ш§Щ„Щ…Ш±ЩѓШІ Ш§Щ„ШЈЩ€Щ„ ЩЃЩЉ Ш§Щ„ШЈШЁШ­Ш§Ш« Ш§Щ„ШЄЩ‚Щ†ЩЉШ© Ш§Щ„ШҐЩ‚Щ„ЩЉЩ…ЩЉШ©ШЊ ШЇШ№Щ€Ш© Щ„Щ„Щ†Щ‡Ш§Ш¦ЩЉ Ш§Щ„Щ€Ш·Щ†ЩЉ Щ€Ш±Ш­Щ„Ш© ШЄШ·Щ€ЩЉШ± Щ…ШґШ±Щ€Ш№Щ†Ш§.",
-    pt: "Registros oficiais de patente, primeiro lugar em pesquisa regional de TI, convite para a final nacional e nossa trajetГіria.",
-    fr: "DГ©pГґts de brevets officiels, premiГЁre place en recherche rГ©gionale informatique, invitation Г  la finale nationale et notre parcours.",
+    es: "Patentes oficiales, primer lugar en investigación regional de TI, invitación a la final nacional y nuestra trayectoria.",
+    zh: "官方专利申报、地区信息技术研究第一名、全国总决赛邀请以及我们的项目发展历程。",
+    tr: "Resmi patent başvuruları, bölgesel BT araştırmasında birincilik, ulusal final daveti ve proje geliştirme yolculuğumuz.",
+    hi: "आधिकारिक पेटेंट दाखिल, क्षेत्रीय आईटी अनुसंधान में प्रथम स्थान, राष्ट्रीय फाइनल आमंत्रण और हमारी परियोजना यात्रा।",
+    ar: "ملفات براءات اختراع رسمية، المركز الأول في الأبحاث التقنية الإقليمية، دعوة للنهائي الوطني ورحلة تطوير مشروعنا.",
+    pt: "Registros oficiais de patente, primeiro lugar em pesquisa regional de TI, convite para a final nacional e nossa trajetória.",
+    fr: "Dépôts de brevets officiels, première place en recherche régionale informatique, invitation à la finale nationale et notre parcours.",
     de: "Offizielle Patentanmeldungen, erster Platz in regionaler IT-Forschung, Einladung zum nationalen Finale und unsere Projektentwicklung.",
-    ja: "е…¬ејЏз‰№иЁ±е‡єйЎгЂЃењ°еџџITз ”з©¶гЃ§з¬¬1дЅЌгЂЃе…Ёе›Ѕе¤§дјљгѓ•г‚Ўг‚¤гѓЉгѓ«гЃёгЃ®ж‹›еѕ…гЂЃгЃќгЃ—гЃ¦гѓ—гѓ­г‚ёг‚§г‚Їгѓ€гЃ®ж­©гЃїгЂ‚",
+    ja: "公式特許出願、地域IT研究で第1位、全国大会ファイナルへの招待、そしてプロジェクトの歩み。",
   },
   comparison: {
-    ru: "РћР±СЉРµРєС‚РёРІРЅР°СЏ СЃСЂР°РІРЅРёС‚РµР»СЊРЅР°СЏ С‚Р°Р±Р»РёС†Р° С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅРѕСЃС‚Рё TrustNode СЃ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРјРё РЅР° СЂС‹РЅРєРµ Р°РЅР°Р»РѕРіР°РјРё РїРѕ РєР»СЋС‡РµРІС‹Рј РїР°СЂР°РјРµС‚СЂР°Рј.",
+    ru: "Объективная сравнительная таблица функциональности TrustNode с существующими на рынке аналогами по ключевым параметрам.",
     en: "An objective comparative analysis of TrustNode vs leading global security solutions across key parameters.",
-    es: "Un anГЎlisis comparativo objetivo de TrustNode frente a las principales soluciones de seguridad globales.",
-    zh: "TrustNode дёЋе…Ёзђѓйў†е…€е®‰е…Ёи§Је†іж–№жЎ€ењЁе…ій”®еЏ‚ж•°дёЉзљ„е®ўи§‚еЇ№жЇ”е€†жћђгЂ‚",
-    tr: "TrustNode'un Г¶nde gelen kГјresel gГјvenlik Г§Г¶zГјmleriyle temel parametreler Гјzerinden objektif karЕџД±laЕџtД±rmasД±.",
-    hi: "а¤ЄаҐЌа¤°а¤®аҐЃа¤– а¤®а¤ѕа¤Ёа¤•аҐ‹а¤‚ а¤Єа¤° TrustNode а¤¬а¤Ёа¤ѕа¤® а¤…а¤—аҐЌа¤°а¤ЈаҐЂ а¤µаҐ€а¤¶аҐЌа¤µа¤їа¤• а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤ёа¤®а¤ѕа¤§а¤ѕа¤ЁаҐ‹а¤‚ а¤•а¤ѕ а¤Ёа¤їа¤·аҐЌа¤Єа¤•аҐЌа¤· а¤¤аҐЃа¤Іа¤Ёа¤ѕа¤¤аҐЌа¤®а¤• а¤µа¤їа¤¶аҐЌа¤ІаҐ‡а¤·а¤ЈаҐ¤",
-    ar: "ШЄШ­Щ„ЩЉЩ„ Щ…Щ‚Ш§Ш±Щ† Щ…Щ€Ш¶Щ€Ш№ЩЉ ШЁЩЉЩ† TrustNode Щ€Ш­Щ„Щ€Щ„ Ш§Щ„ШЈЩ…Ш§Щ† Ш§Щ„Ш№Ш§Щ„Щ…ЩЉШ© Ш§Щ„Ш±Ш§Ш¦ШЇШ© Ш№ШЁШ± Ш§Щ„Щ…Ш№Ш§ЩЉЩЉШ± Ш§Щ„ШЈШіШ§ШіЩЉШ©.",
-    pt: "Uma anГЎlise comparativa objetiva do TrustNode versus as principais soluГ§Гµes globais de seguranГ§a.",
-    fr: "Une analyse comparative objective de TrustNode face aux principales solutions de sГ©curitГ© mondiales.",
-    de: "Eine objektive vergleichende Analyse von TrustNode gegenГјber fГјhrenden globalen SicherheitslГ¶sungen.",
-    ja: "дё»и¦ЃгЃЄгѓ‘гѓ©гѓЎгѓјг‚їгЃ«еџєгЃҐгЃЏгЂЃTrustNodeгЃЁдё–з•ЊгЃ®дё»и¦Ѓг‚»г‚­гѓҐгѓЄгѓ†г‚Јг‚ЅгѓЄгѓҐгѓјг‚·гѓ§гѓігЃ®е®ўи¦ізљ„жЇ”ијѓе€†жћђгЂ‚",
+    es: "Un análisis comparativo objetivo de TrustNode frente a las principales soluciones de seguridad globales.",
+    zh: "TrustNode 与全球领先安全解决方案在关键参数上的客观对比分析。",
+    tr: "TrustNode'un önde gelen küresel güvenlik çözümleriyle temel parametreler üzerinden objektif karşılaştırması.",
+    hi: "प्रमुख मानकों पर TrustNode बनाम अग्रणी वैश्विक सुरक्षा समाधानों का निष्पक्ष तुलनात्मक विश्लेषण।",
+    ar: "تحليل مقارن موضوعي بين TrustNode وحلول الأمان العالمية الرائدة عبر المعايير الأساسية.",
+    pt: "Uma análise comparativa objetiva do TrustNode versus as principais soluções globais de segurança.",
+    fr: "Une analyse comparative objective de TrustNode face aux principales solutions de sécurité mondiales.",
+    de: "Eine objektive vergleichende Analyse von TrustNode gegenüber führenden globalen Sicherheitslösungen.",
+    ja: "主要なパラメータに基づく、TrustNodeと世界の主要セキュリティソリューションの客観的比較分析。",
   },
   download: {
-    ru: "РЎРєР°С‡Р°Р№С‚Рµ TrustNode Р±РµСЃРїР»Р°С‚РЅРѕ РёР· RuStore РёР»Рё СЃ GitHub Рё Р·Р°С‰РёС‚РёС‚Рµ СЃРІРѕР№ СЃРјР°СЂС‚С„РѕРЅ РѕС‚ РјРѕС€РµРЅРЅРёРєРѕРІ Рё СЃРїР°РјР°.",
+    ru: "Скачайте TrustNode бесплатно из RuStore или с GitHub и защитите свой смартфон от мошенников и спама.",
     en: "Download TrustNode for free from RuStore or GitHub and protect your smartphone from scammers and spam.",
     es: "Descargue TrustNode gratis desde RuStore o GitHub y proteja su smartphone de estafadores y spam.",
-    zh: "д»Ћ RuStore ж€– GitHub е…Ќиґ№дё‹иЅЅ TrustNodeпјЊдїќжЉ¤ж‚Ёзљ„ж™єиѓЅж‰‹жњєе…ЌеЏ—иЇ€йЄ—е’ЊећѓењѕдїЎжЃЇйЄљж‰°гЂ‚",
-    tr: "TrustNode'u RuStore veya GitHub'dan Гјcretsiz indirin ve akД±llД± telefonunuzu dolandД±rД±cД±lardan ve spam'lerden koruyun.",
-    hi: "RuStore а¤Їа¤ѕ GitHub а¤ёаҐ‡ TrustNode а¤®аҐЃа¤«аҐЌа¤¤ а¤®аҐ‡а¤‚ а¤Ўа¤ѕа¤‰а¤Ёа¤ІаҐ‹а¤Ў а¤•а¤°аҐ‡а¤‚ а¤”а¤° а¤…а¤Єа¤ЁаҐ‡ а¤ёаҐЌа¤®а¤ѕа¤°аҐЌа¤џа¤«аҐ‹а¤Ё а¤•аҐ‹ а¤ёаҐЌа¤•аҐ€а¤®а¤°аҐЌа¤ё а¤”а¤° а¤ёаҐЌа¤ЄаҐ€а¤® а¤ёаҐ‡ а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤їа¤¤ а¤°а¤–аҐ‡а¤‚аҐ¤",
-    ar: "Ш­Щ…Щ‘Щ„ TrustNode Щ…Ш¬Ш§Щ†Ш§Щ‹ Щ…Щ† RuStore ШЈЩ€ GitHub Щ€Ш§Ш­Щ…Щђ Щ‡Ш§ШЄЩЃЩѓ Ш§Щ„Ш°ЩѓЩЉ Щ…Щ† Ш§Щ„Щ…Ш­ШЄШ§Щ„ЩЉЩ† Щ€Ш§Щ„Ш±ШіШ§Ш¦Щ„ Ш§Щ„Щ…ШІШ№Ш¬Ш©.",
+    zh: "从 RuStore 或 GitHub 免费下载 TrustNode，保护您的智能手机免受诈骗和垃圾信息骚扰。",
+    tr: "TrustNode'u RuStore veya GitHub'dan ücretsiz indirin ve akıllı telefonunuzu dolandırıcılardan ve spam'lerden koruyun.",
+    hi: "RuStore या GitHub से TrustNode मुफ्त में डाउनलोड करें और अपने स्मार्टफोन को स्कैमर्स और स्पैम से सुरक्षित रखें।",
+    ar: "حمّل TrustNode مجاناً من RuStore أو GitHub واحمِ هاتفك الذكي من المحتالين والرسائل المزعجة.",
     pt: "Baixe o TrustNode gratuitamente na RuStore ou no GitHub e proteja seu smartphone contra golpes e spam.",
-    fr: "TГ©lГ©chargez TrustNode gratuitement depuis RuStore ou GitHub et protГ©gez votre smartphone des arnaques et du spam.",
-    de: "Laden Sie TrustNode kostenlos von RuStore oder GitHub herunter und schГјtzen Sie Ihr Smartphone vor BetrГјgern und Spam.",
-    ja: "RuStoreгЃѕгЃџгЃЇGitHubгЃ‹г‚‰TrustNodeг‚’з„Ўж–™гЃ§гѓЂг‚¦гѓігѓ­гѓјгѓ‰гЃ—гЃ¦гЂЃи©ђж¬єг‚„г‚№гѓ‘гѓ гЃ‹г‚‰г‚№гѓћгѓјгѓ€гѓ•г‚©гѓіг‚’е®€г‚ЉгЃѕгЃ—г‚‡гЃ†гЂ‚",
+    fr: "Téléchargez TrustNode gratuitement depuis RuStore ou GitHub et protégez votre smartphone des arnaques et du spam.",
+    de: "Laden Sie TrustNode kostenlos von RuStore oder GitHub herunter und schützen Sie Ihr Smartphone vor Betrügern und Spam.",
+    ja: "RuStoreまたはGitHubからTrustNodeを無料でダウンロードして、詐欺やスパムからスマートフォンを守りましょう。",
   },
   news: {
-    ru: "РџРѕСЃР»РµРґРЅРёРµ РїСѓР±Р»РёРєР°С†РёРё РєРѕРјР°РЅРґС‹ TrustNode РёР· Telegram Рё VK: РѕР±РЅРѕРІР»РµРЅРёСЏ СЂР°Р·СЂР°Р±РѕС‚РєРё Рё Р°РЅРѕРЅСЃС‹.",
+    ru: "Последние публикации команды TrustNode из Telegram и VK: обновления разработки и анонсы.",
     en: "Latest posts from the TrustNode team on Telegram and VK: development updates and announcements.",
-    es: "Гљltimas publicaciones del equipo TrustNode en Telegram y VK: actualizaciones de desarrollo y anuncios.",
-    zh: "TrustNode е›ўйџењЁ Telegram е’Њ VK зљ„жњЂж–°еЏ‘еёѓпјљејЂеЏ‘еЉЁжЂЃдёЋе…¬е‘ЉгЂ‚",
-    tr: "TrustNode ekibinin Telegram ve VK'daki son gГ¶nderileri: geliЕџtirme gГјncellemeleri ve duyurular.",
-    hi: "Telegram а¤”а¤° VK а¤Єа¤° TrustNode а¤џаҐЂа¤® а¤•аҐ‡ а¤Ёа¤µаҐЂа¤Ёа¤¤а¤® а¤ЄаҐ‹а¤ёаҐЌа¤џ: а¤µа¤їа¤•а¤ѕа¤ё а¤…а¤Єа¤ЎаҐ‡а¤џ а¤”а¤° а¤аҐ‹а¤·а¤Ја¤ѕа¤Џа¤ЃаҐ¤",
-    ar: "ШЈШ­ШЇШ« Щ…Щ†ШґЩ€Ш±Ш§ШЄ ЩЃШ±ЩЉЩ‚ TrustNode Ш№Щ„Щ‰ Telegram Щ€ VK: ШЄШ­ШЇЩЉШ«Ш§ШЄ Ш§Щ„ШЄШ·Щ€ЩЉШ± Щ€Ш§Щ„ШҐШ№Щ„Ш§Щ†Ш§ШЄ.",
-    pt: "PublicaГ§Гµes mais recentes da equipe TrustNode no Telegram e VK: atualizaГ§Гµes de desenvolvimento e anГєncios.",
-    fr: "DerniГЁres publications de l'Г©quipe TrustNode sur Telegram et VK : mises Г  jour de dГ©veloppement et annonces.",
-    de: "Neueste BeitrГ¤ge des TrustNode-Teams auf Telegram und VK: Entwicklungs-Updates und AnkГјndigungen.",
-    ja: "Telegram гЃЁ VK гЃ§гЃ® TrustNode гѓЃгѓјгѓ гЃ®жњЂж–°жЉ•зЁїпјљй–‹з™єжѓ…е ±гЃЁгЃЉзџҐг‚‰гЃ›гЂ‚",
+    es: "Últimas publicaciones del equipo TrustNode en Telegram y VK: actualizaciones de desarrollo y anuncios.",
+    zh: "TrustNode 团队在 Telegram 和 VK 的最新发布：开发动态与公告。",
+    tr: "TrustNode ekibinin Telegram ve VK'daki son gönderileri: geliştirme güncellemeleri ve duyurular.",
+    hi: "Telegram और VK पर TrustNode टीम के नवीनतम पोस्ट: विकास अपडेट और घोषणाएँ।",
+    ar: "أحدث منشورات فريق TrustNode على Telegram و VK: تحديثات التطوير والإعلانات.",
+    pt: "Publicações mais recentes da equipe TrustNode no Telegram e VK: atualizações de desenvolvimento e anúncios.",
+    fr: "Dernières publications de l'équipe TrustNode sur Telegram et VK : mises à jour de développement et annonces.",
+    de: "Neueste Beiträge des TrustNode-Teams auf Telegram und VK: Entwicklungs-Updates und Ankündigungen.",
+    ja: "Telegram と VK での TrustNode チームの最新投稿：開発情報とお知らせ。",
   },
 };
 
 const PAGE_CTA: Record<string, LangDict> = {
   home: {
-    ru: "РћС‚РєСЂС‹С‚СЊ РіР»Р°РІРЅСѓСЋ в†’", en: "Open Home в†’", es: "Abrir inicio в†’", zh: "ж‰“ејЂй¦–йЎµ в†’", tr: "Ana SayfayД± AГ§ в†’",
-    hi: "а¤®аҐЃа¤–аҐЌа¤Ї а¤–аҐ‹а¤ІаҐ‡а¤‚ в†’", ar: "Ш§ЩЃШЄШ­ Ш§Щ„Ш±Ш¦ЩЉШіЩЉШ© в†’", pt: "Abrir InГ­cio в†’", fr: "Ouvrir l'accueil в†’", de: "Startseite Г¶ffnen в†’", ja: "гѓ›гѓјгѓ г‚’й–‹гЃЏ в†’",
+    ru: "Открыть главную →", en: "Open Home →", es: "Abrir inicio →", zh: "打开首页 →", tr: "Ana Sayfayı Aç →",
+    hi: "मुख्य खोलें →", ar: "افتح الرئيسية →", pt: "Abrir Início →", fr: "Ouvrir l'accueil →", de: "Startseite öffnen →", ja: "ホームを開く →",
   },
   "how-it-works": {
-    ru: "РР·СѓС‡РёС‚СЊ С‚РµС…РЅРѕР»РѕРіРёРё в†’", en: "Explore Technology в†’", es: "Explorar tecnologГ­a в†’", zh: "дє†и§ЈжЉЂжњЇ в†’", tr: "Teknolojiyi KeЕџfet в†’",
-    hi: "а¤¤а¤•а¤ЁаҐЂа¤• а¤¦аҐ‡а¤–аҐ‡а¤‚ в†’", ar: "Ш§ШіШЄЩѓШґЩЃ Ш§Щ„ШЄЩ‚Щ†ЩЉШ© в†’", pt: "Explorar tecnologia в†’", fr: "Explorer la technologie в†’", de: "Technologie entdecken в†’", ja: "жЉЂиЎ“г‚’жЋўг‚‹ в†’",
+    ru: "Изучить технологии →", en: "Explore Technology →", es: "Explorar tecnología →", zh: "了解技术 →", tr: "Teknolojiyi Keşfet →",
+    hi: "तकनीक देखें →", ar: "استكشف التقنية →", pt: "Explorar tecnologia →", fr: "Explorer la technologie →", de: "Technologie entdecken →", ja: "技術を探る →",
   },
   tech: {
-    ru: "РџРµСЂРµР№С‚Рё Рє Р·Р°С‰РёС‚Рµ в†’", en: "View Security в†’", es: "Ver seguridad в†’", zh: "жџҐзњ‹е®‰е…Ё в†’", tr: "GГјvenliДџi GГ¶r в†’",
-    hi: "а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤¦аҐ‡а¤–аҐ‡а¤‚ в†’", ar: "Ш№Ш±Ш¶ Ш§Щ„ШЈЩ…Ш§Щ† в†’", pt: "Ver seguranГ§a в†’", fr: "Voir la sГ©curitГ© в†’", de: "Sicherheit ansehen в†’", ja: "г‚»г‚­гѓҐгѓЄгѓ†г‚Јг‚’и¦‹г‚‹ в†’",
+    ru: "Перейти к защите →", en: "View Security →", es: "Ver seguridad →", zh: "查看安全 →", tr: "Güvenliği Gör →",
+    hi: "सुरक्षा देखें →", ar: "عرض الأمان →", pt: "Ver segurança →", fr: "Voir la sécurité →", de: "Sicherheit ansehen →", ja: "セキュリティを見る →",
   },
   roadmap: {
-    ru: "РЎРјРѕС‚СЂРµС‚СЊ Roadmap в†’", en: "View Roadmap в†’", es: "Ver hoja de ruta в†’", zh: "жџҐзњ‹и·Їзєїе›ѕ в†’", tr: "Yol HaritasД±nД± GГ¶r в†’",
-    hi: "а¤°аҐ‹а¤Ўа¤®аҐ€а¤Є а¤¦аҐ‡а¤–аҐ‡а¤‚ в†’", ar: "Ш№Ш±Ш¶ Ш®Ш§Ш±Ш·Ш© Ш§Щ„Ш·Ш±ЩЉЩ‚ в†’", pt: "Ver roteiro в†’", fr: "Voir la feuille de route в†’", de: "Roadmap ansehen в†’", ja: "гѓ­гѓјгѓ‰гѓћгѓѓгѓ—г‚’и¦‹г‚‹ в†’",
+    ru: "Смотреть Roadmap →", en: "View Roadmap →", es: "Ver hoja de ruta →", zh: "查看路线图 →", tr: "Yol Haritasını Gör →",
+    hi: "रोडमैप देखें →", ar: "عرض خارطة الطريق →", pt: "Ver roteiro →", fr: "Voir la feuille de route →", de: "Roadmap ansehen →", ja: "ロードマップを見る →",
   },
   about: {
-    ru: "Рћ РїСЂРѕРµРєС‚Рµ Рё РєРѕРјР°РЅРґРµ в†’", en: "About Us & Team в†’", es: "Sobre nosotros y equipo в†’", zh: "е…ідєЋж€‘д»¬дёЋе›ўйџ в†’", tr: "HakkД±mД±zda ve Ekip в†’",
-    hi: "а¤№а¤®а¤ѕа¤°аҐ‡ а¤¬а¤ѕа¤°аҐ‡ а¤®аҐ‡а¤‚ а¤”а¤° а¤џаҐЂа¤® в†’", ar: "Щ…Щ† Щ†Ш­Щ† Щ€Ш§Щ„ЩЃШ±ЩЉЩ‚ в†’", pt: "Sobre nГіs e equipe в†’", fr: "ГЂ propos et Г©quipe в†’", de: "Гњber uns & Team в†’", ja: "з§ЃгЃџгЃЎгЃЁгѓЃгѓјгѓ гЃ«гЃ¤гЃ„гЃ¦ в†’",
+    ru: "О проекте и команде →", en: "About Us & Team →", es: "Sobre nosotros y equipo →", zh: "关于我们与团队 →", tr: "Hakkımızda ve Ekip →",
+    hi: "हमारे बारे में और टीम →", ar: "من نحن والفريق →", pt: "Sobre nós e equipe →", fr: "À propos et équipe →", de: "Über uns & Team →", ja: "私たちとチームについて →",
   },
   comparison: {
-    ru: "РћС‚РєСЂС‹С‚СЊ С‚Р°Р±Р»РёС†Сѓ СЃСЂР°РІРЅРµРЅРёСЏ в†’", en: "Open Comparison в†’", es: "Abrir comparaciГіn в†’", zh: "ж‰“ејЂеЇ№жЇ” в†’", tr: "KarЕџД±laЕџtД±rmayД± AГ§ в†’",
-    hi: "а¤¤аҐЃа¤Іа¤Ёа¤ѕ а¤–аҐ‹а¤ІаҐ‡а¤‚ в†’", ar: "Ш§ЩЃШЄШ­ Ш§Щ„Щ…Щ‚Ш§Ш±Щ†Ш© в†’", pt: "Abrir comparaГ§ГЈo в†’", fr: "Ouvrir la comparaison в†’", de: "Vergleich Г¶ffnen в†’", ja: "жЇ”ијѓг‚’й–‹гЃЏ в†’",
+    ru: "Открыть таблицу сравнения →", en: "Open Comparison →", es: "Abrir comparación →", zh: "打开对比 →", tr: "Karşılaştırmayı Aç →",
+    hi: "तुलना खोलें →", ar: "افتح المقارنة →", pt: "Abrir comparação →", fr: "Ouvrir la comparaison →", de: "Vergleich öffnen →", ja: "比較を開く →",
   },
   download: {
-    ru: "Р’С‹Р±СЂР°С‚СЊ РїР»Р°С‚С„РѕСЂРјСѓ", en: "Choose Platform", es: "Elegir plataforma", zh: "йЂ‰ж‹©е№іеЏ°", tr: "Platform SeГ§",
-    hi: "а¤ЄаҐЌа¤ІаҐ‡а¤џа¤«а¤јаҐ‰а¤°аҐЌа¤® а¤љаҐЃа¤ЁаҐ‡а¤‚", ar: "Ш§Ш®ШЄШ± Ш§Щ„Щ…Щ†ШµШ©", pt: "Escolher plataforma", fr: "Choisir la plateforme", de: "Plattform wГ¤hlen", ja: "гѓ—гѓ©гѓѓгѓ€гѓ•г‚©гѓјгѓ г‚’йЃёжЉћ",
+    ru: "Выбрать платформу", en: "Choose Platform", es: "Elegir plataforma", zh: "选择平台", tr: "Platform Seç",
+    hi: "प्लेटफ़ॉर्म चुनें", ar: "اختر المنصة", pt: "Escolher plataforma", fr: "Choisir la plateforme", de: "Plattform wählen", ja: "プラットフォームを選択",
   },
   news: {
-    ru: "Р§РёС‚Р°С‚СЊ РЅРѕРІРѕСЃС‚Рё в†’", en: "Read News в†’", es: "Leer noticias в†’", zh: "й…иЇ»ж–°й—» в†’", tr: "Haberleri Oku в†’",
-    hi: "а¤ёа¤®а¤ѕа¤ља¤ѕа¤° а¤Єа¤ўа¤јаҐ‡а¤‚ в†’", ar: "Ш§Щ‚Ш±ШЈ Ш§Щ„ШЈШ®ШЁШ§Ш± в†’", pt: "Ler notГ­cias в†’", fr: "Lire les actualitГ©s в†’", de: "Neuigkeiten lesen в†’", ja: "гѓ‹гѓҐгѓјг‚№г‚’иЄ­г‚Ђ в†’",
+    ru: "Читать новости →", en: "Read News →", es: "Leer noticias →", zh: "阅读新闻 →", tr: "Haberleri Oku →",
+    hi: "समाचार पढ़ें →", ar: "اقرأ الأخبار →", pt: "Ler notícias →", fr: "Lire les actualités →", de: "Neuigkeiten lesen →", ja: "ニュースを読む →",
   },
 };
 
@@ -214,18 +214,18 @@ export default function ExplorePagesSection() {
       <div
         key={page.id}
         onClick={() => navigateTo(page.id)}
-        className={`group relative flex flex-col justify-between p-6 sm:p-8 rounded-md border border-[#3C404A]/50 shadow-[0_4px_30px_rgba(0,0,0,0.6)] bg-[#12141A] hover:border-[#3B82F6]/55 transition-all duration-300 cursor-pointer ${
+        className={`group relative flex flex-col justify-between p-6 sm:p-8 rounded-xl border border-[#3C404A]/50 shadow-[0_4px_30px_rgba(0,0,0,0.6)] bg-[#12141A] hover:border-[#3B82F6]/55 transition-all duration-300 cursor-pointer ${
           page.id === "how-it-works"
             ? "border-[#3B82F6]/30 shadow-[0_4px_35px_rgba(59,130,246,0.08)]"
             : ""
         } ${extraClass}`}
         id={`explore-${page.id}-card`}
       >
-        <div className="absolute -inset-px rounded-md bg-gradient-to-b from-[#3B82F6]/10 to-transparent pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100" />
+        <div className="absolute -inset-px rounded-xl bg-gradient-to-b from-[#3B82F6]/10 to-transparent pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100" />
 
         <div>
           <div className="flex items-center justify-between mb-6">
-            <div className="w-11 h-11 rounded-md bg-[#0A0A0B]/80 border border-[#3B82F6]/25 flex items-center justify-center text-[#3B82F6] group-hover:shadow-glow-lg transition-all">
+            <div className="w-11 h-11 rounded-xl bg-[#0A0A0B]/80 border border-[#3B82F6]/25 flex items-center justify-center text-[#3B82F6] group-hover:shadow-glow-lg transition-all">
               {Icon && <Icon className="w-5 h-5" />}
             </div>
             <span className="font-mono text-xs tracking-widest text-[#3B82F6] font-bold bg-[#3B82F6]/5 px-3 py-1.5 rounded border border-[#3B82F6]/15">

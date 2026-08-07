@@ -44,7 +44,7 @@ const Footer = React.memo(function Footer() {
   ];
 
   const socialButtonClass =
-    "font-mono text-sm text-gray-400 hover:text-[#3B82F6] hover:border-[#3B82F6]/40 transition-all duration-300 flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#0A0A0B]/80 border border-[#3C404A]/50 min-h-11";
+    "font-mono text-sm text-gray-400 hover:text-[#3B82F6] hover:border-[#3B82F6]/40 transition-all duration-300 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#0A0A0B]/80 border border-[#3C404A]/50 min-h-11";
 
   const scrollToSection = (anchorId: string) => {
     if (activePage === "home") {
@@ -72,7 +72,7 @@ const Footer = React.memo(function Footer() {
         {/* Brand Identity вЂ” centered, full-width first row */}
         <div className="footer-area-brand flex flex-col items-center gap-1 text-center">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-14 flex items-center justify-center bg-[#3C404A]/30 rounded-md border border-[#3B82F6]/10">
+            <div className="w-12 h-14 flex items-center justify-center bg-[#3C404A]/30 rounded-xl border border-[#3B82F6]/10">
               <MiniLogo />
             </div>
             <span className="font-display font-bold text-xl text-[#F5F5F0] tracking-tight">
@@ -130,7 +130,7 @@ const Footer = React.memo(function Footer() {
                 title={label}
                 className={socialButtonClass}
               >
-                <span className="inline-flex items-center justify-center w-11 h-11 rounded-md bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] shrink-0">
+                <span className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] shrink-0">
                   <Icon className="w-4 h-4" />
                 </span>
                 <span className="whitespace-nowrap">{label === "VK" ? "VKontakte" : label}</span>
@@ -148,7 +148,7 @@ const Footer = React.memo(function Footer() {
                 title={label}
                 className={socialButtonClass}
               >
-                <span className="inline-flex items-center justify-center w-11 h-11 rounded-md bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] shrink-0">
+                <span className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] shrink-0">
                   <Icon className="w-4 h-4" />
                 </span>
                 <span className="whitespace-nowrap">{label === "VK" ? "VKontakte" : label}</span>
@@ -206,7 +206,7 @@ const Footer = React.memo(function Footer() {
               title={label}
               className={socialButtonClass}
             >
-              <span className="inline-flex items-center justify-center w-11 h-11 rounded-md bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] shrink-0">
+              <span className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] shrink-0">
                 {Icon || (
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />

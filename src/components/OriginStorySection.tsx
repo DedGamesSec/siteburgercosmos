@@ -1,4 +1,4 @@
-﻿import React, { useRef } from "react";
+import React, { useRef } from "react";
 import { GraduationCap, Award, Compass, Heart, Code2 } from "lucide-react";
 import { motion, useScroll, useTransform, useInView } from "motion/react";
 import { useTranslation } from "../i18n/LanguageContext";
@@ -7,72 +7,72 @@ import { useEcoMode } from "../context/EcoModeContext";
 import SectionBadge from "./SectionBadge";
 
 const TITLE_BY_LANG: Partial<Record<LanguageCode, string>> = {
-  ru: "РСЃС‚РѕСЂРёСЏ РїСЂРѕРµРєС‚Р°",
+  ru: "История проекта",
   en: "Project Legacy",
   es: "Historia del Proyecto",
-  zh: "йЎ№з›®еЋ†зЁ‹дёЋиѓЊж™Ї",
-  hi: "а¤Єа¤°а¤їа¤ЇаҐ‹а¤ња¤Ёа¤ѕ а¤•а¤ѕ а¤‡а¤¤а¤їа¤№а¤ѕа¤ё",
-  ar: "ШЄШ§Ш±ЩЉШ® Ш§Щ„Щ…ШґШ±Щ€Ш№",
-  pt: "HistГіria do Projeto",
+  zh: "项目历程与背景",
+  hi: "परियोजना का इतिहास",
+  ar: "تاريخ المشروع",
+  pt: "História do Projeto",
   fr: "Histoire du Projet",
   de: "Projektgeschichte",
-  ja: "гѓ—гѓ­г‚ёг‚§г‚Їгѓ€гЃ®ж­©гЃї"
+  ja: "プロジェクトの歩み"
 };
 
 const SUBTITLE_BY_LANG: Partial<Record<LanguageCode, string>> = {
-  ru: "РћС‚ РґРёРїР»РѕРјРЅС‹С… РёСЃСЃР»РµРґРѕРІР°РЅРёР№ СЃС‚СѓРґРµРЅС‚Р°-РєРёР±РµСЂР±РµР·РѕРїР°СЃРЅРёРєР° РґРѕ РїР°С‚РµРЅС‚РѕРІ Р¤РРџРЎ Рё С„РµРґРµСЂР°Р»СЊРЅРѕРіРѕ РїСЂРёР·РЅР°РЅРёСЏ",
+  ru: "От дипломных исследований студента-кибербезопасника до патентов ФИПС и федерального признания",
   en: "From a cybersec student's research project to FIPS patents and nationwide recognition",
   es: "Desde las investigaciones de tesis de un estudiante de ciberseguridad hasta patentes FIPS y reconocimiento federal",
-  zh: "д»ЋзЅ‘з»ње®‰е…Ёдё“дёље­¦з”џзљ„жЇ•дёљи®ѕи®ЎпјЊе€°иЌЈиЋ·е›Ѕе®¶дё“е€©дёЋиЃ”й‚¦зє§з§‘жЉЂз«ћиµ›и®¤еЏЇзљ„жј”иї›еЋ†зЁ‹",
-  hi: "а¤Џа¤• а¤ёа¤ѕа¤‡а¤¬а¤° а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤›а¤ѕа¤¤аҐЌа¤° а¤•аҐ‡ а¤¶аҐ‹а¤§ а¤Єа¤¤аҐЌа¤° а¤ёаҐ‡ а¤ІаҐ‡а¤•а¤° а¤ЄаҐ‡а¤џаҐ‡а¤‚а¤џ а¤”а¤° а¤°а¤ѕа¤·аҐЌа¤џаҐЌа¤°аҐЂа¤Ї а¤ёаҐЌа¤¤а¤° а¤Єа¤° а¤®а¤ѕа¤ЁаҐЌа¤Їа¤¤а¤ѕ а¤ЄаҐЌа¤°а¤ѕа¤ЄаҐЌа¤¤ а¤•а¤°а¤ЁаҐ‡ а¤¤а¤• а¤•а¤ѕ а¤ёа¤«а¤°",
-  ar: "Щ…Щ† Ш§Щ„ШЈШЁШ­Ш§Ш« Ш§Щ„ШЈЩѓШ§ШЇЩЉЩ…ЩЉШ© Щ„Ш·Ш§Щ„ШЁ ЩЃЩЉ Ш§Щ„ШЈЩ…Щ† Ш§Щ„ШіЩЉШЁШ±Ш§Щ†ЩЉ ШҐЩ„Щ‰ ШЁШ±Ш§ШЎШ§ШЄ Ш§Щ„Ш§Ш®ШЄШ±Ш§Ш№ Щ€Ш§Щ„Ш§Ш№ШЄШ±Ш§ЩЃ Ш§Щ„Ш§ШЄШ­Ш§ШЇЩЉ",
-  pt: "Das pesquisas de conclusГЈo de curso de um estudante de seguranГ§a cibernГ©tica a patentes oficiais e reconhecimento federal",
-  fr: "Des recherches universitaires d'un Г©tudiant en cybersГ©curitГ© aux brevets officiels et Г  la reconnaissance nationale",
+  zh: "从网络安全专业学生的毕业设计，到荣获国家专利与联邦级科技竞赛认可的演进历程",
+  hi: "एक साइबर सुरक्षा छात्र के शोध पत्र से लेकर पेटेंट और राष्ट्रीय स्तर पर मान्यता प्राप्त करने तक का सफर",
+  ar: "من الأبحاث الأكاديمية لطالب في الأمن السيبراني إلى براءات الاختراع والاعتراف الاتحادي",
+  pt: "Das pesquisas de conclusão de curso de um estudante de segurança cibernética a patentes oficiais e reconhecimento federal",
+  fr: "Des recherches universitaires d'un étudiant en cybersécurité aux brevets officiels et à la reconnaissance nationale",
   de: "Von den Abschlussarbeiten eines Cybersicherheitsstudenten bis hin zu Patenten und nationaler Anerkennung",
-  ja: "дёЂдєєгЃ®г‚µг‚¤гѓђгѓјг‚»г‚­гѓҐгѓЄгѓ†г‚Је­¦з”џгЃ®еЌ’жҐ­з ”з©¶гЃ‹г‚‰е§‹гЃѕг‚ЉгЂЃз‰№иЁ±еЏ–еѕ—г‚„е…Ёе›Ѕзљ„гЃЄиЄЌе®љгЃ«и‡іг‚‹гЃѕгЃ§гЃ®и»Њи·Ў"
+  ja: "一人のサイバーセキュリティ学生の卒業研究から始まり、特許取得や全国的な認定に至るまでの軌跡"
 };
 
 const BADGE_BY_LANG: Partial<Record<LanguageCode, string>> = {
-  ru: "РРЎРўРћР РРЇ Р РљРћРњРђРќР”Рђ",
+  ru: "ИСТОРИЯ И КОМАНДА",
   en: "LEGACY & CREDENTIALS",
   es: "HISTORIA Y EQUIPO",
-  zh: "еЋ†еЏІдёЋе›ўйџ",
-  hi: "а¤‡а¤¤а¤їа¤№а¤ѕа¤ё а¤”а¤° а¤џаҐЂа¤®",
-  ar: "Ш§Щ„ШЄШ§Ш±ЩЉШ® Щ€Ш§Щ„ЩЃШ±ЩЉЩ‚",
-  pt: "HISTГ“RIA E EQUIPE",
-  fr: "HISTOIRE ET Г‰QUIPE",
+  zh: "历史与团队",
+  hi: "इतिहास और टीम",
+  ar: "التاريخ والفريق",
+  pt: "HISTÓRIA E EQUIPE",
+  fr: "HISTOIRE ET ÉQUIPE",
   de: "GESCHICHTE UND TEAM",
-  ja: "ж­©гЃїгЃЁй–‹з™єдЅ“е€¶"
+  ja: "歩みと開発体制"
 };
 
 const TIMELINE_BY_LANG: Partial<Record<LanguageCode, Array<{ badge: string; title: string; desc: string }>>> = {
   ru: [
     {
-      badge: "Р“Р‘РџРћРЈ Р§Р Рў // РљР‘-284",
-      title: "РќР°СѓС‡РЅС‹Рµ РёСЃС‚РѕРєРё Рё СЃРїРµС†РёР°Р»РёР·Р°С†РёСЏ",
-      desc: "РџСЂРѕРµРєС‚ Р·Р°СЂРѕРґРёР»СЃСЏ РІ СЃС‚РµРЅР°С… Р§РµР»СЏР±РёРЅСЃРєРѕРіРѕ СЂР°РґРёРѕС‚РµС…РЅРёС‡РµСЃРєРѕРіРѕ С‚РµС…РЅРёРєСѓРјР° РІ СЂР°РјРєР°С… СѓС‡РµР±РЅРѕР№ РіСЂСѓРїРїС‹ РљР‘-284 (РЎРїРµС†РёР°Р»СЊРЅРѕСЃС‚СЊ 10.02.05 вЂ” В«РРЅС„РѕСЂРјР°С†РёРѕРЅРЅР°СЏ Р±РµР·РѕРїР°СЃРЅРѕСЃС‚СЊ Р°РІС‚РѕРјР°С‚РёР·РёСЂРѕРІР°РЅРЅС‹С… СЃРёСЃС‚РµРјВ») РїРѕРґ СЂСѓРєРѕРІРѕРґСЃС‚РІРѕРј РЅР°СѓС‡РЅРѕРіРѕ СЂСѓРєРѕРІРѕРґРёС‚РµР»СЏ РњРѕСЂРѕР·РєРѕРІРѕР№ РќР°С‚Р°Р»СЊРё РђРЅР°С‚РѕР»СЊРµРІРЅС‹."
+      badge: "ГБПОУ ЧРТ // КБ-284",
+      title: "Научные истоки и специализация",
+      desc: "Проект зародился в стенах Челябинского радиотехнического техникума в рамках учебной группы КБ-284 (Специальность 10.02.05 — «Информационная безопасность автоматизированных систем») под руководством научного руководителя Морозковой Натальи Анатольевны."
     },
     {
-      badge: "РќРР  // I РњР•РЎРўРћ",
-      title: "РўСЂРёСѓРјС„ РЅР° СЂРµРіРёРѕРЅР°Р»СЊРЅРѕРј РќРР ",
-      desc: "РљРѕРјРїР»РµРєСЃРЅР°СЏ СЂР°Р±РѕС‚Р° Рё РёРЅРЅРѕРІР°С†РёРѕРЅРЅС‹Р№ Р°Р»РіРѕСЂРёС‚Рј TrustNode РїСЂРёРЅРµСЃР»Рё РїСЂРѕРµРєС‚Сѓ I РњР•РЎРўРћ РЅР° РѕР±Р»Р°СЃС‚РЅРѕРј РЅР°СѓС‡РЅРѕ-РёСЃСЃР»РµРґРѕРІР°С‚РµР»СЊСЃРєРѕРј РєРѕРЅРєСѓСЂСЃРµ (РќРР ) РІ СЃРµРєС†РёРё В«РРЅС„РѕСЂРјР°С†РёРѕРЅРЅС‹Рµ С‚РµС…РЅРѕР»РѕРіРёРёВ»."
+      badge: "НИР // I МЕСТО",
+      title: "Триумф на региональном НИР",
+      desc: "Комплексная работа и инновационный алгоритм TrustNode принесли проекту I МЕСТО на областном научно-исследовательском конкурсе (НИР) в секции «Информационные технологии»."
     },
     {
-      badge: "РњРћРЎРљР’Рђ // РЎР•РќРўРЇР‘Р Р¬ 2026",
-      title: "Р’С‹С…РѕРґ РЅР° С„РµРґРµСЂР°Р»СЊРЅС‹Р№ С„РёРЅР°Р»",
-      desc: "РџРѕСЃР»Рµ СѓСЃРїРµС…Р° РЅР° СЂРµРіРёРѕРЅР°Р»СЊРЅРѕРј СѓСЂРѕРІРЅРµ РїСЂРѕРµРєС‚ Р±С‹Р» РѕС‚РѕР±СЂР°РЅ РґР»СЏ РїСЂРµР·РµРЅС‚Р°С†РёРё РЅР° РїСЂРµСЃС‚РёР¶РЅРѕРј СЂРµРіРёРѕРЅР°Р»СЊРЅРѕРј РЅР°СѓС‡РЅРѕ-РёСЃСЃР»РµРґРѕРІР°С‚РµР»СЊСЃРєРѕРј С„РёРЅР°Р»Рµ РќРР  РІ РњРѕСЃРєРІРµ РІ СЃРµРЅС‚СЏР±СЂРµ 2026 РіРѕРґР°, РіРґРµ Р±СѓРґСѓС‚ РїСЂРѕРґРµРјРѕРЅСЃС‚СЂРёСЂРѕРІР°РЅС‹ РµРіРѕ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РІ СЃС„РµСЂРµ Р·Р°С‰РёС‚С‹ РѕС‚ РјРѕС€РµРЅРЅРёС‡РµСЃС‚РІР°."
+      badge: "МОСКВА // СЕНТЯБРЬ 2026",
+      title: "Выход на федеральный финал",
+      desc: "После успеха на региональном уровне проект был отобран для презентации на престижном региональном научно-исследовательском финале НИР в Москве в сентябре 2026 года, где будут продемонстрированы его возможности в сфере защиты от мошенничества."
     },
     {
-      badge: "РђР РҐРРўР•РљРўРћР  + AI-РџРћР”Р РЇР”Р§РРљР",
-      title: "РќРѕРІР°СЏ РІРµС…Р°: Р Р°Р·СЂР°Р±РѕС‚РєР° Р±СѓРґСѓС‰РµРіРѕ",
-      desc: "Р Р°Р·СЂР°Р±РѕС‚РєР° Р°СЂС…РёС‚РµРєС‚СѓСЂС‹ Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё Рё РёРЅС‚РµРіСЂР°С†РёСЏ ONNX-РјРѕРґРµР»РµР№ TrustNode РІС‹РїРѕР»РЅРµРЅР° РїРѕ РїРµСЂРµРґРѕРІРѕР№ РјРµС‚РѕРґРѕР»РѕРіРёРё В«РђСЂС…РёС‚РµРєС‚РѕСЂ + AI-РїРѕРґСЂСЏРґС‡РёРєРёВ», РіРґРµ РіРµРЅРµСЂР°С†РёСЏ РєРѕРґР° (Kotlin/C++) Р±С‹Р»Р° РґРµР»РµРіРёСЂРѕРІР°РЅР° СЃРїРµС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Рј РР-Р°РіРµРЅС‚Р°Рј."
+      badge: "АРХИТЕКТОР + AI-ПОДРЯДЧИКИ",
+      title: "Новая веха: Разработка будущего",
+      desc: "Разработка архитектуры безопасности и интеграция ONNX-моделей TrustNode выполнена по передовой методологии «Архитектор + AI-подрядчики», где генерация кода (Kotlin/C++) была делегирована специализированным ИИ-агентам."
     }
   ],
   en: [
     {
       badge: "COLLEGE RESEARCH",
       title: "Academic Foundations",
-      desc: "Developed at the Chelyabinsk Radiotechnical College under educational group KB-284 (Specialty 10.02.05 вЂ” Information Security of Automated Systems), mentored by scientific advisor Natalia Anatolyevna Morozkova."
+      desc: "Developed at the Chelyabinsk Radiotechnical College under educational group KB-284 (Specialty 10.02.05 — Information Security of Automated Systems), mentored by scientific advisor Natalia Anatolyevna Morozkova."
     },
     {
       badge: "REGIONAL VICTORY",
@@ -93,140 +93,140 @@ const TIMELINE_BY_LANG: Partial<Record<LanguageCode, Array<{ badge: string; titl
   es: [
     {
       badge: "CRTC // KB-284",
-      title: "Bases AcadГ©micas y EspecializaciГіn",
-      desc: "El proyecto naciГі en la Escuela RadiotГ©cnica de Chelyabinsk dentro del grupo KB-284 (Especialidad 10.02.05 вЂ” Seguridad de la InformaciГіn en Sistemas Automatizados), bajo la direcciГіn cientГ­fica de Natalia Anatolyevna Morozkova."
+      title: "Bases Académicas y Especialización",
+      desc: "El proyecto nació en la Escuela Radiotécnica de Chelyabinsk dentro del grupo KB-284 (Especialidad 10.02.05 — Seguridad de la Información en Sistemas Automatizados), bajo la dirección científica de Natalia Anatolyevna Morozkova."
     },
     {
-      badge: "INVESTIGACIГ“N // 1.ER LUGAR",
+      badge: "INVESTIGACIÓN // 1.ER LUGAR",
       title: "Triunfo en el concurso regional",
-      desc: "El trabajo integral y el innovador algoritmo de TrustNode le otorgaron al proyecto el 1.er lugar en el concurso regional de investigaciГіn cientГ­fica en la secciГіn de 'TecnologГ­as de la InformaciГіn'."
+      desc: "El trabajo integral y el innovador algoritmo de TrustNode le otorgaron al proyecto el 1.er lugar en el concurso regional de investigación científica en la sección de 'Tecnologías de la Información'."
     },
     {
-      badge: "MOSCГљ // SEPTIEMBRE 2026",
-      title: "Pase a la sГєper final federal",
-      desc: "Como resultado de la victoria, la escuela financiГі por completo el viaje del autor a MoscГє para participar en la sГєper final nacional de proyectos de investigaciГіn en septiembre de 2026."
+      badge: "MOSCÚ // SEPTIEMBRE 2026",
+      title: "Pase a la súper final federal",
+      desc: "Como resultado de la victoria, la escuela financió por completo el viaje del autor a Moscú para participar en la súper final nacional de proyectos de investigación en septiembre de 2026."
     },
     {
       badge: "ARQUITECTO + AGENTES IA",
       title: "Paradigma de desarrollo del futuro",
-      desc: "DiseГ±ado por un Гєnico desarrollador bajo la metodologГ­a 'Arquitecto + Agentes de IA'. La arquitectura de seguridad y los algoritmos son del autor, mientras que la codificaciГіn en Kotlin/C++ se delega en la IA."
+      desc: "Diseñado por un único desarrollador bajo la metodología 'Arquitecto + Agentes de IA'. La arquitectura de seguridad y los algoritmos son del autor, mientras que la codificación en Kotlin/C++ se delega en la IA."
     }
   ],
   zh: [
     {
-      badge: "е­¦й™ўз ”з©¶ // KB-284",
-      title: "е­¦жњЇеџєзЎЂдёЋдё“дёљйў†еџџ",
-      desc: "иЇҐйЎ№з›®иЇћз”џдєЋиЅ¦й‡Њй›…е®ѕж–Їе…‹ж— зєїз”µжЉЂжњЇе­¦й™ўпјЊе±ћдєЋ KB-284 ж•™е­¦з»„пј€дё“дёљд»Јз Ѓ 10.02.05 вЂ”вЂ” и‡ЄеЉЁеЊ–зі»з»џдїЎжЃЇе®‰е…Ёпј‰пјЊз”±еЇјеё€ Natalia Anatolyevna Morozkova жЊ‡еЇјгЂ‚"
+      badge: "学院研究 // KB-284",
+      title: "学术基础与专业领域",
+      desc: "该项目诞生于车里雅宾斯克无线电技术学院，属于 KB-284 教学组（专业代码 10.02.05 —— 自动化系统信息安全），由导师 Natalia Anatolyevna Morozkova 指导。"
     },
     {
-      badge: "з§‘з ”з«ћиµ› // з¬¬дёЂеђЌ",
-      title: "еЊєеџџз§‘з ”з«ћиµ›дё­е¤єе† ",
-      desc: "TrustNode зљ„з»јеђ€иЇ­д№‰жЎ†жћ¶е’Ње€›ж–°з®—жі•дЅїиЇҐйЎ№з›®ењЁеЊєеџџз§‘е­¦з ”з©¶з«ћиµ›пј€дїЎжЃЇжЉЂжњЇз»„пј‰дё­ж–©иЋ·з¬¬дёЂеђЌпјЊи‚Їе®љдє†е…¶ењЁе®ћж—¶йІж¬єиЇ€ж–№йќўзљ„ж€ђе°±гЂ‚"
+      badge: "科研竞赛 // 第一名",
+      title: "区域科研竞赛中夺冠",
+      desc: "TrustNode 的综合语义框架和创新算法使该项目在区域科学研究竞赛（信息技术组）中斩获第一名，肯定了其在实时防欺诈方面的成就。"
     },
     {
-      badge: "иЋ«ж–Їз§‘ // 2026е№ґ9жњ€",
-      title: "ж™‹зє§е›Ѕе®¶зє§и¶…зє§жЂ»е†іиµ›",
-      desc: "еџєдєЋењЁеЊєеџџз«ћиµ›дё­зљ„е¤єй­ЃпјЊе­¦й™ўе…Ёйўќиµ„еЉ©дЅњиЂ…е‰ЌеѕЂиЋ«ж–Їз§‘еЏ‚еЉ  2026 е№ґ 9 жњ€дёѕеЉћзљ„дє«жњ‰з››иЄ‰зљ„е…Ёе›Ѕз ”з©¶ж€ђжћњи¶…зє§жЂ»е†іиµ›гЂ‚"
+      badge: "莫斯科 // 2026年9月",
+      title: "晋级国家级超级总决赛",
+      desc: "基于在区域竞赛中的夺魁，学院全额资助作者前往莫斯科参加 2026 年 9 月举办的享有盛誉的全国研究成果超级总决赛。"
     },
     {
-      badge: "зі»з»џжћ¶жћ„её€ + AI ж™єиѓЅдЅ“",
-      title: "е…Ёж–°й‡ЊзЁ‹зў‘пјљйќўеђ‘жњЄжќҐзљ„ејЂеЏ‘",
-      desc: "иЇҐйЎ№з›®з”±з‹¬з«‹ејЂеЏ‘иЂ…й‡‡з”Ёе‰ЌжІїзљ„вЂњжћ¶жћ„её€ + AI ж™єиѓЅдЅ“вЂќжЁЎејЏи®ѕи®ЎпјљдЅњиЂ…жњ¬дєєж‹…д»»ж ёеїѓзі»з»џжћ¶жћ„её€дёЋз®—жі•и®ѕи®ЎиЂ…пјЊиЂЊд»Јз Ѓзј–е†™пј€Kotlin/C++пј‰е€™е§”ж‰з»™ AI еЉ©ж‰‹е®Њж€ђгЂ‚"
+      badge: "系统架构师 + AI 智能体",
+      title: "全新里程碑：面向未来的开发",
+      desc: "该项目由独立开发者采用前沿的“架构师 + AI 智能体”模式设计：作者本人担任核心系统架构师与算法设计者，而代码编写（Kotlin/C++）则委托给 AI 助手完成。"
     }
   ],
   hi: [
     {
-      badge: "а¤•аҐ‰а¤ІаҐ‡а¤њ а¤°а¤їа¤ёа¤°аҐЌа¤љ // KB-284",
-      title: "а¤¶аҐ€а¤•аҐЌа¤·а¤Ја¤їа¤• а¤†а¤§а¤ѕа¤° а¤”а¤° а¤µа¤їа¤¶аҐ‡а¤·а¤њаҐЌа¤ћа¤¤а¤ѕ",
-      desc: "а¤Їа¤№ а¤Єа¤°а¤їа¤ЇаҐ‹а¤ња¤Ёа¤ѕ а¤љаҐ‡а¤ІаҐЌа¤Їа¤ѕа¤¬а¤їа¤‚а¤ёаҐЌа¤• а¤°аҐ‡а¤Ўа¤їа¤ЇаҐ‹а¤џаҐ‡а¤•аҐЌа¤Ёа¤їа¤•а¤І а¤•аҐ‰а¤ІаҐ‡а¤њ а¤®аҐ‡а¤‚ а¤¶аҐ€а¤•аҐЌа¤·а¤їа¤• а¤ёа¤®аҐ‚а¤№ KB-284 (а¤µа¤їа¤¶аҐ‡а¤·а¤њаҐЌа¤ћа¤¤а¤ѕ 10.02.05 вЂ” а¤ёаҐЌа¤µа¤ља¤ѕа¤Іа¤їа¤¤ а¤ЄаҐЌа¤°а¤Ја¤ѕа¤Іа¤їа¤ЇаҐ‹а¤‚ а¤•аҐЂ а¤ёаҐ‚а¤ља¤Ёа¤ѕ а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ) а¤•аҐ‡ а¤¤а¤№а¤¤ а¤µаҐ€а¤њаҐЌа¤ћа¤ѕа¤Ёа¤їа¤• а¤ёа¤Іа¤ѕа¤№а¤•а¤ѕа¤° а¤Ёа¤¤а¤ѕа¤Іа¤їа¤Їа¤ѕ а¤…а¤Ёа¤ѕа¤¤аҐ‹а¤ІаҐЂа¤µа¤Ёа¤ѕ а¤®аҐ‹а¤°аҐ‹а¤ња¤јаҐЌа¤•аҐ‹РІР° а¤•аҐ‡ а¤®а¤ѕа¤°аҐЌа¤—а¤¦а¤°аҐЌа¤¶а¤Ё а¤®аҐ‡а¤‚ а¤µа¤їа¤•а¤ёа¤їа¤¤ а¤•аҐЂ а¤—а¤€ а¤ҐаҐЂаҐ¤"
+      badge: "कॉलेज रिसर्च // KB-284",
+      title: "शैक्षणिक आधार और विशेषज्ञता",
+      desc: "यह परियोजना चेल्याबिंस्क रेडियोटेक्निकल कॉलेज में शैक्षिक समूह KB-284 (विशेषज्ञता 10.02.05 — स्वचालित प्रणालियों की सूचना सुरक्षा) के तहत वैज्ञानिक सलाहकार नतालिया अनातोलीवना मोरोज़्कोва के मार्गदर्शन में विकसित की गई थी।"
     },
     {
-      badge: "а¤…а¤ЁаҐЃа¤ёа¤‚а¤§а¤ѕа¤Ё // а¤ЄаҐЌа¤°а¤Ґа¤® а¤ёаҐЌа¤Ґа¤ѕа¤Ё",
-      title: "а¤•аҐЌа¤·аҐ‡а¤¤аҐЌа¤°аҐЂа¤Ї а¤…а¤ЁаҐЃа¤ёа¤‚а¤§а¤ѕа¤Ё а¤ЄаҐЌа¤°а¤¤а¤їа¤ЇаҐ‹а¤—а¤їа¤¤а¤ѕ а¤®аҐ‡а¤‚ а¤µа¤їа¤ња¤Ї",
-      desc: "TrustNode а¤•аҐ‡ а¤µаҐЌа¤Їа¤ѕа¤Єа¤• а¤ёа¤їа¤®аҐ‡а¤‚а¤џа¤їа¤• а¤ўа¤ѕа¤‚а¤љаҐ‡ а¤”а¤° а¤…а¤­а¤їа¤Ёа¤µ а¤Џа¤ІаҐЌа¤—аҐ‹а¤°а¤їа¤¦а¤® а¤ЁаҐ‡ а¤†а¤€а¤џаҐЂ а¤…а¤ЁаҐЃа¤­а¤ѕа¤— а¤®аҐ‡а¤‚ а¤•аҐЌа¤·аҐ‡а¤¤аҐЌа¤°аҐЂа¤Ї а¤µаҐ€а¤њаҐЌа¤ћа¤ѕа¤Ёа¤їа¤• а¤”а¤° а¤…а¤ЁаҐЃа¤ёа¤‚а¤§а¤ѕа¤Ё а¤ЄаҐЌа¤°а¤¤а¤їа¤ЇаҐ‹а¤—а¤їа¤¤а¤ѕ а¤®аҐ‡а¤‚ а¤Єа¤°а¤їа¤ЇаҐ‹а¤ња¤Ёа¤ѕ а¤•аҐ‹ а¤Єа¤№а¤Іа¤ѕ а¤ёаҐЌа¤Ґа¤ѕа¤Ё а¤¦а¤їа¤Іа¤ѕа¤Їа¤ѕаҐ¤"
+      badge: "अनुसंधान // प्रथम स्थान",
+      title: "क्षेत्रीय अनुसंधान प्रतियोगिता में विजय",
+      desc: "TrustNode के व्यापक सिमेंटिक ढांचे और अभिनव एल्गोरिदम ने आईटी अनुभाग में क्षेत्रीय वैज्ञानिक और अनुसंधान प्रतियोगिता में परियोजना को पहला स्थान दिलाया।"
     },
     {
-      badge: "а¤®а¤ѕа¤ёаҐЌа¤•аҐ‹ // а¤ёа¤їа¤¤а¤‚а¤¬а¤° 2026",
-      title: "а¤°а¤ѕа¤·аҐЌа¤џаҐЌа¤°аҐЂа¤Ї а¤ёаҐЃа¤Єа¤°а¤«а¤ја¤ѕа¤‡а¤Ёа¤І а¤®аҐ‡а¤‚ а¤ЄаҐЌа¤°а¤µаҐ‡а¤¶",
-      desc: "а¤•аҐЌа¤·аҐ‡а¤¤аҐЌа¤°аҐЂа¤Ї а¤њаҐЂа¤¤ а¤•аҐ‡ а¤†а¤§а¤ѕа¤° а¤Єа¤°, а¤•аҐ‰а¤ІаҐ‡а¤њ а¤ёа¤їа¤¤а¤‚а¤¬а¤° 2026 а¤®аҐ‡а¤‚ а¤№аҐ‹а¤ЁаҐ‡ а¤µа¤ѕа¤ІаҐ‡ а¤ЄаҐЌа¤°а¤¤а¤їа¤·аҐЌа¤ а¤їа¤¤ а¤°а¤ѕа¤·аҐЌа¤џаҐЌа¤°а¤µаҐЌа¤Їа¤ѕа¤ЄаҐЂ а¤…а¤ЁаҐЃа¤ёа¤‚а¤§а¤ѕа¤Ё а¤ёаҐЃа¤Єа¤°а¤«а¤ја¤ѕа¤‡а¤Ёа¤І а¤•аҐ‡ а¤Іа¤їа¤Џ а¤®а¤ѕа¤ёаҐЌа¤•аҐ‹ а¤•аҐЂ а¤Їа¤ѕа¤¤аҐЌа¤°а¤ѕ а¤•а¤ѕ а¤ЄаҐ‚а¤°а¤ѕ а¤–а¤°аҐЌа¤љ а¤‰а¤ а¤ѕ а¤°а¤№а¤ѕ а¤№аҐ€аҐ¤"
+      badge: "मास्को // सितंबर 2026",
+      title: "राष्ट्रीय सुपरफ़ाइनल में प्रवेश",
+      desc: "क्षेत्रीय जीत के आधार पर, कॉलेज सितंबर 2026 में होने वाले प्रतिष्ठित राष्ट्रव्यापी अनुसंधान सुपरफ़ाइनल के लिए मास्को की यात्रा का पूरा खर्च उठा रहा है।"
     },
     {
-      badge: "а¤†а¤°аҐЌа¤•а¤їа¤џаҐ‡а¤•аҐЌа¤џ + а¤Џа¤†а¤€ а¤Џа¤њаҐ‡а¤‚а¤џ",
-      title: "а¤Ёа¤Їа¤ѕ а¤®аҐЂа¤І а¤•а¤ѕ а¤Єа¤¤аҐЌа¤Ґа¤°: а¤­а¤µа¤їа¤·аҐЌа¤Ї а¤•а¤ѕ а¤µа¤їа¤•а¤ѕа¤ё",
-      desc: "а¤Џа¤•а¤І а¤ЎаҐ‡а¤µа¤Іа¤Єа¤° а¤¦аҐЌа¤µа¤ѕа¤°а¤ѕ 'а¤†а¤°аҐЌа¤•а¤їа¤џаҐ‡а¤•аҐЌа¤џ + а¤Џа¤†а¤€ а¤Џа¤њаҐ‡а¤‚а¤џ' а¤Єа¤¦аҐЌа¤§а¤¤а¤ї а¤•а¤ѕ а¤‰а¤Єа¤ЇаҐ‹а¤— а¤•а¤°а¤•аҐ‡ а¤¬а¤Ёа¤ѕа¤Їа¤ѕ а¤—а¤Їа¤ѕаҐ¤ а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤†а¤°аҐЌа¤•а¤їа¤џаҐ‡а¤•аҐЌа¤ља¤° а¤”а¤° а¤Џа¤ІаҐЌа¤—аҐ‹а¤°а¤їа¤¦а¤® а¤ІаҐ‡а¤–а¤• а¤¦аҐЌа¤µа¤ѕа¤°а¤ѕ а¤¬а¤Ёа¤ѕа¤Џ а¤—а¤Џ а¤№аҐ€а¤‚, а¤ња¤¬а¤•а¤ї а¤•аҐ‹а¤Ў а¤ІаҐ‡а¤–а¤Ё (Kotlin/C++) а¤Џа¤†а¤€ а¤Џа¤њаҐ‡а¤‚а¤џаҐ‹а¤‚ а¤•аҐ‹ а¤ёаҐЊа¤‚а¤Єа¤ѕ а¤—а¤Їа¤ѕ а¤№аҐ€аҐ¤"
+      badge: "आर्किटेक्ट + एआई एजेंट",
+      title: "नया मील का पत्थर: भविष्य का विकास",
+      desc: "एकल डेवलपर द्वारा 'आर्किटेक्ट + एआई एजेंट' पद्धति का उपयोग करके बनाया गया। सुरक्षा आर्किटेक्चर और एल्गोरिदम लेखक द्वारा बनाए गए हैं, जबकि कोड लेखन (Kotlin/C++) एआई एजेंटों को सौंपा गया है।"
     }
   ],
   ar: [
     {
-      badge: "ШЈШЁШ­Ш§Ш« Ш§Щ„ЩѓЩ„ЩЉШ© // KB-284",
-      title: "Ш§Щ„ШЈШіШі Ш§Щ„ШЈЩѓШ§ШЇЩЉЩ…ЩЉШ© Щ€Ш§Щ„ШЄШ®ШµШµ",
-      desc: "Щ†ШґШЈ Ш§Щ„Щ…ШґШ±Щ€Ш№ ШЇШ§Ш®Щ„ ШЈШіЩ€Ш§Ш± ЩѓЩ„ЩЉШ© ШЄШґЩЉЩ„ЩЉШ§ШЁЩЉЩ†ШіЩѓ Щ„Щ„Щ‡Щ†ШЇШіШ© Ш§Щ„Щ„Ш§ШіЩ„ЩѓЩЉШ© ЩЃЩЉ Ш§Щ„Щ…Ш¬Щ…Щ€Ш№Ш© Ш§Щ„ШЄШ№Щ„ЩЉЩ…ЩЉШ© KB-284 (ШЄШ®ШµШµ 10.02.05 вЂ” ШЈЩ…Щ† Щ…Ш№Щ„Щ€Щ…Ш§ШЄ Ш§Щ„ШЈЩ†ШёЩ…Ш© Ш§Щ„ШўЩ„ЩЉШ©) ШЄШ­ШЄ ШҐШґШ±Ш§ЩЃ Ш§Щ„Щ…ШіШЄШґШ§Ш±Ш© Ш§Щ„Ш№Щ„Щ…ЩЉШ© Щ†Ш§ШЄШ§Щ„ЩЉШ§ ШЈЩ†Ш§ШЄЩ€Щ„ЩЉЩЃЩ†Ш§ Щ…Щ€Ш±Щ€ШІЩѓЩ€ЩЃШ§."
+      badge: "أبحاث الكلية // KB-284",
+      title: "الأسس الأكاديمية والتخصص",
+      desc: "نشأ المشروع داخل أسوار كلية تشيليابينسك للهندسة اللاسلكية في المجموعة التعليمية KB-284 (تخصص 10.02.05 — أمن معلومات الأنظمة الآلية) تحت إشراف المستشارة العلمية ناتاليا أناتوليفنا موروزكوفا."
     },
     {
-      badge: "Ш§Щ„ШЁШ­Ш« Ш§Щ„Ш№Щ„Щ…ЩЉ // Ш§Щ„Щ…Ш±ЩѓШІ Ш§Щ„ШЈЩ€Щ„",
-      title: "Ш§Щ„Ш§Щ†ШЄШµШ§Ш± ЩЃЩЉ Ш§Щ„ШЁШ­Ш« Ш§Щ„Ш№Щ„Щ…ЩЉ Ш§Щ„ШҐЩ‚Щ„ЩЉЩ…ЩЉ",
-      desc: "Ш­ШµШЇ Ш§Щ„ШҐШ·Ш§Ш± Ш§Щ„ШЇЩ„Ш§Щ„ЩЉ Ш§Щ„ШґШ§Щ…Щ„ Щ€Ш§Щ„Ш®Щ€Ш§Ш±ШІЩ…ЩЉШ© Ш§Щ„Щ…ШЁШЄЩѓШ±Ш© Щ„ЩЂ TrustNode Ш§Щ„Щ…Ш±ЩѓШІ Ш§Щ„ШЈЩ€Щ„ ЩЃЩЉ Ш§Щ„Щ…ШіШ§ШЁЩ‚Ш© Ш§Щ„Ш№Щ„Щ…ЩЉШ© Щ€Ш§Щ„ШЁШ­Ш«ЩЉШ© Ш§Щ„ШҐЩ‚Щ„ЩЉЩ…ЩЉШ© (Щ‚ШіЩ… ШЄЩѓЩ†Щ€Щ„Щ€Ш¬ЩЉШ§ Ш§Щ„Щ…Ш№Щ„Щ€Щ…Ш§ШЄ)."
+      badge: "البحث العلمي // المركز الأول",
+      title: "الانتصار في البحث العلمي الإقليمي",
+      desc: "حصد الإطار الدلالي الشامل والخوارزمية المبتكرة لـ TrustNode المركز الأول في المسابقة العلمية والبحثية الإقليمية (قسم تكنولوجيا المعلومات)."
     },
     {
-      badge: "Щ…Щ€ШіЩѓЩ€ // ШіШЁШЄЩ…ШЁШ± 2026",
-      title: "Ш§Щ„Щ€ШµЩ€Щ„ ШҐЩ„Щ‰ Ш§Щ„ШіЩ€ШЁШ± ЩЃШ§ЩЉЩ†Ш§Щ„ Ш§Щ„Ш§ШЄШ­Ш§ШЇЩЉ",
-      desc: "ШЁЩ†Ш§ШЎЩ‹ Ш№Щ„Щ‰ Ш§Щ„Ш§Щ†ШЄШµШ§Ш± Ш§Щ„ШҐЩ‚Щ„ЩЉЩ…ЩЉ, Щ‚Ш§Щ…ШЄ Ш§Щ„ЩѓЩ„ЩЉШ© ШЁШЄЩ…Щ€ЩЉЩ„ Ш±Ш­Щ„Ш© Ш§Щ„Щ…Ш¤Щ„ЩЃ ШЁШ§Щ„ЩѓШ§Щ…Щ„ ШҐЩ„Щ‰ Щ…Щ€ШіЩѓЩ€ Щ„Щ„Щ…ШґШ§Ш±ЩѓШ© ЩЃЩЉ Ш§Щ„ШіЩ€ШЁШ± ЩЃШ§ЩЉЩ†Ш§Щ„ Ш§Щ„Щ€Ш·Щ†ЩЉ Ш§Щ„Щ…Ш±Щ…Щ€Щ‚ Щ„Щ„ШЈШЁШ­Ш§Ш« Ш§Щ„Ш№Щ„Щ…ЩЉШ© ЩЃЩЉ ШіШЁШЄЩ…ШЁШ± 2026."
+      badge: "موسكو // سبتمبر 2026",
+      title: "الوصول إلى السوبر فاينال الاتحادي",
+      desc: "بناءً على الانتصار الإقليمي, قامت الكلية بتمويل رحلة المؤلف بالكامل إلى موسكو للمشاركة في السوبر فاينال الوطني المرموق للأبحاث العلمية في سبتمبر 2026."
     },
     {
-      badge: "Ш§Щ„Щ…Щ‡Щ†ШЇШі Ш§Щ„Щ…Ш№Щ…Ш§Ш±ЩЉ + Щ€ЩѓЩ„Ш§ШЎ Ш§Щ„Ш°ЩѓШ§ШЎ Ш§Щ„Ш§ШµШ·Щ†Ш§Ш№ЩЉ",
-      title: "Ш№ШµШ± Ш¬ШЇЩЉШЇ: ШЄШ·Щ€ЩЉШ± Ш§Щ„Щ…ШіШЄЩ‚ШЁЩ„",
-      desc: "ШЄЩ… ШЄШµЩ…ЩЉЩ… Ш§Щ„Щ…ШґШ±Щ€Ш№ ШЁЩ€Ш§ШіШ·Ш© Щ…Ш·Щ€Ш± Щ…ШіШЄЩ‚Щ„ ШЁШ§ШіШЄШ®ШЇШ§Щ… Щ…Щ†Щ‡Ш¬ЩЉШ© 'Ш§Щ„Щ…Щ‡Щ†ШЇШі Ш§Щ„Щ…Ш№Щ…Ш§Ш±ЩЉ + Щ€ЩѓЩ„Ш§ШЎ Ш§Щ„Ш°ЩѓШ§ШЎ Ш§Щ„Ш§ШµШ·Щ†Ш§Ш№ЩЉ'. ШµЩ…Щ… Ш§Щ„Щ…Ш¤Щ„ЩЃ ШЁЩ†ЩЉШ© Ш§Щ„ШЈЩ…Щ† Щ€Ш®Щ€Ш§Ш±ШІЩ…ЩЉШ§ШЄ ШЁШ±Ш§ШЎШ§ШЄ Ш§Щ„Ш§Ш®ШЄШ±Ш§Ш№ ШЁЩ†ЩЃШіЩ‡ШЊ Щ€ШЄЩ… ШЄЩЃЩ€ЩЉШ¶ ЩѓШЄШ§ШЁШ© Ш§Щ„ШЈЩѓЩ€Ш§ШЇ (Kotlin/C++) Щ„Щ€ЩѓЩ„Ш§ШЎ Ш§Щ„Ш°ЩѓШ§ШЎ Ш§Щ„Ш§ШµШ·Щ†Ш§Ш№ЩЉ."
+      badge: "المهندس المعماري + وكلاء الذكاء الاصطناعي",
+      title: "عصر جديد: تطوير المستقبل",
+      desc: "تم تصميم المشروع بواسطة مطور مستقل باستخدام منهجية 'المهندس المعماري + وكلاء الذكاء الاصطناعي'. صمم المؤلف بنية الأمن وخوارزميات براءات الاختراع بنفسه، وتم تفويض كتابة الأكواد (Kotlin/C++) لوكلاء الذكاء الاصطناعي."
     }
   ],
   pt: [
     {
       badge: "CRTC // KB-284",
-      title: "FundaГ§ГЈo AcadГЄmica e EspecializaГ§ГЈo",
-      desc: "O projeto nasceu na Escola RadiotГ©cnica de Chelyabinsk no grupo KB-284 (EspecializaГ§ГЈo 10.02.05 вЂ” SeguranГ§a da InformaГ§ГЈo de Sistemas Automatizados), sob a orientaГ§ГЈo de Natalia Anatolyevna Morozkova."
+      title: "Fundação Acadêmica e Especialização",
+      desc: "O projeto nasceu na Escola Radiotécnica de Chelyabinsk no grupo KB-284 (Especialização 10.02.05 — Segurança da Informação de Sistemas Automatizados), sob a orientação de Natalia Anatolyevna Morozkova."
     },
     {
-      badge: "PESQUISA // 1Вє LUGAR",
+      badge: "PESQUISA // 1º LUGAR",
       title: "Triunfo na pesquisa regional",
-      desc: "A estrutura semГўntica integrada e o algoritmo inovador do TrustNode trouxeram ao projeto o 1Вє lugar no concurso regional de pesquisa cientГ­fica na seГ§ГЈo de 'Tecnologia da InformaГ§ГЈo'."
+      desc: "A estrutura semântica integrada e o algoritmo inovador do TrustNode trouxeram ao projeto o 1º lugar no concurso regional de pesquisa científica na seção de 'Tecnologia da Informação'."
     },
     {
       badge: "MOSCOU // SETEMBRO 2026",
-      title: "Acesso Г  superfinal federal",
-      desc: "Devido Г  vitГіria regional, a escola financiou integralmente a viagem do autor a Moscou para participar da prestigiada superfinal de pesquisa nacional em setembro de 2026."
+      title: "Acesso à superfinal federal",
+      desc: "Devido à vitória regional, a escola financiou integralmente a viagem do autor a Moscou para participar da prestigiada superfinal de pesquisa nacional em setembro de 2026."
     },
     {
       badge: "ARQUITETO + AGENTES DE IA",
       title: "Novo paradigma de desenvolvimento",
-      desc: "Criado por um desenvolvedor solo com o paradigma 'Arquiteto + Agentes de IA'. A arquitetura de seguranГ§a e os algoritmos sГЈo do autor, enquanto a codificaГ§ГЈo (Kotlin/C++) foi realizada por agentes de IA."
+      desc: "Criado por um desenvolvedor solo com o paradigma 'Arquiteto + Agentes de IA'. A arquitetura de segurança e os algoritmos são do autor, enquanto a codificação (Kotlin/C++) foi realizada por agentes de IA."
     }
   ],
   fr: [
     {
-      badge: "RECHERCHE COLLГ€GE",
-      title: "Fondations AcadГ©miques",
-      desc: "DГ©veloppГ© au CollГЁge Radiotechnique de Chelyabinsk au sein du groupe d'Г©tudes KB-284 (SpГ©cialitГ© 10.02.05 вЂ” SГ©curitГ© de l'Information des SystГЁmes AutomatisГ©s), sous la direction de la conseillГЁre scientifique Natalia Anatolyevna Morozkova."
+      badge: "RECHERCHE COLLÈGE",
+      title: "Fondations Académiques",
+      desc: "Développé au Collège Radiotechnique de Chelyabinsk au sein du groupe d'études KB-284 (Spécialité 10.02.05 — Sécurité de l'Information des Systèmes Automatisés), sous la direction de la conseillère scientifique Natalia Anatolyevna Morozkova."
     },
     {
-      badge: "VICTOIRE RГ‰GIONALE",
-      title: "Triomphe Scientifique RГ©gional",
-      desc: "Le cadre sГ©mantique global de TrustNode a remportГ© la 1ГЁre place du concours de recherche scientifique rГ©gional (section informatique) pour son approche novatrice de la lutte contre la fraude."
+      badge: "VICTOIRE RÉGIONALE",
+      title: "Triomphe Scientifique Régional",
+      desc: "Le cadre sémantique global de TrustNode a remporté la 1ère place du concours de recherche scientifique régional (section informatique) pour son approche novatrice de la lutte contre la fraude."
     },
     {
-      badge: "SUPERFINALE FГ‰DГ‰RALE",
-      title: "Superfinale Nationale Г  Moscou",
-      desc: "Suite Г  ce triomphe, l'Г©tablissement finance intГ©gralement le voyage de l'auteur Г  Moscou pour participer Г  la prestigieuse superfinale nationale de recherche en septembre 2026."
+      badge: "SUPERFINALE FÉDÉRALE",
+      title: "Superfinale Nationale à Moscou",
+      desc: "Suite à ce triomphe, l'établissement finance intégralement le voyage de l'auteur à Moscou pour participer à la prestigieuse superfinale nationale de recherche en septembre 2026."
     },
     {
       badge: "CONCEPTEUR + AGENTS IA",
-      title: "Nouveau paradigme de dГ©veloppement",
-      desc: "ConГ§u par un dГ©veloppeur solo selon la mГ©thodologie 'Concepteur + Agents IA' : l'auteur crГ©e l'architecture de sГ©curitГ© et les algorithmes, tandis que le codage (Kotlin/C++) est dГ©lГ©guГ© Г  des agents IA."
+      title: "Nouveau paradigme de développement",
+      desc: "Conçu par un développeur solo selon la méthodologie 'Concepteur + Agents IA' : l'auteur crée l'architecture de sécurité et les algorithmes, tandis que le codage (Kotlin/C++) est délégué à des agents IA."
     }
   ],
   de: [
     {
       badge: "COLLEGE RESEARCH",
       title: "Akademische Grundlagen",
-      desc: "Entwickelt am Radiotechnischen Kolleg Tscheljabinsk in der Studiengruppe KB-284 (Fachrichtung 10.02.05 вЂ” Informationssicherheit automatisierter Systeme) unter der wissenschaftlichen Leitung von Natalia Anna Morozkova."
+      desc: "Entwickelt am Radiotechnischen Kolleg Tscheljabinsk in der Studiengruppe KB-284 (Fachrichtung 10.02.05 — Informationssicherheit automatisierter Systeme) unter der wissenschaftlichen Leitung von Natalia Anna Morozkova."
     },
     {
       badge: "REGIONALER SIEG",
@@ -236,34 +236,34 @@ const TIMELINE_BY_LANG: Partial<Record<LanguageCode, Array<{ badge: string; titl
     {
       badge: "SUPERFINALE MOSKAU",
       title: "Bundesweites Superfinale",
-      desc: "Aufgrund des regionalen Triumphs finanziert das Kolleg die Reise des Autors nach Moskau zum angesehenen bundesweiten Forschungs-Superfinale im September 2026 vollstГ¤ndig."
+      desc: "Aufgrund des regionalen Triumphs finanziert das Kolleg die Reise des Autors nach Moskau zum angesehenen bundesweiten Forschungs-Superfinale im September 2026 vollständig."
     },
     {
       badge: "ARCHITEKT + KI-AGENTEN",
       title: "Entwicklungsparadigma der Zukunft",
-      desc: "Erstellt von einem Solo-Entwickler nach der Methode 'Architekt + KI-Agenten'. Die Sicherheitsarchitektur und Patentalgorithmen stammen vom Autor, wГ¤hrend die Codierung (Kotlin/C++) an KI-Agenten delegiert wurde."
+      desc: "Erstellt von einem Solo-Entwickler nach der Methode 'Architekt + KI-Agenten'. Die Sicherheitsarchitektur und Patentalgorithmen stammen vom Autor, während die Codierung (Kotlin/C++) an KI-Agenten delegiert wurde."
     }
   ],
   ja: [
     {
-      badge: "жЉЂиЎ“е°‚й–Ђе­¦ж Ўз ”з©¶ // KB-284",
-      title: "е­¦иЎ“зљ„еџєз¤ЋгЃЁе°‚й–Ђе€†й‡Ћ",
-      desc: "гѓЃг‚§гѓЄгѓЈгѓ“гѓіг‚№г‚Їз„Ўз·ље·Ґе­¦жЉЂиЎ“е°‚й–Ђе­¦ж ЎгЃ«гЃ¦гЂЃKB-284з ”з©¶г‚°гѓ«гѓјгѓ—пј€е°‚й–Ђе€†й‡Ћ 10.02.05 вЂ” гЂЊи‡Єе‹•еЊ–г‚·г‚№гѓ†гѓ жѓ…е ±г‚»г‚­гѓҐгѓЄгѓ†г‚ЈгЂЌпј‰гЃ®дёЂз’°гЃЁгЃ—гЃ¦гЂЃжЊ‡е°Ћж•™е®гѓЉг‚їгѓЄг‚ўгѓ»г‚ўгѓЉгѓ€гѓЄг‚ЁгѓґгѓЉгѓ»гѓўгѓ­г‚єг‚ігѓЇгЃ®жЊ‡е°ЋгЃ®г‚‚гЃЁгЃ§й–‹з™єгЃЊг‚№г‚їгѓјгѓ€гЃ—гЃѕгЃ—гЃџгЂ‚"
+      badge: "技術専門学校研究 // KB-284",
+      title: "学術的基礎と専門分野",
+      desc: "チェリャビンスク無線工学技術専門学校にて、KB-284研究グループ（専門分野 10.02.05 — 「自動化システム情報セキュリティ」）の一環として、指導教官ナタリア・アナトリエヴナ・モロズコワの指導のもとで開発がスタートしました。"
     },
     {
-      badge: "е­¦иЎ“з ”з©¶ // з¬¬1дЅЌ",
-      title: "ењ°еџџз ”з©¶г‚ігѓігѓ†г‚№гѓ€гЃ§гЃ®е„Єе‹ќ",
-      desc: "TrustNodeгЃ®й«еє¦гЃЄг‚»гѓћгѓігѓ†г‚Јгѓѓг‚Їи§Јжћђгѓ•гѓ¬гѓјгѓ гѓЇгѓјг‚ЇгЃЁйќ©ж–°зљ„гЃЄг‚ўгѓ«г‚ґгѓЄг‚єгѓ гЃЇгЂЃењ°еџџгЃ®е­¦иЎ“з ”з©¶г‚ігѓігѓљгѓ†г‚Јг‚·гѓ§гѓігЃ®гЂЊжѓ…е ±жЉЂиЎ“гЂЌг‚»г‚Їг‚·гѓ§гѓігЃ§з¬¬1дЅЌг‚’зЌІеѕ—гЃ—гЃѕгЃ—гЃџгЂ‚"
+      badge: "学術研究 // 第1位",
+      title: "地域研究コンテストでの優勝",
+      desc: "TrustNodeの高度なセマンティック解析フレームワークと革新的なアルゴリズムは、地域の学術研究コンペティションの「情報技術」セクションで第1位を獲得しました。"
     },
     {
-      badge: "гѓўг‚№г‚ЇгѓЇ // 2026е№ґ9жњ€",
-      title: "е…Ёе›Ѕг‚№гѓјгѓ‘гѓјгѓ•г‚Ўг‚¤гѓЉгѓ«йЂІе‡є",
-      desc: "ењ°ж–№г‚ігѓігѓ†г‚№гѓ€гЃ§гЃ®ијќгЃ‹гЃ—гЃ„е„Єе‹ќг‚’еЏ—гЃ‘гЂЃе°‚й–Ђе­¦ж ЎгЃ®е…ЁйЎЌжЏґеЉ©гЃ«г‚€г‚ЉгЂЃ2026е№ґ9жњ€гЃ«гѓўг‚№г‚ЇгѓЇгЃ§й–‹е‚¬гЃ•г‚Њг‚‹жЁ©еЁЃгЃ‚г‚‹е…Ёе›Ѕз ”з©¶г‚ігѓігѓ†г‚№гѓ€гѓ»г‚№гѓјгѓ‘гѓјгѓ•г‚Ўг‚¤гѓЉгѓ«гЃёгЃ®е‡єе ґг‚’жћњгЃџгЃ—гЃѕгЃ—гЃџгЂ‚"
+      badge: "モスクワ // 2026年9月",
+      title: "全国スーパーファイナル進出",
+      desc: "地方コンテストでの輝かしい優勝を受け、専門学校の全額援助により、2026年9月にモスクワで開催される権威ある全国研究コンテスト・スーパーファイナルへの出場を果たしました。"
     },
     {
-      badge: "г‚ўгѓјг‚­гѓ†г‚Їгѓ€ пј‹ AI г‚Ёгѓјг‚ёг‚§гѓігѓ€",
-      title: "ж–°гѓћг‚¤гѓ«г‚№гѓ€гѓјгѓіпјљжњЄжќҐгЃ®й–‹з™єдЅ“е€¶",
-      desc: "жњ¬гѓ—гѓ­г‚ёг‚§г‚Їгѓ€гЃЇгЂЃг‚Ѕгѓ­й–‹з™єиЂ…гЃЊгЂЊг‚ўгѓјг‚­гѓ†г‚Їгѓ€пј‹AIг‚Ёгѓјг‚ёг‚§гѓігѓ€гЂЌдЅ“е€¶гЃ§иЁ­иЁ€гЂ‚г‚»г‚­гѓҐгѓЄгѓ†г‚Јж§‹йЂ гЃЁз‰№иЁ±г‚ўгѓ«г‚ґгѓЄг‚єгѓ гЃЇи‘—иЂ…гЃЊж§‹зЇ‰гЃ—гЂЃг‚ігѓјгѓ‰гЃ®е®џиЈ…пј€Kotlin/C++пј‰г‚’AIг‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ«е§”иЁ—гЃ—гЃѕгЃ—гЃџгЂ‚"
+      badge: "アーキテクト ＋ AI エージェント",
+      title: "新マイルストーン：未来の開発体制",
+      desc: "本プロジェクトは、ソロ開発者が「アーキテクト＋AIエージェント」体制で設計。セキュリティ構造と特許アルゴリズムは著者が構築し、コードの実装（Kotlin/C++）をAIエージェントに委託しました。"
     }
   ]
 };
@@ -289,7 +289,7 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ item, index, ecoMode }) => 
       ref={ref}
       initial={false}
       animate={{ opacity: 1, y: 0 }}
-      className="p-6 sm:p-8 rounded-md bg-[#0A0A0B]/80 border border-white/[0.03] hover:border-[#3B82F6]/30 hover:shadow-glow-sm transition-all duration-300 relative group flex flex-col justify-between overflow-hidden"
+      className="p-6 sm:p-8 rounded-xl bg-[#0A0A0B]/80 border border-white/[0.03] hover:border-[#3B82F6]/30 hover:shadow-glow-sm transition-all duration-300 relative group flex flex-col justify-between overflow-hidden"
     >
       {/* Top Accent line */}
       <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#3B82F6]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -302,10 +302,10 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ item, index, ecoMode }) => 
       <div>
         {/* Header Row */}
         <div className="flex items-center justify-between gap-4 mb-6">
-          <div className={`w-10 h-10 rounded-md bg-[#12141A] flex items-center justify-center border transition-colors duration-300 ${inView ? "border-[#3B82F6]/50 text-[#3B82F6]" : "border-[#3B82F6]/10"}`}>
+          <div className={`w-10 h-10 rounded-xl bg-[#12141A] flex items-center justify-center border transition-colors duration-300 ${inView ? "border-[#3B82F6]/50 text-[#3B82F6]" : "border-[#3B82F6]/10"}`}>
             {item.icon}
           </div>
-          <span className="font-mono text-[10px] sm:text-xs tracking-widest text-[#6FB1FF] uppercase font-bold bg-[#3B82F6]/10 px-3 py-1.5 rounded-md border border-[#3B82F6]/30">
+          <span className="font-mono text-[10px] sm:text-xs tracking-widest text-[#6FB1FF] uppercase font-bold bg-[#3B82F6]/10 px-3 py-1.5 rounded-xl border border-[#3B82F6]/30">
             {item.badge}
           </span>
         </div>

@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Sparkles, ArrowLeft, Send, CheckCircle2, XCircle, HelpCircle } from "lucide-react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useNavigation } from "../navigation/NavigationContext";
@@ -7,144 +7,144 @@ import { motion } from "motion/react";
 
 const LOCAL_COMP_DICT: Record<LanguageCode, Record<string, string>> = {
   ru: {
-    backToMain: "РќР°Р·Р°Рґ РЅР° Р“Р»Р°РІРЅСѓСЋ",
-    targetIndicator: "рџЋЇ С†РµР»РµРІРѕР№ РѕСЂРёРµРЅС‚РёСЂ",
-    roadmapInfo: "TrustNode (TN1) вЂ” С„Р°РєС‚РёС‡РµСЃРєРё РіРѕС‚РѕРІС‹Р№ MVP РјРѕР±РёР»СЊРЅРѕРіРѕ РїСЂРёР»РѕР¶РµРЅРёСЏ. РќРѕРІС‹Рµ РјРѕРґСѓР»Рё (TN3, KIRA) РЅР°С…РѕРґСЏС‚СЃСЏ РІ Р°РєС‚РёРІРЅРѕРј Р±СЌРєР»РѕРіРµ СЂР°Р·СЂР°Р±РѕС‚РєРё.",
-    presetRf: "РЎСЂР°РІРЅРёС‚СЊ СЃ Р»РёРґРµСЂРѕРј Р Р¤-СЂС‹РЅРєР°",
-    presetNiche: "РЎСЂР°РІРЅРёС‚СЊ СЃ РЅРёС€РµРІС‹РјРё AI-РґРµС‚РµРєС‚РѕСЂР°РјРё",
-    kasperskyBadge: "вљЎ RU-Р»РёРґРµСЂ"
+    backToMain: "Назад на Главную",
+    targetIndicator: "🎯 целевой ориентир",
+    roadmapInfo: "TrustNode (TN1) — фактически готовый MVP мобильного приложения. Новые модули (TN3, KIRA) находятся в активном бэклоге разработки.",
+    presetRf: "Сравнить с лидером РФ-рынка",
+    presetNiche: "Сравнить с нишевыми AI-детекторами",
+    kasperskyBadge: "⚡ RU-лидер"
   },
   en: {
     backToMain: "Back to Main",
-    targetIndicator: "рџЋЇ target indicator",
+    targetIndicator: "🎯 target indicator",
     roadmapInfo: "TrustNode (TN1) is a ready mobile application MVP. Next-gen modules (TN3, KIRA) are in active roadmap development.",
     presetRf: "Compare with RU market leader",
     presetNiche: "Compare with niche AI detectors",
-    kasperskyBadge: "вљЎ RU leader"
+    kasperskyBadge: "⚡ RU leader"
   },
   es: {
     backToMain: "Volver al Inicio",
-    targetIndicator: "рџЋЇ indicador objetivo",
-    roadmapInfo: "TrustNode (TN1) es un MVP de aplicaciГіn mГіvil listo. Los mГіdulos de prГіxima generaciГіn (TN3, KIRA) se encuentran en desarrollo activo.",
-    presetRf: "Comparar con lГ­der del mercado RU",
+    targetIndicator: "🎯 indicador objetivo",
+    roadmapInfo: "TrustNode (TN1) es un MVP de aplicación móvil listo. Los módulos de próxima generación (TN3, KIRA) se encuentran en desarrollo activo.",
+    presetRf: "Comparar con líder del mercado RU",
     presetNiche: "Comparar con detectores IA especializados",
-    kasperskyBadge: "вљЎ LГ­der RU"
+    kasperskyBadge: "⚡ Líder RU"
   },
   zh: {
-    backToMain: "иї”е›ћдё»йЎµ",
-    targetIndicator: "рџЋЇ ж ёеїѓи§„е€’жЊ‡ж ‡",
-    roadmapInfo: "TrustNode (TN1) з§»еЉЁеє”з”Ё MVP е·Іе°±з»ЄгЂ‚дё‹дёЂд»ЈйІжЉ¤зЅ©пј€TN3гЂЃKIRAпј‰ж­Је¤„дєЋжґ»и·ѓејЂеЏ‘и®Ўе€’дё­гЂ‚",
-    presetRf: "дёЋдї„зЅ—ж–Їеё‚ењєйў†еЇјиЂ…еЇ№жЇ”",
-    presetNiche: "дёЋе°Џдј—AIжЈЂжµ‹е™ЁеЇ№жЇ”",
-    kasperskyBadge: "вљЎ дї„её‚ењєйў†еЇјиЂ…"
+    backToMain: "返回主页",
+    targetIndicator: "🎯 核心规划指标",
+    roadmapInfo: "TrustNode (TN1) 移动应用 MVP 已就绪。下一代防护罩（TN3、KIRA）正处于活跃开发计划中。",
+    presetRf: "与俄罗斯市场领导者对比",
+    presetNiche: "与小众AI检测器对比",
+    kasperskyBadge: "⚡ 俄市场领导者"
   },
   tr: {
-    backToMain: "Ana Sayfaya DГ¶n",
-    targetIndicator: "рџЋЇ hedef gГ¶sterge",
-    roadmapInfo: "TrustNode (TN1) mobil uygulama MVP'si hazД±r durumdadД±r. Yeni nesil modГјller (TN3, KIRA) aktif geliЕџtirme planД±ndadД±r.",
-    presetRf: "RU pazar lideriyle karЕџД±laЕџtД±r",
-    presetNiche: "NiЕџ AI dedektГ¶rleriyle karЕџД±laЕџtД±r",
-    kasperskyBadge: "вљЎ RU lideri"
+    backToMain: "Ana Sayfaya Dön",
+    targetIndicator: "🎯 hedef gösterge",
+    roadmapInfo: "TrustNode (TN1) mobil uygulama MVP'si hazır durumdadır. Yeni nesil modüller (TN3, KIRA) aktif geliştirme planındadır.",
+    presetRf: "RU pazar lideriyle karşılaştır",
+    presetNiche: "Niş AI dedektörleriyle karşılaştır",
+    kasperskyBadge: "⚡ RU lideri"
   },
   hi: {
-    backToMain: "а¤®аҐЃа¤–аҐЌа¤Ї а¤ЄаҐѓа¤·аҐЌа¤  а¤Єа¤° а¤µа¤ѕа¤Єа¤ё",
-    targetIndicator: "рџЋЇ а¤Іа¤•аҐЌа¤·а¤їа¤¤ а¤ёа¤‚а¤•аҐ‡а¤¤а¤•",
-    roadmapInfo: "TrustNode (TN1) а¤Џа¤• а¤¤аҐ€а¤Їа¤ѕа¤° а¤®аҐ‹а¤¬а¤ѕа¤‡а¤І а¤Џа¤ЄаҐЌа¤ІаҐЂа¤•аҐ‡а¤¶а¤Ё MVP а¤№аҐ€аҐ¤ а¤…а¤—а¤ІаҐЂ а¤ЄаҐЂа¤ўа¤јаҐЂ а¤•аҐ‡ а¤®аҐ‰а¤ЎаҐЌа¤ЇаҐ‚а¤І (TN3, KIRA) а¤ёа¤•аҐЌа¤°а¤їа¤Ї а¤µа¤їа¤•а¤ѕа¤ё а¤°аҐ‹а¤Ўа¤®аҐ€а¤Є а¤®аҐ‡а¤‚ а¤№аҐ€а¤‚аҐ¤",
-    presetRf: "RU а¤¬а¤ѕа¤ња¤ја¤ѕа¤° а¤ЁаҐ‡а¤¤а¤ѕ а¤ёаҐ‡ а¤¤аҐЃа¤Іа¤Ёа¤ѕ а¤•а¤°аҐ‡а¤‚",
-    presetNiche: "а¤µа¤їа¤¶а¤їа¤·аҐЌа¤џ AI а¤Ўа¤їа¤џаҐ‡а¤•аҐЌа¤џа¤° а¤ёаҐ‡ а¤¤аҐЃа¤Іа¤Ёа¤ѕ а¤•а¤°аҐ‡а¤‚",
-    kasperskyBadge: "вљЎ RU а¤ЁаҐ‡а¤¤а¤ѕ"
+    backToMain: "मुख्य पृष्ठ पर वापस",
+    targetIndicator: "🎯 लक्षित संकेतक",
+    roadmapInfo: "TrustNode (TN1) एक तैयार मोबाइल एप्लीकेशन MVP है। अगली पीढ़ी के मॉड्यूल (TN3, KIRA) सक्रिय विकास रोडमैप में हैं।",
+    presetRf: "RU बाज़ार नेता से तुलना करें",
+    presetNiche: "विशिष्ट AI डिटेक्टर से तुलना करें",
+    kasperskyBadge: "⚡ RU नेता"
   },
   ar: {
-    backToMain: "Ш§Щ„Ш№Щ€ШЇШ© Щ„Щ„Ш±Ш¦ЩЉШіЩЉШ©",
-    targetIndicator: "рџЋЇ Ш§Щ„Щ…Ш¤ШґШ± Ш§Щ„Щ…ШіШЄЩ‡ШЇЩЃ",
-    roadmapInfo: "ШЄШ·ШЁЩЉЩ‚ TrustNode (TN1) Ш¬Ш§Щ‡ШІ ЩѓШҐШµШЇШ§Ш± MVP. Ш§Щ„Щ€Ш­ШЇШ§ШЄ Ш§Щ„Щ†Щ‚ШЇЩЉШ© Ш§Щ„ШЄШ§Щ„ЩЉШ© (TN3, KIRA) ЩЃЩЉ Щ…Ш±Ш­Щ„Ш© Ш§Щ„ШЄШ·Щ€ЩЉШ± Ш§Щ„Щ†ШґШ· Ш­Ш§Щ„ЩЉШ§Щ‹.",
-    presetRf: "Щ…Щ‚Ш§Ш±Щ†Ш© Щ…Ш№ ШіЩ€Щ‚ RU Ш§Щ„Ш±Ш§Ш¦ШЇ",
-    presetNiche: "Щ…Щ‚Ш§Ш±Щ†Ш© Щ…Ш№ ЩѓШ§ШґЩЃШ§ШЄ AI Ш§Щ„Щ…ШЄШ®ШµШµШ©",
-    kasperskyBadge: "вљЎ Ш±Ш§Ш¦ШЇ RU"
+    backToMain: "العودة للرئيسية",
+    targetIndicator: "🎯 المؤشر المستهدف",
+    roadmapInfo: "تطبيق TrustNode (TN1) جاهز كإصدار MVP. الوحدات النقدية التالية (TN3, KIRA) في مرحلة التطوير النشط حالياً.",
+    presetRf: "مقارنة مع سوق RU الرائد",
+    presetNiche: "مقارنة مع كاشفات AI المتخصصة",
+    kasperskyBadge: "⚡ رائد RU"
   },
   pt: {
     backToMain: "Voltar para Principal",
-    targetIndicator: "рџЋЇ indicador-alvo",
-    roadmapInfo: "O TrustNode (TN1) Г© um MVP de aplicativo mГіvel pronto. Os novos mГіdulos (TN3, KIRA) estГЈo em desenvolvimento ativo.",
-    presetRf: "Comparar com lГ­der do mercado RU",
+    targetIndicator: "🎯 indicador-alvo",
+    roadmapInfo: "O TrustNode (TN1) é um MVP de aplicativo móvel pronto. Os novos módulos (TN3, KIRA) estão em desenvolvimento ativo.",
+    presetRf: "Comparar com líder do mercado RU",
     presetNiche: "Comparar com detectores IA especializados",
-    kasperskyBadge: "вљЎ LГ­der RU"
+    kasperskyBadge: "⚡ Líder RU"
   },
   fr: {
-    backToMain: "Retour Г  l'Accueil",
-    targetIndicator: "рџЋЇ indicateur cible",
-    roadmapInfo: "TrustNode (TN1) est un MVP d'application mobile opГ©rationnel. Les modules de nouvelle gГ©nГ©ration (TN3, KIRA) sont en cours de dГ©veloppement.",
-    presetRf: "Comparer avec le leader du marchГ© RU",
-    presetNiche: "Comparer avec les dГ©tecteurs IA spГ©cialisГ©s",
-    kasperskyBadge: "вљЎ Leader RU"
+    backToMain: "Retour à l'Accueil",
+    targetIndicator: "🎯 indicateur cible",
+    roadmapInfo: "TrustNode (TN1) est un MVP d'application mobile opérationnel. Les modules de nouvelle génération (TN3, KIRA) sont en cours de développement.",
+    presetRf: "Comparer avec le leader du marché RU",
+    presetNiche: "Comparer avec les détecteurs IA spécialisés",
+    kasperskyBadge: "⚡ Leader RU"
   },
   de: {
-    backToMain: "ZurГјck zur Hauptseite",
-    targetIndicator: "рџЋЇ Zielindikator",
-    roadmapInfo: "TrustNode (TN1) ist ein fertiges mobiles MVP. Die Module der nГ¤chsten Generation (TN3, KIRA) befinden sich in der aktiven Entwicklung.",
-    presetRf: "Mit RU-MarktfГјhrer vergleichen",
+    backToMain: "Zurück zur Hauptseite",
+    targetIndicator: "🎯 Zielindikator",
+    roadmapInfo: "TrustNode (TN1) ist ein fertiges mobiles MVP. Die Module der nächsten Generation (TN3, KIRA) befinden sich in der aktiven Entwicklung.",
+    presetRf: "Mit RU-Marktführer vergleichen",
     presetNiche: "Mit Nischen-AI-Detektoren vergleichen",
-    kasperskyBadge: "вљЎ RU-FГјhrer"
+    kasperskyBadge: "⚡ RU-Führer"
   },
   ja: {
-    backToMain: "гѓЎг‚¤гѓігЃ«ж€»г‚‹",
-    targetIndicator: "рџЋЇ й–‹з™єз›®жЁ™жЊ‡жЁ™",
-    roadmapInfo: "TrustNode (TN1) гЃЇе®џз”ЁеЏЇиѓЅгЃЄгѓўгѓђг‚¤гѓ«г‚ўгѓ—гѓЄMVPгЃ§гЃ™гЂ‚ж¬Ўдё–д»Јгѓўг‚ёгѓҐгѓјгѓ«пј€TN3гЂЃKIRAпј‰гЃЇгѓ­гѓјгѓ‰гѓћгѓѓгѓ—гЃ«еѕ“гЃ„гЂЃзЏѕењЁжґ»з™єгЃ«й–‹з™єдё­гЃ§гЃ™гЂ‚",
-    presetRf: "RUеё‚е ґгѓЄгѓјгѓЂгѓјгЃЁжЇ”ијѓ",
-    presetNiche: "гѓ‹гѓѓгѓЃAIж¤ње‡єе™ЁгЃЁжЇ”ијѓ",
-    kasperskyBadge: "вљЎ RUгѓЄгѓјгѓЂгѓј"
+    backToMain: "メインに戻る",
+    targetIndicator: "🎯 開発目標指標",
+    roadmapInfo: "TrustNode (TN1) は実用可能なモバイルアプリMVPです。次世代モジュール（TN3、KIRA）はロードマップに従い、現在活発に開発中です。",
+    presetRf: "RU市場リーダーと比較",
+    presetNiche: "ニッチAI検出器と比較",
+    kasperskyBadge: "⚡ RUリーダー"
   }
 };
 
 const COMPETITORS = [
-  { id: "kaspersky", name: "Kaspersky", priceRu: "РѕС‚ ~1990в‚Ѕ/РіРѕРґ", priceEn: "from ~$19.99/yr" },
-  { id: "norton", name: "Norton", priceRu: "РѕС‚ ~2990в‚Ѕ/РіРѕРґ", priceEn: "from ~$39.99/yr" },
-  { id: "bitdefender", name: "Bitdefender", priceRu: "РѕС‚ ~2490в‚Ѕ/РіРѕРґ", priceEn: "from ~$29.99/yr" },
-  { id: "googleSpam", name: "Google Protection", priceRu: "Р‘РµСЃРїР»Р°С‚РЅРѕ", priceEn: "Free" },
-  { id: "truecaller", name: "Truecaller", priceRu: "РѕС‚ ~990в‚Ѕ/РіРѕРґ", priceEn: "from ~$29.99/yr" },
-  { id: "malwarebytes", name: "Malwarebytes", priceRu: "РѕС‚ ~2490в‚Ѕ/РіРѕРґ", priceEn: "from ~$39.99/yr" },
-  { id: "adguard", name: "AdGuard", priceRu: "РѕС‚ ~1290в‚Ѕ/РіРѕРґ", priceEn: "from ~$19.99/yr" },
-  { id: "avast", name: "Avast Security", priceRu: "РѕС‚ ~1890в‚Ѕ/РіРѕРґ", priceEn: "from ~$29.99/yr" },
-  { id: "yandex", name: "РЇРЅРґРµРєСЃ РћРїСЂРµРґРµР»РёС‚РµР»СЊ", priceRu: "Р‘РµСЃРїР»Р°С‚РЅРѕ", priceEn: "Free" },
-  { id: "mcafee", name: "McAfee Security", priceRu: "РѕС‚ ~2490в‚Ѕ/РіРѕРґ", priceEn: "from ~$39.99/yr" },
-  { id: "lookout", name: "Lookout Safety", priceRu: "РѕС‚ ~1890в‚Ѕ/РіРѕРґ", priceEn: "from ~$29.99/yr" },
-  { id: "getcontact", name: "Getcontact", priceRu: "РѕС‚ ~1490в‚Ѕ/РіРѕРґ", priceEn: "from ~$19.99/yr" },
-  { id: "phishbowl", name: "Phishbowl", priceRu: "Р‘РµСЃРїР»Р°С‚РЅРѕ / Pro-РїРѕРґРїРёСЃРєР°", priceEn: "Free / Pro subscription" }
+  { id: "kaspersky", name: "Kaspersky", priceRu: "от ~1990₽/год", priceEn: "from ~$19.99/yr" },
+  { id: "norton", name: "Norton", priceRu: "от ~2990₽/год", priceEn: "from ~$39.99/yr" },
+  { id: "bitdefender", name: "Bitdefender", priceRu: "от ~2490₽/год", priceEn: "from ~$29.99/yr" },
+  { id: "googleSpam", name: "Google Protection", priceRu: "Бесплатно", priceEn: "Free" },
+  { id: "truecaller", name: "Truecaller", priceRu: "от ~990₽/год", priceEn: "from ~$29.99/yr" },
+  { id: "malwarebytes", name: "Malwarebytes", priceRu: "от ~2490₽/год", priceEn: "from ~$39.99/yr" },
+  { id: "adguard", name: "AdGuard", priceRu: "от ~1290₽/год", priceEn: "from ~$19.99/yr" },
+  { id: "avast", name: "Avast Security", priceRu: "от ~1890₽/год", priceEn: "from ~$29.99/yr" },
+  { id: "yandex", name: "Яндекс Определитель", priceRu: "Бесплатно", priceEn: "Free" },
+  { id: "mcafee", name: "McAfee Security", priceRu: "от ~2490₽/год", priceEn: "from ~$39.99/yr" },
+  { id: "lookout", name: "Lookout Safety", priceRu: "от ~1890₽/год", priceEn: "from ~$29.99/yr" },
+  { id: "getcontact", name: "Getcontact", priceRu: "от ~1490₽/год", priceEn: "from ~$19.99/yr" },
+  { id: "phishbowl", name: "Phishbowl", priceRu: "Бесплатно / Pro-подписка", priceEn: "Free / Pro subscription" }
 ];
 
 const SELECT_LABELS: Record<LanguageCode, string> = {
-  ru: "Р’С‹Р±РµСЂРёС‚Рµ РїСЂРѕРґСѓРєС‚С‹ РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ СЃ TrustNode (Р°РєС‚РёРІРЅРѕ РґРѕ 4 РѕРґРЅРѕРІСЂРµРјРµРЅРЅРѕ):",
+  ru: "Выберите продукты для сравнения с TrustNode (активно до 4 одновременно):",
   en: "Select products to compare with TrustNode (up to 4 active simultaneously):",
   es: "Seleccione productos para comparar con TrustNode (hasta 4 activos a la vez):",
-  zh: "йЂ‰ж‹©дёЋ TrustNode еЇ№жЇ”зљ„зњџе®ће®‰е…Ёдє§е“Ѓпј€еђЊж—¶жњЂе¤љйЂ‰ж‹© 4 дёЄпј‰пјљ",
-  tr: "TrustNode ile karЕџД±laЕџtД±rmak iГ§in ГјrГјnleri seГ§in (en fazla 4 adet):",
-  hi: "TrustNode а¤•аҐ‡ а¤ёа¤ѕа¤Ґ а¤¤аҐЃа¤Іа¤Ёа¤ѕ а¤•а¤°а¤ЁаҐ‡ а¤•аҐ‡ а¤Іа¤їа¤Џ а¤‰а¤¤аҐЌа¤Єа¤ѕа¤¦аҐ‹а¤‚ а¤•а¤ѕ а¤ља¤Їа¤Ё а¤•а¤°аҐ‡а¤‚ (а¤Џа¤• а¤¬а¤ѕа¤° а¤®аҐ‡а¤‚ 4 а¤¤а¤•):",
-  ar: "Ш§Ш®ШЄШ± Ш§Щ„Щ…Щ†ШЄШ¬Ш§ШЄ Щ„Щ„Щ…Щ‚Ш§Ш±Щ†Ш© Щ…Ш№ TrustNode (ШЁШ­ШЇ ШЈЩ‚ШµЩ‰ 4 ЩЃЩЉ Щ€Щ‚ШЄ Щ€Ш§Ш­ШЇ):",
-  pt: "Selecione produtos para comparar com TrustNode (atГ© 4 por vez):",
-  fr: "SГ©lectionnez les produits Г  comparer avec TrustNode (jusqu'Г  4 Г  la fois):",
-  de: "WГ¤hlen Sie Produkte zum Vergleich mit TrustNode aus (bis zu 4 gleichzeitig):",
-  ja: "TrustNodeгЃЁжЇ”ијѓгЃ™г‚‹г‚»г‚­гѓҐгѓЄгѓ†г‚ЈиЈЅе“Ѓг‚’йЃёжЉћпј€еђЊж™‚гЃ«жњЂе¤§4гЃ¤гЃѕгЃ§пј‰пјљ"
+  zh: "选择与 TrustNode 对比的真实安全产品（同时最多选择 4 个）：",
+  tr: "TrustNode ile karşılaştırmak için ürünleri seçin (en fazla 4 adet):",
+  hi: "TrustNode के साथ तुलना करने के लिए उत्पादों का चयन करें (एक बार में 4 तक):",
+  ar: "اختر المنتجات للمقارنة مع TrustNode (بحد أقصى 4 في وقت واحد):",
+  pt: "Selecione produtos para comparar com TrustNode (até 4 por vez):",
+  fr: "Sélectionnez les produits à comparer avec TrustNode (jusqu'à 4 à la fois):",
+  de: "Wählen Sie Produkte zum Vergleich mit TrustNode aus (bis zu 4 gleichzeitig):",
+  ja: "TrustNodeと比較するセキュリティ製品を選択（同時に最大4つまで）："
 };
 
 const SELECT_LABELS_SINGLE: Record<LanguageCode, string> = {
-  ru: "Р’С‹Р±РµСЂРёС‚Рµ РѕРґРёРЅ РїСЂРѕРґСѓРєС‚ РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ 1-РЅР°-1 СЃ TrustNode:",
+  ru: "Выберите один продукт для сравнения 1-на-1 с TrustNode:",
   en: "Select one product to compare 1-on-1 with TrustNode:",
   es: "Seleccione un producto para comparar 1 a 1 con TrustNode:",
-  zh: "йЂ‰ж‹© 1 дёЄдёЋ TrustNode иї›иЎЊ 1еЇ№1 еЇ№жЇ”зљ„дє§е“Ѓпјљ",
-  tr: "TrustNode ile 1-on-1 karЕџД±laЕџtД±rmak iГ§in bir ГјrГјn seГ§in:",
-  hi: "TrustNode а¤•аҐ‡ а¤ёа¤ѕа¤Ґ 1-on-1 а¤¤аҐЃа¤Іа¤Ёа¤ѕ а¤•а¤°а¤ЁаҐ‡ а¤•аҐ‡ а¤Іа¤їа¤Џ а¤Џа¤• а¤‰а¤¤аҐЌа¤Єа¤ѕа¤¦ а¤љаҐЃа¤ЁаҐ‡а¤‚:",
-  ar: "Ш§Ш®ШЄШ± Щ…Щ†ШЄШ¬Щ‹Ш§ Щ€Ш§Ш­ШЇЩ‹Ш§ Щ„Щ„Щ…Щ‚Ш§Ш±Щ†Ш© 1 Щ„ЩЂ 1 Щ…Ш№ TrustNode:",
+  zh: "选择 1 个与 TrustNode 进行 1对1 对比的产品：",
+  tr: "TrustNode ile 1-on-1 karşılaştırmak için bir ürün seçin:",
+  hi: "TrustNode के साथ 1-on-1 तुलना करने के लिए एक उत्पाद चुनें:",
+  ar: "اختر منتجًا واحدًا للمقارنة 1 لـ 1 مع TrustNode:",
   pt: "Selecione um produto para comparar 1 a 1 com TrustNode:",
-  fr: "SГ©lectionnez un produit Г  comparer 1-Г -1 avec TrustNode:",
-  de: "WГ¤hlen Sie ein Produkt fГјr den 1-zu-1-Vergleich mit TrustNode aus:",
-  ja: "TrustNodeгЃЁ1еЇѕ1гЃ§жЇ”ијѓгЃ™г‚‹иЈЅе“Ѓг‚’1гЃ¤йЃёжЉћгЃ—гЃ¦гЃЏгЃ гЃ•гЃ„пјљ"
+  fr: "Sélectionnez un produit à comparer 1-à-1 avec TrustNode:",
+  de: "Wählen Sie ein Produkt für den 1-zu-1-Vergleich mit TrustNode aus:",
+  ja: "TrustNodeと1対1で比較する製品を1つ選択してください："
 };
 
 const MODE_LABELS: Record<string, { label: string; multi: string; single: string }> = {
   ru: {
-    label: "Р РµР¶РёРј СЃСЂР°РІРЅРµРЅРёСЏ:",
-    multi: "РњСѓР»СЊС‚Рё-СЃСЂР°РІРЅРµРЅРёРµ (РґРѕ 4)",
-    single: "РЎСЂР°РІРЅРёС‚СЊ 1-РЅР°-1 (С‚РѕР»СЊРєРѕ 1)"
+    label: "Режим сравнения:",
+    multi: "Мульти-сравнение (до 4)",
+    single: "Сравнить 1-на-1 (только 1)"
   },
   en: {
     label: "Comparison Mode:",
@@ -152,39 +152,39 @@ const MODE_LABELS: Record<string, { label: string; multi: string; single: string
     single: "1-on-1 Compare (only 1)"
   },
   es: {
-    label: "Modo de comparaciГіn:",
-    multi: "ComparaciГіn mГєltiple (hasta 4)",
+    label: "Modo de comparación:",
+    multi: "Comparación múltiple (hasta 4)",
     single: "Comparar 1 a 1 (solo 1)"
   },
   zh: {
-    label: "еЇ№жЇ”жЁЎејЏпјљ",
-    multi: "е¤љй‡ЌеЇ№жЇ”пј€жњЂе¤љ 4 дёЄпј‰",
-    single: "1еЇ№1еЇ№жЇ”пј€д»…йЂ‰ 1 дёЄпј‰"
+    label: "对比模式：",
+    multi: "多重对比（最多 4 个）",
+    single: "1对1对比（仅选 1 个）"
   },
   tr: {
-    label: "KarЕџД±laЕџtД±rma Modu:",
-    multi: "Г‡oklu KarЕџД±laЕџtД±rma (4'e kadar)",
-    single: "1-on-1 KarЕџД±laЕџtД±rma (sadece 1)"
+    label: "Karşılaştırma Modu:",
+    multi: "Çoklu Karşılaştırma (4'e kadar)",
+    single: "1-on-1 Karşılaştırma (sadece 1)"
   },
   hi: {
-    label: "а¤¤аҐЃа¤ІРЅР° а¤®аҐ‹а¤Ў:",
-    multi: "а¤¬а¤№аҐЃ-а¤¤аҐЃа¤ІРЅР° (4 а¤¤а¤•)",
-    single: "1-on-1 а¤¤аҐЃа¤Іа¤Ёа¤ѕ (а¤•аҐ‡а¤µа¤І 1)"
+    label: "तुलна मोड:",
+    multi: "बहु-तुलна (4 तक)",
+    single: "1-on-1 तुलना (केवल 1)"
   },
   ar: {
-    label: "Щ€Ш¶Ш№ Ш§Щ„Щ…Щ‚Ш§Ш±Щ†Ш©:",
-    multi: "Щ…Щ‚Ш§Ш±Щ†Ш© Щ…ШЄШ№ШЇШЇШ© (Ш­ШЄЩ‰ 4)",
-    single: "Щ…Щ‚Ш§Ш±Щ†Ш© 1 Щ„ЩЂ 1 (Щ€Ш§Ш­ШЇ ЩЃЩ‚Ш·)"
+    label: "وضع المقارنة:",
+    multi: "مقارنة متعددة (حتى 4)",
+    single: "مقارنة 1 لـ 1 (واحد فقط)"
   },
   pt: {
-    label: "Modo de ComparaГ§ГЈo:",
-    multi: "Multi-comparaГ§ГЈo (atГ© 4)",
+    label: "Modo de Comparação:",
+    multi: "Multi-comparação (até 4)",
     single: "Comparar 1 a 1 (apenas 1)"
   },
   fr: {
     label: "Mode de comparaison:",
-    multi: "Multi-comparaison (jusqu'Г  4)",
-    single: "Comparer 1-Г -1 (seulement 1)"
+    multi: "Multi-comparaison (jusqu'à 4)",
+    single: "Comparer 1-à-1 (seulement 1)"
   },
   de: {
     label: "Vergleichsmodus:",
@@ -192,9 +192,9 @@ const MODE_LABELS: Record<string, { label: string; multi: string; single: string
     single: "1-zu-1-Vergleich (nur 1)"
   },
   ja: {
-    label: "жЇ”ијѓгѓўгѓјгѓ‰пјљ",
-    multi: "гѓћгѓ«гѓЃжЇ”ијѓпј€жњЂе¤§4гЃ¤пј‰",
-    single: "1еЇѕ1жЇ”ијѓпј€1гЃ¤гЃ®гЃїпј‰"
+    label: "比較モード：",
+    multi: "マルチ比較（最大4つ）",
+    single: "1対1比較（1つのみ）"
   }
 };
 
@@ -490,7 +490,7 @@ export default function ComparisonSection() {
         {/* Go back header */}
         <button 
           onClick={() => navigateTo("home")}
-          className="self-start mb-8 font-mono text-xs text-gray-500 hover:text-[#3B82F6] flex items-center gap-2 px-3 py-1.5 rounded-md border border-white/[0.04] bg-white/[0.02] transition-colors cursor-pointer"
+          className="self-start mb-8 font-mono text-xs text-gray-500 hover:text-[#3B82F6] flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/[0.04] bg-white/[0.02] transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>{localComp.backToMain}</span>
@@ -513,7 +513,7 @@ export default function ComparisonSection() {
         </p>
 
         {/* Product status info box */}
-        <div className="max-w-3xl mx-auto mb-8 px-4 py-2.5 rounded-md border border-blue-500/10 bg-blue-500/[0.02] text-center flex items-center justify-center gap-2">
+        <div className="max-w-3xl mx-auto mb-8 px-4 py-2.5 rounded-xl border border-blue-500/10 bg-blue-500/[0.02] text-center flex items-center justify-center gap-2">
           <HelpCircle className="w-4 h-4 text-blue-400 shrink-0 animate-pulse" />
           <span className="font-sans text-xs text-blue-300 font-medium leading-relaxed">
             {localComp.roadmapInfo}
@@ -521,16 +521,16 @@ export default function ComparisonSection() {
         </div>
 
         {/* Interactive Selector badges */}
-        <div className="w-full mb-8 p-6 border border-[#3C404A]/20 bg-[#12141A] rounded-md">
+        <div className="w-full mb-8 p-6 border border-[#3C404A]/20 bg-[#12141A] rounded-xl">
           {/* Mode Switcher */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6 pb-5 border-b border-white/[0.04]">
             <span className="font-mono text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider font-bold">
               {(MODE_LABELS[language] || MODE_LABELS.en).label}
             </span>
-            <div className="flex bg-white/[0.02] border border-white/[0.06] p-1 rounded-md">
+            <div className="flex bg-white/[0.02] border border-white/[0.06] p-1 rounded-xl">
               <button
                 onClick={() => handleModeChange("multi")}
-                className={`px-3 py-1.5 rounded-md font-sans text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl font-sans text-xs font-semibold transition-all duration-300 cursor-pointer ${
                   comparisonMode === "multi"
                     ? "bg-[#3B82F6] text-white shadow-[0_2px_8px_rgba(59,130,246,0.3)]"
                     : "text-gray-400 hover:text-gray-200"
@@ -540,7 +540,7 @@ export default function ComparisonSection() {
               </button>
               <button
                 onClick={() => handleModeChange("single")}
-                className={`px-3 py-1.5 rounded-md font-sans text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl font-sans text-xs font-semibold transition-all duration-300 cursor-pointer ${
                   comparisonMode === "single"
                     ? "bg-[#3B82F6] text-white shadow-[0_2px_8px_rgba(59,130,246,0.3)]"
                     : "text-gray-400 hover:text-gray-200"
@@ -561,13 +561,13 @@ export default function ComparisonSection() {
           <div className="flex flex-wrap justify-center gap-2 mb-4">
             <button
               onClick={() => { setComparisonMode("single"); setSelectedCompIds(["kaspersky"]); }}
-              className="px-3 py-1.5 rounded-md font-sans text-xs font-semibold border border-dashed border-amber-500/30 bg-amber-500/5 text-amber-400 hover:bg-amber-500/10 hover:border-amber-500/50 transition-all duration-300 cursor-pointer"
+              className="px-3 py-1.5 rounded-xl font-sans text-xs font-semibold border border-dashed border-amber-500/30 bg-amber-500/5 text-amber-400 hover:bg-amber-500/10 hover:border-amber-500/50 transition-all duration-300 cursor-pointer"
             >
               {localComp.presetRf}
             </button>
             <button
               onClick={() => { setComparisonMode("single"); setSelectedCompIds(["phishbowl"]); }}
-              className="px-3 py-1.5 rounded-md font-sans text-xs font-semibold border border-dashed border-violet-500/30 bg-violet-500/5 text-violet-400 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all duration-300 cursor-pointer"
+              className="px-3 py-1.5 rounded-xl font-sans text-xs font-semibold border border-dashed border-violet-500/30 bg-violet-500/5 text-violet-400 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all duration-300 cursor-pointer"
             >
               {localComp.presetNiche}
             </button>
@@ -579,7 +579,7 @@ export default function ComparisonSection() {
                 <button
                   key={comp.id}
                   onClick={() => toggleCompetitor(comp.id)}
-                  className={`px-3 py-1.5 rounded-md font-sans text-xs font-semibold border transition-all duration-300 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-xl font-sans text-xs font-semibold border transition-all duration-300 cursor-pointer ${
                     active
                       ? "bg-[#3B82F6]/15 border-[#3B82F6] text-white shadow-glow-md"
                       : "bg-white/[0.02] border-white/[0.06] text-gray-400 hover:border-white/[0.15] hover:text-gray-200"
@@ -602,9 +602,9 @@ export default function ComparisonSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
-          className="w-full p-4 sm:p-6 border border-[#3C404A]/30 bg-[#12141A] backdrop-blur-md rounded-md overflow-hidden mb-8"
+          className="w-full p-4 sm:p-6 border border-[#3C404A]/30 bg-[#12141A] backdrop-blur-md rounded-xl overflow-hidden mb-8"
         >
-          <div className="w-full overflow-x-auto rounded-md border border-white/[0.04] bg-[#0A0A0B]/50">
+          <div className="w-full overflow-x-auto rounded-xl border border-white/[0.04] bg-[#0A0A0B]/50">
             <table className="w-full min-w-[900px] border-collapse text-left">
               <thead>
                 <tr className="border-b border-white/[0.06] bg-white/[0.01]">
@@ -674,7 +674,7 @@ export default function ComparisonSection() {
         </motion.div>
 
         {/* Disclaimer section */}
-        <div className="max-w-2xl mx-auto flex flex-col items-center text-center p-6 sm:p-8 rounded-md border border-[#3C404A]/30 bg-[#12141A] backdrop-blur-md">
+        <div className="max-w-2xl mx-auto flex flex-col items-center text-center p-6 sm:p-8 rounded-xl border border-[#3C404A]/30 bg-[#12141A] backdrop-blur-md">
           <p className="font-sans text-xs text-gray-500 leading-relaxed mb-6">
             {cp.disclaimer}
           </p>
@@ -682,7 +682,7 @@ export default function ComparisonSection() {
             href="https://t.me/TrustNode_team"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-[#3B82F6] text-white font-sans text-xs font-bold hover:bg-[#3B82F6]/90 transition-all cursor-pointer shadow-glow-md hover:shadow-glow-lg"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#3B82F6] text-white font-sans text-xs font-bold hover:bg-[#3B82F6]/90 transition-all cursor-pointer shadow-glow-md hover:shadow-glow-lg"
           >
             <Send className="w-4 h-4" />
             <span>{cp.telegramBtn}</span>

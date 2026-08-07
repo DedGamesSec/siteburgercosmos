@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as Astronomy from "astronomy-engine";
 import { REAL_STARS, CONSTELLATION_LINES, type RealStar } from "../data/realStarCatalog";
 import { STAR_NAMES_RU, getRussianName } from "../data/starNamesRu";
@@ -254,7 +254,7 @@ export default function NetworkBackground({
 
       const moonGlow = moonGlowMultiplierRef.current;
 
-      // 0. Horizon twilight glow if Sun altitude is between -6В° and +6В°
+      // 0. Horizon twilight glow if Sun altitude is between -6° and +6°
       const sunAlt = sunAltitudeRef.current;
       if (sunAlt >= -6 && sunAlt <= 6) {
         const twilightAlpha = 0.08 * (1 - Math.abs(sunAlt) / 6);
@@ -489,7 +489,7 @@ export default function NetworkBackground({
           y: p.y,
           size: p.size,
           titleRu: p.nameRu,
-          techInfo: `${getSkyLabel("altitude", language)}: ${p.alt.toFixed(1)}В°`
+          techInfo: `${getSkyLabel("altitude", language)}: ${p.alt.toFixed(1)}°`
         });
       }
 
@@ -501,7 +501,7 @@ export default function NetworkBackground({
           y: sb.y,
           size: 2.2,
           titleRu: sb.nameRu,
-          techInfo: `${getSkyLabel("keplerianOrbitAlt", language)}: ${sb.alt.toFixed(1)}В°`
+          techInfo: `${getSkyLabel("keplerianOrbitAlt", language)}: ${sb.alt.toFixed(1)}°`
         });
       }
 
@@ -547,8 +547,8 @@ export default function NetworkBackground({
         ctx.save();
         ctx.globalAlpha = sc.alpha * (isHovered ? 1 : sc.centerDampen);
 
-        // Р§С‘С‚РєРёРµ С‚РѕС‡РєРё, Р±РµР· blur-СЃРІРµС‡РµРЅРёСЏ РІРѕРєСЂСѓРі Р·РІС‘Р·Рґ (РєР°Рє РІ bot/card_generator.py):
-        // Р·РІС‘Р·РґС‹ вЂ” С‡РёСЃС‚С‹Рµ РєСЂСѓРіРё, СЃРІРµС‡РµРЅРёРµ С‚РѕР»СЊРєРѕ РЅР° Р°РєС‚РёРІРЅРѕР№ (hovered) Р·РІРµР·РґРµ.
+        // Чёткие точки, без blur-свечения вокруг звёзд (как в bot/card_generator.py):
+        // звёзды — чистые круги, свечение только на активной (hovered) звезде.
         if (isHovered) {
           ctx.shadowColor = "#2DD4BF";
           ctx.shadowBlur = 10 * moonGlow;
@@ -663,7 +663,7 @@ export default function NetworkBackground({
             y: sat.y,
             size: 2.5,
             titleRu: sat.nameRu,
-            techInfo: `${getSkyLabel("orbit", language)}: ${sat.alt.toFixed(1)}В° // ${getSkyLabel("az", language)}: ${sat.az.toFixed(0)}В°`
+            techInfo: `${getSkyLabel("orbit", language)}: ${sat.alt.toFixed(1)}° // ${getSkyLabel("az", language)}: ${sat.az.toFixed(0)}°`
           });
         }
       }
@@ -698,7 +698,7 @@ export default function NetworkBackground({
       {/* Interactive Floating Tooltip */}
       {hoveredItem && (
         <div
-          className="fixed z-50 px-3.5 py-2 rounded-md bg-[#12141A]/95 backdrop-blur-md border border-[#3B82F6]/50 text-[#F5F5F0] pointer-events-none transition-all duration-75 flex flex-col gap-0.5 animate-fade-in"
+          className="fixed z-50 px-3.5 py-2 rounded-xl bg-[#12141A]/95 backdrop-blur-md border border-[#3B82F6]/50 text-[#F5F5F0] pointer-events-none transition-all duration-75 flex flex-col gap-0.5 animate-fade-in"
           style={{
             left: Math.min(window.innerWidth - 250, tooltipPos.x + 16),
             top: Math.max(16, Math.min(window.innerHeight - 90, tooltipPos.y - 14)),

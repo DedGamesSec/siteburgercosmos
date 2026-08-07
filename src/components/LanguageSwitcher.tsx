@@ -75,7 +75,7 @@ export default function LanguageSwitcher({ variant = "desktop" }: LanguageSwitch
   }, [isOpen, close]);
 
   const buttonClass =
-    "inline-flex items-center justify-center w-11 h-11 rounded-md bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300 cursor-pointer";
+    "inline-flex items-center justify-center w-11 h-11 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300 cursor-pointer";
 
   return (
     <div className="relative" ref={containerRef} id={`language-switcher-${variant}`}>
@@ -97,7 +97,7 @@ export default function LanguageSwitcher({ variant = "desktop" }: LanguageSwitch
             id={MENU_ID}
             role="listbox"
             aria-label="Language"
-            className="fixed z-[9999] w-[min(calc(100vw-16px),20rem)] sm:w-56 max-h-[calc(100vh-16px)] overflow-y-auto grid grid-cols-2 sm:grid-cols-1 rounded-md border border-[#3C404A] bg-[#0A0A0B] backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.5)] py-1.5 animate-fade-in"
+            className="fixed z-[9999] w-[min(calc(100vw-16px),20rem)] sm:w-56 max-h-[calc(100vh-16px)] overflow-y-auto grid grid-cols-2 sm:grid-cols-1 rounded-xl border border-[#3C404A] bg-[#0A0A0B] backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.5)] py-1.5 animate-fade-in"
             style={{ top: position.top, left: position.left }}
           >
             {LANGUAGES.map((lang) => (

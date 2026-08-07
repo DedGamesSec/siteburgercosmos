@@ -36,7 +36,7 @@ export default function FaqSection() {
             return (
               <div
                 key={index}
-                className={`rounded-md border transition-colors duration-300 ${
+                className={`rounded-xl border transition-colors duration-300 ${
                   isOpen ? "border-[#3B82F6]/30 bg-[#12141A]" : "border-white/[0.06] bg-[#12141A]"
                 }`}
               >

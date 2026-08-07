@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Shield, Lock, Eye, AlertCircle, RefreshCw } from "lucide-react";
 import { motion } from "motion/react";
 import { useTranslation } from "../i18n/LanguageContext";
@@ -7,87 +7,87 @@ import { useEcoMode } from "../context/EcoModeContext";
 import SectionBadge from "./SectionBadge";
 
 const TITLE_BY_LANG: Partial<Record<LanguageCode, string>> = {
-  ru: "Р‘РµР·РѕРїР°СЃРЅРѕСЃС‚СЊ РєСѓРїРѕР»Р°",
+  ru: "Безопасность купола",
   en: "Dome Hardening",
-  es: "Seguridad de la CГєpula",
-  zh: "з©№йЎ¶е®‰е…ЁйІжЉ¤",
-  hi: "а¤ЎаҐ‹а¤® а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ",
-  ar: "ШЈЩ…Ш§Щ† Ш§Щ„Щ‚ШЁШ©",
-  pt: "SeguranГ§a da CГєpula",
-  fr: "SГ©curitГ© du DГґme",
+  es: "Seguridad de la Cúpula",
+  zh: "穹顶安全防护",
+  hi: "डोम सुरक्षा",
+  ar: "أمان القبة",
+  pt: "Segurança da Cúpula",
+  fr: "Sécurité du Dôme",
   de: "Kuppelsicherheit",
-  ja: "гѓ‰гѓјгѓ гЃ®е®‰е…ЁеЇѕз­–"
+  ja: "ドームの安全対策"
 };
 
 const SUBTITLE_BY_LANG: Partial<Record<LanguageCode, string>> = {
-  ru: "РљР°Рє TrustNode Р·Р°С‰РёС‰Р°РµС‚ СЃРѕР±СЃС‚РІРµРЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјС‹ Рё РІР°С€Рё РґР°РЅРЅС‹Рµ РѕС‚ Р°РЅР°Р»РёР·Р° Рё РІР·Р»РѕРјР°",
+  ru: "Как TrustNode защищает собственные алгоритмы и ваши данные от анализа и взлома",
   en: "How TrustNode hardens its own environment and secures local user analytics",
-  es: "CГіmo TrustNode protege sus propios algoritmos y sus datos contra anГЎlisis y hackeos",
-  zh: "TrustNode е¦‚дЅ•ејєеЊ–и‡Єиє«иїђиЎЊзЋЇеўѓе№¶дїќжЉ¤жњ¬ењ°з”Ёж€·е€†жћђе…ЌеЏ—йЂ†еђ‘дёЋж”»е‡»",
-  hi: "TrustNode а¤…а¤Єа¤ЁаҐ‡ а¤ёаҐЌа¤µа¤Їа¤‚ а¤•аҐ‡ а¤Џа¤ІаҐЌа¤—аҐ‹а¤°а¤їа¤¦а¤® а¤”а¤° а¤†а¤Єа¤•аҐ‡ а¤ЎаҐ‡а¤џа¤ѕ а¤•аҐ‹ а¤µа¤їа¤¶аҐЌа¤ІаҐ‡а¤·а¤Ј а¤”а¤° а¤№аҐ€а¤•а¤їа¤‚а¤— а¤ёаҐ‡ а¤•аҐ€а¤ёаҐ‡ а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤їа¤¤ а¤°а¤–а¤¤а¤ѕ а¤№аҐ€",
-  ar: "ЩѓЩЉЩЃ ШЄШ­Щ…ЩЉ TrustNode Ш®Щ€Ш§Ш±ШІЩ…ЩЉШ§ШЄЩ‡Ш§ Ш§Щ„Ш®Ш§ШµШ© Щ€ШЁЩЉШ§Щ†Ш§ШЄЩѓ Щ…Щ† Ш§Щ„ШЄШ­Щ„ЩЉЩ„ Щ€Ш§Щ„Ш§Ш®ШЄШ±Ш§Щ‚",
-  pt: "Como o TrustNode protege seus prГіprios algoritmos e seus dados contra anГЎlise e invasГЈo",
-  fr: "Comment TrustNode protГЁge ses propres algorithmes et vos donnГ©es contre l'analyse et le piratage",
-  de: "Wie TrustNode seine eigenen Algorithmen und Ihre Daten vor Analyse und Hacking schГјtzt",
-  ja: "TrustNodeгЃЊз‹¬и‡ЄгЃ®г‚ўгѓ«г‚ґгѓЄг‚єгѓ гЃЁгѓ¦гѓјг‚¶гѓјгѓ‡гѓјг‚їг‚’и§Јжћђг‚„гѓЏгѓѓг‚­гѓіг‚°гЃ‹г‚‰дїќи­·гЃ™г‚‹ж–№жі•"
+  es: "Cómo TrustNode protege sus propios algoritmos y sus datos contra análisis y hackeos",
+  zh: "TrustNode 如何强化自身运行环境并保护本地用户分析免受逆向与攻击",
+  hi: "TrustNode अपने स्वयं के एल्गोरिदम और आपके डेटा को विश्लेषण और हैकिंग से कैसे सुरक्षित रखता है",
+  ar: "كيف تحمي TrustNode خوارزمياتها الخاصة وبياناتك من التحليل والاختراق",
+  pt: "Como o TrustNode protege seus próprios algoritmos e seus dados contra análise e invasão",
+  fr: "Comment TrustNode protège ses propres algorithmes et vos données contre l'analyse et le piratage",
+  de: "Wie TrustNode seine eigenen Algorithmen und Ihre Daten vor Analyse und Hacking schützt",
+  ja: "TrustNodeが独自のアルゴリズムとユーザーデータを解析やハッキングから保護する方法"
 };
 
 const BADGE_BY_LANG: Partial<Record<LanguageCode, string>> = {
-  ru: "Р—РђР©РРўРђ РЎРђРњРћР“Рћ РџР РР›РћР–Р•РќРРЇ",
+  ru: "ЗАЩИТА САМОГО ПРИЛОЖЕНИЯ",
   en: "APPLICATION HARDENING MODEL",
-  es: "MODELO DE PROTECCIГ“N DE LA APLICACIГ“N",
-  zh: "еє”з”ЁзЁ‹еєЏеЉ е›єжЁЎећ‹",
-  hi: "а¤Џа¤ЄаҐЌа¤Іа¤їа¤•аҐ‡а¤¶а¤Ё а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤®аҐ‰а¤Ўа¤І",
-  ar: "Щ†Щ…Щ€Ш°Ш¬ Ш­Щ…Ш§ЩЉШ© Ш§Щ„ШЄШ·ШЁЩЉЩ‚",
-  pt: "MODELO DE PROTEГ‡ГѓO DO APLICATIVO",
-  fr: "MODГ€LE DE SГ‰CURITГ‰ DE L'APPLICATION",
+  es: "MODELO DE PROTECCIÓN DE LA APLICACIÓN",
+  zh: "应用程序加固模型",
+  hi: "एप्लिकेशन सुरक्षा मॉडल",
+  ar: "نموذج حماية التطبيق",
+  pt: "MODELO DE PROTEÇÃO DO APLICATIVO",
+  fr: "MODÈLE DE SÉCURITÉ DE L'APPLICATION",
   de: "ANWENDUNGSSICHERHEITSMODELL",
-  ja: "г‚ўгѓ—гѓЄг‚±гѓјг‚·гѓ§гѓіеЉ е›єгѓўгѓ‡гѓ«"
+  ja: "アプリケーション加固モデル"
 };
 
 const COMPLIANCE_LABEL_BY_LANG: Partial<Record<LanguageCode, string>> = {
-  ru: "Р®Р РР”РР§Р•РЎРљРђРЇ Р РЎР•Р РўРР¤РРљРђР¦РРћРќРќРђРЇ РљР›РђРЎРЎРР¤РРљРђР¦РРЇ",
+  ru: "ЮРИДИЧЕСКАЯ И СЕРТИФИКАЦИОННАЯ КЛАССИФИКАЦИЯ",
   en: "LEGAL & SECURITY COMPLIANCE CLASSIFICATION",
-  es: "CLASIFICACIГ“N DE CUMPLIMIENTO LEGAL Y DE SEGURIDAD",
-  zh: "жі•еѕ‹дёЋе®‰е…Ёеђ€и§„е€†з±»",
-  hi: "а¤•а¤ѕа¤ЁаҐ‚а¤ЁаҐЂ а¤”а¤° а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤…а¤ЁаҐЃа¤Єа¤ѕа¤Іа¤Ё а¤µа¤°аҐЌа¤—аҐЂа¤•а¤°а¤Ј",
-  ar: "ШЄШµЩ†ЩЉЩЃ Ш§Щ„Ш§Щ…ШЄШ«Ш§Щ„ Ш§Щ„Щ‚Ш§Щ†Щ€Щ†ЩЉ Щ€Ш§Щ„ШЈЩ…Щ†ЩЉ",
-  pt: "CLASSIFICAГ‡ГѓO DE CONFORMIDADE LEGAL E SEGURANГ‡A",
-  fr: "CLASSIFICATION DE CONFORMITГ‰ LГ‰GALE ET SГ‰CURITAIRE",
+  es: "CLASIFICACIÓN DE CUMPLIMIENTO LEGAL Y DE SEGURIDAD",
+  zh: "法律与安全合规分类",
+  hi: "कानूनी और सुरक्षा अनुपालन वर्गीकरण",
+  ar: "تصنيف الامتثال القانوني والأمني",
+  pt: "CLASSIFICAÇÃO DE CONFORMIDADE LEGAL E SEGURANÇA",
+  fr: "CLASSIFICATION DE CONFORMITÉ LÉGALE ET SÉCURITAIRE",
   de: "RECHTLICHE & SICHERHEITSKLASSIFIZIERUNG",
-  ja: "жі•зљ„гЃЉг‚€гЃіг‚»г‚­гѓҐгѓЄгѓ†г‚Јжє–ж‹ гЃ®е€†йЎћ"
+  ja: "法的およびセキュリティ準拠の分類"
 };
 
 const COMPLIANCE_TEXT_BY_LANG: Partial<Record<LanguageCode, string>> = {
-  ru: "TrustNode РєР»Р°СЃСЃРёС„РёС†РёСЂСѓРµС‚СЃСЏ РєР°Рє СЃРµРјР°РЅС‚РёС‡РµСЃРєРёР№ СЌРІСЂРёСЃС‚РёС‡РµСЃРєРёР№ Р°РЅР°Р»РёР·Р°С‚РѕСЂ Р»РѕРєР°Р»СЊРЅС‹С… РґР°РЅРЅС‹С… Рё С‚РµРєСЃС‚РѕРІС‹С… РїР°С‚С‚РµСЂРЅРѕРІ. РЎРёСЃС‚РµРјР° РќР• СЃРѕРґРµСЂР¶РёС‚ РІСЃС‚СЂРѕРµРЅРЅС‹С… СЃСЂРµРґСЃС‚РІ С€РёС„СЂРѕРІР°РЅРёСЏ СЃС‚РѕСЂРѕРЅРЅРµРіРѕ С‚СЂР°С„РёРєР°, Р±Р»Р°РіРѕРґР°СЂСЏ С‡РµРјСѓ РЅРµ С‚СЂРµР±СѓРµС‚ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕРіРѕ Р»РёС†РµРЅР·РёСЂРѕРІР°РЅРёСЏ РІ Р¤РЎР‘ Р РѕСЃСЃРёРё РїРѕ РџРѕСЃС‚Р°РЅРѕРІР»РµРЅРёСЋ РџСЂР°РІРёС‚РµР»СЊСЃС‚РІР° в„–313.",
+  ru: "TrustNode классифицируется как семантический эвристический анализатор локальных данных и текстовых паттернов. Система НЕ содержит встроенных средств шифрования стороннего трафика, благодаря чему не требует обязательного лицензирования в ФСБ России по Постановлению Правительства №313.",
   en: "TrustNode operates strictly as a semantic heuristic text analyzer inside a localized memory environment. Since it does not encrypt or decrypt external network payloads, it does not require mandatory Russian Federal Security Service (FSB) licensing.",
-  es: "TrustNode se clasifica como un analizador heurГ­stico semГЎntico de datos locales y patrones de texto. El sistema NO contiene herramientas de cifrado para trГЎfico externo, por lo que no requiere licencias obligatorias del Servicio Federal de Seguridad (FSB) de Rusia.",
-  zh: "TrustNode дёҐж јдЅњдёєжњ¬ењ°еЊ–е†…е­зЋЇеўѓдё­зљ„иЇ­д№‰еђЇеЏ‘ејЏж–‡жњ¬е€†жћђе™ЁиїђиЎЊгЂ‚з”±дєЋе®ѓдёЌеЇ№е¤–йѓЁзЅ‘з»њиґџиЅЅиї›иЎЊеЉ еЇ†ж€–и§ЈеЇ†пјЊе› ж­¤дёЌйњЂи¦Ѓдї„зЅ—ж–ЇиЃ”й‚¦е®‰е…Ёе±Ђ (FSB) зљ„ејєе€¶и®ёеЏЇгЂ‚",
-  hi: "TrustNode а¤Џа¤• а¤ёаҐЌа¤Ґа¤ѕа¤ЁаҐЂа¤Їа¤•аҐѓа¤¤ а¤®аҐ‡а¤®аҐ‹а¤°аҐЂ а¤µа¤ѕа¤¤а¤ѕа¤µа¤°а¤Ј а¤•аҐ‡ а¤­аҐЂа¤¤а¤° а¤…а¤°аҐЌа¤Ґа¤—а¤¤ а¤…а¤ЁаҐЃа¤®а¤ѕа¤ЁаҐЂ а¤Єа¤ѕа¤  а¤µа¤їа¤¶аҐЌа¤ІаҐ‡а¤·а¤• а¤•аҐ‡ а¤°аҐ‚а¤Є а¤®аҐ‡а¤‚ а¤•а¤ѕа¤°аҐЌа¤Ї а¤•а¤°а¤¤а¤ѕ а¤№аҐ€аҐ¤ а¤љаҐ‚а¤‚а¤•а¤ї а¤Їа¤№ а¤¬а¤ѕа¤№а¤°аҐЂ а¤ЁаҐ‡а¤џа¤µа¤°аҐЌа¤• а¤ЄаҐ‡а¤ІаҐ‹Рґ а¤•аҐ‹ а¤Џа¤ЁаҐЌа¤•аҐЌа¤°а¤їа¤ЄаҐЌа¤џ а¤Їа¤ѕ а¤Ўа¤їа¤•аҐЌа¤°а¤їа¤ЄаҐЌа¤џ а¤Ёа¤№аҐЂа¤‚ а¤•а¤°а¤¤а¤ѕ а¤№аҐ€, а¤‡а¤ёа¤Іа¤їа¤Џ а¤‡а¤ёа¤•аҐ‡ а¤Іа¤їа¤Џ а¤°аҐ‚а¤ёаҐЂ а¤ёа¤‚а¤аҐЂа¤Ї а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤ёаҐ‡а¤µа¤ѕ (FSB) а¤Іа¤ѕа¤‡а¤ёаҐ‡а¤‚а¤ёа¤їа¤‚а¤— а¤•аҐЂ а¤†а¤µа¤¶аҐЌа¤Їа¤•а¤¤а¤ѕ а¤Ёа¤№аҐЂа¤‚ а¤№аҐ€аҐ¤",
-  ar: "ЩЉШЄЩ… ШЄШµЩ†ЩЉЩЃ TrustNode ЩѓЩ…Ш­Щ„Щ„ ШҐШ±ШґШ§ШЇЩЉ ШЇЩ„Ш§Щ„ЩЉ Щ„Щ„ШЁЩЉШ§Щ†Ш§ШЄ Ш§Щ„Щ…Ш­Щ„ЩЉШ© Щ€ШЈЩ†Щ…Ш§Ш· Ш§Щ„Щ†ШµЩ€Шµ. Щ„Ш§ ЩЉШ­ШЄЩ€ЩЉ Ш§Щ„Щ†ШёШ§Щ… Ш№Щ„Щ‰ ШЈЩЉ ШЈШЇЩ€Ш§ШЄ ШЄШґЩЃЩЉШ± Щ„Ш­Ш±ЩѓШ© Щ…Ш±Щ€Ш± Ш®Ш§Ш±Ш¬ЩЉШ©ШЊ Щ€ШЁШ§Щ„ШЄШ§Щ„ЩЉ Щ„Ш§ ЩЉШЄШ·Щ„ШЁ ШЄШ±Ш®ЩЉШµЩ‹Ш§ ШҐЩ„ШІШ§Щ…ЩЉЩ‹Ш§ Щ…Щ† Ш¬Щ‡Ш§ШІ Ш§Щ„ШЈЩ…Щ† Ш§Щ„ЩЃЩЉШЇШ±Ш§Щ„ЩЉ Ш§Щ„Ш±Щ€ШіЩЉ (FSB).",
-  pt: "O TrustNode Г© classificado como um analisador heurГ­stico semГўntico de dados locais e padrГµes de texto. O sistema NГѓO contГ©m ferramentas de criptografia para trГЎfego de terceiros, portanto, nГЈo exige licenciamento obrigatГіrio do FSB russo.",
-  fr: "TrustNode est classГ© comme un analyseur heuristique sГ©mantique de donnГ©es locales et de motifs textuels. Le systГЁme ne contient aucun outil de chiffrement tiers, il n'est donc pas soumis Г  l'octroi d'une licence obligatoire par le FSB russe.",
-  de: "TrustNode arbeitet ausschlieГџlich als semantisch-heuristischer Textanalysator in einer lokalen Speicherumgebung. Da es keine externen Netzwerknutzdaten verschlГјsselt oder entschlГјsselt, ist keine gesetzlich vorgeschriebene FSB-Lizenzierung erforderlich.",
-  ja: "TrustNodeгЃЇгЂЃгѓ­гѓјг‚«гѓ«гѓЎгѓўгѓЄз’°еўѓе†…гЃ®ж„Џе‘іи«–зљ„гѓ’гѓҐгѓјгѓЄг‚№гѓ†г‚Јгѓѓг‚Їгѓ†г‚­г‚№гѓ€е€†жћђгѓ„гѓјгѓ«гЃЁгЃ—гЃ¦гЃ®гЃїе‹•дЅњгЃ—гЃѕгЃ™гЂ‚е¤–йѓЁзЅ‘з»њгѓљг‚¤гѓ­гѓјгѓ‰г‚’жљ—еЏ·еЊ–гЃѕгЃџгЃЇеѕ©еЏ·гЃ™г‚‹гЃ“гЃЁгЃЇгЃЄгЃ„гЃџг‚ЃгЂЃгѓ­г‚·г‚ўйЂЈй‚¦дїќе®‰еєЃпј€FSBпј‰гЃ«г‚€г‚‹еј·е€¶гѓ©г‚¤г‚»гѓіг‚№гЃ®еЇѕи±Ўе¤–гЃЁгЃЄг‚ЉгЃѕгЃ™гЂ‚"
+  es: "TrustNode se clasifica como un analizador heurístico semántico de datos locales y patrones de texto. El sistema NO contiene herramientas de cifrado para tráfico externo, por lo que no requiere licencias obligatorias del Servicio Federal de Seguridad (FSB) de Rusia.",
+  zh: "TrustNode 严格作为本地化内存环境中的语义启发式文本分析器运行。由于它不对外部网络负载进行加密或解密，因此不需要俄罗斯联邦安全局 (FSB) 的强制许可。",
+  hi: "TrustNode एक स्थानीयकृत मेमोरी वातावरण के भीतर अर्थगत अनुमानी पाठ विश्लेषक के रूप में कार्य करता है। चूंकि यह बाहरी नेटवर्क पेलोд को एन्क्रिप्ट या डिक्रिप्ट नहीं करता है, इसलिए इसके लिए रूसी संघीय सुरक्षा सेवा (FSB) लाइसेंसिंग की आवश्यकता नहीं है।",
+  ar: "يتم تصنيف TrustNode كمحلل إرشادي دلالي للبيانات المحلية وأنماط النصوص. لا يحتوي النظام على أي أدوات تشفير لحركة مرور خارجية، وبالتالي لا يتطلب ترخيصًا إلزاميًا من جهاز الأمن الفيدرالي الروسي (FSB).",
+  pt: "O TrustNode é classificado como um analisador heurístico semântico de dados locais e padrões de texto. O sistema NÃO contém ferramentas de criptografia para tráfego de terceiros, portanto, não exige licenciamento obrigatório do FSB russo.",
+  fr: "TrustNode est classé comme un analyseur heuristique sémantique de données locales et de motifs textuels. Le système ne contient aucun outil de chiffrement tiers, il n'est donc pas soumis à l'octroi d'une licence obligatoire par le FSB russe.",
+  de: "TrustNode arbeitet ausschließlich als semantisch-heuristischer Textanalysator in einer lokalen Speicherumgebung. Da es keine externen Netzwerknutzdaten verschlüsselt oder entschlüsselt, ist keine gesetzlich vorgeschriebene FSB-Lizenzierung erforderlich.",
+  ja: "TrustNodeは、ローカルメモリ環境内の意味論的ヒューリスティックテキスト分析ツールとしてのみ動作します。外部网络ペイロードを暗号化または復号することはないため、ロシア連邦保安庁（FSB）による強制ライセンスの対象外となります。"
 };
 
 const FEATURES_BY_LANG: Partial<Record<LanguageCode, Array<{ title: string; desc: string }>>> = {
   ru: [
     {
-      title: "РЁРёС„СЂРѕРІР°РЅРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ VAULT",
-      desc: "РЁРёС„СЂРѕРІР°РЅРёРµ РїРѕ СЃС‚Р°РЅРґР°СЂС‚Сѓ AES-256-GCM СЃ РёРЅС‚РµРіСЂР°С†РёРµР№ Р°РїРїР°СЂР°С‚РЅРѕРіРѕ С‡РёРїР° Android Keystore / StrongBox. Р›РѕРєР°Р»СЊРЅС‹Рµ Р±Р°Р·С‹ Р·Р°С‰РёС‰РµРЅС‹ С‡РµСЂРµР· SQLCipher Рё PBKDF2+HKDF."
+      title: "Шифрованное хранилище VAULT",
+      desc: "Шифрование по стандарту AES-256-GCM с интеграцией аппаратного чипа Android Keystore / StrongBox. Локальные базы защищены через SQLCipher и PBKDF2+HKDF."
     },
     {
-      title: "РђРєС‚РёРІРЅР°СЏ Р·Р°С‰РёС‚Р° AEGIS RASP",
-      desc: "Р—Р°С‰РёС‚Р° РїСЂРёР»РѕР¶РµРЅРёСЏ РІРѕ РІСЂРµРјСЏ СЂР°Р±РѕС‚С‹ (Runtime Application Self-Protection). РћР±РЅР°СЂСѓР¶РёРІР°РµС‚ РѕС‚Р»Р°РґРєСѓ (Anti-Debug), СЂСѓС‚-РїСЂР°РІР°, СЌРјСѓР»СЏС‚РѕСЂС‹ Рё РїРѕРїС‹С‚РєРё РёРЅСЉРµРєС†РёРё РєРѕРґР°."
+      title: "Активная защита AEGIS RASP",
+      desc: "Защита приложения во время работы (Runtime Application Self-Protection). Обнаруживает отладку (Anti-Debug), рут-права, эмуляторы и попытки инъекции кода."
     },
     {
-      title: "РЎРёСЃС‚РµРјР° Р°СѓРґРёС‚Р° Self-Audit",
-      desc: "Р¤РѕРЅРѕРІС‹Рµ РїРµСЂРёРѕРґРёС‡РµСЃРєРёРµ РїСЂРѕРІРµСЂРєРё С†РµР»РѕСЃС‚РЅРѕСЃС‚Рё РёСЃРїРѕР»РЅСЏРµРјС‹С… С„Р°Р№Р»РѕРІ РЅР° Р±Р°Р·Рµ WorkManager. Р’С‹С‡РёСЃР»СЏРµС‚ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Рµ СЃСѓРјРјС‹ CRC32 РЅР°С‚РёРІРЅС‹С… РјРѕРґСѓР»РµР№ Рё СЃСЂР°РІРЅРёРІР°РµС‚ СЃ СЌС‚Р°Р»РѕРЅРѕРј."
+      title: "Система аудита Self-Audit",
+      desc: "Фоновые периодические проверки целостности исполняемых файлов на базе WorkManager. Вычисляет контрольные суммы CRC32 нативных модулей и сравнивает с эталоном."
     },
     {
-      title: "Р›РѕРєР°Р»СЊРЅР°СЏ РїРµСЃРѕС‡РЅРёС†Р° Рё 152-Р¤Р—",
-      desc: "РџРѕР»РЅРѕРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ Р·Р°РєРѕРЅСѓ Рѕ РїРµСЂСЃРѕРЅР°Р»СЊРЅС‹С… РґР°РЅРЅС‹С…. РСЃС…РѕРґРЅС‹Рµ С„Р°Р№Р»С‹, Р»РѕРіРё Рё Р°СѓРґРёРѕРїРѕС‚РѕРєРё РѕР±СЂР°Р±Р°С‚С‹РІР°СЋС‚СЃСЏ С‚РѕР»СЊРєРѕ РІ РћР—РЈ СѓСЃС‚СЂРѕР№СЃС‚РІР° Рё РЅРёРєРѕРіРґР° РЅРµ РѕС‚РїСЂР°РІР»СЏСЋС‚СЃСЏ РЅР° СЃРµСЂРІРµСЂР°."
+      title: "Локальная песочница и 152-ФЗ",
+      desc: "Полное соответствие закону о персональных данных. Исходные файлы, логи и аудиопотоки обрабатываются только в ОЗУ устройства и никогда не отправляются на сервера."
     }
   ],
   en: [
@@ -111,145 +111,145 @@ const FEATURES_BY_LANG: Partial<Record<LanguageCode, Array<{ title: string; desc
   es: [
     {
       title: "Almacenamiento Seguro VAULT",
-      desc: "Cifrado AES-256-GCM respaldado por chips fГ­sicos Android Keystore / StrongBox. Las bases de datos locales estГЎn protegidas mediante SQLCipher y PBKDF2+HKDF."
+      desc: "Cifrado AES-256-GCM respaldado por chips físicos Android Keystore / StrongBox. Las bases de datos locales están protegidas mediante SQLCipher y PBKDF2+HKDF."
     },
     {
-      title: "ProtecciГіn Activa AEGIS RASP",
-      desc: "AutoprotecciГіn de la aplicaciГіn en tiempo de ejecuciГіn (RASP). Detecta depuraciГіn (Anti-Debug), privilegios de root, emuladores e intentos de inyecciГіn de cГіdigo."
+      title: "Protección Activa AEGIS RASP",
+      desc: "Autoprotección de la aplicación en tiempo de ejecución (RASP). Detecta depuración (Anti-Debug), privilegios de root, emuladores e intentos de inyección de código."
     },
     {
-      title: "Motor de AutoauditorГ­a PeriГіdica",
-      desc: "Comprobaciones en segundo plano de la integridad de los archivos ejecutables a travГ©s de WorkManager. Calcula sumas de comprobaciГіn CRC32 de binarios nativos NDK."
+      title: "Motor de Autoauditoría Periódica",
+      desc: "Comprobaciones en segundo plano de la integridad de los archivos ejecutables a través de WorkManager. Calcula sumas de comprobación CRC32 de binarios nativos NDK."
     },
     {
       title: "Espacio de Trabajo Local y Ley 152-FZ",
-      desc: "Cumplimiento estricto de la ley de datos personales. Los registros de voz, archivos y transcripciones se procesan solo en la RAM del dispositivo y nunca se envГ­an a servidores."
+      desc: "Cumplimiento estricto de la ley de datos personales. Los registros de voz, archivos y transcripciones se procesan solo en la RAM del dispositivo y nunca se envían a servidores."
     }
   ],
   zh: [
     {
-      title: "VAULT еЉ еЇ†е­е‚Ё",
-      desc: "з”±з‰©зђ† Android Keystore / StrongBox зЎ¬д»¶иЉЇз‰‡ж”ЇжЊЃзљ„е†›з”Ёзє§ AES-256-GCM еЉ еЇ†гЂ‚жњ¬ењ°ж•°жЌ®й›†еђ€йЂљиї‡ SQLCipher е’Њ PBKDF2+HKDF иї›иЎЊеЉ е›єгЂ‚"
+      title: "VAULT 加密存储",
+      desc: "由物理 Android Keystore / StrongBox 硬件芯片支持的军用级 AES-256-GCM 加密。本地数据集合通过 SQLCipher 和 PBKDF2+HKDF 进行加固。"
     },
     {
-      title: "AEGIS дё»еЉЁиїђиЎЊж—¶дїќжЉ¤ (RASP)",
-      desc: "дё»еЉЁиїђиЎЊж—¶еє”з”ЁзЁ‹еєЏи‡ЄдїќжЉ¤ (RASP)гЂ‚жЊЃз»­е®Ўи®Ўе†…е­е®Њж•ґжЂ§пјЊж‹¦ж€Єи°ѓиЇ•е™ЁгЂЃRootе·Ґе…·гЂЃжЁЎж‹џе™ЁзЋЇеўѓе’Њд»Јз ЃжіЁе…ҐгЂ‚"
+      title: "AEGIS 主动运行时保护 (RASP)",
+      desc: "主动运行时应用程序自保护 (RASP)。持续审计内存完整性，拦截调试器、Root工具、模拟器环境和代码注入。"
     },
     {
-      title: "Self-Audit е®љжњџи‡ЄжЈЂеј•ж“Ћ",
-      desc: "з”± WorkManager й©±еЉЁзљ„еђЋеЏ°ж–‡д»¶е’Њз»„д»¶е®Њж•ґжЂ§е®Ўи®Ўе™ЁгЂ‚и®Ўз®—еЋџз”џ NDK дєЊиї›е€¶ж–‡д»¶зљ„ CRC32 ж ЎйЄЊе’ЊпјЊд»Ґе®ћж—¶жЈЂжµ‹зЇЎж”№гЂ‚"
+      title: "Self-Audit 定期自检引擎",
+      desc: "由 WorkManager 驱动的后台文件和组件完整性审计器。计算原生 NDK 二进制文件的 CRC32 校验和，以实时检测篡改。"
     },
     {
-      title: "жњ¬ењ°жІ™з›’дёЋдї„зЅ—ж–Ї 152-FZ жі•еѕ‹еђ€и§„",
-      desc: "е®Ње…Ёз¬¦еђ€дёЄдєєж•°жЌ®дїќжЉ¤жі•гЂ‚ж‰Ђжњ‰йЂљиЇќиЅ¬еЅ•гЂЃж¶€жЃЇе’Ње†…е­ж—Ґеї—еќ‡дёҐж јдїќе­ењЁжњ¬ењ°и®ѕе¤‡ RAM дё­пјЊз»ќдёЌеЏ‘йЂЃе€°жњЌеЉЎе™ЁгЂ‚"
+      title: "本地沙盒与俄罗斯 152-FZ 法律合规",
+      desc: "完全符合个人数据保护法。所有通话转录、消息和内存日志均严格保存在本地设备 RAM 中，绝不发送到服务器。"
     }
   ],
   hi: [
     {
-      title: "VAULT а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤їа¤¤ а¤ёаҐЌа¤џаҐ‹а¤°аҐ‡а¤њ",
-      desc: "а¤­аҐЊа¤¤а¤їа¤• Android Keystore / StrongBox а¤№а¤ѕа¤°аҐЌа¤Ўа¤µаҐ‡а¤Їа¤° а¤ља¤їа¤ЄаҐЌа¤ё а¤¦аҐЌа¤µа¤ѕа¤°а¤ѕ а¤ёа¤®а¤°аҐЌа¤Ґа¤їа¤¤ а¤ёаҐ€а¤ЁаҐЌа¤Ї-а¤—аҐЌа¤°аҐ‡а¤Ў AES-256-GCM а¤Џа¤ЁаҐЌа¤•аҐЌа¤°а¤їа¤ЄаҐЌа¤¶а¤ЁаҐ¤ а¤ёаҐЌа¤Ґа¤ѕа¤ЁаҐЂа¤Ї а¤ЎаҐ‡а¤џа¤ѕ SQLCipher а¤”а¤° PBKDF2+HKDF а¤•аҐ‡ а¤®а¤ѕа¤§аҐЌа¤Їа¤® а¤ёаҐ‡ а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤їа¤¤ а¤№аҐ€аҐ¤"
+      title: "VAULT सुरक्षित स्टोरेज",
+      desc: "भौतिक Android Keystore / StrongBox हार्डवेयर चिप्स द्वारा समर्थित सैन्य-ग्रेड AES-256-GCM एन्क्रिप्शन। स्थानीय डेटा SQLCipher और PBKDF2+HKDF के माध्यम से सुरक्षित है।"
     },
     {
-      title: "AEGIS а¤ёа¤•аҐЌа¤°а¤їа¤Ї RASP а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ",
-      desc: "а¤ёа¤•аҐЌа¤°а¤їа¤Ї а¤°а¤Ёа¤џа¤ѕа¤‡а¤® а¤Џа¤ЄаҐЌа¤Іа¤їа¤•аҐ‡а¤¶а¤Ё а¤ёаҐ‡а¤ІаҐЌа¤«-а¤ЄаҐЌа¤°аҐ‹а¤џаҐ‡а¤•аҐЌа¤¶а¤Ё (RASP)аҐ¤ а¤®аҐ‡а¤®аҐ‹а¤°аҐЂ а¤…а¤–а¤‚а¤Ўа¤¤а¤ѕ а¤•а¤ѕ а¤Іа¤—а¤ѕа¤¤а¤ѕа¤° а¤‘а¤Ўа¤їа¤џ а¤•а¤°а¤¤а¤ѕ а¤№аҐ€, а¤Ўа¤їа¤¬а¤—а¤°аҐЌа¤ё, а¤°аҐ‚а¤џ а¤џаҐ‚а¤ІаҐЌа¤ё, а¤Џа¤®аҐЃа¤ІаҐ‡а¤џа¤° а¤µа¤ѕа¤¤а¤ѕа¤µа¤°а¤Ј а¤”а¤° а¤•аҐ‹а¤Ў а¤‡а¤‚а¤њаҐ‡а¤•аҐЌа¤¶а¤Ё а¤•аҐ‹ а¤°аҐ‹а¤•а¤¤а¤ѕ а¤№аҐ€аҐ¤"
+      title: "AEGIS सक्रिय RASP सुरक्षा",
+      desc: "सक्रिय रनटाइम एप्लिकेशन सेल्फ-प्रोटेक्शन (RASP)। मेमोरी अखंडता का लगातार ऑडिट करता है, डिबगर्स, रूट टूल्स, एमुलेटर वातावरण और कोड इंजेक्शन को रोकता है।"
     },
     {
-      title: "а¤†а¤µа¤§а¤їа¤• а¤ёаҐЌа¤µ-а¤‘а¤Ўа¤їа¤џ а¤‡а¤‚а¤ња¤Ё",
-      desc: "WorkManager а¤¦аҐЌа¤µа¤ѕа¤°а¤ѕ а¤ёа¤‚а¤ља¤ѕа¤Іа¤їа¤¤ а¤ЄаҐѓа¤·аҐЌа¤ а¤­аҐ‚а¤®а¤ї а¤«а¤ја¤ѕа¤‡а¤І а¤”а¤° а¤а¤џа¤• а¤…а¤–а¤‚а¤Ўа¤¤а¤ѕ а¤Єа¤°аҐЂа¤•аҐЌа¤·а¤•аҐ¤ а¤µа¤ѕа¤ёаҐЌа¤¤а¤µа¤їа¤• а¤ёа¤®а¤Ї а¤®аҐ‡а¤‚ а¤›аҐ‡а¤Ўа¤ја¤›а¤ѕа¤Ўа¤ј а¤•а¤ѕ а¤Єа¤¤а¤ѕ а¤Іа¤—а¤ѕа¤ЁаҐ‡ а¤•аҐ‡ а¤Іа¤їа¤Џ а¤®аҐ‚а¤І NDK а¤¬а¤ѕа¤‡а¤Ёа¤°аҐЂ а¤•аҐ‡ CRC32 а¤љаҐ‡а¤•а¤ёа¤® а¤•аҐЂ а¤—а¤Ја¤Ёа¤ѕ а¤•а¤°а¤¤а¤ѕ а¤№аҐ€аҐ¤"
+      title: "आवधिक स्व-ऑडिट इंजन",
+      desc: "WorkManager द्वारा संचालित पृष्ठभूमि फ़ाइल और घटक अखंडता परीक्षक। वास्तविक समय में छेड़छाड़ का पता लगाने के लिए मूल NDK बाइनरी के CRC32 चेकसम की गणना करता है।"
     },
     {
-      title: "а¤‘а¤Ё-а¤Ўа¤їа¤µа¤ѕа¤‡а¤ё а¤ёаҐ€а¤‚а¤Ўа¤¬аҐ‰а¤•аҐЌа¤ё а¤”а¤° а¤•а¤ѕа¤ЁаҐ‚а¤Ё 152-FZ",
-      desc: "а¤µаҐЌа¤Їа¤•аҐЌа¤¤а¤їа¤—а¤¤ а¤ЎаҐ‡а¤џа¤ѕ а¤•а¤ѕа¤ЁаҐ‚а¤Ё а¤•а¤ѕ а¤ЄаҐ‚а¤°аҐЌа¤Ј а¤…а¤ЁаҐЃа¤Єа¤ѕа¤Іа¤ЁаҐ¤ а¤ёа¤­аҐЂ а¤•аҐ‰а¤І а¤џаҐЌа¤°а¤ѕа¤‚а¤ёа¤•аҐЌа¤°а¤їа¤ЄаҐЌа¤¶а¤Ё, а¤®аҐ€а¤ёаҐ‡а¤ња¤їа¤‚а¤— а¤”а¤° а¤®аҐ‡а¤®аҐ‹а¤°аҐЂ а¤ІаҐ‰а¤— а¤•аҐ‡а¤µа¤І а¤ёаҐЌа¤Ґа¤ѕа¤ЁаҐЂа¤Ї а¤Ўа¤їа¤µа¤ѕа¤‡а¤ё а¤°аҐ€а¤® а¤•аҐ‡ а¤­аҐЂа¤¤а¤° а¤°а¤№а¤¤аҐ‡ а¤№аҐ€а¤‚ а¤”а¤° а¤•а¤­аҐЂ а¤­аҐЂ а¤ёа¤°аҐЌа¤µа¤° а¤Єа¤° а¤Ёа¤№аҐЂа¤‚ а¤­аҐ‡а¤њаҐ‡ а¤ња¤ѕа¤¤аҐ‡ а¤№аҐ€а¤‚аҐ¤"
+      title: "ऑन-डिवाइस सैंडबॉक्स और कानून 152-FZ",
+      desc: "व्यक्तिगत डेटा कानून का पूर्ण अनुपालन। सभी कॉल ट्रांसक्रिप्शन, मैसेजिंग और मेमोरी लॉग केवल स्थानीय डिवाइस रैम के भीतर रहते हैं और कभी भी सर्वर पर नहीं भेजे जाते हैं।"
     }
   ],
   ar: [
     {
-      title: "Щ…ШіШЄЩ€ШЇШ№ VAULT Ш§Щ„ШўЩ…Щ†",
-      desc: "ШЄШґЩЃЩЉШ± AES-256-GCM Щ…ШЇШ№Щ€Щ… ШЁШґШ±ЩЉШ­Ш© Ш№ШЄШ§ШЇ Android Keystore / StrongBox. ЩЉШЄЩ… ШЄШЈЩ…ЩЉЩ† Щ‚Щ€Ш§Ш№ШЇ Ш§Щ„ШЁЩЉШ§Щ†Ш§ШЄ Ш§Щ„Щ…Ш­Щ„ЩЉШ© Ш№ШЁШ± SQLCipher Щ€ PBKDF2+HKDF."
+      title: "مستودع VAULT الآمن",
+      desc: "تشفير AES-256-GCM مدعوم بشريحة عتاد Android Keystore / StrongBox. يتم تأمين قواعد البيانات المحلية عبر SQLCipher و PBKDF2+HKDF."
     },
     {
-      title: "Ш­Щ…Ш§ЩЉШ© AEGIS RASP Ш§Щ„Щ†ШґШ·Ш©",
-      desc: "Ш§Щ„Ш­Щ…Ш§ЩЉШ© Ш§Щ„Ш°Ш§ШЄЩЉШ© Щ„Щ„ШЄШ·ШЁЩЉЩ‚ ШЈШ«Щ†Ш§ШЎ Ш§Щ„ШЄШґШєЩЉЩ„ (RASP). ШЄЩѓШЄШґЩЃ ШЈШЇЩ€Ш§ШЄ Ш§Щ„ШЄШµШ­ЩЉШ­ (Anti-Debug)ШЊ Щ€ШµЩ„Ш§Ш­ЩЉШ§ШЄ Ш§Щ„Ш±Щ€ШЄШЊ Щ€Ш§Щ„Щ…Ш­Ш§ЩѓЩЉШ§ШЄШЊ Щ€Щ…Ш­Ш§Щ€Щ„Ш§ШЄ Ш­Щ‚Щ† Ш§Щ„ШґЩЉЩЃШ±Ш©."
+      title: "حماية AEGIS RASP النشطة",
+      desc: "الحماية الذاتية للتطبيق أثناء التشغيل (RASP). تكتشف أدوات التصحيح (Anti-Debug)، وصلاحيات الروت، والمحاكيات، ومحاولات حقن الشيفرة."
     },
     {
-      title: "Щ…Ш­Ш±Щѓ Ш§Щ„ШЄШЇЩ‚ЩЉЩ‚ Ш§Щ„Ш°Ш§ШЄЩЉ Ш§Щ„ШЇЩ€Ш±ЩЉ",
-      desc: "ЩЃШ­Щ€ШµШ§ШЄ ШЇЩ€Ш±ЩЉШ© ЩЃЩЉ Ш§Щ„Ш®Щ„ЩЃЩЉШ© Щ„Щ„ШЄШЈЩѓШЇ Щ…Щ† ШіЩ„Ш§Щ…Ш© Ш§Щ„Щ…Щ„ЩЃШ§ШЄ Ш§Щ„Щ‚Ш§ШЁЩ„Ш© Щ„Щ„ШЄЩ†ЩЃЩЉШ° Ш№ШЁШ± WorkManager. ЩЉШ­ШіШЁ Щ…Ш¬Щ…Щ€Ш№ Ш§Щ„ШЄШ­Щ‚Щ‚ CRC32 Щ„Щ…Щ„ЩЃШ§ШЄ NDK Ш§Щ„Ш«Щ†Ш§Ш¦ЩЉШ© Ш§Щ„ШЈШµЩ„ЩЉШ©."
+      title: "محرك التدقيق الذاتي الدوري",
+      desc: "فحوصات دورية في الخلفية للتأكد من سلامة الملفات القابلة للتنفيذ عبر WorkManager. يحسب مجموع التحقق CRC32 لملفات NDK الثنائية الأصلية."
     },
     {
-      title: "ШЁЩЉШ¦Ш© Ш§Щ„Ш№Щ…Щ„ Ш§Щ„Щ…Ш­Щ„ЩЉШ© Щ€Щ‚Ш§Щ†Щ€Щ† 152-FZ",
-      desc: "Ш§Щ…ШЄШ«Ш§Щ„ ЩѓШ§Щ…Щ„ Щ„Щ‚Ш§Щ†Щ€Щ† Ш§Щ„ШЁЩЉШ§Щ†Ш§ШЄ Ш§Щ„ШґШ®ШµЩЉШ©. ШЄЩЏШ№Ш§Щ„Ш¬ Щ…Щ„ЩЃШ§ШЄ Ш§Щ„ШµЩ€ШЄ Щ€Ш§Щ„ШіШ¬Щ„Ш§ШЄ Щ€Ш§Щ„ШЄШ±Ш¬Щ…Ш§ШЄ ЩЃЩЉ Ш°Ш§ЩѓШ±Ш© Ш§Щ„Щ€ШµЩ€Щ„ Ш§Щ„Ш№ШґЩ€Ш§Ш¦ЩЉ Щ„Щ„Ш¬Щ‡Ш§ШІ ЩЃЩ‚Ш· Щ€Щ„Ш§ ШЄЩЏШ±ШіЩ„ Щ…Ш·Щ„Щ‚Щ‹Ш§ ШҐЩ„Щ‰ Ш§Щ„ШіЩЉШ±ЩЃШ±Ш§ШЄ."
+      title: "بيئة العمل المحلية وقانون 152-FZ",
+      desc: "امتثال كامل لقانون البيانات الشخصية. تُعالج ملفات الصوت والسجلات والترجمات في ذاكرة الوصول العشوائي للجهاز فقط ولا تُرسل مطلقًا إلى السيرفرات."
     }
   ],
   pt: [
     {
       title: "Armazenamento Seguro VAULT",
-      desc: "Criptografia AES-256-GCM com integraГ§ГЈo do chip de hardware Android Keystore / StrongBox. As bases locais sГЈo protegidas via SQLCipher e PBKDF2+HKDF."
+      desc: "Criptografia AES-256-GCM com integração do chip de hardware Android Keystore / StrongBox. As bases locais são protegidas via SQLCipher e PBKDF2+HKDF."
     },
     {
-      title: "ProteГ§ГЈo Ativa AEGIS RASP",
-      desc: "AutoproteГ§ГЈo do aplicativo em tempo de execuГ§ГЈo (RASP). Detecta depuraГ§ГЈo (Anti-Debug), privilГ©gios de root, emuladores e tentativas de injeГ§ГЈo de cГіdigo."
+      title: "Proteção Ativa AEGIS RASP",
+      desc: "Autoproteção do aplicativo em tempo de execução (RASP). Detecta depuração (Anti-Debug), privilégios de root, emuladores e tentativas de injeção de código."
     },
     {
-      title: "Sistema de Autoauditoria PeriГіdica",
-      desc: "VerificaГ§Гµes periГіdicas em segundo plano da integridade de arquivos executГЎveis baseadas no WorkManager. Calcula somas de verificaГ§ГЈo CRC32 dos binГЎrios nativos do NDK."
+      title: "Sistema de Autoauditoria Periódica",
+      desc: "Verificações periódicas em segundo plano da integridade de arquivos executáveis baseadas no WorkManager. Calcula somas de verificação CRC32 dos binários nativos do NDK."
     },
     {
       title: "Sandbox Local e Lei Federal 152-FZ",
-      desc: "Conformidade total com a lei de dados pessoais. Arquivos originais, logs e fluxos de ГЎudio sГЈo processados apenas na RAM do dispositivo e nunca saem do aparelho."
+      desc: "Conformidade total com a lei de dados pessoais. Arquivos originais, logs e fluxos de áudio são processados apenas na RAM do dispositivo e nunca saem do aparelho."
     }
   ],
   fr: [
     {
-      title: "Stockage SГ©curisГ© VAULT",
-      desc: "Chiffrement AES-256-GCM de niveau militaire soutenu par les puces physiques Android Keystore / StrongBox. Les bases de donnГ©es locales sont sГ©curisГ©es via SQLCipher et PBKDF2+HKDF."
+      title: "Stockage Sécurisé VAULT",
+      desc: "Chiffrement AES-256-GCM de niveau militaire soutenu par les puces physiques Android Keystore / StrongBox. Les bases de données locales sont sécurisées via SQLCipher et PBKDF2+HKDF."
     },
     {
       title: "Protection Active AEGIS RASP",
-      desc: "Autoprotection de l'application au moment de l'exГ©cution (RASP). DГ©tecte le dГ©bogage (Anti-Debug), les privilГЁges root, les Г©mulateurs et les injections de code."
+      desc: "Autoprotection de l'application au moment de l'exécution (RASP). Détecte le débogage (Anti-Debug), les privilèges root, les émulateurs et les injections de code."
     },
     {
-      title: "Moteur d'Auto-audit PГ©riodique",
-      desc: "VГ©rifications d'intГ©gritГ© en arriГЁre-plan des exГ©cutables gГ©rГ©es par WorkManager. Calcule les sommes de contrГґle CRC32 des binaires NDK natifs pour dГ©tecter les altГ©rations."
+      title: "Moteur d'Auto-audit Périodique",
+      desc: "Vérifications d'intégrité en arrière-plan des exécutables gérées par WorkManager. Calcule les sommes de contrôle CRC32 des binaires NDK natifs pour détecter les altérations."
     },
     {
-      title: "Bac Г  sable local & Loi 152-FZ",
-      desc: "ConformitГ© stricte Г  la loi sur les donnГ©es personnelles. Toutes les transcriptions d'appels, messages et journaux restent uniquement dans la RAM locale de l'appareil et ne sont jamais envoyГ©s aux serveurs."
+      title: "Bac à sable local & Loi 152-FZ",
+      desc: "Conformité stricte à la loi sur les données personnelles. Toutes les transcriptions d'appels, messages et journaux restent uniquement dans la RAM locale de l'appareil et ne sont jamais envoyés aux serveurs."
     }
   ],
   de: [
     {
       title: "Sicherer VAULT-Speicher",
-      desc: "AES-256-GCM-VerschlГјsselung auf MilitГ¤rniveau, unterstГјtzt durch physische Android Keystore / StrongBox-Hardwarechips. Lokale DatensГ¤tze sind Гјber SQLCipher & PBKDF2+HKDF geschГјtzt."
+      desc: "AES-256-GCM-Verschlüsselung auf Militärniveau, unterstützt durch physische Android Keystore / StrongBox-Hardwarechips. Lokale Datensätze sind über SQLCipher & PBKDF2+HKDF geschützt."
     },
     {
       title: "AEGIS Aktiver RASP-Schutz",
-      desc: "Proaktive Runtime Application Self-Protection (RASP). ГњberprГјft stГ¤ndig die SpeicherintegritГ¤t und blockiert Debugger, Root-Tools, Emulatorumgebungen und Code-Injections."
+      desc: "Proaktive Runtime Application Self-Protection (RASP). Überprüft ständig die Speicherintegrität und blockiert Debugger, Root-Tools, Emulatorumgebungen und Code-Injections."
     },
     {
-      title: "RegelmГ¤Гџige Self-Audit-Engine",
-      desc: "HintergrundintegritГ¤tsprГјfung fГјr Dateien und Komponenten via WorkManager. Berechnet CRC32-PrГјfsummen nativer NDK-BinГ¤rdateien, um Manipulationen sofort zu erkennen."
+      title: "Regelmäßige Self-Audit-Engine",
+      desc: "Hintergrundintegritätsprüfung für Dateien und Komponenten via WorkManager. Berechnet CRC32-Prüfsummen nativer NDK-Binärdateien, um Manipulationen sofort zu erkennen."
     },
     {
       title: "On-Device-Sandbox & Gesetz 152-FZ",
-      desc: "Strikte Einhaltung des russischen Bundesgesetzes 152-FZ. Alle Anruftranskriptionen, Nachrichten und Speicherprotokolle verbleiben ausschlieГџlich im RAM des lokalen GerГ¤ts."
+      desc: "Strikte Einhaltung des russischen Bundesgesetzes 152-FZ. Alle Anruftranskriptionen, Nachrichten und Speicherprotokolle verbleiben ausschließlich im RAM des lokalen Geräts."
     }
   ],
   ja: [
     {
-      title: "жљ—еЏ·еЊ–г‚№гѓ€гѓ¬гѓјг‚ё VAULT",
-      desc: "Android Keystore / StrongBox з‰©зђ†гѓЏгѓјгѓ‰г‚¦г‚§г‚ўгѓЃгѓѓгѓ—г‚’еџєз›¤гЃЁгЃ™г‚‹и»Ќз”Ёгѓ¬гѓ™гѓ«гЃ® AES-256-GCM жљ—еЏ·еЊ–гЂ‚гѓ­гѓјг‚«гѓ«гѓ‡гѓјг‚їгѓ™гѓјг‚№гЃЇ SQLCipher гЃЁ PBKDF2+HKDF гЃ§дїќи­·гЃ•г‚ЊгЃ¦гЃ„гЃѕгЃ™гЂ‚"
+      title: "暗号化ストレージ VAULT",
+      desc: "Android Keystore / StrongBox 物理ハードウェアチップを基盤とする軍用レベルの AES-256-GCM 暗号化。ローカルデータベースは SQLCipher と PBKDF2+HKDF で保護されています。"
     },
     {
-      title: "г‚ўг‚Їгѓ†г‚Јгѓ–дїќи­· AEGIS RASP",
-      desc: "е®џиЎЊж™‚г‚ўгѓ—гѓЄг‚±гѓјг‚·гѓ§гѓіи‡Єе·±дїќи­·пј€RASPпј‰гЂ‚гѓЎгѓўгѓЄгЃ®е®Ње…ЁжЂ§г‚’з¶™з¶љзљ„гЃ«з›Ји¦–гЃ—гЂЃгѓ‡гѓђгѓѓг‚¬пј€Anti-Debugпј‰гЂЃгѓ«гѓјгѓ€жЁ©й™ђгЂЃг‚ЁгѓџгѓҐгѓ¬гѓјг‚їгЂЃг‚ігѓјгѓ‰г‚¤гѓіг‚ёг‚§г‚Їг‚·гѓ§гѓіг‚’ж¤ње‡єгѓ»йЃ®ж–­гЃ—гЃѕгЃ™гЂ‚"
+      title: "アクティブ保護 AEGIS RASP",
+      desc: "実行時アプリケーション自己保護（RASP）。メモリの完全性を継続的に監視し、デバッガ（Anti-Debug）、ルート権限、エミュレータ、コードインジェクションを検出・遮断します。"
     },
     {
-      title: "и‡Єе·±з›Јжџ»г‚Ёгѓіг‚ёгѓі Self-Audit",
-      desc: "WorkManager г‚’дЅїз”ЁгЃ—гЃџгѓђгѓѓг‚Їг‚°гѓ©г‚¦гѓігѓ‰гЃ§гЃ®е®џиЎЊгѓ•г‚Ўг‚¤гѓ«е®Ње…ЁжЂ§з›Јжџ»гЂ‚гѓЌг‚¤гѓ†г‚Јгѓ– NDK гѓђг‚¤гѓЉгѓЄгЃ® CRC32 гѓЃг‚§гѓѓг‚Їг‚µгѓ г‚’з®—е‡єгЃ—гЂЃж”№гЃ–г‚“г‚’гѓЄг‚ўгѓ«г‚їг‚¤гѓ гЃ«ж¤њзџҐгЃ—гЃѕгЃ™гЂ‚"
+      title: "自己監査エンジン Self-Audit",
+      desc: "WorkManager を使用したバックグラウンドでの実行ファイル完全性監査。ネイティブ NDK バイナリの CRC32 チェックサムを算出し、改ざんをリアルタイムに検知します。"
     },
     {
-      title: "г‚Єгѓігѓ‡гѓђг‚¤г‚№гѓ»г‚µгѓігѓ‰гѓњгѓѓг‚Їг‚№гЃЁеЂ‹дєєжѓ…е ±дїќи­·жі•",
-      desc: "еЂ‹дєєгѓ‡гѓјг‚їдїќи­·жі•гЃ«е®Ње…Ёжє–ж‹ гЂ‚йџіеЈ°гЂЃиЁйЊІгЂЃгѓ†г‚­г‚№гѓ€гЃ®гѓ­г‚°гЃЇгѓ‡гѓђг‚¤г‚№гЃ® RAM дёЉгЃ§гЃ®гЃїе‡¦зђ†гЃ•г‚ЊгЂЃг‚µгѓјгѓђгѓјгЃ«йЂЃдїЎгЃ•г‚Њг‚‹гЃ“гЃЁгЃЇгЃ‚г‚ЉгЃѕгЃ›г‚“гЂ‚"
+      title: "オンデバイス・サンドボックスと個人情報保護法",
+      desc: "個人データ保護法に完全準拠。音声、記録、テキストのログはデバイスの RAM 上でのみ処理され、サーバーに送信されることはありません。"
     }
   ]
 };
@@ -275,7 +275,7 @@ const SecurityCard: React.FC<SecurityCardProps> = ({ feat, className, ecoMode })
 
   return (
     <div
-      className={`relative p-6 sm:p-8 rounded-md bg-[#0A0A0B]/95 border border-white/[0.04] hover:border-[#3B82F6]/40 transition-all duration-300 group flex gap-5 overflow-hidden ${className}`}
+      className={`relative p-6 sm:p-8 rounded-xl bg-[#0A0A0B]/95 border border-white/[0.04] hover:border-[#3B82F6]/40 transition-all duration-300 group flex gap-5 overflow-hidden ${className}`}
       onMouseEnter={() => { if (!ecoMode) setScan("active"); }}
       onMouseLeave={() => {
         if (!ecoMode) setScan((s) => (s === "active" ? "exiting" : s));
@@ -284,7 +284,7 @@ const SecurityCard: React.FC<SecurityCardProps> = ({ feat, className, ecoMode })
       {/* Single scan stripe: slow infinite sweep on hover; on leave the SAME
           stripe accelerates from its current position and exits */}
       {scanning && (
-        <div className="absolute inset-x-0 top-0 h-full pointer-events-none overflow-hidden rounded-md">
+        <div className="absolute inset-x-0 top-0 h-full pointer-events-none overflow-hidden rounded-xl">
           <motion.div
             className="absolute left-0 w-full h-[2px]"
             style={{
@@ -303,7 +303,7 @@ const SecurityCard: React.FC<SecurityCardProps> = ({ feat, className, ecoMode })
           />
         </div>
       )}
-      <div className="w-10 h-10 rounded-md bg-[#12141A] flex items-center justify-center border border-[#3B82F6]/10 shrink-0 group-hover:border-[#3B82F6]/30 transition-all duration-300">
+      <div className="w-10 h-10 rounded-xl bg-[#12141A] flex items-center justify-center border border-[#3B82F6]/10 shrink-0 group-hover:border-[#3B82F6]/30 transition-all duration-300">
         {feat.icon}
       </div>
       <div>
@@ -386,7 +386,7 @@ const AppSecuritySection = React.memo(function AppSecuritySection() {
         </div>
 
         {/* Technical Architecture Info Row */}
-        <div className="mt-16 p-6 rounded-md border border-[#3B82F6]/15 bg-[#090F1B]/40 backdrop-blur-md max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-5">
+        <div className="mt-16 p-6 rounded-xl border border-[#3B82F6]/15 bg-[#090F1B]/40 backdrop-blur-md max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-5">
           <div className="w-12 h-12 rounded-full bg-[#3B82F6]/10 flex items-center justify-center shrink-0 border border-[#3B82F6]/20">
             <AlertCircle className="w-6 h-6 text-[#3B82F6]" />
           </div>

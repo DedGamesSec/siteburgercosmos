@@ -61,7 +61,7 @@ const StatCard: React.FC<StatCardProps> = ({ stat }) => {
   return (
     <div
       ref={ref}
-      className="relative p-7 sm:p-9 rounded-md bg-[#12141A] backdrop-blur-md border border-[#3C404A]/30 hover:border-[#3B82F6]/50 transition-all duration-300 group flex flex-col overflow-hidden hover:shadow-[0_8px_35px_rgba(59,130,246,0.12)]"
+      className="relative p-7 sm:p-9 rounded-xl bg-[#12141A] backdrop-blur-md border border-[#3C404A]/30 hover:border-[#3B82F6]/50 transition-all duration-300 group flex flex-col overflow-hidden hover:shadow-[0_8px_35px_rgba(59,130,246,0.12)]"
       id={stat.id}
     >
       {/* Internal subtle glow card backing */}
@@ -71,7 +71,7 @@ const StatCard: React.FC<StatCardProps> = ({ stat }) => {
 
         {/* Micro-badge styled icon wrapper */}
         <div className="relative inline-flex items-center justify-center mb-6">
-          <div className="relative flex items-center justify-center p-2.5 rounded-md bg-[#0A0A0B] border border-[#3B82F6]/30 shadow-glow-sm group-hover:border-[#3B82F6]/60 transition-all duration-300 group-hover:scale-[1.05]">
+          <div className="relative flex items-center justify-center p-2.5 rounded-xl bg-[#0A0A0B] border border-[#3B82F6]/30 shadow-glow-sm group-hover:border-[#3B82F6]/60 transition-all duration-300 group-hover:scale-[1.05]">
             <stat.Icon className="w-5 h-5 text-[#3B82F6]" />
           </div>
         </div>

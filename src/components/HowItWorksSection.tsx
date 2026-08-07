@@ -73,13 +73,13 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
           </p>
 
           {/* Toggle Tab Selector (Swiss-style segment control) */}
-          <div className="inline-flex p-1 rounded-md bg-[#0A0A0B] border border-white/[0.04] mt-8 shrink-0 relative z-20">
+          <div className="inline-flex p-1 rounded-xl bg-[#0A0A0B] border border-white/[0.04] mt-8 shrink-0 relative z-20">
             <button
               onClick={() => {
                 setIsAdvancedView(false);
                 setActiveLayer(0);
               }}
-              className={`px-4 py-2 rounded-md font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+              className={`px-4 py-2 rounded-xl font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                 !isAdvancedView 
                   ? "bg-[#3B82F6] text-white shadow-glow-md" 
                   : "text-gray-500 hover:text-gray-300 bg-transparent"
@@ -92,7 +92,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                 setIsAdvancedView(true);
                 setActiveLayer(0);
               }}
-              className={`px-4 py-2 rounded-md font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-xl font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
                 isAdvancedView 
                   ? "bg-[#3B82F6] text-white shadow-glow-md" 
                   : "text-gray-500 hover:text-gray-300 bg-transparent"
@@ -125,7 +125,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                   <button
                     key={layer.num}
                     onClick={() => setActiveLayer(index)}
-                    className={`w-full text-left relative z-10 flex items-start gap-4 p-4 sm:p-5 rounded-md border transition-all duration-300 ${
+                    className={`w-full text-left relative z-10 flex items-start gap-4 p-4 sm:p-5 rounded-xl border transition-all duration-300 ${
                       isActive 
                         ? "bg-[#12141A] border-[#3B82F6] shadow-glow-md" 
                         : "bg-[#0A0A0B]/80 border-[#3C404A]/40 hover:border-[#3B82F6]/20 hover:bg-[#0A0A0B]"
@@ -166,7 +166,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
 
           {/* Right Block: Core USPs as a single full-width accent panel */}
           <div className="lg:col-span-5" id="usp-highlights">
-            <div className="relative rounded-md border border-[#3B82F6]/20 bg-[#12141A] overflow-hidden">
+            <div className="relative rounded-xl border border-[#3B82F6]/20 bg-[#12141A] overflow-hidden">
               <div className="absolute top-0 right-0 w-full h-36 bg-[#3B82F6]/5 blur-2xl pointer-events-none" />
               <div className="relative p-6 sm:p-7">
                 <div className="flex items-center gap-2 mb-5">
@@ -180,7 +180,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                     const { Icon, wrapClass } = USP_ICONS[i];
                     return (
                       <div key={usp.title} className="flex items-start gap-4 py-5 first:pt-0 last:pb-0">
-                        <div className={`p-3 rounded-md shrink-0 ${wrapClass}`}>
+                        <div className={`p-3 rounded-xl shrink-0 ${wrapClass}`}>
                           <Icon className="w-6 h-6" />
                         </div>
                         <div className="min-w-0">

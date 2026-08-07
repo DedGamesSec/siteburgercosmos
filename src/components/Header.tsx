@@ -107,7 +107,7 @@ export default function Header() {
       <button
         key={page.id}
         onClick={() => handlePageNavigation(page.id)}
-        className={`font-sans text-sm font-medium text-left transition-colors py-2.5 px-3 rounded-md border cursor-pointer ${
+        className={`font-sans text-sm font-medium text-left transition-colors py-2.5 px-3 rounded-xl border cursor-pointer ${
           isActive
             ? "text-[#3B82F6] bg-[#3B82F6]/10 border-[#3B82F6]/20"
             : "text-gray-300 hover:text-[#3B82F6] border-transparent"
@@ -124,7 +124,7 @@ export default function Header() {
       <button
         key={page.id}
         onClick={() => handlePageNavigation(page.id)}
-        className={`relative font-sans text-sm font-medium whitespace-nowrap px-2.5 py-2 rounded-md transition-colors cursor-pointer ${
+        className={`relative font-sans text-sm font-medium whitespace-nowrap px-2.5 py-2 rounded-xl transition-colors cursor-pointer ${
           isActive ? "text-[#3B82F6]" : "text-gray-300 hover:text-white"
         }`}
         aria-current={isActive ? "page" : undefined}
@@ -132,12 +132,12 @@ export default function Header() {
         {isActive && (
           <>
             {ecoMode ? (
-              <div className="absolute inset-0 rounded-md bg-[#3B82F6]/10 border border-[#3B82F6]/25" />
+              <div className="absolute inset-0 rounded-xl bg-[#3B82F6]/10 border border-[#3B82F6]/25" />
             ) : (
               <motion.div
                 layoutId="nav-active-pill"
                 transition={{ type: "spring", stiffness: 500, damping: 40 }}
-                className="absolute inset-0 rounded-md bg-[#3B82F6]/10 border border-[#3B82F6]/25"
+                className="absolute inset-0 rounded-xl bg-[#3B82F6]/10 border border-[#3B82F6]/25"
               />
             )}
           </>
@@ -164,7 +164,7 @@ export default function Header() {
           rel="noopener noreferrer"
           aria-label={label}
           title={label}
-          className="inline-flex items-center justify-center w-10 h-10 rounded-md bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
+          className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
         >
           <Icon className="w-4 h-4" />
         </a>
@@ -175,7 +175,7 @@ export default function Header() {
         rel="noopener noreferrer"
         aria-label="Product Radar"
         title="Product Radar"
-        className="inline-flex items-center justify-center w-10 h-10 rounded-md bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
+        className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
       >
         <Radar className="w-4 h-4" />
       </a>
@@ -183,7 +183,7 @@ export default function Header() {
   );
 
   const utilityButtonClass =
-    "inline-flex items-center justify-center w-11 h-11 rounded-md border transition-all duration-300 cursor-pointer";
+    "inline-flex items-center justify-center w-11 h-11 rounded-xl border transition-all duration-300 cursor-pointer";
 
   const renderEcoButton = () => (
     <button
@@ -240,7 +240,7 @@ export default function Header() {
           onClick={() => handlePageNavigation("home")}
           id="header-logo-container"
         >
-          <div className="w-12 h-14 flex items-center justify-center bg-[#3C404A]/30 rounded-md border border-[#3B82F6]/15">
+          <div className="w-12 h-14 flex items-center justify-center bg-[#3C404A]/30 rounded-xl border border-[#3B82F6]/15">
             <MiniLogo />
           </div>
 
@@ -274,7 +274,7 @@ export default function Header() {
         {/* Mobile: hamburger toggle */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden col-start-3 justify-self-end p-2.5 rounded-md bg-[#3C404A]/40 border border-[#3C404A]/50 text-gray-400 hover:text-[#3B82F6] transition-colors cursor-pointer"
+          className="lg:hidden col-start-3 justify-self-end p-2.5 rounded-xl bg-[#3C404A]/40 border border-[#3C404A]/50 text-gray-400 hover:text-[#3B82F6] transition-colors cursor-pointer"
           id="mobile-menu-toggle"
           aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
@@ -308,7 +308,7 @@ export default function Header() {
       {/* Non-blocking mode toast confirmation */}
       <div
         aria-live="polite"
-        className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 rounded-md border border-[#3B82F6]/30 bg-[#0A0A0B]/95 text-[#F5F5F0] font-sans text-xs shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-md transition-all duration-300 ${toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"}`}
+        className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 rounded-xl border border-[#3B82F6]/30 bg-[#0A0A0B]/95 text-[#F5F5F0] font-sans text-xs shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-md transition-all duration-300 ${toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"}`}
       >
         {toast}
       </div>

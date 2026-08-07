@@ -1209,7 +1209,7 @@ const rafTypingRef = useRef<number | null>(null);
                 }
               }}
               disabled={isPlaying}
-              className={`px-4 py-2.5 rounded-md font-sans text-xs sm:text-sm font-semibold border transition-all duration-300 flex items-center gap-2 ${
+              className={`px-4 py-2.5 rounded-xl font-sans text-xs sm:text-sm font-semibold border transition-all duration-300 flex items-center gap-2 ${
                 isPlaying ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
               } ${
                 activeScenarioIdx === idx
@@ -1227,7 +1227,7 @@ const rafTypingRef = useRef<number | null>(null);
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto items-stretch">
           
           {/* PHONE CALL SIMULATOR COLUMN (Col 5) */}
-          <div className="lg:col-span-5 flex flex-col justify-between p-6 sm:p-8 rounded-md bg-[#0A0A0B] border border-white/[0.04] relative overflow-hidden shadow-2xl min-h-[500px]">
+          <div className="lg:col-span-5 flex flex-col justify-between p-6 sm:p-8 rounded-xl bg-[#0A0A0B] border border-white/[0.04] relative overflow-hidden shadow-2xl min-h-[500px]">
             
             {/* Flashing Intrusion Danger Ambient Cover */}
             <AnimatePresence>
@@ -1244,7 +1244,7 @@ const rafTypingRef = useRef<number | null>(null);
 
             {/* Simulated Phone UI Header */}
             <div className="flex items-center justify-between z-10">
-              <div className="flex items-center gap-1.5 bg-white/[0.02] border border-white/[0.05] px-2.5 py-1 rounded-md font-mono text-[11px] text-[#3B82F6]">
+              <div className="flex items-center gap-1.5 bg-white/[0.02] border border-white/[0.05] px-2.5 py-1 rounded-xl font-mono text-[11px] text-[#3B82F6]">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
                 <span>{sui.secureLine}</span>
               </div>
@@ -1275,7 +1275,7 @@ const rafTypingRef = useRef<number | null>(null);
             {/* LIVE DIALOG TRANSCRIPTION CANVAS */}
             <div 
               ref={transcriptionContainerRef}
-              className="flex-1 min-h-[160px] max-h-[220px] overflow-y-auto p-4 rounded-md bg-[#0A0A0B] border border-white/[0.02] flex flex-col gap-3 relative scrollbar-thin z-10"
+              className="flex-1 min-h-[160px] max-h-[220px] overflow-y-auto p-4 rounded-xl bg-[#0A0A0B] border border-white/[0.02] flex flex-col gap-3 relative scrollbar-thin z-10"
             >
               {currentSentenceIdx === -1 ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
@@ -1287,7 +1287,7 @@ const rafTypingRef = useRef<number | null>(null);
               ) : (
                 <div className="space-y-4">
                   {currentScenario.speech.slice(0, currentSentenceIdx).map((sent, i) => (
-                    <div key={i} className="text-left bg-white/[0.01] p-3 rounded-md border border-white/[0.02]">
+                    <div key={i} className="text-left bg-white/[0.01] p-3 rounded-xl border border-white/[0.02]">
                       <p className="font-mono text-[11px] text-gray-500 mb-1">
                         SENC-{String(i+1).padStart(2, "0")} // {sui.secRamLabel}
                       </p>
@@ -1302,7 +1302,7 @@ const rafTypingRef = useRef<number | null>(null);
                     <motion.div 
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-left bg-[#110D12] p-3 rounded-md border border-[#EF4444]/15"
+                      className="text-left bg-[#110D12] p-3 rounded-xl border border-[#EF4444]/15"
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-mono text-[11px] text-[#EF4444] uppercase tracking-wider flex items-center gap-1">
@@ -1327,7 +1327,7 @@ const rafTypingRef = useRef<number | null>(null);
                   initial={{ opacity: 0, scale: 0.95, y: 10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="mt-4 p-4 rounded-md bg-[#7F1D1D]/40 border border-[#EF4444]/40 flex items-center gap-3 z-10"
+                  className="mt-4 p-4 rounded-xl bg-[#7F1D1D]/40 border border-[#EF4444]/40 flex items-center gap-3 z-10"
                 >
                   <AlertTriangle className="w-5 h-5 text-[#EF4444] shrink-0 animate-bounce" />
                   <div className="text-left">
@@ -1347,7 +1347,7 @@ const rafTypingRef = useRef<number | null>(null);
               <button
                 onClick={startSimulation}
                 disabled={isPlaying || currentSentenceIdx !== -1}
-                className={`py-3 px-4 rounded-md font-sans text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
+                className={`py-3 px-4 rounded-xl font-sans text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
                   isPlaying || currentSentenceIdx !== -1
                     ? "bg-gray-800 text-gray-500 border border-transparent cursor-not-allowed"
                     : "bg-[#3B82F6] text-[#F5F5F0] hover:bg-[#3B82F6]/90 cursor-pointer shadow-glow-md hover:shadow-glow-lg"
@@ -1358,7 +1358,7 @@ const rafTypingRef = useRef<number | null>(null);
               </button>
               <button
                 onClick={resetSimulation}
-                className="py-3 px-4 rounded-md font-sans text-xs font-bold bg-[#12141A] border border-white/[0.05] text-gray-400 hover:text-white hover:bg-white/[0.02] cursor-pointer transition-colors flex items-center justify-center gap-2"
+                className="py-3 px-4 rounded-xl font-sans text-xs font-bold bg-[#12141A] border border-white/[0.05] text-gray-400 hover:text-white hover:bg-white/[0.02] cursor-pointer transition-colors flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 {btnReset}
@@ -1371,7 +1371,7 @@ const rafTypingRef = useRef<number | null>(null);
           <div className="lg:col-span-7 flex flex-col justify-between gap-6">
             
             {/* THREAT CLIMBER HUD */}
-            <div className="p-6 rounded-md bg-[#0A0A0B] border border-white/[0.04]">
+            <div className="p-6 rounded-xl bg-[#0A0A0B] border border-white/[0.04]">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-mono text-xs font-bold text-gray-400 uppercase tracking-wider">
                   {threatMeterLabel}
@@ -1396,7 +1396,7 @@ const rafTypingRef = useRef<number | null>(null);
                 <motion.div 
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="mt-4 p-3 rounded-md bg-[#101B2B] border border-[#3B82F6]/30 flex items-center justify-center gap-2.5"
+                  className="mt-4 p-3 rounded-xl bg-[#101B2B] border border-[#3B82F6]/30 flex items-center justify-center gap-2.5"
                 >
                   <ShieldCheck className="w-4 h-4 text-[#3B82F6] animate-pulse" />
                   <span className="font-mono text-[10px] font-black tracking-wider text-[#3B82F6] uppercase">
@@ -1407,7 +1407,7 @@ const rafTypingRef = useRef<number | null>(null);
             </div>
 
             {/* 7 LAYER PIPELINE STATUS TRACKER */}
-            <div className="p-6 rounded-md bg-[#0A0A0B] border border-white/[0.04] flex-1 flex flex-col justify-between">
+            <div className="p-6 rounded-xl bg-[#0A0A0B] border border-white/[0.04] flex-1 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-mono text-xs font-bold text-gray-400 uppercase tracking-wider">
@@ -1427,7 +1427,7 @@ const rafTypingRef = useRef<number | null>(null);
                     return (
                       <div 
                         key={index}
-                        className={`p-2.5 sm:p-3 rounded-md border transition-all duration-300 flex items-center justify-between ${
+                        className={`p-2.5 sm:p-3 rounded-xl border transition-all duration-300 flex items-center justify-between ${
                           isActive 
                             ? isThreatLayer && threatLevel >= 75
                               ? "bg-[#2E1010]/50 border-[#EF4444]/40 shadow-glow-danger"
@@ -1479,7 +1479,7 @@ const rafTypingRef = useRef<number | null>(null);
             </div>
 
             {/* REAL-TIME ENCRYPTED TERMINAL CONSOLE */}
-            <div className="p-5 rounded-md bg-[#0A0A0B] border border-white/[0.04] h-48 flex flex-col justify-between">
+            <div className="p-5 rounded-xl bg-[#0A0A0B] border border-white/[0.04] h-48 flex flex-col justify-between">
               <div className="flex items-center gap-2 border-b border-white/[0.04] pb-2 mb-2">
                 <Terminal className="w-4 h-4 text-gray-500" />
                 <span className="font-mono text-[15px] text-gray-200 uppercase tracking-widest font-bold">
