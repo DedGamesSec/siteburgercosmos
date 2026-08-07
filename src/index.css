@@ -1,5 +1,12 @@
 ﻿@import "tailwindcss";
 
+/* Tailwind scans the whole repo by default. Exclude docs/scripts so that any
+   hex or class mentioned there (e.g. old accent #2E7DFF in md/ps1) can't leak
+   into the generated CSS as dead utilities. */
+@source not "../scripts/**";
+@source not "../MASTER_PROMPT.md";
+@source not "../**/*.md";
+
 @theme {
   /* Typography: Exo 2 + Jura + JetBrains Mono вЂ” РµРґРёРЅС‹Р№ С€СЂРёС„С‚РѕРІРѕР№ СЏР·С‹Рє СЃ Р±РѕС‚РѕРј
      (bot/card_generator.py: Exo2 РґР»СЏ С‡РёСЃРµР»/Р·Р°РіРѕР»РѕРІРєРѕРІ, Jura РґР»СЏ РїРѕРґРїРёСЃРµР№/С‚РµРєСЃС‚Р°) */

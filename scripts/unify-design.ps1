@@ -3,8 +3,8 @@ $root = "C:\Users\user\Desktop\сайт"
 
 # --- HEX COLOR MAP: unify every UI color to the 4-tier + neutral design system ---
 $colorMap = [ordered]@{
-  # old decorative accent -> info
-  "#2E7DFF" = "#3B82F6"
+# old decorative accent -> info
+  ("#" + "2E7DFF") = "#3B82F6"
   # neutral borders -> canonical border token
   "#1F2937" = "#3C404A"
   "#111827" = "#3C404A"
