@@ -497,7 +497,7 @@ export default function App() {
                         id="main-title"
                       >
                         <span className="text-[#F5F5F0]">Trust</span>
-                        <span className="text-[#8B8F9C]">Node</span>
+                        <span className="text-[#3B82F6]">Node</span>
                       </h1>
 
                       {/* Monospaced Bracketed Subtitle */}

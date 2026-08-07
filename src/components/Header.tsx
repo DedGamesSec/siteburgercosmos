@@ -240,7 +240,7 @@ export default function Header() {
           onClick={() => handlePageNavigation("home")}
           id="header-logo-container"
         >
-          <div className="w-12 h-14 flex items-center justify-center bg-[#3C404A]/30 rounded-xl border border-[#3B82F6]/15">
+          <div className="w-12 h-14 flex items-center justify-center">
             <MiniLogo />
           </div>
 
