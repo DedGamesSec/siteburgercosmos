@@ -1,0 +1,355 @@
+﻿import React from "react";
+import { Bot, WifiOff, HardDrive, Cpu, Radio, FileText } from "lucide-react";
+import { motion } from "motion/react";
+import { useTranslation } from "../i18n/LanguageContext";
+import { LanguageCode } from "../i18n/languages";
+import { useEcoMode } from "../context/EcoModeContext";
+import SectionBadge from "./SectionBadge";
+
+// Deterministic pseudo-random equalizer heights per bar (for variety across idle loops)
+const EQ_BASE = [10, 22, 16, 30, 14, 26, 20, 34, 18, 28, 12, 24];
+
+const TITLE_BY_LANG: Partial<Record<LanguageCode, string>> = {
+  ru: "Р“РѕР»РѕСЃРѕРІРѕР№ Р°СЃСЃРёСЃС‚РµРЅС‚ KIRA",
+  en: "KIRA Voice Assistant",
+  es: "Asistente de Voz KIRA",
+  zh: "KIRA иЇ­йџіеЉ©ж‰‹",
+  hi: "а¤•аҐЂа¤°а¤ѕ (KIRA) а¤µаҐ‰а¤ЇСЃ а¤…а¤ёа¤їа¤ёаҐЌа¤џаҐ‡а¤‚а¤џ",
+  ar: "Ш§Щ„Щ…ШіШ§Ш№ШЇ Ш§Щ„ШµЩ€ШЄЩЉ KIRA",
+  pt: "Assistente de Voz KIRA",
+  fr: "Assistant Vocal KIRA",
+  de: "KIRA Sprachassistent",
+  ja: "йџіеЈ°г‚ўг‚·г‚№г‚їгѓігѓ€ KIRA"
+};
+
+const SUBTITLE_BY_LANG: Partial<Record<LanguageCode, string>> = {
+  ru: "РРЅС‚РµР»Р»РµРєС‚СѓР°Р»СЊРЅС‹Р№ СЂРµС‡РµРІРѕР№ РєРѕРЅС‚СѓСЂ, СЂР°Р±РѕС‚Р°СЋС‰РёР№ РїСЂСЏРјРѕ РІ РѕРїРµСЂР°С‚РёРІРЅРѕР№ РїР°РјСЏС‚Рё С‚РµР»РµС„РѕРЅР°",
+  en: "An intelligent, speech-capable companion running fully within your local RAM",
+  es: "Un bucle de voz inteligente que se ejecuta directamente en la memoria RAM de su telГ©fono",
+  zh: "з›ґжЋҐењЁж‰‹жњєиїђиЎЊе†…е­дё­иїђиЎЊзљ„ж™єиѓЅиЇ­йџіе€†жћђе›ћи·Ї",
+  hi: "а¤Џа¤• а¤¬аҐЃа¤¦аҐЌа¤§а¤їа¤®а¤ѕа¤Ё а¤­а¤ѕа¤·а¤Ј-а¤ёа¤•аҐЌа¤·а¤® а¤ёа¤ѕа¤ҐаҐЂ а¤њаҐ‹ а¤ЄаҐ‚а¤°аҐЂ а¤¤а¤°а¤№ а¤ёаҐ‡ а¤†а¤Єа¤•аҐ‡ а¤ёаҐЌа¤Ґа¤ѕа¤ЁаҐЂа¤Ї а¤°аҐ€а¤® а¤•аҐ‡ а¤­аҐЂа¤¤а¤° а¤ља¤Іа¤¤а¤ѕ а¤№аҐ€",
+  ar: "ШЇШ§Ш¦Ш±Ш© ЩѓЩ„Ш§Щ…ЩЉШ© Ш°ЩѓЩЉШ© ШЄШ№Щ…Щ„ Щ…ШЁШ§ШґШ±Ш© ЩЃЩЉ Ш°Ш§ЩѓШ±Ш© Ш§Щ„Щ€ШµЩ€Щ„ Ш§Щ„Ш№ШґЩ€Ш§Ш¦ЩЉ (RAM) Щ„Щ‡Ш§ШЄЩЃЩѓ",
+  pt: "Um circuito de fala inteligente operando diretamente na memГіria RAM do seu celular",
+  fr: "Un circuit de parole intelligent fonctionnant entiГЁrement dans la mГ©moire RAM locale de votre smartphone",
+  de: "Ein intelligenter, sprachfГ¤higer Begleiter, der vollstГ¤ndig in Ihrem lokalen RAM lГ¤uft",
+  ja: "г‚№гѓћгѓјгѓ€гѓ•г‚©гѓігЃ® RAM дёЉгЃ§е®Ње…ЁгЃ«е‹•дЅњгЃ™г‚‹гЂЃг‚¤гѓігѓ†гѓЄг‚ёг‚§гѓігѓ€гЃЄйџіеЈ°иЄЌи­е›ћи·Ї"
+};
+
+const BADGE_BY_LANG: Partial<Record<LanguageCode, string>> = {
+  ru: "РџР РћР“Р РђРњРњРќР«Р™ РџР›РђРќ: KIRA",
+  en: "PROJECT TIMELINE: KIRA",
+  es: "CRONOGRAMA DEL PROYECTO: KIRA",
+  zh: "йЎ№з›®и§„е€’пјљKIRA",
+  hi: "а¤Єа¤°а¤їа¤ЇаҐ‹а¤ња¤Ёа¤ѕ а¤ёа¤®а¤Їа¤°аҐ‡а¤–а¤ѕ: KIRA",
+  ar: "Ш®Ш·Ш© Ш§Щ„ШЁШ±Щ†Ш§Щ…Ш¬: KIRA",
+  pt: "PLANO DO PROJETO: KIRA",
+  fr: "CALENDRIER DU PROJET : KIRA",
+  de: "PROJEKTZEITPLAN: KIRA",
+  ja: "гѓ—гѓ­г‚ёг‚§г‚Їгѓ€иЁ€з”»пјљKIRA"
+};
+
+const KIRA_STATUS_BY_LANG: Record<LanguageCode, string> = {
+  ru: "Р­РўРђРџ РџР РћР•РљРўРР РћР’РђРќРРЇ (DESIGN PHASE)",
+  en: "DESIGN PHASE",
+  es: "FASE DE DISEГ‘O",
+  zh: "и®ѕи®Ўй¶ж®µ",
+  tr: "TASARIM AЕћAMASI",
+  hi: "а¤Ўа¤їа¤ња¤ја¤ѕа¤‡а¤Ё а¤ља¤°а¤Ј",
+  ar: "Щ…Ш±Ш­Щ„Ш© Ш§Щ„ШЄШµЩ…ЩЉЩ…",
+  pt: "FASE DE PROJETO",
+  fr: "PHASE DE CONCEPTION",
+  de: "DESIGNPHASE",
+  ja: "иЁ­иЁ€гѓ•г‚§гѓјг‚є"
+};
+
+const FEATURES_BY_LANG: Partial<Record<LanguageCode, Array<{ title: string; desc: string }>>> = {
+  ru: [
+    {
+      title: "Р›РѕРєР°Р»СЊРЅС‹Р№ РРЅС‚РµРЅС‚-РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ",
+      desc: "Р”РѕРѕР±СѓС‡РµРЅРЅР°СЏ РЅР°РґСЃС‚СЂРѕР№РєР° РЅР°Рґ РѕСЃРЅРѕРІРЅРѕР№ rubert-tiny2. Р Р°СЃРїРѕР·РЅР°РµС‚ 15-20 СЃРїРµС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹С… РёРЅС‚РµРЅС‚РѕРІ Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё, РґРѕР±Р°РІР»СЏСЏ Рє РјРѕРґРµР»Рё РІСЃРµРіРѕ ~200 РљР‘ РІРµСЃРѕРІ."
+    },
+    {
+      title: "Р Р°Р±РѕС‚Р° РЅР° 100% РћС„Р»Р°Р№РЅ",
+      desc: "РќРёРєР°РєРёС… РѕР±СЂР°С‰РµРЅРёР№ Рє РѕР±Р»Р°С‡РЅС‹Рј LLM. Р’СЃСЏ СЃРµРјР°РЅС‚РёС‡РµСЃРєР°СЏ СЃС‚СЂСѓРєС‚СѓСЂР° Рё С€Р°Р±Р»РѕРЅС‹ РѕС‚РІРµС‚РѕРІ СѓРїР°РєРѕРІР°РЅС‹ РІ РїСЂРёР»РѕР¶РµРЅРёРµ, СЂР°Р±РѕС‚Р°СЏ Р±РµР· СЃРµС‚Рё РІ СЂРµР¶РёРјРµ СЃРІРµСЂС…РЅРёР·РєРѕР№ Р·Р°РґРµСЂР¶РєРё."
+    },
+    {
+      title: "РЎРёРЅС‚РµС‚РёС‡РµСЃРєРёР№ Р”Р°С‚Р°СЃРµС‚ РљРѕР»Р»Р°Р±РѕСЂР°С†РёРё",
+      desc: "РћР±СѓС‡РµРЅР° РЅР° СѓР·РєРѕСЃРїРµС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹С… СЃРёРЅС‚РµС‚РёС‡РµСЃРєРёС… РґРёР°Р»РѕРіР°С… РјРѕС€РµРЅРЅРёС‡РµСЃРєРёС… СЃС…РµРј, СЃРіРµРЅРµСЂРёСЂРѕРІР°РЅРЅС‹С… РІ РѕР±Р»Р°РєРµ Google Colab СЃ РїРѕРјРѕС‰СЊСЋ Llama 3.1 Рё Qwen2.5."
+    }
+  ],
+  en: [
+    {
+      title: "Local Intent Classifier",
+      desc: "A highly optimized fine-tuned add-on on top of the main rubert-tiny2 model. Resolves 15-20 specific security intents, introducing a mere 200 KB memory footprint."
+    },
+    {
+      title: "100% Offline Execution",
+      desc: "No expensive, slow external LLM API calls. Fully offline response templates and speech processing algorithms keep execution latency down to microseconds."
+    },
+    {
+      title: "Advanced Training Datasets",
+      desc: "Trained on synthetic dialogues of social-engineering schemes synthesized in Google Colab using advanced Llama 3.1 and Qwen2.5 models for ultimate accuracy."
+    }
+  ],
+  es: [
+    {
+      title: "Clasificador de Intenciones Local",
+      desc: "ExtensiГіn entrenada sobre la red rubert-tiny2 bГЎsica. Reconoce entre 15 y 20 intenciones de seguridad especializadas, aГ±adiendo solo ~200 KB de peso al modelo."
+    },
+    {
+      title: "EjecuciГіn 100% Fuera de LГ­nea",
+      desc: "Sin conexiones a LLM en la nube. Toda la estructura semГЎntica y las plantillas de respuestas estГЎn empaquetadas en la aplicaciГіn, funcionando sin conexiГіn con latencia ultra baja."
+    },
+    {
+      title: "Conjunto de Datos SintГ©ticos",
+      desc: "Entrenada con diГЎlogos sintГ©ticos altamente especializados de esquemas de fraude, generados en la nube de Google Colab mediante Llama 3.1 y Qwen2.5."
+    }
+  ],
+  zh: [
+    {
+      title: "жњ¬ењ°ж„Џе›ѕе€†з±»е™Ё",
+      desc: "еџєдєЋдё» rubert-tiny2 зљ„еѕ®и°ѓй™„еЉ з»„д»¶гЂ‚еЏЇиЇ†е€« 15-20 дёЄз‰№е®љзљ„е®‰е…Ёж„Џе›ѕпјЊд»…еўћеЉ зє¦ 200 KB зљ„жЁЎећ‹жќѓй‡ЌгЂ‚"
+    },
+    {
+      title: "100% з¦»зєїж‰§иЎЊ",
+      desc: "ж— йњЂиЇ·ж±‚дє‘з«Їе¤§жЁЎећ‹ APIгЂ‚ж‰Ђжњ‰иЇ­д№‰з»“жћ„е’Њеє”з­”жЁЎжќїйѓЅж‰“еЊ…ењЁеє”з”Ёдё­пјЊењЁж— зЅ‘зЉ¶жЂЃдё‹д»Ґи¶…дЅЋе»¶иїџиїђиЎЊгЂ‚"
+    },
+    {
+      title: "е…€иї›и®­з»ѓж•°жЌ®й›†",
+      desc: "ењЁй«еє¦дё“дёљзљ„ж¬єиЇ€и®Ўе€’еђ€ж€ђеЇ№иЇќдёЉиї›иЎЊи®­з»ѓпјЊиї™дє›еЇ№иЇќжЇдЅїз”Ёе…€иї›зљ„ Llama 3.1 е’Њ Qwen2.5 жЁЎећ‹ењЁ Google Colab дё­з”џж€ђзљ„гЂ‚"
+    }
+  ],
+  hi: [
+    {
+      title: "а¤ёаҐЌа¤Ґа¤ѕа¤ЁаҐЂа¤Ї а¤‡а¤°а¤ѕа¤¦а¤ѕ а¤µа¤°аҐЌа¤—аҐЂа¤•а¤ѕа¤°а¤•",
+      desc: "а¤®аҐЃа¤–аҐЌа¤Ї rubert-tiny2 а¤•аҐ‡ а¤¶аҐЂа¤°аҐЌа¤· а¤Єа¤° а¤Џа¤• а¤…а¤¤аҐЌа¤Їа¤§а¤їа¤• а¤…а¤ЁаҐЃа¤•аҐ‚а¤Іа¤їа¤¤ а¤«а¤ѕа¤‡а¤Ё-а¤џаҐЌа¤ЇаҐ‚а¤ЁаҐЌа¤Ў а¤ђа¤Ў-а¤‘а¤ЁаҐ¤ а¤•аҐ‡а¤µа¤І 200 KB а¤®аҐ‡а¤®аҐ‹а¤°аҐЂ а¤«а¤јаҐЃа¤џа¤ЄаҐЌа¤°а¤їа¤‚а¤џ а¤•аҐ‡ а¤ёа¤ѕа¤Ґ 15-20 а¤µа¤їа¤¶а¤їа¤·аҐЌа¤џ а¤ёаҐЃа¤°а¤•аҐЌа¤·а¤ѕ а¤‡а¤°а¤ѕа¤¦аҐ‹а¤‚ а¤•аҐ‹ а¤№а¤І а¤•а¤°а¤¤а¤ѕ а¤№аҐ€аҐ¤"
+    },
+    {
+      title: "100% а¤‘а¤«а¤ја¤Іа¤ѕа¤‡а¤Ё а¤Ёа¤їа¤·аҐЌа¤Єа¤ѕа¤¦а¤Ё",
+      desc: "а¤•аҐ‹а¤€ а¤®а¤№а¤‚а¤—а¤ѕ, а¤§аҐЂа¤®а¤ѕ а¤¬а¤ѕа¤№а¤°аҐЂ LLM API а¤•аҐ‰а¤І а¤Ёа¤№аҐЂа¤‚аҐ¤ а¤ЄаҐ‚а¤°аҐЂ а¤¤а¤°а¤№ а¤ёаҐ‡ а¤‘а¤«а¤ја¤Іа¤ѕа¤‡а¤Ё а¤ЄаҐЌа¤°а¤¤а¤їа¤•аҐЌа¤°а¤їа¤Їа¤ѕ а¤џаҐ‡а¤®аҐЌа¤Єа¤ІаҐ‡а¤џ а¤”а¤° а¤­а¤ѕа¤·а¤Ј а¤ЄаҐЌа¤°а¤ёа¤‚а¤ёаҐЌа¤•а¤°а¤Ј а¤Џа¤ІаҐЌа¤—аҐ‹а¤°а¤їа¤¦а¤® а¤Ёа¤їа¤·аҐЌа¤Єа¤ѕа¤¦а¤Ё а¤µа¤їа¤Іа¤‚а¤¬а¤¤а¤ѕ а¤•аҐ‹ а¤ёаҐ‚а¤•аҐЌа¤·аҐЌа¤®а¤ёаҐ‡а¤•а¤‚а¤Ў а¤¤а¤• а¤•а¤® а¤°а¤–а¤¤аҐ‡ а¤№аҐ€а¤‚аҐ¤"
+    },
+    {
+      title: "а¤‰а¤ЁаҐЌа¤Ёа¤¤ а¤ЄаҐЌа¤°а¤¶а¤їа¤•аҐЌа¤·а¤Ј а¤ЎаҐ‡а¤џа¤ѕа¤ёаҐ‡а¤џ",
+      desc: "а¤…а¤‚а¤¤а¤їа¤® а¤ёа¤џаҐЂа¤•а¤¤а¤ѕ а¤•аҐ‡ а¤Іа¤їа¤Џ а¤‰а¤ЁаҐЌа¤Ёа¤¤ Llama 3.1 а¤”а¤° Qwen2.5 а¤®аҐ‰а¤Ўа¤І а¤•а¤ѕ а¤‰а¤Єа¤ЇаҐ‹а¤— а¤•а¤°а¤•аҐ‡ Google Colab а¤®аҐ‡а¤‚ а¤ёа¤‚а¤¶аҐЌа¤ІаҐ‡а¤·а¤їа¤¤ а¤ёаҐ‹а¤¶а¤І-а¤‡а¤‚а¤њаҐЂа¤Ёа¤їа¤Їа¤°а¤їа¤‚а¤— а¤ЇаҐ‹а¤ња¤Ёа¤ѕа¤“а¤‚ а¤•аҐ‡ а¤ёа¤їа¤‚а¤ҐаҐ‡а¤џа¤їа¤• а¤ёа¤‚а¤µа¤ѕа¤¦аҐ‹а¤‚ а¤Єа¤° а¤ЄаҐЌа¤°а¤¶а¤їа¤•аҐЌа¤·а¤їа¤¤аҐ¤"
+    }
+  ],
+  ar: [
+    {
+      title: "Щ…ШµЩ†ЩЃ Ш§Щ„Щ†Щ€Ш§ЩЉШ§ Ш§Щ„Щ…Ш­Щ„ЩЉ",
+      desc: "ШҐШ¶Ш§ЩЃШ© Щ…ШЇШ±ШЁШ© Щ€Щ…Ш­ШіЩ†Ш© ЩЃЩ€Щ‚ Щ†Щ…Щ€Ш°Ш¬ rubert-tiny2 Ш§Щ„ШЈШіШ§ШіЩЉ. ЩЉШЄШ№Ш±ЩЃ Ш№Щ„Щ‰ 15-20 Щ†ЩЉШ© ШЈЩ…Щ†ЩЉШ© Щ…ШЄШ®ШµШµШ©ШЊ Щ…Ш¶Ш§ЩЃЩ‹Ш§ ШҐЩ„Щ‰ Щ€ШІЩ† Ш§Щ„Щ†Щ…Щ€Ш°Ш¬ ~200 ЩѓЩЉЩ„Щ€ШЁШ§ЩЉШЄ ЩЃЩ‚Ш·."
+    },
+    {
+      title: "ШЄШґШєЩЉЩ„ ШЈЩ€ЩЃЩ„Ш§ЩЉЩ† ШЁЩ†ШіШЁШ© 100%",
+      desc: "Щ„Ш§ ШЄЩ€Ш¬ШЇ Ш§ШЄШµШ§Щ„Ш§ШЄ ШЁЩ†Щ…Ш§Ш°Ш¬ Щ„ШєЩ€ЩЉШ© ШіШ­Ш§ШЁЩЉШ© Щ…ЩѓЩ„ЩЃШ©. Ш¬Щ…ЩЉШ№ Щ‡ЩЉШ§ЩѓЩ„ Ш§Щ„ШЇЩ„Ш§Щ„Ш§ШЄ Щ€Щ‚Щ€Ш§Щ„ШЁ Ш§Щ„Ш§ШіШЄШ¬Ш§ШЁШ© Щ…Ш№ШЁШЈШ© ЩЃЩЉ Ш§Щ„ШЄШ·ШЁЩЉЩ‚ШЊ Щ€ШЄШ№Щ…Щ„ ШЁШЇЩ€Щ† ШґШЁЩѓШ© ШЁШІЩ…Щ† Ш§Щ†ШЄЩ‚Ш§Щ„ ЩЃШ§Ш¦Щ‚ Ш§Щ„Щ‚ШµШ±."
+    },
+    {
+      title: "Щ…Ш¬Щ…Щ€Ш№Ш§ШЄ Ш§Щ„ШЁЩЉШ§Щ†Ш§ШЄ Ш§Щ„ШЄШЇШ±ЩЉШЁЩЉШ© Ш§Щ„Щ…ШЄЩ‚ШЇЩ…Ш©",
+      desc: "ШЄЩ… ШЄШЇШ±ЩЉШЁЩ‡ Ш№Щ„Щ‰ Ш­Щ€Ш§Ш±Ш§ШЄ ШЄШ±ЩѓЩЉШЁЩЉШ© Щ…ШЄШ®ШµШµШ© Щ„Щ„ШєШ§ЩЉШ© Щ„Ш®Ш·Ш· Ш§Щ„Ш§Ш­ШЄЩЉШ§Щ„ШЊ ШЄЩ… ШҐЩ†ШґШ§Ш¤Щ‡Ш§ ЩЃЩЉ ШіШ­Ш§ШЁШ© Google Colab ШЁШ§ШіШЄШ®ШЇШ§Щ… Щ†Щ…Щ€Ш°Ш¬ЩЉ Llama 3.1 Щ€ Qwen2.5."
+    }
+  ],
+  pt: [
+    {
+      title: "Classificador de IntenГ§ГЈo Local",
+      desc: "ExtensГЈo ajustada sobre a rede rubert-tiny2 principal. Reconoce de 15 a 20 intenГ§Гµes de seguranГ§a especГ­ficas, adicionando apenas ~200 KB de peso ao modelo."
+    },
+    {
+      title: "ExecuГ§ГЈo 100% Off-line",
+      desc: "Sem chamadas para LLMs em nuvem. Toda a estrutura semГўntica e os modelos de resposta estГЈo embutidos no aplicativo, rodando sem rede em modo de latГЄncia ultra baixa."
+    },
+    {
+      title: "Dataset de Treinamento AvanГ§ado",
+      desc: "Treinado em diГЎlogos sintГ©ticos altamente especializados de esquemas de fraude, gerados no Google Colab usando Llama 3.1 e Qwen2.5."
+    }
+  ],
+  fr: [
+    {
+      title: "Classificateur d'Intents Local",
+      desc: "Un module complГ©mentaire affinГ© et hautement optimisГ© au-dessus du modГЁle principal rubert-tiny2. RГ©sout 15 Г  20 intentions de sГ©curitГ© spГ©cifiques pour une empreinte mГ©moire de seulement 200 Ko."
+    },
+    {
+      title: "ExГ©cution 100 % hors ligne",
+      desc: "Aucun appel d'API LLM externe lent et coГ»teux. Les modГЁles de rГ©ponse entiГЁrement hors ligne et les algorithmes de traitement de la parole maintiennent la latence d'exГ©cution Г  l'Г©chelle de la microseconde."
+    },
+    {
+      title: "Jeux de donnГ©es d'entraГ®nement avancГ©s",
+      desc: "EntraГ®nГ© sur des dialogues synthГ©tiques de schГ©mas d'ingГ©nierie sociale synthГ©tisГ©s dans Google Colab Г  l'aide de modГЁles avancГ©s Llama 3.1 et Qwen2.5 pour une prГ©cision ultime."
+    }
+  ],
+  de: [
+    {
+      title: "Lokaler Intent-Klassifikator",
+      desc: "Ein hochgradig optimiertes, feingetuntes Add-On auf Basis des rubert-tiny2-Hauptmodells. Erkennt 15-20 spezifische Sicherheits-Intents bei nur 200 KB Speicherbedarf."
+    },
+    {
+      title: "100% Offline-AusfГјhrung",
+      desc: "Keine teuren, langsamen externen LLM-API-Aufrufe. VollstГ¤ndige Offline-Antwortvorlagen und Sprachverarbeitungsalgorithmen halten die Latenz im Mikrosekundenbereich."
+    },
+    {
+      title: "Fortschrittliche Trainingsdaten",
+      desc: "Trainiert mit hochspezialisierten synthetischen Dialogen von Betrugsszenarien, die in Google Colab mit Llama 3.1 und Qwen2.5 generiert wurden."
+    }
+  ],
+  ja: [
+    {
+      title: "гѓ­гѓјг‚«гѓ«ж„Џе›іе€†йЎће™Ё",
+      desc: "гѓ™гѓјг‚№гЃЁгЃЄг‚‹ rubert-tiny2 дёЉгЃ«ж§‹зЇ‰гЃ•г‚ЊгЃџиїЅеЉ гЃ®иЄїж•ґгѓ¬г‚¤гѓ¤гѓјгЂ‚г‚ЏгЃљгЃ‹зґ„200 KBгЃ®г‚¦г‚§г‚¤гѓ€иїЅеЉ гЃ§гЂЃ15гЂњ20еЂ‹гЃ®г‚»г‚­гѓҐгѓЄгѓ†г‚ЈгЃ«з‰№еЊ–гЃ—гЃџж„Џе›іг‚’и­е€ҐгЃ—гЃѕгЃ™гЂ‚"
+    },
+    {
+      title: "100% г‚Єгѓ•гѓ©г‚¤гѓіе‹•дЅњ",
+      desc: "г‚Їгѓ©г‚¦гѓ‰дёЉгЃ®е¤§и¦ЏжЁЎиЁЂиЄћгѓўгѓ‡гѓ«пј€LLMпј‰гЃёгЃ®е•ЏгЃ„еђ€г‚ЏгЃ›гЃЇдёЂе€‡дёЌи¦ЃгЂ‚гЃ™гЃ№гЃ¦гЃ®ж„Џе‘іж§‹йЂ гЃЁеїњз­”гѓ†гѓігѓ—гѓ¬гѓјгѓ€гЃЇг‚ўгѓ—гѓЄе†…гЃ«гѓ‘гѓѓг‚±гѓјг‚ёеЊ–гЃ•г‚ЊгЂЃгѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃЄгЃ—гЃ§и¶…дЅЋйЃ…е»¶гЃ§ж©џиѓЅгЃ—гЃѕгЃ™гЂ‚"
+    },
+    {
+      title: "й«еє¦гЃЄеђ€ж€ђгѓ‡гѓјг‚їг‚»гѓѓгѓ€",
+      desc: "Google ColabдёЉгЃ«гЃ¦ Llama 3.1 г‚„ Qwen2.5 гЃЄгЃ©гЃ®е…€з«Їгѓўгѓ‡гѓ«г‚’з”ЁгЃ„гЃ¦з”џж€ђгЃ•г‚ЊгЃџгЂЃг‚Ѕгѓјг‚·гѓЈгѓ«г‚Ёгѓіг‚ёгѓ‹г‚ўгѓЄгѓіг‚°и©ђж¬єгЃ«з‰№еЊ–гЃ—гЃџеђ€ж€ђеЇѕи©±гѓ‡гѓјг‚їг‚»гѓѓгѓ€гЃ§иЁ“з·ґгЃ•г‚ЊгЃ¦гЃ„гЃѕгЃ™гЂ‚"
+    }
+  ]
+};
+
+const FEATURE_ICONS = [
+  <Cpu className="w-5 h-5 text-[#3B82F6]" />,
+  <WifiOff className="w-5 h-5 text-[#3B82F6]" />,
+  <HardDrive className="w-5 h-5 text-[#3B82F6]" />,
+  <FileText className="w-5 h-5 text-[#3B82F6]" />,
+  <Bot className="w-5 h-5 text-[#3B82F6]" />
+];
+
+const KiraAssistantSection = React.memo(function KiraAssistantSection() {
+  const { t, language } = useTranslation();
+  const { ecoMode } = useEcoMode();
+
+  const title = t.kira?.title || TITLE_BY_LANG[language] || TITLE_BY_LANG.en;
+  const subtitle = t.kira?.subtitle || SUBTITLE_BY_LANG[language] || SUBTITLE_BY_LANG.en;
+  const badgeText = t.kira?.badge || BADGE_BY_LANG[language] || BADGE_BY_LANG.en;
+
+  const currentFeatures = FEATURES_BY_LANG[language] || FEATURES_BY_LANG.en || [];
+  const featuresList = currentFeatures.map((feat: any, index: number) => ({
+    icon: FEATURE_ICONS[index] || FEATURE_ICONS[0],
+    title: feat.title,
+    desc: feat.desc,
+  }));
+
+  return (
+    <section 
+      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]" 
+      id="kira-assistant"
+    >
+      {/* Background soft visual grid element */}
+      <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#3B82F6]/20 to-transparent pointer-events-none" />
+      <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto relative z-10">
+        
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+            <SectionBadge variant="brackets" label={badgeText} />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 shadow-glow-warn">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+              </span>
+              <span className="font-mono text-[10px] sm:text-xs font-bold tracking-wider text-amber-500 uppercase">
+                {KIRA_STATUS_BY_LANG[language] || KIRA_STATUS_BY_LANG.en}
+              </span>
+            </div>
+          </div>
+          
+          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+            {title}
+          </h2>
+          
+          <p className="font-sans text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
+            {subtitle}
+          </p>
+        </div>
+
+        {/* Feature Split Block */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center max-w-5xl mx-auto">
+          
+          {/* Visual Voice Wave Simulation Block */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center p-8 rounded-md bg-[#0A0A0B] border border-white/[0.04] relative overflow-hidden min-h-[300px]">
+            <div className="absolute top-4 left-4 font-mono text-[9px] text-amber-500 tracking-wider uppercase flex items-center gap-1.5">
+              <Radio className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+              KIRA CONCEPT // DESIGN PHASE
+            </div>
+            
+            {/* Interactive wave spheres */}
+            <div className="relative w-40 h-40 flex items-center justify-center">
+              {!ecoMode && (
+                <>
+                  <motion.div
+                    className="absolute w-24 h-24 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
+                    animate={{ scale: [0.7, 1.15], opacity: [0.7, 0] }}
+                    transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 0 }}
+                  />
+                  <motion.div
+                    className="absolute w-24 h-24 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
+                    animate={{ scale: [0.7, 1.15], opacity: [0.6, 0] }}
+                    transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 0.8 }}
+                  />
+                  <motion.div
+                    className="absolute w-24 h-24 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
+                    animate={{ scale: [0.7, 1.15], opacity: [0.5, 0] }}
+                    transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 1.6 }}
+                  />
+                </>
+              )}
+              <div className={`absolute w-16 h-16 rounded-full bg-[#3B82F6]/20 border border-[#3B82F6]/30 ${ecoMode ? "" : "animate-pulse"}`} />
+              <div className="w-12 h-12 rounded-full bg-[#3B82F6] flex items-center justify-center shadow-glow-lg">
+                <Bot className="w-6 h-6 text-white" />
+              </div>
+            </div>
+
+            {/* Audio wave lines */}
+            <div className="flex items-center justify-center gap-1.5 mt-8 h-8">
+              {EQ_BASE.map((height, idx) => {
+                const props = {
+                  key: idx,
+                  className: "w-[2px] bg-[#3B82F6]/60 rounded-full",
+                };
+                if (ecoMode) {
+                  return <div {...props} style={{ height: `${height}px` }} />;
+                }
+                return (
+                  <motion.div
+                    {...props}
+                    animate={{ height: [6, height, 6] }}
+                    transition={{
+                      duration: 0.9 + (idx % 5) * 0.18,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: idx * 0.09,
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Details list */}
+          <div className="lg:col-span-7 space-y-6">
+            {featuresList.map((feat, index) => (
+              <div key={index} className="flex gap-4 p-4 rounded-md hover:bg-white/[0.01] transition-all duration-300">
+                <div className="w-10 h-10 rounded-md bg-[#12141A]/50 border border-[#3B82F6]/15 flex items-center justify-center shrink-0">
+                  {feat.icon}
+                </div>
+                <div>
+                  <h4 className="font-display font-bold text-base text-[#F5F5F0] mb-1">
+                    {feat.title}
+                  </h4>
+                  <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">
+                    {feat.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  );
+});
+
+export default KiraAssistantSection;

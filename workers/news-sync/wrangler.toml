@@ -1,0 +1,24 @@
+name = "trustnode-news-sync"
+main = "src/index.ts"
+compatibility_date = "2025-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Cron: every 15 minutes
+[triggers]
+crons = ["*/15 * * * *"]
+
+# Runtime secrets (set via `wrangler secret put`): GITHUB_TOKEN, VK_ACCESS_TOKEN
+
+[vars]
+# Owner/repo where news.json lives, e.g. "DedGamesSec/sitedisgincheck"
+GITHUB_REPO = "DedGamesSec/sitedisgincheck"
+GITHUB_BRANCH = "master"
+# Path of the news file inside the repo
+NEWS_PATH = "src/data/news.json"
+# Telegram channel web-preview to scrape
+TELEGRAM_WEB_URL = "https://t.me/s/TrustNode_team"
+TELEGRAM_CHANNEL = "TrustNode_team"
+VK_DOMAIN = "trustnode"
+
+[observability]
+enabled = true

@@ -1,0 +1,43 @@
+name: Sync News
+
+# NOTE FOR THE REPOSITORY OWNER (manual step, cannot be automated):
+# This workflow needs a VK community access token to fetch posts from the
+# VK wall. Create it at:
+#   Settings -> Secrets and variables -> Actions -> New repository secret
+# Name the secret exactly `VK_ACCESS_TOKEN` and paste a community token that
+# has the `wall` permission (obtained via vk.com/dev or the community settings).
+# Without it, the VK source is skipped on every run (Telegram still works),
+# and the manual `workflow_dispatch` run will only sync Telegram.
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # once a day, 06:00 UTC
+  workflow_dispatch: {}     # manual trigger from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx tsx scripts/sync-news.ts
+        env:
+          VK_ACCESS_TOKEN: ${{ secrets.VK_ACCESS_TOKEN }}
+      # Translate newly added Russian posts to English exactly once.
+      # Uses the free Google `gtx` endpoint (no API key), only fills in
+      # missing `en` fields, so existing translations are never re-done.
+      - run: npx tsx scripts/translate-news.ts
+      - name: Commit updated news.json
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add src/data/news.json
+          git diff --staged --quiet || git commit -m "chore: sync + translate news from Telegram/VK"
+          git push origin master

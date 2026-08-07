@@ -1,0 +1,234 @@
+﻿@import "tailwindcss";
+
+@theme {
+  /* Typography: Exo 2 + Jura + JetBrains Mono вЂ” РµРґРёРЅС‹Р№ С€СЂРёС„С‚РѕРІРѕР№ СЏР·С‹Рє СЃ Р±РѕС‚РѕРј
+     (bot/card_generator.py: Exo2 РґР»СЏ С‡РёСЃРµР»/Р·Р°РіРѕР»РѕРІРєРѕРІ, Jura РґР»СЏ РїРѕРґРїРёСЃРµР№/С‚РµРєСЃС‚Р°) */
+  --font-sans: "Jura", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Exo 2", "Jura", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* 4-С‚РёСЂРЅР°СЏ СЃС‚Р°С‚СѓСЃРЅР°СЏ СЃРµРјР°РЅС‚РёРєР° вЂ” С‚РѕС‡РЅС‹Рµ hex РёР· bot/card_generator.py (ACCENT_DARK) */
+  --color-status-info: #3B82F6;   /* news вЂ” РЅРµР№С‚СЂР°Р»СЊРЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ */
+  --color-status-danger: #EF4444; /* real_threat вЂ” РєСЂРёС‚РёС‡РЅРѕ/СѓРіСЂРѕР·Р° */
+  --color-status-warn: #FB923C;   /* medium вЂ” СЃСЂРµРґРЅРёР№ СЂРёСЃРє / С‡Р°СЃС‚РёС‡РЅРѕ РіРѕС‚РѕРІРѕ */
+  --color-status-safe: #2DD4BF;   /* safe вЂ” Р±РµР·РѕРїР°СЃРЅРѕ / РіРѕС‚РѕРІРѕ */
+
+  /* РќРµР№С‚СЂР°Р»СЊРЅС‹Рµ РіСЂР°С„РёС‚РѕРІС‹Рµ РїР°РЅРµР»Рё (panel_fill/border_c РёР· bot/card_generator.py) */
+  --color-panel: #12141A;
+  --color-panel-border: #3C404A;
+
+  /* РўРµРЅРё: С‚РѕР»СЊРєРѕ РґР»СЏ Р°РєС‚РёРІРЅС‹С…/РёРЅС‚РµСЂР°РєС‚РёРІРЅС‹С… РёРЅРґРёРєР°С‚РѕСЂРѕРІ СЃС‚Р°С‚СѓСЃР°, РЅРµ РґР»СЏ СЃС‚Р°С‚РёС‡РЅС‹С… РєР°СЂС‚РѕС‡РµРє.
+     Р‘Р°Р·РѕРІС‹Рµ РѕС‚С‚РµРЅРєРё РїСЂРёРІРµРґРµРЅС‹ Рє 4-С‚РёСЂРЅРѕР№ РїР°Р»РёС‚СЂРµ, Р° РЅРµ Рє РґРµРєРѕСЂР°С‚РёРІРЅРѕРјСѓ СЃРёРЅРµРјСѓ #3B82F6. */
+  --shadow-glow-sm: 0 0 12px rgba(59, 130, 246, 0.15);
+  --shadow-glow-md: 0 0 24px rgba(59, 130, 246, 0.2);
+  --shadow-glow-lg: 0 0 40px rgba(59, 130, 246, 0.25);
+  --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.25);
+  --shadow-glow-success: 0 0 20px rgba(45, 212, 191, 0.15);
+  --shadow-glow-warn: 0 0 20px rgba(251, 146, 60, 0.15);
+}
+
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: #3C404A #0A0A0B;
+  }
+
+  html::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: #0A0A0B;
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background: #3C404A;
+    border-radius: 5px;
+    border: 2px solid #0A0A0B;
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background: #12141A;
+  }
+
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    background-color: #0A0A0B;
+    color: #F5F5F0;
+    font-family: 'Jura', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid #3B82F6;
+    outline-offset: 2px;
+  }
+
+  /* Default text is another ~10% smaller (reduced twice for desktop reading) */
+  html {
+    font-size: 97%;
+  }
+
+  @media (max-width: 640px) {
+    html {
+      font-size: 86%;
+    }
+  }
+
+  @media (max-width: 380px) {
+    html {
+      font-size: 77%;
+    }
+  }
+
+  /* Senior-friendly mode: text sized at the former normal mode */
+  html.senior-mode {
+    font-size: 120%;
+  }
+
+  @media (max-width: 640px) {
+    html.senior-mode {
+      font-size: 106%;
+    }
+  }
+
+  @media (max-width: 380px) {
+    html.senior-mode {
+      font-size: 94%;
+    }
+  }
+}
+
+@layer utilities {
+  .eco-mode *,
+  .eco-mode *::before,
+  .eco-mode *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .eco-mode .animate-ping,
+  .eco-mode .animate-pulse,
+  .eco-mode .animate-bounce {
+    animation: none !important;
+  }
+}
+
+/* AppSecuritySection: brief RGB-split glitch on hover */
+@keyframes appsec-glitch {
+  0%   { transform: translate(0, 0); text-shadow: 0 0 0 transparent; }
+  20%  { transform: translate(-1.5px, 0.5px); text-shadow: 1.5px 0 #3B82F6, -1.5px 0 rgba(255,80,120,0.6); clip-path: inset(0 0 55% 0); }
+  40%  { transform: translate(1px, -0.5px); text-shadow: -1px 0 rgba(255,80,120,0.6), 1px 0 #3B82F6; clip-path: inset(45% 0 0 0); }
+  60%  { transform: translate(-0.5px, 0); text-shadow: 0.5px 0 #3B82F6, -0.5px 0 rgba(255,80,120,0.5); }
+  100% { transform: translate(0, 0); text-shadow: 0 0 0 transparent; }
+}
+.group:hover .appsec-glitch {
+  animation: appsec-glitch 0.3s steps(2, end);
+}
+
+.footer-grid {
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "brand   brand"
+    "sitemap social"
+    "legal   store";
+}
+
+.footer-area-brand   { grid-area: brand; }
+.footer-area-sitemap { grid-area: sitemap; }
+.footer-area-social  { grid-area: social; }
+.footer-area-legal   { grid-area: legal; }
+.footer-area-store   { grid-area: store; }
+
+/* Footer social/store buttons: unified rectangle, all rows the same width */
+.footer-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+/* Tablet + Desktop (md: в‰Ґ768px) вЂ” buttons stretch into an equal-width rectangle */
+@media (min-width: 768px) {
+  .footer-btn-rect {
+    width: 20rem;
+  }
+
+  .footer-btn-row {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .footer-btn-row > a {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+/* Tablet only (md: 768pxвЂ“1023px) вЂ” single column, centered rectangle */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "brand"
+      "sitemap"
+      "social"
+      "store"
+      "legal";
+  }
+
+  .footer-area-social,
+  .footer-area-store {
+    justify-self: center;
+  }
+}
+
+/* Mobile (<768px) */
+@media (max-width: 767px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "brand"
+      "sitemap"
+      "social"
+      "store"
+      "legal";
+  }
+}
+
+/* Hero protection marquee: infinite horizontal loop, pauses on hover */
+@keyframes tn-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: tn-marquee-scroll 42s linear infinite;
+  will-change: transform;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Target indicator pulse for comparison table */
+@keyframes target-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
+.target-pulse {
+  animation: target-pulse 3s ease-in-out infinite;
+}
+
+.eco-mode .target-pulse {
+  animation: none !important;
+}
