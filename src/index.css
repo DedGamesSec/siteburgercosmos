@@ -239,10 +239,3 @@
 .eco-mode .target-pulse {
   animation: none !important;
 }
-
-/* ProblemSection colander feed: one endless vertical scroll of fraud news.
-   The column holds two copies of the feed, so a -50% translate loops cleanly. */
-@keyframes newsScroll {
-  from { transform: translateY(0); }
-  to   { transform: translateY(-50%); }
-}
