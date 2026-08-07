@@ -4,6 +4,7 @@ import { useNavigation, PageId } from "../navigation/NavigationContext";
 import { useTranslation } from "../i18n/LanguageContext";
 import { motion } from "motion/react";
 import { HEADER_PAGES } from "../navigation/pages.config";
+import ScanCard from "./ScanCard";
 
 const NEXT_LABEL: Record<string, string> = {
   ru: "Следующий раздел",
@@ -166,8 +167,16 @@ export default function PageNavigationFooter({ currentPage }: PageNavigationFoot
           whileHover={{ y: -4 }}
           transition={{ duration: 0.2 }}
           onClick={handleNextNavigation}
-          className="group relative w-full md:max-w-2xl p-6 sm:p-8 border border-[#3C404A]/30 bg-[#12141A] backdrop-blur-md rounded-xl hover:border-[#3B82F6]/45 hover:shadow-glow-md transition-all duration-300 cursor-pointer overflow-hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6"
+          className="group relative w-full md:max-w-2xl cursor-pointer"
         >
+          <ScanCard
+            accent="59,130,246"
+            borderColor="border-[#3C404A]/30"
+            cardClassName="bg-[#12141A] backdrop-blur-md hover:border-[#3B82F6]/45 hover:shadow-glow-md"
+            onClick={handleNextNavigation}
+            padding="p-6 sm:p-8"
+            className="sm:flex-row sm:items-center sm:justify-between gap-6"
+          >
           {/* Accent light overlay */}
           <div className="absolute -inset-px rounded-xl bg-gradient-to-r from-[#3B82F6]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
           
@@ -197,6 +206,7 @@ export default function PageNavigationFooter({ currentPage }: PageNavigationFoot
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </div>
           </div>
+          </ScanCard>
         </motion.div>
       </div>
     </div>

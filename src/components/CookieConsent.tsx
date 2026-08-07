@@ -4,6 +4,7 @@ import { useTranslation } from "../i18n/LanguageContext";
 import { useNavigation } from "../navigation/NavigationContext";
 import { announce } from "../i18n/Announcer";
 import { useCookieBanner } from "../context/CookieBannerContext";
+import ScanCard from "./ScanCard";
 
 export default function CookieConsent() {
   const { t } = useTranslation();
@@ -58,7 +59,7 @@ export default function CookieConsent() {
       style={{ bottom: "max(1rem, calc(env(safe-area-inset-bottom) + 0.5rem))" }}
       id="cookie-consent-banner"
     >
-      <div className="p-4 sm:p-5 rounded-xl border border-[#3B82F6]/30 bg-[#0A0A0B]/95 backdrop-blur-md text-[#F5F5F0] shadow-[0_10px_35px_rgba(0,0,0,0.8)] flex flex-col gap-4">
+      <ScanCard accent="59,130,246" borderColor="border-[#3B82F6]/30" cardClassName="bg-[#0A0A0B]/95 backdrop-blur-md shadow-[0_10px_35px_rgba(0,0,0,0.8)]" padding="p-4 sm:p-5" className="gap-4">
         
         {/* Banner Body */}
         <div className="flex gap-3 items-start text-left">
@@ -110,7 +111,7 @@ export default function CookieConsent() {
           </div>
         </div>
 
-      </div>
+      </ScanCard>
     </div>
   );
 }

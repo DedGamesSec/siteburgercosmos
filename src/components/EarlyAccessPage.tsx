@@ -3,6 +3,7 @@ import { ArrowLeft, ShieldCheck, Lock, Cpu, Smartphone } from "lucide-react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useNavigation } from "../navigation/NavigationContext";
 import { RUSTORE_URL, GITHUB_APK_URL } from "./Header";
+import ScanCard from "./ScanCard";
 
 const TRUST_DICT: Record<string, Record<string, string>> = {
   ru: {
@@ -81,7 +82,7 @@ export default function EarlyAccessPage() {
         <p className="font-sans text-sm sm:text-base text-gray-500 text-center max-w-2xl mx-auto mb-12 leading-relaxed">{lp.subtitle}</p>
 
         <div className="max-w-2xl mx-auto w-full mb-12">
-          <div className="p-6 sm:p-8 rounded-xl border border-[#3C404A]/30 bg-[#12141A] backdrop-blur-md flex flex-col items-center gap-6">
+          <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/30" cardClassName="bg-[#12141A] backdrop-blur-md" className="items-center gap-6">
             <a href={GITHUB_APK_URL} target="_blank" rel="noopener noreferrer"
               className="w-full py-4 px-6 rounded-xl font-sans text-sm font-bold transition-all duration-300 flex items-center justify-center gap-3 bg-[#3B82F6] text-white hover:bg-[#3B82F6]/90 cursor-pointer shadow-glow-md hover:shadow-glow-lg">
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
@@ -92,7 +93,7 @@ export default function EarlyAccessPage() {
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
               {lp.rustoreBtn}
             </a>
-          </div>
+          </ScanCard>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 w-full">
@@ -100,20 +101,20 @@ export default function EarlyAccessPage() {
             const Icon = featureIcons[idx];
             const descs = [lp.feature1Desc, lp.feature2Desc, lp.feature3Desc];
             return (
-              <div key={idx} className="p-5 sm:p-6 rounded-xl border border-[#3C404A]/40 bg-[#0A0A0B]/80">
+                          <ScanCard key={idx} accent="59,130,246" borderColor="border-[#3C404A]/40" cardClassName="bg-[#0A0A0B]/80" padding="p-5 sm:p-6">
                 <div className="w-11 h-11 rounded-xl bg-[#0A0A0B]/80 border border-[#3B82F6]/25 flex items-center justify-center text-[#3B82F6] mb-4"><Icon className="w-5 h-5" /></div>
                 <h3 className="font-display font-bold text-base sm:text-lg text-[#F5F5F0] mb-2">{title}</h3>
                 <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">{descs[idx]}</p>
-              </div>
+              </ScanCard>
             );
           })}
         </div>
 
         <div className="max-w-2xl mx-auto w-full mb-12">
-          <div className="rounded-xl border border-[#3C404A]/40 bg-[#0A0A0B]/80 p-6 sm:p-8">
+          <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/40" cardClassName="bg-[#0A0A0B]/80" padding="p-6 sm:p-8">
             <h3 className="font-display font-bold text-base sm:text-lg text-[#F5F5F0] mb-3">{trust.noStoreTitle}</h3>
             <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">{trust.noStoreText}</p>
-          </div>
+          </ScanCard>
         </div>
 
         <p className="font-mono text-sm sm:text-base tracking-normal text-gray-400 text-center">{lp.note}</p>

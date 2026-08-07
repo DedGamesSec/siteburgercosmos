@@ -148,7 +148,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                     </p>
                   </div>
 
-                  <div className="p-6 rounded-xl bg-[#0A0A0B]/80 border border-[#3C404A]/40 space-y-4">
+                  <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/40" cardClassName="bg-[#0A0A0B]/80" padding="p-6" className="space-y-4">
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                       <div>
@@ -172,7 +172,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         <span className="font-sans text-xs sm:text-sm text-gray-300">{currentAward.event}</span>
                       </div>
                     </div>
-                  </div>
+                  </ScanCard>
 
                   <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">
                     {currentAward.desc}
@@ -221,15 +221,15 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 rounded-xl bg-[#0A0A0B]/80 border border-[#3C404A]/40 text-center">
+                    <ScanCard accent="6,182,212" borderColor="border-[#3C404A]/40" cardClassName="bg-[#0A0A0B]/80" padding="p-4" className="items-center text-center">
                       <span className="block font-display font-bold text-2xl sm:text-3xl text-cyan-500">74</span>
                       <span className="font-mono text-[10px] text-gray-500 uppercase tracking-widest">{dui.nodes}</span>
-                    </div>
+                    </ScanCard>
                     
-                    <div className="p-4 rounded-xl bg-[#0A0A0B]/80 border border-[#3C404A]/40 text-center">
+                    <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/40" cardClassName="bg-[#0A0A0B]/80" padding="p-4" className="items-center text-center">
                       <span className="block font-display font-bold text-2xl sm:text-3xl text-[#3B82F6]">328</span>
                       <span className="font-mono text-[10px] text-gray-500 uppercase tracking-widest">{dui.conns}</span>
-                    </div>
+                    </ScanCard>
                   </div>
 
                   <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">
@@ -261,7 +261,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
                   
                   {/* Left Column: Live Model Architecture Inspector Widget */}
-                  <div className="lg:col-span-5 p-6 rounded-xl bg-[#0A0A0B] border border-[#3C404A]/60 shadow-2xl relative overflow-hidden flex flex-col justify-between">
+                  <ScanCard accent="59,130,246" cardClassName="lg:col-span-5 shadow-2xl" className="flex-col justify-between" padding="p-6" borderColor="border-[#3C404A]/60">
                     <div className="absolute top-0 right-0 w-32 h-[1px] bg-gradient-to-l from-[#3B82F6]/40 to-transparent" />
                     
                     <div>
@@ -302,7 +302,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       </div>
 
                       {/* Specifications */}
-                      <div className="p-4 rounded-xl bg-[#0A0A0B]/80 border border-[#3C404A]/40">
+                      <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/40" cardClassName="bg-[#0A0A0B]/80" padding="p-4">
                         <h4 className="font-display font-semibold text-xs text-[#F5F5F0] uppercase tracking-wider mb-3">
                           {dui.specs}
                         </h4>
@@ -320,18 +320,18 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                             <span className="text-[#3B82F6]">{onnxConsole.latencyValue}</span>
                           </li>
                         </ul>
-                      </div>
+                      </ScanCard>
                     </div>
 
 
-                  </div>
+                  </ScanCard>
 
                   {/* Right Column: Dynamic Neural Tester & Telegram Ticket Portal */}
-                  <div className="lg:col-span-7 flex flex-col justify-between p-6 rounded-xl bg-[#0A0A0B] border border-[#3C404A]/60 shadow-2xl relative overflow-hidden">
+                  <ScanCard accent="59,130,246" cardClassName="lg:col-span-7 shadow-2xl" className="flex-col justify-between" padding="p-6" borderColor="border-[#3C404A]/60">
                     <div className="absolute top-0 right-0 w-32 h-[1px] bg-gradient-to-l from-[#3B82F6]/40 to-transparent" />
                     
                     <OnnxInteractiveTester language={language} />
-                  </div>
+                  </ScanCard>
 
                 </div>
               </motion.div>
@@ -1639,7 +1639,7 @@ ${tkt.inventory}`;
             className="space-y-4"
           >
             {/* Decoded Output Banner */}
-            <div className="p-4 rounded-xl bg-[#0A0A0B] border border-[#3C404A]/50 space-y-3">
+            <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/50" padding="p-4" className="space-y-3">
               <div className="flex justify-between items-center pb-2 border-b border-[#3C404A]/30">
                 <span className="font-mono text-[9px] text-gray-500 uppercase tracking-widest">{dict.resultHeader}</span>
                 <span className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded ${
@@ -1681,10 +1681,10 @@ ${tkt.inventory}`;
                   </div>
                 </div>
               </div>
-            </div>
+            </ScanCard>
 
             {/* Token Attention Visualiser */}
-            <div className="p-4 rounded-xl bg-[#0A0A0B]/60 border border-white/[0.02] space-y-2">
+            <ScanCard accent="59,130,246" borderColor="border-white/[0.02]" cardClassName="bg-[#0A0A0B]/60" padding="p-4" className="space-y-2">
               <span className="block font-mono text-[10px] text-gray-500 uppercase tracking-wider">
                 {dict.attentionTitle}
               </span>
@@ -1705,7 +1705,7 @@ ${tkt.inventory}`;
                   );
                 })}
               </div>
-            </div>
+            </ScanCard>
 
             {/* Toggle Feedback portal */}
             <div>
@@ -1728,8 +1728,8 @@ ${tkt.inventory}`;
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="p-5 rounded-xl border border-[#3C404A]/80 bg-[#0A0A0B] space-y-4"
           >
+            <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/80" padding="p-5" className="space-y-4">
             <div>
               <h4 className="font-display font-semibold text-xs text-[#F5F5F0]">
                 {dict.feedbackHeader}
@@ -1792,6 +1792,7 @@ ${tkt.inventory}`;
                 <span>{copied ? dict.copied : dict.btnCopy}</span>
               </button>
             </div>
+            </ScanCard>
           </motion.div>
         )}
       </AnimatePresence>
