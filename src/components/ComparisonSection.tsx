@@ -4,6 +4,7 @@ import { useTranslation } from "../i18n/LanguageContext";
 import { useNavigation } from "../navigation/NavigationContext";
 import { LanguageCode } from "../i18n/languages";
 import { motion } from "motion/react";
+import ScanCard from "./ScanCard";
 
 const LOCAL_COMP_DICT: Record<LanguageCode, Record<string, string>> = {
   ru: {
@@ -521,7 +522,7 @@ export default function ComparisonSection() {
         </div>
 
         {/* Interactive Selector badges */}
-        <div className="w-full mb-8 p-6 border border-[#3C404A]/20 bg-[#12141A] rounded-xl">
+        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/20" cardClassName="bg-[#12141A]" padding="p-6 mb-8" className="w-full">
           {/* Mode Switcher */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6 pb-5 border-b border-white/[0.04]">
             <span className="font-mono text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider font-bold">
@@ -595,15 +596,16 @@ export default function ComparisonSection() {
               );
             })}
           </div>
-        </div>
+        </ScanCard>
 
         {/* Table Container card */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-          className="w-full p-4 sm:p-6 border border-[#3C404A]/30 bg-[#12141A] backdrop-blur-md rounded-xl overflow-hidden mb-8"
-        >
+        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/30" cardClassName="bg-[#12141A] backdrop-blur-md overflow-hidden mb-8" padding="p-4 sm:p-6" className="w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="w-full"
+          >
           <div className="w-full overflow-x-auto rounded-xl border border-white/[0.04] bg-[#0A0A0B]/50">
             <table className="w-full min-w-[900px] border-collapse text-left">
               <thead>
@@ -671,10 +673,11 @@ export default function ComparisonSection() {
               </tbody>
             </table>
           </div>
-        </motion.div>
+          </motion.div>
+        </ScanCard>
 
         {/* Disclaimer section */}
-        <div className="max-w-2xl mx-auto flex flex-col items-center text-center p-6 sm:p-8 rounded-xl border border-[#3C404A]/30 bg-[#12141A] backdrop-blur-md">
+        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/30" cardClassName="bg-[#12141A] backdrop-blur-md" padding="p-6 sm:p-8" className="max-w-2xl mx-auto items-center text-center">
           <p className="font-sans text-xs text-gray-500 leading-relaxed mb-6">
             {cp.disclaimer}
           </p>
@@ -687,7 +690,7 @@ export default function ComparisonSection() {
             <Send className="w-4 h-4" />
             <span>{cp.telegramBtn}</span>
           </a>
-        </div>
+        </ScanCard>
 
       </div>
     </div>

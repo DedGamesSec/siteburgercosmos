@@ -3,6 +3,7 @@ import { HelpCircle, ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
+import ScanCard from "./ScanCard";
 
 export default function FaqSection() {
   const { t } = useTranslation();
@@ -34,11 +35,11 @@ export default function FaqSection() {
           {t.faq.items.map((item, index) => {
             const isOpen = openIndex === index;
             return (
-              <div
+              <ScanCard
                 key={index}
-                className={`rounded-xl border transition-colors duration-300 ${
-                  isOpen ? "border-[#3B82F6]/30 bg-[#12141A]" : "border-white/[0.06] bg-[#12141A]"
-                }`}
+                padding="p-0"
+                borderColor={isOpen ? "border-[#3B82F6]/30" : "border-white/[0.06]"}
+                cardClassName="bg-[#12141A]"
               >
                 <button
                   type="button"
@@ -73,7 +74,7 @@ export default function FaqSection() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </ScanCard>
             );
           })}
         </div>

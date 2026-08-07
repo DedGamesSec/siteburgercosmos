@@ -4,6 +4,7 @@ import { LanguageCode } from "../i18n/languages";
 import { motion, AnimatePresence } from "motion/react";
 import { Shield, Award, Cpu, Network, FileCode, CheckCircle2, Copy, ExternalLink, Sparkles, Send, AlertTriangle, RefreshCw, AlertCircle, Play, Info, ShieldCheck, Milestone } from "lucide-react";
 import { SiTelegram, SiVk, SiGithub } from "react-icons/si";
+import ScanCard from "./ScanCard";
 const SiTelegramIcon = SiTelegram as React.ComponentType<any>;
 const SiVkIcon = SiVk as React.ComponentType<any>;
 const SiGithubIcon = SiGithub as React.ComponentType<any>;
@@ -347,7 +348,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
               >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   {/* TN1 Card */}
-                  <div className="p-6 rounded-xl bg-[#0A0A0B] border border-emerald-500/30 shadow-glow-success relative flex flex-col justify-between">
+                  <ScanCard accent="16,185,129" borderColor="border-emerald-500/30" cardClassName="shadow-glow-success" className="h-full justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
                         <span className="font-mono text-[10px] sm:text-xs text-emerald-300 uppercase tracking-widest bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
@@ -355,7 +356,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         </span>
                         <span className="font-mono text-sm text-gray-300">v1.2.0</span>
                       </div>
-                      <h4 className="font-display font-bold text-xl text-white mb-2">TrustNode 1 (TN1)</h4>
+                      <h4 className="font-display font-bold text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">TrustNode 1 (TN1)</h4>
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.tn1Desc}
                       </p>
@@ -386,10 +387,10 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         {rmp.sourceGithub}
                       </a>
                     </div>
-                  </div>
+                  </ScanCard>
 
                   {/* TN3 / PHANTOM 2.0 Card */}
-                  <div className="p-6 rounded-xl bg-[#0A0A0B] border border-[#3B82F6]/30 shadow-glow-sm relative flex flex-col justify-between">
+                  <ScanCard accent="59,130,246" borderColor="border-[#3B82F6]/30" cardClassName="shadow-glow-sm" className="h-full justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
                         <span className="font-mono text-[10px] sm:text-xs text-[#6FB1FF] uppercase tracking-widest bg-[#0A0A0B]/60 border border-[#3B82F6]/40 px-2.5 py-0.5 rounded-full">
@@ -397,7 +398,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         </span>
                         <span className="font-mono text-sm text-gray-300">v2.0-alpha</span>
                       </div>
-                      <h4 className="font-display font-bold text-xl text-white mb-2">TrustNode 3 (TN3) / PHANTOM 2.0</h4>
+                      <h4 className="font-display font-bold text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">TrustNode 3 (TN3) / PHANTOM 2.0</h4>
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.tn3Desc}
                       </p>
@@ -412,10 +413,10 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </ScanCard>
 
                   {/* KIRA Voice Card */}
-                  <div className="p-6 rounded-xl bg-[#0A0A0B] border border-amber-500/30 shadow-glow-warn relative flex flex-col justify-between">
+                  <ScanCard accent="251,191,36" borderColor="border-amber-500/30" cardClassName="shadow-glow-warn" className="h-full justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
                         <span className="font-mono text-[10px] sm:text-xs text-amber-400 uppercase tracking-widest bg-amber-950/60 border border-amber-500/40 px-2.5 py-0.5 rounded-full">
@@ -423,7 +424,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         </span>
                         <span className="font-mono text-sm text-gray-300">v3.0-design</span>
                       </div>
-                      <h4 className="font-display font-bold text-xl text-white mb-2">Kira Voice Assistant</h4>
+                      <h4 className="font-display font-bold text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">Kira Voice Assistant</h4>
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.kiraDesc}
                       </p>
@@ -442,11 +443,11 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </ScanCard>
                 </div>
 
                 {/* Security Disclosure Policy */}
-                <div className="p-6 rounded-xl bg-[#0A0A0B]/90 border border-emerald-500/20">
+                <ScanCard accent="16,185,129" borderColor="border-emerald-500/20" padding="p-6 sm:p-6">
                   <div className="flex items-start gap-3 mb-4">
                     <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                     <div>
@@ -493,10 +494,10 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       {rmp.reportGithub}
                     </a>
                   </div>
-                </div>
+                </ScanCard>
 
                 {/* Release Milestones Timeline */}
-                <div className="p-6 rounded-xl bg-[#0A0A0B]/90 border border-[#3C404A]/50">
+                <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/50" padding="p-6 sm:p-6">
                   <div className="flex items-center gap-2.5 mb-5 border-b border-white/[0.04] pb-3">
                     <Milestone className="w-5 h-5 text-[#3B82F6]" />
                     <h4 className="font-display font-bold text-lg text-white">
@@ -526,7 +527,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                     {rmp.allProjectsGithub}
                     <ExternalLink className="w-3 h-3" />
                   </a>
-                </div>
+                </ScanCard>
 
               </motion.div>
             )}

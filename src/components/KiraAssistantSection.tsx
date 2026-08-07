@@ -5,6 +5,7 @@ import { useTranslation } from "../i18n/LanguageContext";
 import { LanguageCode } from "../i18n/languages";
 import { useEcoMode } from "../context/EcoModeContext";
 import SectionBadge from "./SectionBadge";
+import ScanCard from "./ScanCard";
 
 // Deterministic pseudo-random equalizer heights per bar (for variety across idle loops)
 const EQ_BASE = [10, 22, 16, 30, 14, 26, 20, 34, 18, 28, 12, 24];
@@ -329,19 +330,23 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
           {/* Details list */}
           <div className="lg:col-span-7 space-y-6">
             {featuresList.map((feat, index) => (
-              <div key={index} className="flex gap-4 p-4 rounded-xl hover:bg-white/[0.01] transition-all duration-300">
+              <ScanCard
+                key={index}
+                padding="p-4"
+                className="flex-row items-start gap-4"
+              >
                 <div className="w-10 h-10 rounded-xl bg-[#12141A]/50 border border-[#3B82F6]/15 flex items-center justify-center shrink-0">
                   {feat.icon}
                 </div>
                 <div>
-                  <h4 className="font-display font-bold text-base text-[#F5F5F0] mb-1">
+                  <h4 className="font-display font-bold text-base text-[#F5F5F0] mb-1 group-hover:text-[#3B82F6] transition-all duration-300">
                     {feat.title}
                   </h4>
                   <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">
                     {feat.desc}
                   </p>
                 </div>
-              </div>
+              </ScanCard>
             ))}
           </div>
 

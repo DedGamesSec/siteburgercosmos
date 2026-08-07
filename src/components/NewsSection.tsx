@@ -5,6 +5,7 @@ import { Send, ExternalLink } from "lucide-react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
 import SectionBadge from "./SectionBadge";
+import ScanCard from "./ScanCard";
 import newsData from "../data/news.json";
 import type { NewsItem } from "../vite-env";
 
@@ -180,10 +181,10 @@ export default function NewsSection() {
                 whileInView={ecoMode ? undefined : { opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.2), ease: "easeOut" }}
-                className={`rounded-xl border bg-[#12141A] p-5 sm:p-6 ${
-                  isExpanded ? "border-[#3B82F6]/30" : "border-white/[0.04]"
-                }`}
               >
+                <ScanCard
+                  borderColor={isExpanded ? "border-[#3B82F6]/30" : "border-white/[0.04]"}
+                >
                 <div className="flex items-center justify-between gap-3">
                   <SourceBadge source={item.source} />
                   <span className="font-mono text-[11px] text-gray-500">{formatDate(item.date)}</span>
@@ -236,6 +237,7 @@ export default function NewsSection() {
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 </div>
+                </ScanCard>
               </motion.article>
             );
           })}

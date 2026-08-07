@@ -5,6 +5,7 @@ import { useTranslation } from "../i18n/LanguageContext";
 import { LanguageCode } from "../i18n/languages";
 import { useEcoMode } from "../context/EcoModeContext";
 import SectionBadge from "./SectionBadge";
+import ScanCard from "./ScanCard";
 
 const TITLE_BY_LANG: Partial<Record<LanguageCode, string>> = {
   ru: "История проекта",
@@ -289,8 +290,8 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ item, index, ecoMode }) => 
       ref={ref}
       initial={false}
       animate={{ opacity: 1, y: 0 }}
-      className="p-6 sm:p-8 rounded-xl bg-[#0A0A0B]/80 border border-white/[0.03] hover:border-[#3B82F6]/30 hover:shadow-glow-sm transition-all duration-300 relative group flex flex-col justify-between overflow-hidden"
     >
+      <ScanCard className="h-full justify-between">
       {/* Top Accent line */}
       <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#3B82F6]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -318,6 +319,7 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ item, index, ecoMode }) => 
       <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed border-t border-[#3C404A]/30 pt-4 mt-2">
         {item.desc}
       </p>
+      </ScanCard>
     </motion.div>
   );
 }

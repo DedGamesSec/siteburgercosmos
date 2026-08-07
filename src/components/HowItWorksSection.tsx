@@ -2,6 +2,7 @@
 import { Cpu, Layers, ServerCrash, CheckCircle2, Sliders } from "lucide-react";
 import { useTranslation } from "../i18n/LanguageContext";
 import SectionBadge from "./SectionBadge";
+import ScanCard from "./ScanCard";
 
 const USP_ICONS = [
   { Icon: Cpu, wrapClass: "bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20" },
@@ -122,14 +123,15 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
               {activeLayersList.map((layer, index) => {
                 const isActive = currentActiveIndex === index;
                 return (
-                  <button
+                  <ScanCard
                     key={layer.num}
                     onClick={() => setActiveLayer(index)}
-                    className={`w-full text-left relative z-10 flex items-start gap-4 p-4 sm:p-5 rounded-xl border transition-all duration-300 ${
-                      isActive 
-                        ? "bg-[#12141A] border-[#3B82F6] shadow-glow-md" 
-                        : "bg-[#0A0A0B]/80 border-[#3C404A]/40 hover:border-[#3B82F6]/20 hover:bg-[#0A0A0B]"
+                    padding="p-4 sm:p-5"
+                    cardClassName={`w-full text-left relative z-10 cursor-pointer ${
+                      isActive ? "shadow-glow-md" : "hover:border-[#3B82F6]/20"
                     }`}
+                    borderColor={isActive ? "border-[#3B82F6]" : "border-[#3C404A]/40"}
+                    className="flex-row items-start gap-4"
                   >
                     {/* Circle badge */}
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-mono text-xs font-bold border transition-colors duration-300 ${
@@ -158,7 +160,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                         {layer.desc}
                       </p>
                     </div>
-                  </button>
+                  </ScanCard>
                 );
               })}
             </div>
@@ -166,9 +168,8 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
 
           {/* Right Block: Core USPs as a single full-width accent panel */}
           <div className="lg:col-span-5" id="usp-highlights">
-            <div className="relative rounded-xl border border-[#3B82F6]/20 bg-[#12141A] overflow-hidden">
-              <div className="absolute top-0 right-0 w-full h-36 bg-[#3B82F6]/5 blur-2xl pointer-events-none" />
-              <div className="relative p-6 sm:p-7">
+            <div className="relative rounded-xl border border-[#3B82F6]/20">
+              <ScanCard className="w-full">
                 <div className="flex items-center gap-2 mb-5">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
                   <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#3B82F6] font-bold">
@@ -184,7 +185,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                           <Icon className="w-6 h-6" />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-display font-bold text-base sm:text-lg text-[#F5F5F0] mb-1.5">
+                          <h4 className="font-display font-bold text-base sm:text-lg text-[#F5F5F0] mb-1.5 group-hover:text-[#3B82F6] transition-all duration-300">
                             {usp.title}
                           </h4>
                           <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">
@@ -195,7 +196,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                     );
                   })}
                 </div>
-              </div>
+              </ScanCard>
             </div>
           </div>
 

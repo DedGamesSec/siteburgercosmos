@@ -3,6 +3,7 @@ import { useTranslation } from "../i18n/LanguageContext";
 import { motion, AnimatePresence } from "motion/react";
 import { ShieldAlert, EyeOff, WifiOff, Phone, ServerOff } from "lucide-react";
 import SectionBadge from "./SectionBadge";
+import ScanCard from "./ScanCard";
 
 const ProblemSection = React.memo(function ProblemSection() {
   const { t, language } = useTranslation();
@@ -236,18 +237,20 @@ const ProblemSection = React.memo(function ProblemSection() {
             >
               {/* Text block */}
               <div className={i % 2 === 1 ? "md:order-2" : "md:order-1"}>
-                <div className="flex items-center gap-3 mb-5">
-                  <span className="font-mono text-6xl sm:text-7xl font-black text-[#3C404A] leading-none select-none">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div className={`h-[2px] flex-1 ${i === 1 ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-[#3B82F6]/40 to-transparent`} />
-                </div>
-                <h3 className="font-display font-bold text-3xl sm:text-4xl text-[#F5F5F0] mb-4">
-                  {problem.title}
-                </h3>
-                <p className="font-sans text-sm sm:text-base text-gray-400 leading-relaxed">
-                  {problem.desc}
-                </p>
+                <ScanCard className="h-full">
+                  <div className="flex items-center gap-3 mb-5">
+                    <span className="font-mono text-6xl sm:text-7xl font-black text-[#3C404A] leading-none select-none">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div className={`h-[2px] flex-1 ${i === 1 ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-[#3B82F6]/40 to-transparent`} />
+                  </div>
+                  <h3 className="font-display font-bold text-3xl sm:text-4xl text-[#F5F5F0] mb-4 group-hover:text-[#3B82F6] transition-all duration-300">
+                    {problem.title}
+                  </h3>
+                  <p className="font-sans text-sm sm:text-base text-gray-400 leading-relaxed">
+                    {problem.desc}
+                  </p>
+                </ScanCard>
               </div>
 
               {/* Accent animated visual */}

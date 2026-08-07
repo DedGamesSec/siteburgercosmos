@@ -4,6 +4,7 @@ import { useNavigation } from "../navigation/NavigationContext";
 import { PAGES_CONFIG } from "../navigation/pages.config";
 import { Home, Cpu, ShieldCheck, Map, Users, BarChart3, Download, Newspaper } from "lucide-react";
 import type { LanguageCode } from "../i18n/languages";
+import ScanCard from "./ScanCard";
 
 const PAGE_ICONS: Record<string, React.ElementType> = {
   home: Home,
@@ -211,18 +212,16 @@ export default function ExplorePagesSection() {
     const cta = PAGE_CTA[page.id]?.[language] || "";
 
     return (
-      <div
+      <ScanCard
         key={page.id}
-        onClick={() => navigateTo(page.id)}
-        className={`group relative flex flex-col justify-between p-6 sm:p-8 rounded-xl border border-[#3C404A]/50 shadow-[0_4px_30px_rgba(0,0,0,0.6)] bg-[#12141A] hover:border-[#3B82F6]/55 transition-all duration-300 cursor-pointer ${
-          page.id === "how-it-works"
-            ? "border-[#3B82F6]/30 shadow-[0_4px_35px_rgba(59,130,246,0.08)]"
-            : ""
-        } ${extraClass}`}
         id={`explore-${page.id}-card`}
+        onClick={() => navigateTo(page.id)}
+        cardClassName={`cursor-pointer shadow-[0_4px_30px_rgba(0,0,0,0.6)] ${
+          page.id === "how-it-works" ? "shadow-[0_4px_35px_rgba(59,130,246,0.08)]" : ""
+        } ${extraClass}`}
+        borderColor={page.id === "how-it-works" ? "border-[#3B82F6]/30" : "border-[#3C404A]/50"}
+        className="h-full justify-between"
       >
-        <div className="absolute -inset-px rounded-xl bg-gradient-to-b from-[#3B82F6]/10 to-transparent pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100" />
-
         <div>
           <div className="flex items-center justify-between mb-6">
             <div className="w-11 h-11 rounded-xl bg-[#0A0A0B]/80 border border-[#3B82F6]/25 flex items-center justify-center text-[#3B82F6] group-hover:shadow-glow-lg transition-all">
@@ -244,7 +243,7 @@ export default function ExplorePagesSection() {
         <span className="inline-flex justify-center w-full font-mono text-sm font-bold text-[#3B82F6] group-hover:text-white transition-all">
           {cta}
         </span>
-      </div>
+      </ScanCard>
     );
   };
 

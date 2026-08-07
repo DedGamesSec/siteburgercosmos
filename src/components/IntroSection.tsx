@@ -3,6 +3,7 @@ import { HelpCircle, Shield, Eye, ArrowRight } from "lucide-react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
 import SectionBadge from "./SectionBadge";
+import ScanCard from "./ScanCard";
 
 const DICT: Record<string, { badge: string; title: string; subtitle: string; steps: Array<{ tag: string; title: string; desc: string }> }> = {
   ru: {
@@ -282,17 +283,14 @@ const IntroSection = React.memo(function IntroSection() {
 
         {/* 3-Column steps as cards */}
         <div className="relative">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[#3C404A] border border-[#3C404A]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {content.steps.map((step, idx) => {
               const IconComponent = ICONS[idx];
               const colorClass = COLORS[idx];
               return (
-                <div
-                  key={idx}
-                  className="relative p-6 sm:p-8 bg-[#12141A] flex flex-col justify-between h-full"
-                >
+                <ScanCard key={idx} className="h-full justify-between">
                   {/* 4-тирный статусный акцент сверху (как top-stripe в карточках бота) */}
-                  <div className={`absolute top-0 left-0 right-0 h-1 ${colorClass.split(" ")[0].replace("border-[#", "bg-[#")}`} />
+                  <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-xl ${colorClass.split(" ")[0].replace("border-[#", "bg-[#")}`} />
                   <div>
                     {/* Step Tag */}
                     <div className="flex items-center justify-between mb-6">
@@ -305,7 +303,7 @@ const IntroSection = React.memo(function IntroSection() {
                     </div>
 
                     {/* Title */}
-                    <h3 className="font-display font-bold text-lg text-[#F5F5F0] mb-3">
+                    <h3 className="font-display font-bold text-lg text-[#F5F5F0] mb-3 group-hover:text-[#3B82F6] transition-all duration-300">
                       {step.title}
                     </h3>
 
@@ -321,7 +319,7 @@ const IntroSection = React.memo(function IntroSection() {
                       <ArrowRight className="w-3.5 h-3.5" />
                     </div>
                   )}
-                </div>
+                </ScanCard>
               );
             })}
           </div>

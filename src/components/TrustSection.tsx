@@ -3,6 +3,7 @@ import { Award, FileText, Compass, Percent } from "lucide-react";
 import { useInView } from "motion/react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
+import ScanCard from "./ScanCard";
 
 const STAT_ICONS = [FileText, Award, Compass, Percent];
 
@@ -58,20 +59,17 @@ const StatCard: React.FC<StatCardProps> = ({ stat }) => {
   const inView = useInView(ref, { once: true, margin: "-80px 0px" });
   const { ecoMode } = useEcoMode();
 
-  return (
-    <div
+return (
+    <ScanCard
       ref={ref}
-      className="relative p-7 sm:p-9 rounded-xl bg-[#12141A] backdrop-blur-md border border-[#3C404A]/30 hover:border-[#3B82F6]/50 transition-all duration-300 group flex flex-col overflow-hidden hover:shadow-[0_8px_35px_rgba(59,130,246,0.12)]"
       id={stat.id}
+      cardClassName="hover:shadow-[0_8px_35px_rgba(59,130,246,0.12)]"
     >
-      {/* Internal subtle glow card backing */}
-      <div className="absolute -inset-10 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.06)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-      <div className="relative z-10 min-h-[170px] flex flex-col">
+      <div className="min-h-[170px] flex flex-col">
 
         {/* Micro-badge styled icon wrapper */}
         <div className="relative inline-flex items-center justify-center mb-6">
-          <div className="relative flex items-center justify-center p-2.5 rounded-xl bg-[#0A0A0B] border border-[#3B82F6]/30 shadow-glow-sm group-hover:border-[#3B82F6]/60 transition-all duration-300 group-hover:scale-[1.05]">
+          <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-[#12141A] border border-[#3B82F6]/10 shadow-glow-sm group-hover:border-[#3B82F6]/30 transition-all duration-300 group-hover:scale-[1.05]">
             <stat.Icon className="w-5 h-5 text-[#3B82F6]" />
           </div>
         </div>
@@ -87,11 +85,10 @@ const StatCard: React.FC<StatCardProps> = ({ stat }) => {
         </div>
       </div>
 
-      {/* Description */}
       <p className="font-sans text-xs text-gray-400 leading-relaxed border-t border-[#3C404A]/30 pt-4 mt-2 relative z-10">
         {stat.desc}
       </p>
-    </div>
+    </ScanCard>
   );
 };
 

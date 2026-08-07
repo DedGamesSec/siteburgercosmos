@@ -3,6 +3,7 @@ import { Calculator, ShieldCheck } from "lucide-react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
 import SectionBadge from "./SectionBadge";
+import ScanCard from "./ScanCard";
 
 const CURRENCY_BY_LANG: Record<string, string> = {
   ru: "RUB",
@@ -55,7 +56,7 @@ export default function DamageCalculator() {
           </p>
         </div>
 
-        <div className="rounded-xl bg-[#12141A] border border-white/[0.06] p-6 sm:p-10">
+        <ScanCard accent="59,130,246" borderColor="border-white/[0.06]" cardClassName="bg-[#12141A]" padding="p-6 sm:p-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
             <div>
               <label htmlFor="calc-calls" className="block font-sans text-sm text-gray-300 mb-3">
@@ -108,7 +109,7 @@ export default function DamageCalculator() {
             </div>
           </div>
 
-          <div className="mt-10 rounded-xl border border-[#3B82F6]/20 bg-[#12141A] p-6 sm:p-8 text-center">
+          <ScanCard accent="59,130,246" borderColor="border-[#3B82F6]/20" cardClassName="bg-[#12141A]" padding="p-6 sm:p-8" className="items-center text-center">
             <div className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-2">
               {t.damageCalc.resultTitle}
             </div>
@@ -121,12 +122,12 @@ export default function DamageCalculator() {
               <ShieldCheck className="w-4 h-4 text-[#3B82F6]" />
               {t.damageCalc.savedLabel}
             </div>
-          </div>
+          </ScanCard>
 
           <p className="mt-6 font-sans text-xs text-gray-600 text-center leading-relaxed">
             {t.damageCalc.disclaimer}
           </p>
-        </div>
+        </ScanCard>
       </div>
     </section>
   );

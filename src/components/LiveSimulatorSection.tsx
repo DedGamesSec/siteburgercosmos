@@ -4,6 +4,7 @@ import { useTranslation } from "../i18n/LanguageContext";
 import { LanguageCode } from "../i18n/languages";
 import { motion, AnimatePresence } from "motion/react";
 import SectionBadge from "./SectionBadge";
+import ScanCard from "./ScanCard";
 
 interface Scenario {
   id: string;
@@ -1227,7 +1228,7 @@ const rafTypingRef = useRef<number | null>(null);
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto items-stretch">
           
           {/* PHONE CALL SIMULATOR COLUMN (Col 5) */}
-          <div className="lg:col-span-5 flex flex-col justify-between p-6 sm:p-8 rounded-xl bg-[#0A0A0B] border border-white/[0.04] relative overflow-hidden shadow-2xl min-h-[500px]">
+          <ScanCard accent="59,130,246" cardClassName="lg:col-span-5 shadow-2xl min-h-[500px]" className="flex-col justify-between" padding="p-6 sm:p-8">
             
             {/* Flashing Intrusion Danger Ambient Cover */}
             <AnimatePresence>
@@ -1365,13 +1366,13 @@ const rafTypingRef = useRef<number | null>(null);
               </button>
             </div>
 
-          </div>
+          </ScanCard>
 
           {/* NEURAL HUD AND LOGS COLUMN (Col 7) */}
           <div className="lg:col-span-7 flex flex-col justify-between gap-6">
             
             {/* THREAT CLIMBER HUD */}
-            <div className="p-6 rounded-xl bg-[#0A0A0B] border border-white/[0.04]">
+            <ScanCard accent="59,130,246" padding="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-mono text-xs font-bold text-gray-400 uppercase tracking-wider">
                   {threatMeterLabel}
@@ -1404,10 +1405,10 @@ const rafTypingRef = useRef<number | null>(null);
                   </span>
                 </motion.div>
               )}
-            </div>
+            </ScanCard>
 
             {/* 7 LAYER PIPELINE STATUS TRACKER */}
-            <div className="p-6 rounded-xl bg-[#0A0A0B] border border-white/[0.04] flex-1 flex flex-col justify-between">
+            <ScanCard accent="59,130,246" cardClassName="flex-1" padding="p-6">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-mono text-xs font-bold text-gray-400 uppercase tracking-wider">
@@ -1476,10 +1477,10 @@ const rafTypingRef = useRef<number | null>(null);
                   })}
                 </div>
               </div>
-            </div>
+            </ScanCard>
 
             {/* REAL-TIME ENCRYPTED TERMINAL CONSOLE */}
-            <div className="p-5 rounded-xl bg-[#0A0A0B] border border-white/[0.04] h-48 flex flex-col justify-between">
+            <ScanCard accent="59,130,246" cardClassName="h-48" className="flex-col justify-between" padding="p-5">
               <div className="flex items-center gap-2 border-b border-white/[0.04] pb-2 mb-2">
                 <Terminal className="w-4 h-4 text-gray-500" />
                 <span className="font-mono text-[15px] text-gray-200 uppercase tracking-widest font-bold">
@@ -1508,7 +1509,7 @@ const rafTypingRef = useRef<number | null>(null);
                   );
                 })}
               </div>
-            </div>
+            </ScanCard>
 
           </div>
 
