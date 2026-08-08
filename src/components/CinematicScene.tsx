@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { REAL_STARS, CONSTELLATION_LINES } from "../data/realStarCatalog";
+import { REAL_STARS } from "../data/realStarCatalog";
 
 export interface CinematicPhases {
   underEnd: number;
@@ -68,6 +68,7 @@ function buildStarLayer(codes: string[]): THREE.Points {
   const positions = new Float32Array(members.length * 3);
   const sizes = new Float32Array(members.length);
   const alphas = new Float32Array(members.length);
+  const colors = new Float32Array(members.length * 3);
 
   for (let i = 0; i < members.length; i++) {
     const star = members[i];
@@ -81,12 +82,29 @@ function buildStarLayer(codes: string[]): THREE.Points {
     const v = starVisual(star);
     sizes[i] = v.size;
     alphas[i] = v.alpha;
+
+    // Subtle temperature tint: blue-white / white / warm
+    const t = fract(Math.sin(i * 12.9898 + star.ra) * 43758.5453);
+    if (t < 0.4) {
+      colors[i * 3] = 0.82;
+      colors[i * 3 + 1] = 0.9;
+      colors[i * 3 + 2] = 1;
+    } else if (t < 0.8) {
+      colors[i * 3] = 1;
+      colors[i * 3 + 1] = 1;
+      colors[i * 3 + 2] = 1;
+    } else {
+      colors[i * 3] = 1;
+      colors[i * 3 + 1] = 0.86;
+      colors[i * 3 + 2] = 0.68;
+    }
   }
 
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
   geo.setAttribute("aSize", new THREE.BufferAttribute(sizes, 1));
   geo.setAttribute("aAlpha", new THREE.BufferAttribute(alphas, 1));
+  geo.setAttribute("aColor", new THREE.BufferAttribute(colors, 3));
 
   const mat = new THREE.ShaderMaterial({
     uniforms: { uOpacity: { value: 1 } },
@@ -96,9 +114,12 @@ function buildStarLayer(codes: string[]): THREE.Points {
     vertexShader: `
       attribute float aSize;
       attribute float aAlpha;
+      attribute vec3 aColor;
       varying float vAlpha;
+      varying vec3 vColor;
       void main() {
         vAlpha = aAlpha;
+        vColor = aColor;
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
         gl_PointSize = min(30.0, aSize * (620.0 / max(1.0, -mv.z)));
         gl_Position = projectionMatrix * mv;
@@ -107,6 +128,7 @@ function buildStarLayer(codes: string[]): THREE.Points {
     fragmentShader: `
       precision mediump float;
       varying float vAlpha;
+      varying vec3 vColor;
       uniform float uOpacity;
       void main() {
         vec2 c = gl_PointCoord - vec2(0.5);
@@ -115,7 +137,7 @@ function buildStarLayer(codes: string[]): THREE.Points {
         float halo = smoothstep(0.5, 0.1, d);
         float a = (core + halo * 0.45) * vAlpha * uOpacity;
         if (a < 0.02) discard;
-        gl_FragColor = vec4(1.0, 1.0, 1.0, a);
+        gl_FragColor = vec4(vColor, a);
       }
     `
   });
@@ -123,28 +145,75 @@ function buildStarLayer(codes: string[]): THREE.Points {
   return new THREE.Points(geo, mat);
 }
 
-// Deep-space background: two shells of faint stars that keep the sky full at every
-// point of the flight, so there is always a visible starfield behind the scene.
-function buildDeepDust(count: number, radius: number, seedMul: number): THREE.Points {
+function fract(x: number) {
+  return x - Math.floor(x);
+}
+
+// A realistic night sky, not uniform dots: thousands of faint stars with a proper
+// brightness distribution, subtle color temperature variety and a bright Milky Way
+// band crossing the sky. One distant shell that stays as the backdrop for the whole
+// flight; the bright real catalog stars layer on top of it with parallax.
+function buildBackgroundSky(count: number, radius: number): THREE.Points {
+  const bandN = new THREE.Vector3(0.35, 0.78, 0.52).normalize();
+  const bandP = new THREE.Vector3(1, 0, 0);
+  const bandQ = new THREE.Vector3(0, 0, 1);
+
   const positions = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
   const alphas = new Float32Array(count);
+  const colors = new Float32Array(count * 3);
+  const dir = new THREE.Vector3();
+
   for (let i = 0; i < count; i++) {
-    const u = fract(Math.sin(i * 12.9898 + seedMul) * 43758.5453);
-    const v = fract(Math.sin(i * 78.233 + seedMul * 1.7) * 12543.123);
-    const theta = 2 * Math.PI * u;
-    const phi = Math.acos(2 * v - 1);
-    const r = radius * (0.9 + 0.2 * fract(Math.sin(i * 39.19 + seedMul) * 2345.7));
-    positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-    positions[i * 3 + 1] = r * Math.cos(phi);
-    positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-    sizes[i] = 1.0 + 1.2 * fract(Math.sin(i * 91.3 + seedMul) * 5432.1);
-    alphas[i] = 0.3 + 0.5 * fract(Math.sin(i * 27.4 + seedMul) * 9123.5);
+    // ~40% of stars cluster in the Milky Way band (a great circle band)
+    if (Math.random() < 0.4) {
+      const a = Math.random() * Math.PI * 2;
+      const lat = (Math.random() - 0.5) * 0.5;
+      dir.copy(bandP).multiplyScalar(Math.cos(a) * Math.cos(lat));
+      dir.addScaledVector(bandQ, Math.sin(a) * Math.cos(lat));
+      dir.addScaledVector(bandN, Math.sin(lat));
+    } else {
+      const u = Math.random() * 2 - 1;
+      const phi = Math.random() * Math.PI * 2;
+      const r = Math.sqrt(1 - u * u);
+      dir.set(r * Math.cos(phi), u, r * Math.sin(phi));
+    }
+    dir.normalize();
+    const r = radius * (0.92 + 0.16 * Math.random());
+    positions[i * 3] = dir.x * r;
+    positions[i * 3 + 1] = dir.y * r;
+    positions[i * 3 + 2] = dir.z * r;
+
+    // Brightness: many faint, few bright (magnitude 1.5..7)
+    const mag = 1.5 + 5.5 * Math.pow(Math.random(), 0.55);
+    sizes[i] = Math.max(0.7, 4.6 - mag * 0.62);
+    alphas[i] = Math.min(1, Math.max(0.2, 1.05 - mag * 0.13));
+
+    // Subtle color temperature: blue-white / white / warm
+    const t = Math.random();
+    if (t < 0.5) {
+      const k = 0.82 + 0.15 * Math.random();
+      colors[i * 3] = k;
+      colors[i * 3 + 1] = k;
+      colors[i * 3 + 2] = Math.min(1, k + 0.18);
+    } else if (t < 0.85) {
+      const k = 0.92 + 0.08 * Math.random();
+      colors[i * 3] = k;
+      colors[i * 3 + 1] = k;
+      colors[i * 3 + 2] = k;
+    } else {
+      colors[i * 3] = 1;
+      colors[i * 3 + 1] = 0.85 + 0.1 * Math.random();
+      colors[i * 3 + 2] = 0.62 + 0.15 * Math.random();
+    }
   }
+
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
   geo.setAttribute("aSize", new THREE.BufferAttribute(sizes, 1));
   geo.setAttribute("aAlpha", new THREE.BufferAttribute(alphas, 1));
+  geo.setAttribute("aColor", new THREE.BufferAttribute(colors, 3));
+
   const mat = new THREE.ShaderMaterial({
     uniforms: { uOpacity: { value: 1 } },
     transparent: true,
@@ -153,63 +222,32 @@ function buildDeepDust(count: number, radius: number, seedMul: number): THREE.Po
     vertexShader: `
       attribute float aSize;
       attribute float aAlpha;
+      attribute vec3 aColor;
       varying float vAlpha;
+      varying vec3 vColor;
       void main() {
         vAlpha = aAlpha;
+        vColor = aColor;
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = min(7.0, aSize * (520.0 / max(1.0, -mv.z)));
+        gl_PointSize = min(5.0, aSize * (420.0 / max(1.0, -mv.z)));
         gl_Position = projectionMatrix * mv;
       }
     `,
     fragmentShader: `
       precision mediump float;
       varying float vAlpha;
+      varying vec3 vColor;
       uniform float uOpacity;
       void main() {
         vec2 c = gl_PointCoord - vec2(0.5);
         float d = length(c);
         float a = smoothstep(0.5, 0.06, d) * vAlpha * uOpacity;
         if (a < 0.015) discard;
-        gl_FragColor = vec4(1.0, 1.0, 1.0, a);
+        gl_FragColor = vec4(vColor, a);
       }
     `
   });
   return new THREE.Points(geo, mat);
-}
-
-function fract(x: number) {
-  return x - Math.floor(x);
-}
-
-// Real constellation asterisms drawn from the same catalog, for a set of codes.
-// Line endpoints sit at the same parallax radius as the stars themselves, so the
-// asterisms live inside the starfield instead of a rigid far shell around it.
-function buildConstellationLayer(codes: string[]): THREE.LineSegments {
-  const starById = new Map(REAL_STARS.map((s) => [s.id, s]));
-  const starRadius = (s: (typeof REAL_STARS)[number]) => {
-    const distLy = s.distLy || 400;
-    return lerp(240, 860, clamp01(distLy / 900));
-  };
-  const lines: number[] = [];
-  for (const asterism of CONSTELLATION_LINES) {
-    if (!codes.includes(asterism.code)) continue;
-    for (const [a, b] of asterism.lines) {
-      const sa = starById.get(a);
-      const sb = starById.get(b);
-      if (!sa || !sb) continue;
-      const pa = raDecDir(sa.ra, sa.dec).multiplyScalar(starRadius(sa));
-      const pb = raDecDir(sb.ra, sb.dec).multiplyScalar(starRadius(sb));
-      lines.push(pa.x, pa.y, pa.z, pb.x, pb.y, pb.z);
-    }
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.Float32BufferAttribute(lines, 3));
-  const mat = new THREE.LineBasicMaterial({
-    color: 0x7fa8ff,
-    transparent: true,
-    opacity: 0
-  });
-  return new THREE.LineSegments(geo, mat);
 }
 
 // Night-lights: a shader sphere that only shows city lights on the dark side.
@@ -343,25 +381,17 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     fill.position.set(-60, -30, -80);
     scene.add(fill);
 
-    // Real sky, revealed in layers as the flight deepens. Two faint background
-    // shells of stars are always visible so the sky is never empty; the bright
-    // catalog stars and their constellation lines then layer on top of them.
+    // Real sky. One dense, realistic backdrop (faint stars, Milky Way band, color
+    // temperature) is always on; the bright catalog stars layer on top with real
+    // parallax so the flight flies past actual stars. No constellation lines.
+    const background = buildBackgroundSky(5200, 1400);
+    scene.add(background);
     const starsNorth = buildStarLayer(SKY_GROUP_NORTH);
     scene.add(starsNorth);
     const starsMid = buildStarLayer(SKY_GROUP_MID);
     scene.add(starsMid);
     const starsSouth = buildStarLayer(SKY_GROUP_SOUTH);
     scene.add(starsSouth);
-    const consNorth = buildConstellationLayer(SKY_GROUP_NORTH);
-    scene.add(consNorth);
-    const consMid = buildConstellationLayer(SKY_GROUP_MID);
-    scene.add(consMid);
-    const consSouth = buildConstellationLayer(SKY_GROUP_SOUTH);
-    scene.add(consSouth);
-    const deepA = buildDeepDust(1600, 880, 0.31);
-    scene.add(deepA);
-    const deepB = buildDeepDust(2600, 1180, 3.71);
-    scene.add(deepB);
 
     // Professional Earth: day texture + relief + ocean specular + clouds + night lights
     const earthGeo = new THREE.SphereGeometry(EARTH_R, 128, 128);
@@ -489,22 +519,15 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       (atmo.material as THREE.ShaderMaterial).opacity = earthIn;
       (night.material as THREE.ShaderMaterial).opacity = earthIn;
 
-      // Progressive sky reveal, tied to the narrative:
-      // - Two faint background star shells are always on, so the sky is never empty.
-      // - The original north sky (constellation lines included) is the backdrop for
-      //   the TRUSTNODE title; its lines fall away as we fly into the deep.
-      // - New constellations open while the logo assembles and hovers; everything
-      //   thins as Earth fills the view.
+      // Sky reveal: the realistic backdrop is always on. The bright real stars are
+      // grouped by sky region so the flight moves from the northern sky into the
+      // mid/southern constellations; everything thins as Earth fills the view.
       const skyFade = (inA: number, inB: number, outA: number, outB: number) =>
         smooth(inA, inB, p) * (1 - smooth(outA, outB, p));
+      (background.material as THREE.ShaderMaterial).uniforms.uOpacity.value = 1;
       (starsNorth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = 1 - smooth(0.6, 0.85, p);
       (starsMid.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.42, 0.55, 0.85, 0.95);
       (starsSouth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.55, 0.68, 0.87, 0.97);
-      (deepA.material as THREE.ShaderMaterial).uniforms.uOpacity.value = 1;
-      (deepB.material as THREE.ShaderMaterial).uniforms.uOpacity.value = 1;
-      (consNorth.material as THREE.LineBasicMaterial).opacity = skyFade(0, 0.06, 0.08, 0.22) * 0.8;
-      (consMid.material as THREE.LineBasicMaterial).opacity = skyFade(0.45, 0.58, 0.85, 0.95) * 0.8;
-      (consSouth.material as THREE.LineBasicMaterial).opacity = skyFade(0.6, 0.72, 0.87, 0.97) * 0.8;
 
       sampleCamera(p);
 
@@ -557,15 +580,10 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
           else mat?.dispose();
         }
       });
-      const skyPoints: THREE.Points[] = [starsNorth, starsMid, starsSouth, deepA, deepB];
+      const skyPoints: THREE.Points[] = [background, starsNorth, starsMid, starsSouth];
       skyPoints.forEach((pt) => {
         pt.geometry.dispose();
         (pt.material as THREE.Material).dispose();
-      });
-      const skyLines: THREE.LineSegments[] = [consNorth, consMid, consSouth];
-      skyLines.forEach((ln) => {
-        ln.geometry.dispose();
-        (ln.material as THREE.Material).dispose();
       });
       renderer.dispose();
       if (renderer.domElement.parentElement === container) {
