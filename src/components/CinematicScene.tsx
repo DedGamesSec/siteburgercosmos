@@ -57,8 +57,8 @@ const SKY_GROUP_SOUTH = ["SCO", "SGR", "CEN", "CRU", "PEG"];
 
 // Brightness/size from real magnitude (smaller mag = brighter star)
 function starVisual(star: (typeof REAL_STARS)[number]) {
-  const size = Math.max(0.7, 3.4 - star.mag * 0.5);
-  const alpha = Math.min(1, Math.max(0.18, 1.1 - star.mag * 0.2));
+  const size = Math.max(1.6, 5.5 - star.mag * 0.7);
+  const alpha = Math.min(1, Math.max(0.45, 1.25 - star.mag * 0.12));
   return { size, alpha };
 }
 
@@ -100,7 +100,7 @@ function buildStarLayer(codes: string[]): THREE.Points {
       void main() {
         vAlpha = aAlpha;
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = aSize * (300.0 / max(1.0, -mv.z));
+        gl_PointSize = min(30.0, aSize * (620.0 / max(1.0, -mv.z)));
         gl_Position = projectionMatrix * mv;
       }
     `,
@@ -123,8 +123,8 @@ function buildStarLayer(codes: string[]): THREE.Points {
   return new THREE.Points(geo, mat);
 }
 
-// Deep-space dust revealed as the flight deepens: two far shells of faint stars that
-// come into view after the catalog constellations have opened up.
+// Deep-space background: two shells of faint stars that keep the sky full at every
+// point of the flight, so there is always a visible starfield behind the scene.
 function buildDeepDust(count: number, radius: number, seedMul: number): THREE.Points {
   const positions = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
@@ -138,8 +138,8 @@ function buildDeepDust(count: number, radius: number, seedMul: number): THREE.Po
     positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
     positions[i * 3 + 1] = r * Math.cos(phi);
     positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-    sizes[i] = 0.5 + 0.8 * fract(Math.sin(i * 91.3 + seedMul) * 5432.1);
-    alphas[i] = 0.25 + 0.5 * fract(Math.sin(i * 27.4 + seedMul) * 9123.5);
+    sizes[i] = 1.0 + 1.2 * fract(Math.sin(i * 91.3 + seedMul) * 5432.1);
+    alphas[i] = 0.3 + 0.5 * fract(Math.sin(i * 27.4 + seedMul) * 9123.5);
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -157,7 +157,7 @@ function buildDeepDust(count: number, radius: number, seedMul: number): THREE.Po
       void main() {
         vAlpha = aAlpha;
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = aSize * (240.0 / max(1.0, -mv.z));
+        gl_PointSize = min(7.0, aSize * (520.0 / max(1.0, -mv.z)));
         gl_Position = projectionMatrix * mv;
       }
     `,
@@ -182,9 +182,14 @@ function fract(x: number) {
 }
 
 // Real constellation asterisms drawn from the same catalog, for a set of codes.
+// Line endpoints sit at the same parallax radius as the stars themselves, so the
+// asterisms live inside the starfield instead of a rigid far shell around it.
 function buildConstellationLayer(codes: string[]): THREE.LineSegments {
   const starById = new Map(REAL_STARS.map((s) => [s.id, s]));
-  const R = 820;
+  const starRadius = (s: (typeof REAL_STARS)[number]) => {
+    const distLy = s.distLy || 400;
+    return lerp(240, 860, clamp01(distLy / 900));
+  };
   const lines: number[] = [];
   for (const asterism of CONSTELLATION_LINES) {
     if (!codes.includes(asterism.code)) continue;
@@ -192,8 +197,8 @@ function buildConstellationLayer(codes: string[]): THREE.LineSegments {
       const sa = starById.get(a);
       const sb = starById.get(b);
       if (!sa || !sb) continue;
-      const pa = raDecDir(sa.ra, sa.dec).multiplyScalar(R);
-      const pb = raDecDir(sb.ra, sb.dec).multiplyScalar(R);
+      const pa = raDecDir(sa.ra, sa.dec).multiplyScalar(starRadius(sa));
+      const pb = raDecDir(sb.ra, sb.dec).multiplyScalar(starRadius(sb));
       lines.push(pa.x, pa.y, pa.z, pb.x, pb.y, pb.z);
     }
   }
@@ -338,9 +343,9 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     fill.position.set(-60, -30, -80);
     scene.add(fill);
 
-    // Real sky, revealed in layers as the flight deepens: the north constellations
-    // (the same ones as the original landing page sky) are visible from the start,
-    // then mid declinations open up, then the far south, then deep-space dust.
+    // Real sky, revealed in layers as the flight deepens. Two faint background
+    // shells of stars are always visible so the sky is never empty; the bright
+    // catalog stars and their constellation lines then layer on top of them.
     const starsNorth = buildStarLayer(SKY_GROUP_NORTH);
     scene.add(starsNorth);
     const starsMid = buildStarLayer(SKY_GROUP_MID);
@@ -353,9 +358,9 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     scene.add(consMid);
     const consSouth = buildConstellationLayer(SKY_GROUP_SOUTH);
     scene.add(consSouth);
-    const deepA = buildDeepDust(900, 880, 0.31);
+    const deepA = buildDeepDust(1600, 880, 0.31);
     scene.add(deepA);
-    const deepB = buildDeepDust(1600, 1180, 3.71);
+    const deepB = buildDeepDust(2600, 1180, 3.71);
     scene.add(deepB);
 
     // Professional Earth: day texture + relief + ocean specular + clouds + night lights
@@ -399,7 +404,7 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     const baseUrl = import.meta.env.BASE_URL;
 
     const loadTex = (path: string) => loader.load(`${baseUrl}textures/${path}`);
-    const dayTex = loadTex("earth_atmos_2048.jpg");
+    const dayTex = loadTex("earth.jpg");
     dayTex.colorSpace = THREE.SRGBColorSpace;
     earthMat.map = dayTex;
 
@@ -422,26 +427,28 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     (night.material as THREE.ShaderMaterial).uniforms.uNight.value = nightTex;
 
     // Camera keyframes. Narrative: the TRUSTNODE title sits in the original starry
-    // sky -> we fly INTO the stars (constellation lines fall away) -> new
-    // constellations open as the logo assembles, with a brief hover -> then a turn
-    // toward Earth and a close approach until the planet fills the frame.
+    // sky (camera tilted up into the northern constellations) -> we fly INTO the
+    // stars (constellation lines fall away) -> new constellations open as the logo
+    // assembles, with a brief hover -> then a turn toward Earth and an approach
+    // that ends on a large, crisp planet.
     const kf: Keyframe[] = [
-      { p: 0, pos: new THREE.Vector3(0, 6, 120), look: new THREE.Vector3(0, 0, 0) },
-      { p: phases.underEnd * 0.5, pos: new THREE.Vector3(0, 5, 70), look: new THREE.Vector3(0, 0, 0) },
-      { p: phases.underEnd, pos: new THREE.Vector3(0, 4, 20), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.underEnd, phases.orbitEnd, 0.4), pos: new THREE.Vector3(9, 3, -14), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.underEnd, phases.orbitEnd, 0.75), pos: new THREE.Vector3(0, 2, -38), look: new THREE.Vector3(0, 0, 0) },
-      { p: phases.orbitEnd, pos: new THREE.Vector3(-8, 2, -14), look: new THREE.Vector3(0, 0, 0) },
+      { p: 0, pos: new THREE.Vector3(0, 6, 120), look: new THREE.Vector3(0, 26, 0) },
+      { p: phases.underEnd * 0.5, pos: new THREE.Vector3(0, 5, 70), look: new THREE.Vector3(0, 24, 0) },
+      { p: phases.underEnd, pos: new THREE.Vector3(0, 4, 20), look: new THREE.Vector3(0, 14, 0) },
+      { p: lerp(phases.underEnd, phases.orbitEnd, 0.4), pos: new THREE.Vector3(9, 3, -14), look: new THREE.Vector3(0, -2, 8) },
+      { p: lerp(phases.underEnd, phases.orbitEnd, 0.75), pos: new THREE.Vector3(0, 2, -38), look: new THREE.Vector3(0, -4, 6) },
+      { p: phases.orbitEnd, pos: new THREE.Vector3(-8, 2, -14), look: new THREE.Vector3(0, 0, 4) },
       { p: phases.throughEnd, pos: new THREE.Vector3(0, 3, 10), look: new THREE.Vector3(0, 0, 0) },
       { p: lerp(phases.throughEnd, phases.assemblyEnd, 0.5), pos: new THREE.Vector3(0, 3, 0), look: new THREE.Vector3(0, 0, 0) },
       { p: phases.assemblyEnd, pos: new THREE.Vector3(0, 3, -6), look: new THREE.Vector3(0, 0, 0) },
       { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.45), pos: new THREE.Vector3(0, 3, -6), look: new THREE.Vector3(0, 0, 0) },
       { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.85), pos: new THREE.Vector3(0, 3, -6), look: new THREE.Vector3(0, -15, 120) },
       { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 40), look: new THREE.Vector3(0, -45, 800) },
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.45), pos: new THREE.Vector3(0, -8, 300), look: new THREE.Vector3(0, -40, 800) },
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.8), pos: new THREE.Vector3(0, -14, 520), look: new THREE.Vector3(0, -42, 800) },
-      { p: phases.approachEnd, pos: new THREE.Vector3(0, -10, 650), look: new THREE.Vector3(0, 90, 800) },
-      { p: 1, pos: new THREE.Vector3(0, -10, 650), look: new THREE.Vector3(0, 90, 800) }
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.35), pos: new THREE.Vector3(0, -4, 180), look: new THREE.Vector3(0, -45, 800) },
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.6), pos: new THREE.Vector3(0, -2, 300), look: new THREE.Vector3(0, -45, 800) },
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.82), pos: new THREE.Vector3(0, -1, 370), look: new THREE.Vector3(0, -45, 800) },
+      { p: phases.approachEnd, pos: new THREE.Vector3(0, 0, 430), look: new THREE.Vector3(0, -45, 800) },
+      { p: 1, pos: new THREE.Vector3(0, 0, 430), look: new THREE.Vector3(0, -45, 800) }
     ];
 
     const currentLook = new THREE.Vector3(0, 0, 0);
@@ -483,20 +490,21 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       (night.material as THREE.ShaderMaterial).opacity = earthIn;
 
       // Progressive sky reveal, tied to the narrative:
+      // - Two faint background star shells are always on, so the sky is never empty.
       // - The original north sky (constellation lines included) is the backdrop for
       //   the TRUSTNODE title; its lines fall away as we fly into the deep.
-      // - New constellations open while the logo assembles and hovers.
-      // - Deep dust appears during the turn; everything thins as Earth fills the view.
+      // - New constellations open while the logo assembles and hovers; everything
+      //   thins as Earth fills the view.
       const skyFade = (inA: number, inB: number, outA: number, outB: number) =>
         smooth(inA, inB, p) * (1 - smooth(outA, outB, p));
       (starsNorth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = 1 - smooth(0.6, 0.85, p);
-      (starsMid.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.42, 0.55, 0.82, 0.94);
-      (starsSouth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.55, 0.68, 0.84, 0.95);
-      (deepA.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.68, 0.8, 1, 1);
-      (deepB.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.75, 0.88, 1, 1);
-      (consNorth.material as THREE.LineBasicMaterial).opacity = skyFade(0, 0.06, 0.08, 0.22);
-      (consMid.material as THREE.LineBasicMaterial).opacity = skyFade(0.45, 0.58, 0.82, 0.94);
-      (consSouth.material as THREE.LineBasicMaterial).opacity = skyFade(0.6, 0.72, 0.84, 0.95);
+      (starsMid.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.42, 0.55, 0.85, 0.95);
+      (starsSouth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.55, 0.68, 0.87, 0.97);
+      (deepA.material as THREE.ShaderMaterial).uniforms.uOpacity.value = 1;
+      (deepB.material as THREE.ShaderMaterial).uniforms.uOpacity.value = 1;
+      (consNorth.material as THREE.LineBasicMaterial).opacity = skyFade(0, 0.06, 0.08, 0.22) * 0.8;
+      (consMid.material as THREE.LineBasicMaterial).opacity = skyFade(0.45, 0.58, 0.85, 0.95) * 0.8;
+      (consSouth.material as THREE.LineBasicMaterial).opacity = skyFade(0.6, 0.72, 0.87, 0.97) * 0.8;
 
       sampleCamera(p);
 
