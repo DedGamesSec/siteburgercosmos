@@ -289,8 +289,6 @@ const IntroSection = React.memo(function IntroSection() {
               const colorClass = COLORS[idx];
               return (
                 <ScanCard key={idx} className="h-full justify-between">
-                  {/* 4-тирный статусный акцент сверху (как top-stripe в карточках бота) */}
-                  <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-xl ${colorClass.split(" ")[0].replace("border-[#", "bg-[#")}`} />
                   <div>
                     {/* Step Tag */}
                     <div className="flex items-center justify-between mb-6">
