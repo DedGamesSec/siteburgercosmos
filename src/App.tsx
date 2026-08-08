@@ -763,11 +763,11 @@ export default function App() {
                               return (
                                 <motion.div
                                   key={idx}
-                                  initial={{ opacity: 0, y: -60, scale: 0.9 }}
+                                  initial={{ opacity: 0, y: -60, scale: 0.8 }}
                                   animate={{
                                     opacity: cinematicProgress > 0.9 ? 1 : 0,
                                     y: cinematicProgress > 0.9 ? 0 : -60,
-                                    scale: cinematicProgress > 0.9 ? 1 : 0.9
+                                    scale: cinematicProgress > 0.9 ? 1 : 0.8
                                   }}
                                   transition={{ duration: 0.7, delay: idx * 0.12, ease: "easeOut" }}
                                   className="h-full"
