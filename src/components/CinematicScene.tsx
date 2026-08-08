@@ -48,16 +48,29 @@ function raDecDir(ra: number, dec: number): THREE.Vector3 {
   );
 }
 
-// Real starfield from the site's star catalog: real RA/Dec, real distances for
-// parallax depth, brightness/size from real magnitude.
-function buildRealStarfield(): THREE.Points {
-  const count = REAL_STARS.length;
-  const positions = new Float32Array(count * 3);
-  const sizes = new Float32Array(count);
-  const alphas = new Float32Array(count);
+// Real star layers grouped by region of the sky, so the flight gradually reveals
+// new constellations the deeper we go: north (seen from the start, like the original
+// sky) -> mid declinations -> far south.
+const SKY_GROUP_NORTH = ["UMA", "UMI", "CAS", "DRA", "CEP", "CYG", "LYR", "AND", "AUR", "PER", "BOO", "HER", "CRB", "GEM"];
+const SKY_GROUP_MID = ["ORI", "TAU", "CMA", "CMI", "LEO", "VIR", "AQL"];
+const SKY_GROUP_SOUTH = ["SCO", "SGR", "CEN", "CRU", "PEG"];
 
-  for (let i = 0; i < count; i++) {
-    const star = REAL_STARS[i];
+// Brightness/size from real magnitude (smaller mag = brighter star)
+function starVisual(star: (typeof REAL_STARS)[number]) {
+  const size = Math.max(0.7, 3.4 - star.mag * 0.5);
+  const alpha = Math.min(1, Math.max(0.18, 1.1 - star.mag * 0.2));
+  return { size, alpha };
+}
+
+// Build a real-star Points layer from the catalog for a given set of constellations.
+function buildStarLayer(codes: string[]): THREE.Points {
+  const members = REAL_STARS.filter((s) => s.constellationCode && codes.includes(s.constellationCode));
+  const positions = new Float32Array(members.length * 3);
+  const sizes = new Float32Array(members.length);
+  const alphas = new Float32Array(members.length);
+
+  for (let i = 0; i < members.length; i++) {
+    const star = members[i];
     const dir = raDecDir(star.ra, star.dec);
     // Nearest stars fly past close to the camera; distant ones sit on the far shell
     const distLy = star.distLy || 400;
@@ -65,8 +78,9 @@ function buildRealStarfield(): THREE.Points {
     positions[i * 3] = dir.x * radius;
     positions[i * 3 + 1] = dir.y * radius;
     positions[i * 3 + 2] = dir.z * radius;
-    sizes[i] = Math.max(0.6, 3.4 - star.mag * 0.5);
-    alphas[i] = Math.min(1, Math.max(0.18, 1.1 - star.mag * 0.2));
+    const v = starVisual(star);
+    sizes[i] = v.size;
+    alphas[i] = v.alpha;
   }
 
   const geo = new THREE.BufferGeometry();
@@ -75,6 +89,7 @@ function buildRealStarfield(): THREE.Points {
   geo.setAttribute("aAlpha", new THREE.BufferAttribute(alphas, 1));
 
   const mat = new THREE.ShaderMaterial({
+    uniforms: { uOpacity: { value: 1 } },
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
@@ -92,26 +107,87 @@ function buildRealStarfield(): THREE.Points {
     fragmentShader: `
       precision mediump float;
       varying float vAlpha;
+      uniform float uOpacity;
       void main() {
         vec2 c = gl_PointCoord - vec2(0.5);
         float d = length(c);
-        float a = smoothstep(0.5, 0.08, d) * vAlpha;
+        float core = smoothstep(0.12, 0.0, d);
+        float halo = smoothstep(0.5, 0.1, d);
+        float a = (core + halo * 0.45) * vAlpha * uOpacity;
         if (a < 0.02) discard;
         gl_FragColor = vec4(1.0, 1.0, 1.0, a);
       }
     `
   });
 
-  const pts = new THREE.Points(geo, mat);
-  return pts;
+  return new THREE.Points(geo, mat);
 }
 
-// Real constellation asterisms drawn from the same catalog.
-function buildConstellationLines(): THREE.LineSegments {
+// Deep-space dust revealed as the flight deepens: two far shells of faint stars that
+// come into view after the catalog constellations have opened up.
+function buildDeepDust(count: number, radius: number, seedMul: number): THREE.Points {
+  const positions = new Float32Array(count * 3);
+  const sizes = new Float32Array(count);
+  const alphas = new Float32Array(count);
+  for (let i = 0; i < count; i++) {
+    const u = fract(Math.sin(i * 12.9898 + seedMul) * 43758.5453);
+    const v = fract(Math.sin(i * 78.233 + seedMul * 1.7) * 12543.123);
+    const theta = 2 * Math.PI * u;
+    const phi = Math.acos(2 * v - 1);
+    const r = radius * (0.9 + 0.2 * fract(Math.sin(i * 39.19 + seedMul) * 2345.7));
+    positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    positions[i * 3 + 1] = r * Math.cos(phi);
+    positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+    sizes[i] = 0.5 + 0.8 * fract(Math.sin(i * 91.3 + seedMul) * 5432.1);
+    alphas[i] = 0.25 + 0.5 * fract(Math.sin(i * 27.4 + seedMul) * 9123.5);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute("aSize", new THREE.BufferAttribute(sizes, 1));
+  geo.setAttribute("aAlpha", new THREE.BufferAttribute(alphas, 1));
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uOpacity: { value: 1 } },
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexShader: `
+      attribute float aSize;
+      attribute float aAlpha;
+      varying float vAlpha;
+      void main() {
+        vAlpha = aAlpha;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = aSize * (240.0 / max(1.0, -mv.z));
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: `
+      precision mediump float;
+      varying float vAlpha;
+      uniform float uOpacity;
+      void main() {
+        vec2 c = gl_PointCoord - vec2(0.5);
+        float d = length(c);
+        float a = smoothstep(0.5, 0.06, d) * vAlpha * uOpacity;
+        if (a < 0.015) discard;
+        gl_FragColor = vec4(1.0, 1.0, 1.0, a);
+      }
+    `
+  });
+  return new THREE.Points(geo, mat);
+}
+
+function fract(x: number) {
+  return x - Math.floor(x);
+}
+
+// Real constellation asterisms drawn from the same catalog, for a set of codes.
+function buildConstellationLayer(codes: string[]): THREE.LineSegments {
   const starById = new Map(REAL_STARS.map((s) => [s.id, s]));
-  const R = 780;
+  const R = 820;
   const lines: number[] = [];
   for (const asterism of CONSTELLATION_LINES) {
+    if (!codes.includes(asterism.code)) continue;
     for (const [a, b] of asterism.lines) {
       const sa = starById.get(a);
       const sb = starById.get(b);
@@ -126,7 +202,7 @@ function buildConstellationLines(): THREE.LineSegments {
   const mat = new THREE.LineBasicMaterial({
     color: 0x7fa8ff,
     transparent: true,
-    opacity: 0.16
+    opacity: 0
   });
   return new THREE.LineSegments(geo, mat);
 }
@@ -262,11 +338,25 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     fill.position.set(-60, -30, -80);
     scene.add(fill);
 
-    // Real sky: catalog stars + real constellation asterisms
-    const stars = buildRealStarfield();
-    scene.add(stars);
-    const consLines = buildConstellationLines();
-    scene.add(consLines);
+    // Real sky, revealed in layers as the flight deepens: the north constellations
+    // (the same ones as the original landing page sky) are visible from the start,
+    // then mid declinations open up, then the far south, then deep-space dust.
+    const starsNorth = buildStarLayer(SKY_GROUP_NORTH);
+    scene.add(starsNorth);
+    const starsMid = buildStarLayer(SKY_GROUP_MID);
+    scene.add(starsMid);
+    const starsSouth = buildStarLayer(SKY_GROUP_SOUTH);
+    scene.add(starsSouth);
+    const consNorth = buildConstellationLayer(SKY_GROUP_NORTH);
+    scene.add(consNorth);
+    const consMid = buildConstellationLayer(SKY_GROUP_MID);
+    scene.add(consMid);
+    const consSouth = buildConstellationLayer(SKY_GROUP_SOUTH);
+    scene.add(consSouth);
+    const deepA = buildDeepDust(900, 880, 0.31);
+    scene.add(deepA);
+    const deepB = buildDeepDust(1600, 1180, 3.71);
+    scene.add(deepB);
 
     // Professional Earth: day texture + relief + ocean specular + clouds + night lights
     const earthGeo = new THREE.SphereGeometry(EARTH_R, 128, 128);
@@ -388,6 +478,20 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       (atmo.material as THREE.ShaderMaterial).opacity = earthIn;
       (night.material as THREE.ShaderMaterial).opacity = earthIn;
 
+      // Progressive sky reveal: north from the start, mid declinations open deeper
+      // in, then far south, then deep dust. Everything thins out as Earth fills the
+      // view on approach.
+      const skyFade = (fadeInStart: number, fadeInEnd: number, fadeOutStart: number, fadeOutEnd: number) =>
+        smooth(fadeInStart, fadeInEnd, p) * (1 - smooth(fadeOutStart, fadeOutEnd, p));
+      (starsNorth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = 1 - smooth(0.72, 0.88, p);
+      (starsMid.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.18, 0.34, 0.74, 0.9);
+      (starsSouth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.42, 0.58, 0.76, 0.92);
+      (deepA.material as THREE.ShaderMaterial).uniforms.uOpacity.value = smooth(0.62, 0.78, p);
+      (deepB.material as THREE.ShaderMaterial).uniforms.uOpacity.value = smooth(0.72, 0.9, p);
+      (consNorth.material as THREE.LineBasicMaterial).opacity = skyFade(0, 0.12, 0.7, 0.86);
+      (consMid.material as THREE.LineBasicMaterial).opacity = skyFade(0.24, 0.4, 0.74, 0.9);
+      (consSouth.material as THREE.LineBasicMaterial).opacity = skyFade(0.5, 0.64, 0.76, 0.92);
+
       sampleCamera(p);
       renderer.render(scene, camera);
     };
@@ -430,10 +534,16 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
           else mat?.dispose();
         }
       });
-      stars.geometry.dispose();
-      (stars.material as THREE.Material).dispose();
-      consLines.geometry.dispose();
-      (consLines.material as THREE.Material).dispose();
+      const skyPoints: THREE.Points[] = [starsNorth, starsMid, starsSouth, deepA, deepB];
+      skyPoints.forEach((pt) => {
+        pt.geometry.dispose();
+        (pt.material as THREE.Material).dispose();
+      });
+      const skyLines: THREE.LineSegments[] = [consNorth, consMid, consSouth];
+      skyLines.forEach((ln) => {
+        ln.geometry.dispose();
+        (ln.material as THREE.Material).dispose();
+      });
       renderer.dispose();
       if (renderer.domElement.parentElement === container) {
         container.removeChild(renderer.domElement);
