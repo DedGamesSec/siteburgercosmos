@@ -311,7 +311,7 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ item, index, ecoMode }) => 
           </span>
         </div>
 
-        <h3 className="font-display font-bold text-lg sm:text-xl text-[#F5F5F0] mb-3 group-hover:text-[#3B82F6] transition-all duration-300">
+        <h3 className="font-display font-medium text-lg sm:text-xl text-[#F5F5F0] mb-3 group-hover:text-[#3B82F6] transition-all duration-300">
           {item.title}
         </h3>
       </div>
@@ -350,7 +350,7 @@ const OriginStorySection = React.memo(function OriginStorySection() {
 
   return (
     <section 
-      className="relative w-full pt-8 pb-16 sm:pt-10 sm:pb-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]" 
+      className="relative w-full pt-8 pb-16 sm:pt-10 sm:pb-20 px-4 bg-[#0A0A0B]" 
       id="origin-story"
     >
       {/* Background radial lights */}
@@ -367,7 +367,7 @@ const OriginStorySection = React.memo(function OriginStorySection() {
             className="mb-6"
           />
           
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] tracking-tighter mb-6">
             {title}
           </h2>
           

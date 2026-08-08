@@ -264,7 +264,7 @@ const IntroSection = React.memo(function IntroSection() {
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/40 bg-[#0A0A0B]" 
+      className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B]" 
       id="intro-simplified"
     >
       <div className="max-w-6xl mx-auto relative z-10">
@@ -272,7 +272,7 @@ const IntroSection = React.memo(function IntroSection() {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <SectionBadge variant="brackets" label={content.badge} className="mb-6" />
 
-          <h2 className="font-display font-bold text-2xl sm:text-4xl text-[#F5F5F0] tracking-tight mb-4">
+          <h2 className="font-display font-medium text-2xl sm:text-4xl text-[#F5F5F0] tracking-tighter mb-4">
             {content.title}
           </h2>
           
@@ -301,7 +301,7 @@ const IntroSection = React.memo(function IntroSection() {
                     </div>
 
                     {/* Title */}
-                    <h3 className="font-display font-bold text-lg text-[#F5F5F0] mb-3 group-hover:text-[#3B82F6] transition-all duration-300">
+                    <h3 className="font-display font-medium text-lg text-[#F5F5F0] mb-3 group-hover:text-[#3B82F6] transition-all duration-300">
                       {step.title}
                     </h3>
 

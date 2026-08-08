@@ -39,7 +39,7 @@ export default function LegalPage({ tab }: LegalPageProps) {
               <FileText className="w-5 h-5 text-[#3B82F6]" />
             )}
           </div>
-          <h1 className="font-display font-bold text-xl sm:text-2xl text-[#F5F5F0]">
+          <h1 className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0]">
             {tab === "privacy" ? t.legal.privacyTitle : t.legal.termsTitle}
           </h1>
         </div>

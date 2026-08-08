@@ -14,21 +14,29 @@
   --font-display: "Exo 2", "Jura", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  /* Шкала типографики (design tokens): caption 12px … display 72px */
+  /* Шкала типографики (design tokens): caption 12px … display 72px
+     Supabase-style: uniform negative tracking -0.007em, weight tops out at 500 */
   --text-caption: 0.75rem;
   --text-caption--line-height: 1.5;
+  --text-caption--letter-spacing: -0.084px;
   --text-body-sm: 0.875rem;
   --text-body-sm--line-height: 1.43;
+  --text-body-sm--letter-spacing: -0.098px;
   --text-body: 1rem;
   --text-body--line-height: 1.5;
+  --text-body--letter-spacing: -0.112px;
   --text-subheading: 1.125rem;
   --text-subheading--line-height: 1.38;
+  --text-subheading--letter-spacing: -0.126px;
   --text-heading-sm: 1.5rem;
   --text-heading-sm--line-height: 1.33;
+  --text-heading-sm--letter-spacing: -0.168px;
   --text-heading: 2.25rem;
   --text-heading--line-height: 1.2;
+  --text-heading--letter-spacing: -0.252px;
   --text-display: 4.5rem;
   --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.504px;
 
   /* Шкала отступов (design tokens): 8px … 224px */
   --space-1: 8px;
@@ -50,8 +58,14 @@
   --radius-2xl: 16px;
   --radius-full: 9999px;
 
-  /* Тень по умолчанию (design tokens: shadow-sm) */
+  /* Веса: Supabase-style типографика капает на 500 — жирное не используется */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+
+  /* Тень по умолчанию (design tokens: shadow-sm) — единственная flat-тень,
+     карточки в Supabase-стиле разграничиваются бордером, а не тенью */
   --shadow-sm: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.06);
 
   /* Поверхности (design tokens) — на исходной синей палитре */
   --color-obsidian-canvas: #0A0A0B;

@@ -491,7 +491,7 @@ export default function ComparisonSection() {
         {/* Go back header */}
         <button 
           onClick={() => navigateTo("home")}
-          className="self-start mb-8 font-mono text-xs text-gray-500 hover:text-[#3B82F6] flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/[0.04] bg-white/[0.02] transition-colors cursor-pointer"
+          className="self-start mb-8 font-mono text-xs text-gray-500 hover:text-[#3B82F6] flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.04] bg-white/[0.02] transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>{localComp.backToMain}</span>
@@ -504,7 +504,7 @@ export default function ComparisonSection() {
         </div>
 
         {/* Title */}
-        <h1 className="font-display font-black text-3xl sm:text-5xl text-[#F5F5F0] text-center tracking-tight mb-4 filter drop-shadow-glow-sm">
+        <h1 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] text-center tracking-tighter mb-4 filter drop-shadow-glow-sm">
           {cp.title}
         </h1>
         <p className="font-sans text-sm sm:text-base text-gray-500 text-center max-w-2xl mx-auto mb-6 leading-relaxed">
@@ -611,13 +611,13 @@ export default function ComparisonSection() {
                   <th className="p-4 sm:p-5 font-mono text-xs sm:text-sm font-extrabold text-gray-500 uppercase tracking-wider w-[24%]">
                     {cp.thFeature}
                   </th>
-                  <th className="p-4 sm:p-5 font-display font-black text-xs sm:text-sm text-[#3B82F6] uppercase tracking-wider w-[19%] bg-[#3B82F6]/5">
+                  <th className="p-4 sm:p-5 font-display font-medium text-xs sm:text-sm text-[#3B82F6] uppercase tracking-wider w-[19%] bg-[#3B82F6]/5">
                     {cp.thTrustNode}
                   </th>
                   {selectedCompIds.map(compId => {
                     const comp = COMPETITORS.find(c => c.id === compId);
                     return (
-                      <th key={compId} className="p-4 sm:p-5 font-display font-bold text-xs sm:text-sm text-gray-300 uppercase tracking-wider w-[14%]">
+                      <th key={compId} className="p-4 sm:p-5 font-display font-medium text-xs sm:text-sm text-gray-300 uppercase tracking-wider w-[14%]">
                         {comp?.name || compId}
                       </th>
                     );
@@ -683,7 +683,7 @@ export default function ComparisonSection() {
             href="https://t.me/TrustNode_team"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#3B82F6] text-white font-sans text-xs font-bold hover:bg-[#3B82F6]/90 transition-all cursor-pointer shadow-glow-md hover:shadow-glow-lg"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#3B82F6] text-white font-sans text-xs font-bold hover:bg-[#3B82F6]/90 transition-all cursor-pointer shadow-glow-md hover:shadow-glow-lg"
           >
             <Send className="w-4 h-4" />
             <span>{cp.telegramBtn}</span>

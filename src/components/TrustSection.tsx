@@ -75,7 +75,7 @@ return (
         </div>
 
         {/* Big typography for values */}
-        <div className="font-display font-black text-2xl sm:text-3xl lg:text-[24px] xl:text-[28px] leading-tight text-[#F5F5F0] tracking-tight mb-2 group-hover:text-[#3B82F6] transition-colors duration-300">
+        <div className="font-display font-medium text-2xl sm:text-3xl lg:text-[24px] xl:text-[28px] leading-tight text-[#F5F5F0] tracking-tighter mb-2 group-hover:text-[#3B82F6] transition-colors duration-300">
           {ecoMode ? stat.val : <AnimatedStatNumber value={stat.val} start={inView} />}
         </div>
 
@@ -104,7 +104,7 @@ const TrustSection = React.memo(function TrustSection() {
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]" 
+      className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B]" 
       id="trust-section"
     >
       {/* Absolute radial light strictly behind the center of cards */}
@@ -118,7 +118,7 @@ const TrustSection = React.memo(function TrustSection() {
             {t.trust.badge}
           </div>
 
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] tracking-tighter mb-6">
             {t.trust.title} <span className="text-[#3B82F6]">{t.trust.titleHighlight}</span>
           </h2>
 

@@ -245,7 +245,7 @@ export default function Header() {
           </div>
 
           <div className="flex flex-col">
-            <span className="font-display font-bold text-lg text-[#F5F5F0] tracking-tight">
+            <span className="font-display font-medium text-lg text-[#F5F5F0] tracking-tighter">
               Trust<span className="text-[#3B82F6]">Node</span>
             </span>
             <span className="font-mono text-[8px] text-gray-500 uppercase tracking-widest leading-none">

@@ -232,7 +232,7 @@ export default function ExplorePagesSection() {
             </span>
           </div>
 
-          <h3 className="font-display font-bold text-lg sm:text-xl text-[#F5F5F0] group-hover:text-[#3B82F6] transition-colors mb-3">
+          <h3 className="font-display font-medium text-lg sm:text-xl text-[#F5F5F0] group-hover:text-[#3B82F6] transition-colors mb-3">
             {t.pageNames[page.labelKey]}
           </h3>
           <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed mb-6">
@@ -249,7 +249,7 @@ export default function ExplorePagesSection() {
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 overflow-hidden border-t border-[#3C404A]/35 bg-[#0A0A0B] select-none"
+      className="relative w-full py-16 sm:py-20 px-4 overflow-hidden bg-[#0A0A0B] select-none"
       id="explore-portal-section"
     >
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-72 h-72 rounded-full bg-[#3B82F6]/5 filter blur-[100px] pointer-events-none" />
@@ -261,7 +261,7 @@ export default function ExplorePagesSection() {
             <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
             EXPLORE PROTOCOL PORTAL
           </div>
-          <h2 className="font-display font-bold text-2xl sm:text-4xl text-[#F5F5F0] tracking-tight mb-4">
+          <h2 className="font-display font-medium text-2xl sm:text-4xl text-[#F5F5F0] tracking-tighter mb-4">
             {t.explore.title}
           </h2>
           <p className="font-sans text-xs sm:text-sm text-gray-500 max-w-lg mx-auto">

@@ -63,7 +63,7 @@ const Footer = React.memo(function Footer() {
 
   return (
     <footer 
-      className="relative w-full py-12 sm:py-16 px-4 border-t border-[#3C404A]/20 bg-[#0A0A0B] z-10 overflow-hidden" 
+      className="relative w-full py-12 sm:py-16 px-4 bg-[#0A0A0B] z-10 overflow-hidden" 
       style={{ paddingBottom: "max(3rem, env(safe-area-inset-bottom))" }}
       id="footer"
     >
@@ -75,7 +75,7 @@ const Footer = React.memo(function Footer() {
             <div className="w-12 h-14 flex items-center justify-center bg-[#3C404A]/30 rounded-xl border border-[#3B82F6]/10">
               <MiniLogo />
             </div>
-            <span className="font-display font-bold text-xl text-[#F5F5F0] tracking-tight">
+            <span className="font-display font-medium text-xl text-[#F5F5F0] tracking-tighter">
               Trust<span className="text-[#3B82F6]">Node</span>
             </span>
           </div>

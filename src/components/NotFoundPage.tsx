@@ -43,7 +43,7 @@ export default function NotFoundPage() {
         <span>{t404.badge}</span>
       </div>
 
-      <h1 className="font-display font-bold text-4xl sm:text-6xl text-[#F5F5F0] mb-4 max-w-2xl tracking-tight">
+      <h1 className="font-display font-medium text-4xl sm:text-6xl text-[#F5F5F0] mb-4 max-w-2xl tracking-tighter">
         {t404.title}
       </h1>
 
@@ -53,7 +53,7 @@ export default function NotFoundPage() {
 
       <button
         onClick={() => navigateTo("home")}
-        className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-lg bg-[#3B82F6] hover:bg-[#3B82F6]/90 text-white font-sans font-semibold text-sm shadow-glow-lg transition-all duration-300 cursor-pointer hover:scale-[1.05]"
+        className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-[#3B82F6] hover:bg-[#3B82F6]/90 text-white font-sans font-semibold text-sm shadow-glow-lg transition-all duration-300 cursor-pointer hover:scale-[1.05]"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>{t404.btn}</span>

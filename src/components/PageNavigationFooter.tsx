@@ -190,7 +190,7 @@ export default function PageNavigationFooter({ currentPage }: PageNavigationFoot
             </div>
 
             {/* Next Page Title */}
-            <h4 className="font-display font-bold text-xl sm:text-2xl text-[#F5F5F0] group-hover:text-[#3B82F6] transition-colors mb-2">
+            <h4 className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] group-hover:text-[#3B82F6] transition-colors mb-2">
               {pageLabel}
             </h4>
             

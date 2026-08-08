@@ -52,7 +52,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
 
   return (
     <section 
-      className="relative w-full pt-8 pb-16 sm:pt-10 sm:pb-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]" 
+      className="relative w-full pt-8 pb-16 sm:pt-10 sm:pb-20 px-4 bg-[#0A0A0B]" 
       id="how-it-works"
     >
       {/* Background elements */}
@@ -65,7 +65,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <SectionBadge variant="slash" icon={<Layers className="w-3.5 h-3.5 text-[#3B82F6]" />} label={t.how.badge} className="mb-6" />
 
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] tracking-tighter mb-6">
             {t.how.title} <span className="text-[#3B82F6]">{t.how.titleHighlight}</span>
           </h2>
 
@@ -110,7 +110,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
           
           {/* Left Block: Stacked Layers Diagram */}
           <div className="lg:col-span-7 flex flex-col gap-4" id="layered-diagram">
-            <h3 className="font-display font-bold text-base sm:text-lg lg:text-xl text-[#F5F5F0] mb-2">
+            <h3 className="font-display font-medium text-base sm:text-lg lg:text-xl text-[#F5F5F0] mb-2">
               {isAdvancedView 
                 ? t.how.pipelineHeader
                 : t.how.layersHeading}
@@ -145,7 +145,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                        <span className={`font-display font-bold text-sm sm:text-base ${isActive ? "text-[#F5F5F0]" : "text-gray-300"}`}>
+                        <span className={`font-display font-medium text-sm sm:text-base ${isActive ? "text-[#F5F5F0]" : "text-gray-300"}`}>
                           {layer.name}
                         </span>
                         <span className="font-mono text-[9px] text-[#3B82F6] tracking-wider uppercase opacity-80">
@@ -185,7 +185,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                           <Icon className="w-6 h-6" />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-display font-bold text-base sm:text-lg text-[#F5F5F0] mb-1.5 group-hover:text-[#3B82F6] transition-all duration-300">
+                          <h4 className="font-display font-medium text-base sm:text-lg text-[#F5F5F0] mb-1.5 group-hover:text-[#3B82F6] transition-all duration-300">
                             {usp.title}
                           </h4>
                           <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">

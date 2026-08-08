@@ -307,7 +307,7 @@ const SecurityCard: React.FC<SecurityCardProps> = ({ feat, className, ecoMode })
         {feat.icon}
       </div>
       <div>
-        <h3 className="font-display font-bold text-base sm:text-lg text-[#F5F5F0] mb-2 group-hover:text-[#3B82F6] transition-all duration-300 group-hover:appsec-glitch">
+        <h3 className="font-display font-medium text-base sm:text-lg text-[#F5F5F0] mb-2 group-hover:text-[#3B82F6] transition-all duration-300 group-hover:appsec-glitch">
           {feat.title}
         </h3>
         <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">
@@ -337,7 +337,7 @@ const AppSecuritySection = React.memo(function AppSecuritySection() {
 
   return (
     <section 
-      className="relative w-full pt-8 pb-16 sm:pt-10 sm:pb-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]" 
+      className="relative w-full pt-8 pb-16 sm:pt-10 sm:pb-20 px-4 bg-[#0A0A0B]" 
       id="app-security"
     >
       {/* Background soft tech visual accents */}
@@ -356,7 +356,7 @@ const AppSecuritySection = React.memo(function AppSecuritySection() {
         >
           <SectionBadge variant="brackets" label={badgeText} className="mb-6" />
           
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] tracking-tighter mb-6">
             {title}
           </h2>
           

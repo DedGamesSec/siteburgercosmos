@@ -107,12 +107,12 @@ export default function NewsSection() {
   if (!Array.isArray(news) || news.length === 0) {
     return (
       <section
-        className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden"
+        className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B] overflow-hidden"
         id="news"
       >
         <div className="max-w-3xl mx-auto relative z-10 text-center">
           <SectionBadge variant="pill" label={t.news.badge} className="mb-6" />
-          <h1 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h1 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] tracking-tighter mb-6">
             {t.news.title}
           </h1>
           <div className="font-mono text-[11px] text-gray-400">
@@ -156,7 +156,7 @@ export default function NewsSection() {
 
   return (
     <section
-        className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden"
+        className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B] overflow-hidden"
         id="news"
       >
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.04)_0%,transparent_70%)] pointer-events-none" />
@@ -164,7 +164,7 @@ export default function NewsSection() {
       <div className="max-w-5xl mx-auto relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
           <SectionBadge variant="pill" label={t.news.badge} className="mb-6" />
-          <h1 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h1 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] tracking-tighter mb-6">
             {t.news.title}
           </h1>
         </div>

@@ -493,7 +493,7 @@ export default function App() {
 
                       {/* Huge Hero Title */}
                       <h1 
-                        className="font-display font-bold text-5xl sm:text-7xl md:text-[120px] lg:text-[140px] xl:text-[150px] leading-[0.9] tracking-tight mb-6"
+                        className="font-display font-medium text-5xl sm:text-7xl md:text-[120px] lg:text-[140px] xl:text-[150px] leading-[0.9] tracking-tighter mb-6"
                         id="main-title"
                       >
                         <span className="text-[#F5F5F0]">Trust</span>
@@ -572,7 +572,7 @@ export default function App() {
                           }}
                           className="flex flex-col items-center lg:items-end text-center lg:text-right w-full lg:w-64"
                         >
-                          <span className="font-display font-extrabold text-xl sm:text-2xl text-[#F5F5F0] tracking-tight">
+                          <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
                             {t.assembly?.leftPrimary || "OFFLINE-FIRST"}
                           </span>
                           <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
@@ -593,7 +593,7 @@ export default function App() {
                           }}
                           className="flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-64"
                         >
-                          <span className="font-display font-extrabold text-xl sm:text-2xl text-[#F5F5F0] tracking-tight">
+                          <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
                             {t.assembly?.rightPrimary || "ZERO TELEMETRY"}
                           </span>
                           <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">

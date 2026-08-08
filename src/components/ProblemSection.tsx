@@ -205,7 +205,7 @@ const ProblemSection = React.memo(function ProblemSection() {
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden" 
+      className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B] overflow-hidden" 
       id="problem"
     >
       {/* Background glow accent */}
@@ -217,7 +217,7 @@ const ProblemSection = React.memo(function ProblemSection() {
         <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
           <SectionBadge variant="slash" label={t.problem.badge} className="mb-6" />
           
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] tracking-tighter mb-6">
             {t.problem.titleLine1} <br className="hidden sm:inline" />
             <span className="text-[#3B82F6]">{t.problem.titleHighlight}</span>
           </h2>
@@ -244,7 +244,7 @@ const ProblemSection = React.memo(function ProblemSection() {
                     </span>
                     <div className={`h-[2px] flex-1 ${i === 1 ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-[#3B82F6]/40 to-transparent`} />
                   </div>
-                  <h3 className="font-display font-bold text-3xl sm:text-4xl text-[#F5F5F0] mb-4 group-hover:text-[#3B82F6] transition-all duration-300">
+                  <h3 className="font-display font-medium text-3xl sm:text-4xl text-[#F5F5F0] mb-4 group-hover:text-[#3B82F6] transition-all duration-300">
                     {problem.title}
                   </h3>
                   <p className="font-sans text-sm sm:text-base text-gray-400 leading-relaxed">

@@ -47,14 +47,14 @@ const ScanCard = React.forwardRef<HTMLDivElement, ScanCardProps>(
         ref={ref}
         id={id}
         onClick={onClick}
-        className={`relative ${padding} rounded-xl bg-[#0A0A0B]/95 border ${borderColor} hover:border-[#3B82F6]/40 transition-all duration-300 group flex flex-col overflow-hidden ${cardClassName}`}
+        className={`relative ${padding} rounded-2xl bg-[#0A0A0B]/95 border ${borderColor} hover:border-[#3B82F6]/40 transition-all duration-300 group flex flex-col overflow-hidden ${cardClassName}`}
         onMouseEnter={() => { if (!ecoMode) setScan("active"); }}
         onMouseLeave={() => {
           if (!ecoMode) setScan((s) => (s === "active" ? "exiting" : s));
         }}
       >
         {scanning && (
-          <div className="absolute inset-x-0 top-0 h-full pointer-events-none overflow-hidden rounded-xl">
+          <div className="absolute inset-x-0 top-0 h-full pointer-events-none overflow-hidden rounded-2xl">
             <motion.div
               className="absolute left-0 w-full h-[2px]"
               style={{
@@ -81,7 +81,7 @@ const ScanCard = React.forwardRef<HTMLDivElement, ScanCardProps>(
             </div>
           )}
           {title !== undefined && (
-            <h3 className="font-display font-bold text-base sm:text-lg text-[#F5F5F0] mb-2 group-hover:text-[#3B82F6] transition-all duration-300">
+            <h3 className="font-display font-medium text-base sm:text-lg text-[#F5F5F0] mb-2 group-hover:text-[#3B82F6] transition-all duration-300">
               {title}
             </h3>
           )}

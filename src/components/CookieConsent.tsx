@@ -95,7 +95,7 @@ export default function CookieConsent() {
           <div className="flex items-center gap-2">
             <button
               onClick={handleReject}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-transparent border border-[#3C404A] hover:border-gray-500 text-xs font-sans font-semibold text-gray-300 hover:text-white transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-transparent border border-[#3C404A] hover:border-gray-500 text-xs font-sans font-semibold text-gray-300 hover:text-white transition-all cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
               <span>{t.cookie.reject}</span>
@@ -103,7 +103,7 @@ export default function CookieConsent() {
 
             <button
               onClick={handleAccept}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#3B82F6] hover:bg-[#3B82F6]/85 text-xs font-sans font-semibold text-white transition-all hover:shadow-glow-md cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#3B82F6] hover:bg-[#3B82F6]/85 text-xs font-sans font-semibold text-white transition-all hover:shadow-glow-md cursor-pointer"
             >
               <span>{t.cookie.accept}</span>
               <ArrowRight className="w-3.5 h-3.5" />

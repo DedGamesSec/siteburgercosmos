@@ -231,7 +231,7 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]" 
+      className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B]" 
       id="kira-assistant"
     >
       {/* Background soft visual grid element */}
@@ -255,7 +255,7 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
             </div>
           </div>
           
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] tracking-tighter mb-6">
             {title}
           </h2>
           
@@ -339,7 +339,7 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
                   {feat.icon}
                 </div>
                 <div>
-                  <h4 className="font-display font-bold text-base text-[#F5F5F0] mb-1 group-hover:text-[#3B82F6] transition-all duration-300">
+                  <h4 className="font-display font-medium text-base text-[#F5F5F0] mb-1 group-hover:text-[#3B82F6] transition-all duration-300">
                     {feat.title}
                   </h4>
                   <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">

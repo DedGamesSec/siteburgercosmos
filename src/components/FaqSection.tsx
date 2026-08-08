@@ -13,7 +13,7 @@ export default function FaqSection() {
   return (
     <section
       id="faq"
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden"
+      className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B] overflow-hidden"
     >
       <div className="max-w-3xl mx-auto relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
@@ -21,7 +21,7 @@ export default function FaqSection() {
             <HelpCircle className="w-3.5 h-3.5 text-[#3B82F6]" />
             <span>{t.faq.badge}</span>
           </div>
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] tracking-tighter mb-6">
             {t.faq.title}
           </h2>
           <p className="font-sans text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
@@ -47,7 +47,7 @@ export default function FaqSection() {
                   className="w-full flex items-center justify-between gap-4 p-5 sm:p-6 text-left cursor-pointer"
                 >
                   <span
-                    className={`font-display font-bold text-sm sm:text-base ${isOpen ? "text-[#F5F5F0]" : "text-gray-300"}`}
+                    className={`font-display font-medium text-sm sm:text-base ${isOpen ? "text-[#F5F5F0]" : "text-gray-300"}`}
                   >
                     {item.q}
                   </span>

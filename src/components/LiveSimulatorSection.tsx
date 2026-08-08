@@ -1177,7 +1177,7 @@ const rafTypingRef = useRef<number | null>(null);
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden" 
+      className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B] overflow-hidden" 
       id="live-simulator"
     >
       {/* Visual tech matrix background decoration */}
@@ -1190,7 +1190,7 @@ const rafTypingRef = useRef<number | null>(null);
         <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
           <SectionBadge variant="brackets" label={sui.consoleBadge} className="mb-6" />
           
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] tracking-tighter mb-6">
             {title}
           </h2>
           
@@ -1269,7 +1269,7 @@ const rafTypingRef = useRef<number | null>(null);
                 </div>
               </div>
               <span className="font-mono text-[11px] uppercase text-[#3B82F6] tracking-wider mb-0.5">{callerLabel}</span>
-              <h4 className="font-display font-bold text-base text-[#F5F5F0]">{currentScenario.caller}</h4>
+              <h4 className="font-display font-medium text-base text-[#F5F5F0]">{currentScenario.caller}</h4>
               <p className="font-mono text-[10px] text-gray-500 mt-1">{isPlaying ? sui.activeStream : incomingLabel}</p>
             </div>
 
@@ -1348,7 +1348,7 @@ const rafTypingRef = useRef<number | null>(null);
               <button
                 onClick={startSimulation}
                 disabled={isPlaying || currentSentenceIdx !== -1}
-                className={`py-3 px-4 rounded-lg font-sans text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
+                className={`py-3 px-4 rounded-full font-sans text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
                   isPlaying || currentSentenceIdx !== -1
                     ? "bg-gray-800 text-gray-500 border border-transparent cursor-not-allowed"
                     : "bg-[#3B82F6] text-[#F5F5F0] hover:bg-[#3B82F6]/90 cursor-pointer shadow-glow-md hover:shadow-glow-lg"
@@ -1359,7 +1359,7 @@ const rafTypingRef = useRef<number | null>(null);
               </button>
               <button
                 onClick={resetSimulation}
-                className="py-3 px-4 rounded-xl font-sans text-xs font-bold bg-[#12141A] border border-white/[0.05] text-gray-400 hover:text-white hover:bg-white/[0.02] cursor-pointer transition-colors flex items-center justify-center gap-2"
+                className="py-3 px-4 rounded-full font-sans text-xs font-bold bg-[#12141A] border border-white/[0.05] text-gray-400 hover:text-white hover:bg-white/[0.02] cursor-pointer transition-colors flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 {btnReset}

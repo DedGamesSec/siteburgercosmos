@@ -68,7 +68,7 @@ export default function EarlyAccessPage() {
       <div className="w-full max-w-4xl mx-auto flex flex-col relative z-10">
 
         <button onClick={() => navigateTo("home")}
-          className="self-start mb-8 font-mono text-xs text-gray-500 hover:text-[#3B82F6] flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/[0.04] bg-white/[0.02] transition-colors cursor-pointer">
+          className="self-start mb-8 font-mono text-xs text-gray-500 hover:text-[#3B82F6] flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.04] bg-white/[0.02] transition-colors cursor-pointer">
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>{lp.back}</span>
         </button>
@@ -78,18 +78,18 @@ export default function EarlyAccessPage() {
           <span>{lp.badge}</span>
         </div>
 
-        <h1 className="font-display font-black text-3xl sm:text-5xl text-[#F5F5F0] text-center tracking-tight mb-4 filter drop-shadow-glow-sm">{lp.title}</h1>
+        <h1 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] text-center tracking-tighter mb-4 filter drop-shadow-glow-sm">{lp.title}</h1>
         <p className="font-sans text-sm sm:text-base text-gray-500 text-center max-w-2xl mx-auto mb-12 leading-relaxed">{lp.subtitle}</p>
 
         <div className="max-w-2xl mx-auto w-full mb-12">
           <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/30" cardClassName="bg-[#12141A] backdrop-blur-md" className="items-center gap-6">
             <a href={GITHUB_APK_URL} target="_blank" rel="noopener noreferrer"
-              className="w-full py-4 px-6 rounded-lg font-sans text-sm font-bold transition-all duration-300 flex items-center justify-center gap-3 bg-[#3B82F6] text-white hover:bg-[#3B82F6]/90 cursor-pointer shadow-glow-md hover:shadow-glow-lg">
+              className="w-full py-4 px-6 rounded-full font-sans text-sm font-bold transition-all duration-300 flex items-center justify-center gap-3 bg-[#3B82F6] text-white hover:bg-[#3B82F6]/90 cursor-pointer shadow-glow-md hover:shadow-glow-lg">
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
               {lp.githubBtn}
             </a>
             <a href={RUSTORE_URL} target="_blank" rel="noopener noreferrer"
-              className="w-full py-4 px-6 rounded-lg font-sans text-sm font-bold transition-all duration-300 flex items-center justify-center gap-3 bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] cursor-pointer">
+              className="w-full py-4 px-6 rounded-full font-sans text-sm font-bold transition-all duration-300 flex items-center justify-center gap-3 bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] cursor-pointer">
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
               {lp.rustoreBtn}
             </a>
@@ -103,7 +103,7 @@ export default function EarlyAccessPage() {
             return (
                           <ScanCard key={idx} accent="59,130,246" borderColor="border-[#3C404A]/40" cardClassName="bg-[#0A0A0B]/80" padding="p-5 sm:p-6">
                 <div className="w-11 h-11 rounded-xl bg-[#0A0A0B]/80 border border-[#3B82F6]/25 flex items-center justify-center text-[#3B82F6] mb-4"><Icon className="w-5 h-5" /></div>
-                <h3 className="font-display font-bold text-base sm:text-lg text-[#F5F5F0] mb-2">{title}</h3>
+                <h3 className="font-display font-medium text-base sm:text-lg text-[#F5F5F0] mb-2">{title}</h3>
                 <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">{descs[idx]}</p>
               </ScanCard>
             );
@@ -112,7 +112,7 @@ export default function EarlyAccessPage() {
 
         <div className="max-w-2xl mx-auto w-full mb-12">
           <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/40" cardClassName="bg-[#0A0A0B]/80" padding="p-6 sm:p-8">
-            <h3 className="font-display font-bold text-base sm:text-lg text-[#F5F5F0] mb-3">{trust.noStoreTitle}</h3>
+            <h3 className="font-display font-medium text-base sm:text-lg text-[#F5F5F0] mb-3">{trust.noStoreTitle}</h3>
             <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">{trust.noStoreText}</p>
           </ScanCard>
         </div>

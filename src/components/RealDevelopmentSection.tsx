@@ -36,7 +36,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden" 
+      className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B] overflow-hidden" 
       id="verification"
     >
       {/* Background cyber grid and glow */}
@@ -53,7 +53,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
             <span>{displayBadge}</span>
           </div>
           
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-medium text-3xl sm:text-5xl text-[#F5F5F0] tracking-tighter mb-6">
             {displayTitle}
           </h2>
           
@@ -138,7 +138,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                 {/* Details Meta Block */}
                 <div className="lg:col-span-7 flex flex-col justify-center space-y-6">
                   <div>
-                    <h3 className="font-display font-bold text-2xl sm:text-3xl text-[#F5F5F0] mb-2">
+                    <h3 className="font-display font-medium text-2xl sm:text-3xl text-[#F5F5F0] mb-2">
                       {currentAward.title}
                     </h3>
                     <p className="font-mono text-xs text-[#3B82F6] uppercase tracking-wider mb-4">
@@ -210,7 +210,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                 {/* Technical Node Description */}
                 <div className="lg:col-span-7 flex flex-col justify-center space-y-6">
                   <div>
-                    <h3 className="font-display font-bold text-2xl sm:text-3xl text-[#F5F5F0] mb-2">
+                    <h3 className="font-display font-medium text-2xl sm:text-3xl text-[#F5F5F0] mb-2">
                       {currentGraph.title}
                     </h3>
                     <p className="font-mono text-xs text-[#3B82F6] uppercase tracking-wider mb-4">
@@ -220,12 +220,12 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
 
                   <div className="grid grid-cols-2 gap-4">
                     <ScanCard accent="6,182,212" borderColor="border-[#3C404A]/40" cardClassName="bg-[#0A0A0B]/80" padding="p-4" className="items-center text-center">
-                      <span className="block font-display font-bold text-2xl sm:text-3xl text-cyan-500">74</span>
+                      <span className="block font-display font-medium text-2xl sm:text-3xl text-cyan-500">74</span>
                       <span className="font-mono text-[10px] text-gray-500 uppercase tracking-widest">{dui.nodes}</span>
                     </ScanCard>
                     
                     <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/40" cardClassName="bg-[#0A0A0B]/80" padding="p-4" className="items-center text-center">
-                      <span className="block font-display font-bold text-2xl sm:text-3xl text-[#3B82F6]">328</span>
+                      <span className="block font-display font-medium text-2xl sm:text-3xl text-[#3B82F6]">328</span>
                       <span className="font-mono text-[10px] text-gray-500 uppercase tracking-widest">{dui.conns}</span>
                     </ScanCard>
                   </div>
@@ -301,7 +301,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
 
                       {/* Specifications */}
                       <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/40" cardClassName="bg-[#0A0A0B]/80" padding="p-4">
-                        <h4 className="font-display font-semibold text-xs text-[#F5F5F0] uppercase tracking-wider mb-3">
+                        <h4 className="font-display font-medium text-xs text-[#F5F5F0] uppercase tracking-wider mb-3">
                           {dui.specs}
                         </h4>
                         <ul className="space-y-2 font-mono text-[11px] text-gray-400">
@@ -354,7 +354,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         </span>
                         <span className="font-mono text-sm text-gray-300">v1.2.0</span>
                       </div>
-                      <h4 className="font-display font-bold text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">TrustNode 1 (TN1)</h4>
+                      <h4 className="font-display font-medium text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">TrustNode 1 (TN1)</h4>
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.tn1Desc}
                       </p>
@@ -379,7 +379,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         href="https://github.com/TrustNodeLab"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-[#3C404A] border border-[#3B82F6]/20 hover:border-[#3B82F6]/50 text-gray-400 hover:text-[#3B82F6] transition-all font-mono text-xs font-semibold w-full justify-center"
+                        className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-full bg-[#3C404A] border border-[#3B82F6]/20 hover:border-[#3B82F6]/50 text-gray-400 hover:text-[#3B82F6] transition-all font-mono text-xs font-semibold w-full justify-center"
                       >
                         <SiGithubIcon className="w-3.5 h-3.5" />
                         {rmp.sourceGithub}
@@ -396,7 +396,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         </span>
                         <span className="font-mono text-sm text-gray-300">v2.0-alpha</span>
                       </div>
-                      <h4 className="font-display font-bold text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">TrustNode 3 (TN3) / PHANTOM 2.0</h4>
+                      <h4 className="font-display font-medium text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">TrustNode 3 (TN3) / PHANTOM 2.0</h4>
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.tn3Desc}
                       </p>
@@ -422,7 +422,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                         </span>
                         <span className="font-mono text-sm text-gray-300">v3.0-design</span>
                       </div>
-                      <h4 className="font-display font-bold text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">Kira Voice Assistant</h4>
+                      <h4 className="font-display font-medium text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">Kira Voice Assistant</h4>
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.kiraDesc}
                       </p>
@@ -449,7 +449,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   <div className="flex items-start gap-3 mb-4">
                     <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="font-display font-bold text-base text-white">
+                      <h4 className="font-display font-medium text-base text-white">
                         {rmp.disclosureTitle}
                       </h4>
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mt-2">
@@ -464,7 +464,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       rel="noopener noreferrer"
                       aria-label="Telegram"
                       title="Telegram"
-                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-xl bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
+                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-full bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
                     >
                       <SiTelegramIcon className="w-4 h-4 text-[#3B82F6]" />
                       {rmp.reportTelegram}
@@ -475,7 +475,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       rel="noopener noreferrer"
                       aria-label="VK"
                       title="VK"
-                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-xl bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
+                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-full bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
                     >
                       <SiVkIcon className="w-4 h-4 text-[#3B82F6]" />
                       {rmp.reportVk}
@@ -486,7 +486,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       rel="noopener noreferrer"
                       aria-label="GitHub"
                       title="GitHub"
-                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-xl bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
+                      className="inline-flex items-center justify-center gap-2 min-h-11 px-4 py-2.5 rounded-full bg-[#12141A] border border-[#3B82F6]/40 text-gray-200 hover:text-white hover:bg-[#12141A] transition-colors font-sans text-xs font-bold"
                     >
                       <SiGithubIcon className="w-4 h-4 text-[#3B82F6]" />
                       {rmp.reportGithub}
@@ -498,7 +498,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                 <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/50" padding="p-6 sm:p-6">
                   <div className="flex items-center gap-2.5 mb-5 border-b border-white/[0.04] pb-3">
                     <Milestone className="w-5 h-5 text-[#3B82F6]" />
-                    <h4 className="font-display font-bold text-lg text-white">
+                    <h4 className="font-display font-medium text-lg text-white">
                       {rmp.milestonesTitle}
                     </h4>
                   </div>
@@ -1562,7 +1562,7 @@ ${tkt.inventory}`;
       <div>
         <div className="flex items-center gap-2 mb-2">
           <Sparkles className="w-4 h-4 text-[#3B82F6]" />
-          <h3 className="font-display font-bold text-xl text-[#F5F5F0]">
+          <h3 className="font-display font-medium text-xl text-[#F5F5F0]">
             {dict.title}
           </h3>
         </div>
@@ -1602,7 +1602,7 @@ ${tkt.inventory}`;
         <button
           onClick={handleInference}
           disabled={isTesting || !inputText.trim()}
-          className="w-full py-2.5 rounded-lg font-mono text-xs font-bold text-white bg-[#3B82F6] hover:bg-blue-600 shadow-glow-md hover:shadow-glow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-2.5 rounded-full font-mono text-xs font-bold text-white bg-[#3B82F6] hover:bg-blue-600 shadow-glow-md hover:shadow-glow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {isTesting ? (
             <>
@@ -1729,7 +1729,7 @@ ${tkt.inventory}`;
           >
             <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/80" padding="p-5" className="space-y-4">
             <div>
-              <h4 className="font-display font-semibold text-xs text-[#F5F5F0]">
+              <h4 className="font-display font-medium text-xs text-[#F5F5F0]">
                 {dict.feedbackHeader}
               </h4>
               <p className="font-sans text-[11px] text-gray-500 mt-1 leading-relaxed">
@@ -1776,7 +1776,7 @@ ${tkt.inventory}`;
             <div className="flex flex-wrap sm:flex-nowrap gap-2">
               <button
                 onClick={handleOpenTelegram}
-                className="flex-1 py-2.5 rounded-lg bg-[#3B82F6] hover:bg-blue-600 font-mono text-[11px] font-bold text-white flex items-center justify-center gap-1.5 transition-all shadow-glow-sm"
+                className="flex-1 py-2.5 rounded-full bg-[#3B82F6] hover:bg-blue-600 font-mono text-[11px] font-bold text-white flex items-center justify-center gap-1.5 transition-all shadow-glow-sm"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{dict.btnTg}</span>
@@ -1784,7 +1784,7 @@ ${tkt.inventory}`;
 
               <button
                 onClick={handleCopyTicket}
-                className="px-4 py-2.5 rounded-xl border border-[#3C404A]/60 bg-[#3C404A] hover:border-gray-500 font-mono text-[11px] text-gray-300 hover:text-white flex items-center justify-center gap-1.5 transition-all"
+                className="px-4 py-2.5 rounded-full border border-[#3C404A]/60 bg-[#3C404A] hover:border-gray-500 font-mono text-[11px] text-gray-300 hover:text-white flex items-center justify-center gap-1.5 transition-all"
               >
                 {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? dict.copied : dict.btnCopy}</span>
