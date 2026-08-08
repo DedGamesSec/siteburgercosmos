@@ -158,8 +158,7 @@ export default function PageNavigationFooter({ currentPage }: PageNavigationFoot
   };
 
   return (
-    <div className="w-full py-10 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]/90 relative overflow-hidden select-none" id="page-nav-footer">
-      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#3B82F6]/20 to-transparent pointer-events-none" />
+    <div className="w-full py-10 px-4 bg-[#0A0A0B]/90 relative overflow-hidden select-none" id="page-nav-footer">
       <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[500px] h-[150px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
 
       <div className="max-w-5xl mx-auto flex flex-col items-center">
