@@ -6,7 +6,7 @@ import { Home, Cpu, ShieldCheck, Map, Users, BarChart3, Download, Newspaper } fr
 import type { LanguageCode } from "../i18n/languages";
 import ScanCard from "./ScanCard";
 
-const PAGE_ICONS: Record<string, React.ElementType> = {
+const PAGE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   home: Home,
   "how-it-works": Cpu,
   tech: ShieldCheck,

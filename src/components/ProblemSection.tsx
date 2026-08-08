@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { ShieldAlert, EyeOff, WifiOff, Phone, ServerOff } from "lucide-react";
 import SectionBadge from "./SectionBadge";
 import ScanCard from "./ScanCard";
+import RevealOnScroll from "./ui/RevealOnScroll";
 
 const ProblemSection = React.memo(function ProblemSection() {
   const { t, language } = useTranslation();
@@ -236,7 +237,7 @@ const ProblemSection = React.memo(function ProblemSection() {
               className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 items-center mb-16 sm:mb-24 last:mb-0"
             >
               {/* Text block */}
-              <div className={i % 2 === 1 ? "md:order-2" : "md:order-1"}>
+              <RevealOnScroll className={i % 2 === 1 ? "md:order-2" : "md:order-1"} delay={i * 0.08}>
                 <ScanCard className="h-full">
                   <div className="flex items-center gap-3 mb-5">
                     <span className="font-mono text-6xl sm:text-7xl font-black text-[#3C404A] leading-none select-none">
@@ -251,12 +252,12 @@ const ProblemSection = React.memo(function ProblemSection() {
                     {problem.desc}
                   </p>
                 </ScanCard>
-              </div>
+              </RevealOnScroll>
 
               {/* Accent animated visual */}
-              <div className={i % 2 === 1 ? "md:order-1" : "md:order-2"}>
+              <RevealOnScroll className={i % 2 === 1 ? "md:order-1" : "md:order-2"} delay={i * 0.08 + 0.1}>
                 {problemVisuals[i]}
-              </div>
+              </RevealOnScroll>
             </div>
           ))}
         </div>

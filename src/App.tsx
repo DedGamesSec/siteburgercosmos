@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef, Suspense, lazy } from "react";
 const NetworkBackground = lazy(() => import("./components/NetworkBackground"));
+const HeroScene = lazy(() => import("./components/three/HeroScene"));
+const HeroSceneFallback = lazy(() => import("./components/three/HeroSceneFallback"));
+import { useDeviceCapability } from "./hooks/useDeviceCapability";
 import AssembledLogo from "./components/AssembledLogo";
 
 const hudTranslations: Record<string, { core: string; nodes: string; mode: string }> = {
@@ -53,6 +56,9 @@ export default function App() {
   const { t, language } = useTranslation();
   const { activePage } = useNavigation();
   const { ecoMode, toggleEcoMode } = useEcoMode();
+  const { canRender3D } = useDeviceCapability();
+  const [heroInView, setHeroInView] = useState(true);
+  const heroRef = useRef<HTMLDivElement>(null);
   const [showReplayIntro, setShowReplayIntro] = useState(false);
   const [windowHeight, setWindowHeight] = useState(0);
   const [activeMobileCard, setActiveMobileCard] = useState(0);
@@ -95,6 +101,22 @@ export default function App() {
         setShowReplayIntro(entry.isIntersecting);
       },
       { root: null, threshold: 0.05 },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [activePage]);
+
+  // Unmount the 3D hero scene when it leaves the viewport (saves GPU/battery)
+  useEffect(() => {
+    const target = heroRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setHeroInView(entry.isIntersecting);
+      },
+      { root: null, threshold: 0 },
     );
 
     observer.observe(target);
@@ -458,16 +480,33 @@ export default function App() {
                   
                   {/* SECTION 1: HERO TITLE (100dvh) */}
                   <div 
+                    ref={heroRef}
                     className="relative w-full flex items-center justify-center px-4 select-none pointer-events-none"
                     style={{ height: "100dvh" }}
                     id="main-hero-section-container"
                   >
+                    {/* 3D scroll-driven hero sky (lazy, unmounted when out of viewport) */}
+                    {heroInView && canRender3D && !ecoMode && (
+                      <div className="absolute inset-0 z-0 pointer-events-none">
+                        <Suspense fallback={<HeroSceneFallback />}>
+                          <HeroScene language={language} ecoMode={ecoMode} />
+                        </Suspense>
+                      </div>
+                    )}
+                    {heroInView && !canRender3D && !ecoMode && (
+                      <div className="absolute inset-0 z-0 pointer-events-none">
+                        <Suspense fallback={null}>
+                          <HeroSceneFallback language={language} />
+                        </Suspense>
+                      </div>
+                    )}
+
                     {/* Title and Status Badge Container */}
                     <motion.div 
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="flex flex-col items-center justify-center text-center max-w-5xl px-4 pointer-events-none"
+                      className="flex flex-col items-center justify-center text-center max-w-5xl px-4 pointer-events-none relative z-10"
                       id="main-hero-section"
                     >
                       {/* Status Badge */}
