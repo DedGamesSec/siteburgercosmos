@@ -16,6 +16,9 @@ const hudTranslations: Record<string, { core: string; nodes: string; mode: strin
   ja: { core: "ローカルコア", nodes: "アクティブノード", mode: "保護モード" }
 };
 
+// Extra scroll distance of open space to fly through between the title and the logo.
+const FLIGHT_CORRIDOR_DVH = 150;
+
 function SkyPlaceholder() {
   return <div className="absolute inset-0 w-full h-full bg-[#0A0A0B] pointer-events-none" />;
 }
@@ -123,12 +126,14 @@ export default function App() {
         return;
       }
       const rect = el.getBoundingClientRect();
+      // Total scroll distance from the very top to the logo block: the whole flight.
+      const span = Math.max(vh, rect.top + window.scrollY);
       let p: number;
       if (rect.top > 0) {
-        // Approaching: 0 (hero fills the screen) -> 1 (logo block fills the screen)
-        p = 1 - Math.min(1, Math.max(0, rect.top / vh));
+        // Approaching: 0 at the top of the page -> 1 when the logo block fills the screen
+        p = 1 - Math.min(1, Math.max(0, rect.top / span));
       } else if (rect.top > -vh) {
-        // Logo block still on screen: hold the flight at full strength
+        // Logo block fully on screen: hold the flight at full strength
         p = 1;
       } else {
         // Block scrolled past: ease the flight back to 0 behind the following content
@@ -488,8 +493,8 @@ export default function App() {
                     className="relative w-full flex items-center justify-center px-4 select-none pointer-events-none"
                     style={{
                       height: "100dvh",
-                      opacity: Math.max(0, 1 - flyBy * 1.35),
-                      transform: `scale(${1 + 0.14 * flyBy})`,
+                      opacity: Math.max(0, 1 - Math.min(1, flyBy / 0.45)),
+                      transform: `scale(${1 + 0.14 * Math.min(1, flyBy / 0.45)})`,
                       transformOrigin: "center center"
                     }}
                     id="main-hero-section-container"
@@ -552,7 +557,7 @@ export default function App() {
                     >
                       <button 
                         onClick={() => {
-                          window.scrollTo({ top: vh * 1.0, behavior: "smooth" });
+                          window.scrollTo({ top: vh * (1 + FLIGHT_CORRIDOR_DVH / 100), behavior: "smooth" });
                         }}
                         className="flex flex-col items-center gap-2 cursor-pointer group pointer-events-auto z-30 transition-opacity duration-300"
                         id="scroll-indicator-container"
@@ -572,6 +577,13 @@ export default function App() {
                       </button>
                     </motion.div>
                   </div>
+
+                  {/* SECTION 1.5: DEEP SPACE FLIGHT CORRIDOR (open space to fly through) */}
+                  <div
+                    className="relative w-full pointer-events-none"
+                    style={{ height: `${FLIGHT_CORRIDOR_DVH}dvh` }}
+                    id="flight-corridor"
+                  />
 
                   {/* SECTION 2: LOGO ASSEMBLY & PANELS (100dvh) */}
                   <div 
@@ -678,7 +690,7 @@ export default function App() {
                       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center shrink-0">
                         <button
                           onClick={() => {
-                            window.scrollTo({ top: vh * 2.0, behavior: "smooth" });
+                            window.scrollTo({ top: coreLandingRef.current?.offsetTop ?? vh * (2 + FLIGHT_CORRIDOR_DVH / 100), behavior: "smooth" });
                           }}
                           className="flex flex-col items-center gap-3 cursor-pointer group z-30 transition-all duration-300 pointer-events-auto"
                           id="enter-dome-arrow-btn"

@@ -17,6 +17,18 @@ const PLANET_SHELL_LY = 150;   // planets / sun / moon depth
 const SMALLBODY_SHELL_LY = 40; // comets / asteroids depth
 const SAT_SHELL_LY = 5;        // satellites depth (near foreground layer)
 
+// Deterministic "deep space" starfield: as the flight deepens, more stars appear.
+// Seeds are fixed so scroll-frozen frames are perfectly stable (no flicker).
+const WARP_FIELD_TOTAL = 320;
+const WARP_FIELD_SEEDS: { s1: number; s2: number; s3: number }[] = [];
+for (let i = 0; i < WARP_FIELD_TOTAL; i++) {
+  WARP_FIELD_SEEDS.push({
+    s1: Math.abs(Math.sin(i * 12.9898 + 78.233) * 43758.5453) % 1,
+    s2: Math.abs(Math.sin(i * 78.233 + 12.9898) * 12543.123) % 1,
+    s3: Math.abs(Math.sin(i * 37.719 + 3.14159) * 51529.42) % 1
+  });
+}
+
 interface NetworkBackgroundProps {
   zoomFactor?: number;
   warpProgress?: number;
@@ -320,6 +332,22 @@ export default function NetworkBackground({
         const shift = warp * (isMobile ? 90 : 130) * depthK;
         return { x: x + ux * shift, y: y + uy * shift, depthK };
       };
+
+      // Deep-space stars revealed as the flight deepens: the further you fly, the
+      // denser the field gets. Positions are deterministic; only the count grows.
+      const warpField: { x: number; y: number; z: number; size: number }[] = [];
+      if (warp > 0.03) {
+        const revealCount = Math.floor(warp * WARP_FIELD_TOTAL);
+        const fieldRMax = Math.max(width, height) * 0.52;
+        for (let i = 0; i < revealCount; i++) {
+          const seed = WARP_FIELD_SEEDS[i];
+          const ang = seed.s1 * Math.PI * 2;
+          const rr = Math.min(width, height) * 0.08 + seed.s2 * fieldRMax;
+          const z = 6 + seed.s3 * 320;
+          const wp = warpPos(centerX + rr * Math.cos(ang), centerY + rr * Math.sin(ang), z);
+          warpField.push({ x: wp.x, y: wp.y, z, size: 0.7 + seed.s3 * 1.5 });
+        }
+      }
 
       // Recalculate astronomical positions if interval passed or empty
       if (time - lastAstroCalcTime > astroCalcInterval || currentStarCoords.length === 0) {
@@ -631,6 +659,40 @@ export default function NetworkBackground({
         ctx.fillStyle = isHovered ? "#FFFFFF" : sc.star.mag < 0.5 ? "#F8FAFC" : "#E2E8F0";
         ctx.fill();
         ctx.restore();
+      }
+
+      // DRAW DEEP-SPACE STARS (extra field revealed while flying further out)
+      if (warpField.length > 0) {
+        for (let i = 0; i < warpField.length; i++) {
+          const fs = warpField[i];
+          ctx.save();
+          ctx.globalAlpha = 0.75 * warp;
+          const dx = fs.x - centerX;
+          const dy = fs.y - centerY;
+          const r = Math.hypot(dx, dy);
+          if (r > 0.5) {
+            const ux = dx / r;
+            const uy = dy / r;
+            const depthK = Math.max(0.12, Math.min(1, 120 / fs.z));
+            const len = warp * (isMobile ? 22 : 36) * depthK;
+            const tailX = fs.x - ux * len;
+            const tailY = fs.y - uy * len;
+            const grad = ctx.createLinearGradient(tailX, tailY, fs.x, fs.y);
+            grad.addColorStop(0, "rgba(190, 210, 235, 0)");
+            grad.addColorStop(1, `rgba(190, 210, 235, ${(0.5 * warp).toFixed(3)})`);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 0.9;
+            ctx.beginPath();
+            ctx.moveTo(tailX, tailY);
+            ctx.lineTo(fs.x, fs.y);
+            ctx.stroke();
+          }
+          ctx.beginPath();
+          ctx.arc(fs.x, fs.y, fs.size, 0, Math.PI * 2);
+          ctx.fillStyle = "#C7D2FE";
+          ctx.fill();
+          ctx.restore();
+        }
       }
 
       // DRAW PLANETS & SUN/MOON
