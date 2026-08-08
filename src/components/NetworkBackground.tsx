@@ -36,6 +36,7 @@ interface NetworkBackgroundProps {
   ecoMode?: boolean; // alias compatibility
   onSkyStatusChange?: (status: string) => void;
   language?: string;
+  suspended?: boolean; // pause rendering while an opaque 3D cinematic is on top
 }
 
 interface ProjectedObject {
@@ -56,12 +57,18 @@ export default function NetworkBackground({
   isEcoMode,
   ecoMode,
   onSkyStatusChange,
-  language = "ru"
+  language = "ru",
+  suspended = false
 }: NetworkBackgroundProps) {
   const activeEcoMode = isEcoMode ?? ecoMode ?? false;
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const reducedMotionMode = activeEcoMode || prefersReducedMotion;
+  const suspendedRef = useRef(suspended);
+
+  useEffect(() => {
+    suspendedRef.current = suspended;
+  }, [suspended]);
 
   // Scroll-driven warp progress (0..1). Stored in a ref so per-frame scroll updates
   // don't restart the render-loop effect.
@@ -274,6 +281,7 @@ export default function NetworkBackground({
     let currentSatCoords: SatCoord[] = [];
 
     const render = (time: number) => {
+      if (suspendedRef.current) return;
       const dt = Math.min(0.1, Math.max(0, (time - prevFrameTime) / 1000));
       prevFrameTime = time;
 

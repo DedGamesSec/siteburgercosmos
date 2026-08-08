@@ -1,5 +1,7 @@
-import { useState, useEffect, useRef, Suspense, lazy } from "react";
+import { useState, useEffect, useRef, useMemo, Suspense, lazy } from "react";
 const NetworkBackground = lazy(() => import("./components/NetworkBackground"));
+const CinematicScene = lazy(() => import("./components/CinematicScene"));
+import { isWebGLAvailable, type CinematicPhases } from "./components/CinematicScene";
 import AssembledLogo from "./components/AssembledLogo";
 
 const hudTranslations: Record<string, { core: string; nodes: string; mode: string }> = {
@@ -18,6 +20,20 @@ const hudTranslations: Record<string, { core: string; nodes: string; mode: strin
 
 // Extra scroll distance of open space to fly through between the title and the logo.
 const FLIGHT_CORRIDOR_DVH = 150;
+
+// 3D cinematic corridor: the WebGL flight through the 3D logo + approach to Earth.
+// This corridor replaces the legacy empty corridor when WebGL is available.
+const CINEMATIC_CORRIDOR_DVH = 620;
+
+// Phase boundaries of the cinematic flight, as fractions of the corridor scroll.
+const CINEMATIC_PHASES: CinematicPhases = {
+  underEnd: 0.12,
+  orbitEnd: 0.3,
+  throughEnd: 0.45,
+  assemblyEnd: 0.62,
+  turnEnd: 0.76,
+  approachEnd: 0.92
+};
 
 function SkyPlaceholder() {
   return <div className="absolute inset-0 w-full h-full bg-[#0A0A0B] pointer-events-none" />;
@@ -114,8 +130,26 @@ export default function App() {
   const [sceneProgress, setSceneProgress] = useState(0);
   const warpRAFRef = useRef(0);
 
+  // 3D WebGL cinematic corridor. When WebGL is available (and not in eco mode) the
+  // legacy flight corridor + assembled logo block are replaced by the 3D fly-by
+  // (under the logo -> orbit -> through the letters -> assembly -> turn -> Earth).
+  const cinematicCorridorRef = useRef<HTMLDivElement>(null);
+  const [cinematicProgress, setCinematicProgress] = useState(0);
+  const [cinematicActive, setCinematicActive] = useState(false);
+  const [webglReady] = useState(() => isWebGLAvailable());
+  const cinematicEnabled = webglReady && !ecoMode;
+
   // Scroll-driven fly-past of the hero title; disabled in eco mode (no motion).
-  const flyBy = ecoMode ? 0 : sceneProgress;
+  const flyBy = ecoMode ? 0 : cinematicEnabled ? cinematicProgress : sceneProgress;
+
+  // Pinned DOM overlays that ride on top of the 3D flight, driven by progress.
+  const cLabelT = cinematicProgress > 0.45 ? Math.min(1, (cinematicProgress - 0.45) / 0.15) : 0;
+  const cLabelOut = cinematicProgress > 0.72 ? Math.max(0, 1 - (cinematicProgress - 0.72) / 0.12) : 1;
+  const cLabelOp = cLabelT * cLabelOut;
+  const cHudT = cinematicProgress > 0.6 ? Math.min(1, (cinematicProgress - 0.6) / 0.12) : 0;
+  const cHudOut = cinematicProgress > 0.78 ? Math.max(0, 1 - (cinematicProgress - 0.78) / 0.1) : 1;
+  const cHudOp = cHudT * cHudOut;
+  const cArrowT = cinematicProgress > 0.85 ? Math.min(1, (cinematicProgress - 0.85) / 0.1) : 0;
 
   useEffect(() => {
     const computeScene = () => {
@@ -157,6 +191,49 @@ export default function App() {
       if (warpRAFRef.current) cancelAnimationFrame(warpRAFRef.current);
     };
   }, [windowHeight]);
+
+  // Scroll math for the 3D cinematic corridor: progress 0 at the very top of the page,
+  // 1 once the corridor has scrolled fully into view (Earth approach fills the screen).
+  // The render loop stays active until the opaque core-landing block covers the viewport.
+  useEffect(() => {
+    if (!cinematicEnabled) return;
+    const computeCinematic = () => {
+      const el = cinematicCorridorRef.current;
+      const core = coreLandingRef.current;
+      const vh = windowHeight || window.innerHeight;
+      if (!el) {
+        setCinematicProgress(0);
+        setCinematicActive(false);
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      const absTop = window.scrollY + rect.top;
+      const totalScroll = Math.max(vh, absTop + rect.height - vh);
+      const p = Math.min(1, Math.max(0, window.scrollY / totalScroll));
+      setCinematicProgress(p);
+      const coreRect = core?.getBoundingClientRect();
+      setCinematicActive(!coreRect || coreRect.top > 0);
+    };
+    const onScroll = () => {
+      computeCinematic();
+    };
+    let raf = 0;
+    const onScrollRAF = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        computeCinematic();
+      });
+    };
+    computeCinematic();
+    window.addEventListener("scroll", onScrollRAF, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScrollRAF);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [cinematicEnabled, windowHeight]);
 
   // Dynamic Page Metadata & SEO Management
   useEffect(() => {
@@ -490,7 +567,7 @@ export default function App() {
                   
                   {/* SECTION 1: HERO TITLE (100dvh) */}
                   <div 
-                    className="relative w-full flex items-center justify-center px-4 select-none pointer-events-none"
+                    className="relative z-20 w-full flex items-center justify-center px-4 select-none pointer-events-none"
                     style={{
                       height: "100dvh",
                       opacity: Math.max(0, 1 - Math.min(1, flyBy / 0.45)),
@@ -557,7 +634,7 @@ export default function App() {
                     >
                       <button 
                         onClick={() => {
-                          window.scrollTo({ top: vh * (1 + FLIGHT_CORRIDOR_DVH / 100), behavior: "smooth" });
+                          window.scrollTo({ top: vh * (1 + (cinematicEnabled ? CINEMATIC_CORRIDOR_DVH / 100 * 0.05 : FLIGHT_CORRIDOR_DVH / 100)), behavior: "smooth" });
                         }}
                         className="flex flex-col items-center gap-2 cursor-pointer group pointer-events-auto z-30 transition-opacity duration-300"
                         id="scroll-indicator-container"
@@ -578,143 +655,256 @@ export default function App() {
                     </motion.div>
                   </div>
 
-                  {/* SECTION 1.5: DEEP SPACE FLIGHT CORRIDOR (open space to fly through) */}
-                  <div
-                    className="relative w-full pointer-events-none"
-                    style={{ height: `${FLIGHT_CORRIDOR_DVH}dvh` }}
-                    id="flight-corridor"
-                  />
-
-                  {/* SECTION 2: LOGO ASSEMBLY & PANELS (100dvh) */}
-                  <div 
-                    ref={section2Ref}
-                    className="relative w-full flex items-center justify-center px-4 pb-28 pt-16 select-none pointer-events-none"
-                    style={{ 
-                      minHeight: "100dvh",
-                    }}
-                    id="slide2-assembly-section-container"
-                  >
-                    {/* Central content container shifted slightly higher to feel perfectly framed */}
-                    <motion.div 
-                      initial={{ opacity: 0, y: 40 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-100px" }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="flex flex-col items-center justify-center gap-6 sm:gap-8 lg:gap-10 w-full px-4 pointer-events-auto"
-                      style={{
-                        transform: "translateY(-75px)",
-                      }}
-                      id="slide2-assembly-section"
+                  {cinematicEnabled ? (
+                    /* CINEMATIC CORRIDOR: the whole 3D flight plays across this tall scroll span */
+                    <div
+                      ref={cinematicCorridorRef}
+                      className="relative w-full pointer-events-none"
+                      style={{ height: `${CINEMATIC_CORRIDOR_DVH}dvh` }}
+                      id="cinematic-corridor"
                     >
-                         
-                      <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-16 w-full max-w-5xl mx-auto shrink-0">
-                        {/* Left Status Label */}
-                        <motion.div
-                          style={{
-                            opacity: sceneProgress > 0.15 ? Math.min(1, (sceneProgress - 0.15) / 0.85) : 0,
-                            x: sceneProgress > 0.15 ? -40 * (1 - Math.min(1, (sceneProgress - 0.15) / 0.85)) : -40
-                          }}
-                          className="flex flex-col items-center lg:items-end text-center lg:text-right w-full lg:w-64"
-                        >
-                          <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
-                            {t.assembly?.leftPrimary || "OFFLINE-FIRST"}
-                          </span>
-                          <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
-                            {t.assembly?.leftSub || "// ДАННЫЕ НЕ ПОКИДАЮТ УСТРОЙСТВО"}
-                          </span>
-                        </motion.div>
+                      <Suspense fallback={<SkyPlaceholder />}>
+                        <CinematicScene progress={cinematicProgress} phases={CINEMATIC_PHASES} active={cinematicActive} />
+                      </Suspense>
 
-                        {/* Central Logo */}
-                        <div className="flex items-center justify-center shrink-0">
-                          <AssembledLogo progress={sceneProgress} ecoMode={ecoMode} />
+                      {/* HUD overlays pinned over the 3D flight */}
+                      <div className="fixed inset-0 z-10 pointer-events-none select-none">
+                        {/* Status labels during assembly */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-16 w-full max-w-5xl mx-auto px-4">
+                            <motion.div
+                              style={{
+                                opacity: cLabelOp,
+                                x: cLabelOp > 0 ? -40 * (1 - Math.min(1, cLabelOp)) : -40
+                              }}
+                              className="flex flex-col items-center lg:items-end text-center lg:text-right w-full lg:w-64"
+                            >
+                              <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
+                                {t.assembly?.leftPrimary || "OFFLINE-FIRST"}
+                              </span>
+                              <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
+                                {t.assembly?.leftSub || "// ДАННЫЕ НЕ ПОКИДАЮТ УСТРОЙСТВО"}
+                              </span>
+                            </motion.div>
+
+                            <div className="w-32 sm:w-44 shrink-0 hidden lg:block" />
+
+                            <motion.div
+                              style={{
+                                opacity: cLabelOp,
+                                x: cLabelOp > 0 ? 40 * (1 - Math.min(1, cLabelOp)) : 40
+                              }}
+                              className="flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-64"
+                            >
+                              <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
+                                {t.assembly?.rightPrimary || "ZERO TELEMETRY"}
+                              </span>
+                              <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
+                                {t.assembly?.rightSub || "// НИКАКОЙ ТЕЛЕМЕТРИИ"}
+                              </span>
+                            </motion.div>
+                          </div>
                         </div>
 
-                        {/* Right Status Label */}
-                        <motion.div
-                          style={{
-                            opacity: sceneProgress > 0.15 ? Math.min(1, (sceneProgress - 0.15) / 0.85) : 0,
-                            x: sceneProgress > 0.15 ? 40 * (1 - Math.min(1, (sceneProgress - 0.15) / 0.85)) : 40
-                          }}
-                          className="flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-64"
+                        {/* Minimalist HUD status bar */}
+                        <div
+                          className="absolute inset-x-0 bottom-[20vh] flex justify-center transition-opacity duration-300"
+                          style={{ opacity: cHudOp }}
                         >
-                          <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
-                            {t.assembly?.rightPrimary || "ZERO TELEMETRY"}
-                          </span>
-                          <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
-                            {t.assembly?.rightSub || "// НИКАКОЙ ТЕЛЕМЕТРИИ"}
-                          </span>
-                        </motion.div>
-                      </div>
-
-                      {/* Minimalist HUD Status Bar */}
-                      <AnimatePresence>
-                        {sceneProgress > 0.6 && (
-                          <motion.div
-                            initial="hidden"
-                            animate="visible"
-                            exit="hidden"
-                            variants={{
-                              visible: {
-                                transition: {
-                                  staggerChildren: 0.15
-                                }
-                              }
-                            }}
-                            className="flex flex-wrap items-center justify-center gap-3 mt-2 pointer-events-none select-none"
-                            id="logo-assembly-hud-bar"
-                          >
+                          <div className="flex flex-wrap items-center justify-center gap-3">
                             {[
                               hudTranslations[language]?.core || hudTranslations.en.core,
                               hudTranslations[language]?.nodes || hudTranslations.en.nodes,
                               hudTranslations[language]?.mode || hudTranslations.en.mode
                             ].map((text, idx) => (
-                              <motion.div
+                              <span
                                 key={idx}
-                                variants={{
-                                  hidden: { opacity: 0, y: 10, scale: 0.95 },
-                                  visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
-                                }}
                                 className="font-mono text-[9px] sm:text-[11px] tracking-[0.1em] font-semibold text-[#3B82F6] bg-[#12141A]/60 border border-[#3C404A] px-3.5 py-1.5 rounded-sm whitespace-nowrap"
                               >
                                 {text}
-                              </motion.div>
+                              </span>
                             ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-
-                    </motion.div>
-                    
-                    {/* Bottom Area of Section 2 with Dynamic Dome Navigator */}
-                    {sceneProgress > 0.1 && (
-                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center shrink-0">
-                        <button
-                          onClick={() => {
-                            window.scrollTo({ top: coreLandingRef.current?.offsetTop ?? vh * (2 + FLIGHT_CORRIDOR_DVH / 100), behavior: "smooth" });
-                          }}
-                          className="flex flex-col items-center gap-3 cursor-pointer group z-30 transition-all duration-300 pointer-events-auto"
-                          id="enter-dome-arrow-btn"
-                        >
-                          <div className="relative flex items-center justify-center w-10 h-10 rounded-sm border border-[#3C404A] bg-[#12141A]/60 group-hover:border-[#2DD4BF] group-hover:shadow-glow-success transition-all duration-300">
-                            <svg 
-                              className="w-5 h-5 text-[#8B8F9C] group-hover:text-[#2DD4BF] transition-colors translate-y-0 group-hover:translate-y-0.5 transition-transform animate-bounce" 
-                              fill="none" 
-                              stroke="currentColor" 
-                              strokeWidth="2.5" 
-                              viewBox="0 0 24 24"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 13l-7 7-7-7m14-6l-7 7-7-7" />
-                            </svg>
                           </div>
-                          <span className="font-mono text-[9px] tracking-[0.3em] text-[#8B8F9C] group-hover:text-[#2DD4BF] transition-colors uppercase font-bold animate-pulse mt-2">
-                            {t.hero.enterDome}
-                          </span>
-                        </button>
-                      </div>
-                    )}
+                        </div>
 
-                  </div>
+                        {/* Enter-dome navigator at the end of the flight */}
+                        <div
+                          className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center transition-opacity duration-300"
+                          style={{ opacity: cArrowT }}
+                        >
+                          <button
+                            onClick={() => {
+                              window.scrollTo({ top: coreLandingRef.current?.offsetTop ?? vh * 2, behavior: "smooth" });
+                            }}
+                            className="flex flex-col items-center gap-3 cursor-pointer group z-30 transition-all duration-300 pointer-events-auto"
+                            id="enter-dome-arrow-btn"
+                          >
+                            <div className="relative flex items-center justify-center w-10 h-10 rounded-sm border border-[#3C404A] bg-[#12141A]/60 group-hover:border-[#2DD4BF] group-hover:shadow-glow-success transition-all duration-300">
+                              <svg
+                                className="w-5 h-5 text-[#8B8F9C] group-hover:text-[#2DD4BF] transition-colors translate-y-0 group-hover:translate-y-0.5 transition-transform animate-bounce"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                viewBox="0 0 24 24"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 13l-7 7-7-7m14-6l-7 7-7-7" />
+                              </svg>
+                            </div>
+                            <span className="font-mono text-[9px] tracking-[0.3em] text-[#8B8F9C] group-hover:text-[#2DD4BF] transition-colors uppercase font-bold animate-pulse mt-2">
+                              {t.hero.enterDome}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {/* SECTION 1.5: DEEP SPACE FLIGHT CORRIDOR (open space to fly through) */}
+                      <div
+                        className="relative w-full pointer-events-none"
+                        style={{ height: `${FLIGHT_CORRIDOR_DVH}dvh` }}
+                        id="flight-corridor"
+                      />
+
+                      {/* SECTION 2: LOGO ASSEMBLY & PANELS (100dvh) */}
+                      <div 
+                        ref={section2Ref}
+                        className="relative w-full flex items-center justify-center px-4 pb-28 pt-16 select-none pointer-events-none"
+                        style={{ 
+                          minHeight: "100dvh",
+                        }}
+                        id="slide2-assembly-section-container"
+                      >
+                        {/* Central content container shifted slightly higher to feel perfectly framed */}
+                        <motion.div 
+                          initial={{ opacity: 0, y: 40 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, margin: "-100px" }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          className="flex flex-col items-center justify-center gap-6 sm:gap-8 lg:gap-10 w-full px-4 pointer-events-auto"
+                          style={{
+                            transform: "translateY(-75px)",
+                          }}
+                          id="slide2-assembly-section"
+                        >
+                             
+                          <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-16 w-full max-w-5xl mx-auto shrink-0">
+                            {/* Left Status Label */}
+                            <motion.div
+                              style={{
+                                opacity: sceneProgress > 0.15 ? Math.min(1, (sceneProgress - 0.15) / 0.85) : 0,
+                                x: sceneProgress > 0.15 ? -40 * (1 - Math.min(1, (sceneProgress - 0.15) / 0.85)) : -40
+                              }}
+                              className="flex flex-col items-center lg:items-end text-center lg:text-right w-full lg:w-64"
+                            >
+                              <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
+                                {t.assembly?.leftPrimary || "OFFLINE-FIRST"}
+                              </span>
+                              <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
+                                {t.assembly?.leftSub || "// ДАННЫЕ НЕ ПОКИДАЮТ УСТРОЙСТВО"}
+                              </span>
+                            </motion.div>
+
+                            {/* Central Logo */}
+                            <div className="flex items-center justify-center shrink-0">
+                              <AssembledLogo progress={sceneProgress} ecoMode={ecoMode} />
+                            </div>
+
+                            {/* Right Status Label */}
+                            <motion.div
+                              style={{
+                                opacity: sceneProgress > 0.15 ? Math.min(1, (sceneProgress - 0.15) / 0.85) : 0,
+                                x: sceneProgress > 0.15 ? 40 * (1 - Math.min(1, (sceneProgress - 0.15) / 0.85)) : 40
+                              }}
+                              className="flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-64"
+                            >
+                              <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
+                                {t.assembly?.rightPrimary || "ZERO TELEMETRY"}
+                              </span>
+                              <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
+                                {t.assembly?.rightSub || "// НИКАКОЙ ТЕЛЕМЕТРИИ"}
+                              </span>
+                            </motion.div>
+                          </div>
+
+                          {/* Minimalist HUD Status Bar */}
+                          <AnimatePresence>
+                            {sceneProgress > 0.6 && (
+                              <motion.div
+                                initial="hidden"
+                                animate="visible"
+                                exit="hidden"
+                                variants={{
+                                  visible: {
+                                    transition: {
+                                      staggerChildren: 0.15
+                                    }
+                                  }
+                                }}
+                                className="flex flex-wrap items-center justify-center gap-3 mt-2 pointer-events-none select-none"
+                                id="logo-assembly-hud-bar"
+                              >
+                                {[
+                                  hudTranslations[language]?.core || hudTranslations.en.core,
+                                  hudTranslations[language]?.nodes || hudTranslations.en.nodes,
+                                  hudTranslations[language]?.mode || hudTranslations.en.mode
+                                ].map((text, idx) => (
+                                  <motion.div
+                                    key={idx}
+                                    variants={{
+                                      hidden: { opacity: 0, y: 10, scale: 0.95 },
+                                      visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
+                                    }}
+                                    className="font-mono text-[9px] sm:text-[11px] tracking-[0.1em] font-semibold text-[#3B82F6] bg-[#12141A]/60 border border-[#3C404A] px-3.5 py-1.5 rounded-sm whitespace-nowrap"
+                                  >
+                                    {text}
+                                  </motion.div>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+
+                        </motion.div>
+                        
+                        {/* Bottom Area of Section 2 with Dynamic Dome Navigator */}
+                        {sceneProgress > 0.1 && (
+                          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center shrink-0">
+                            <button
+                              onClick={() => {
+                                window.scrollTo({ top: coreLandingRef.current?.offsetTop ?? vh * (2 + FLIGHT_CORRIDOR_DVH / 100), behavior: "smooth" });
+                              }}
+                              className="flex flex-col items-center gap-3 cursor-pointer group z-30 transition-all duration-300 pointer-events-auto"
+                              id="enter-dome-arrow-btn"
+                            >
+                              <div className="relative flex items-center justify-center w-10 h-10 rounded-sm border border-[#3C404A] bg-[#12141A]/60 group-hover:border-[#2DD4BF] group-hover:shadow-glow-success transition-all duration-300">
+                                <svg 
+                                  className="w-5 h-5 text-[#8B8F9C] group-hover:text-[#2DD4BF] transition-colors translate-y-0 group-hover:translate-y-0.5 transition-transform animate-bounce" 
+                                  fill="none" 
+                                  stroke="currentColor" 
+                                  strokeWidth="2.5" 
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 13l-7 7-7-7m14-6l-7 7-7-7" />
+                                </svg>
+                              </div>
+                              <span className="font-mono text-[9px] tracking-[0.3em] text-[#8B8F9C] group-hover:text-[#2DD4BF] transition-colors uppercase font-bold animate-pulse mt-2">
+                                {t.hero.enterDome}
+                              </span>
+                            </button>
+                          </div>
+                        )}
+
+                      </div>
+                    </>
+                  )}
               </div>
+
+              {/* INTRO CARDS OVER THE EARTH (cinematic mode): transparent, cards slide in from the top */}
+              {cinematicEnabled && (
+                <div className="relative z-10 w-full pointer-events-auto">
+                  <IntroSection transparent />
+                </div>
+              )}
 
               {/* CORE LANDING CONTENT (NORMAL DOCUMENT FLOW) */}
               <div ref={coreLandingRef} className="relative z-20 w-full flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm shadow-[0_-30px_60px_rgba(10,10,11,0.95)]" id="core-landing-page">
@@ -734,7 +924,7 @@ export default function App() {
                     </button>
                   </div>
                 )}
-                <IntroSection />
+                {!cinematicEnabled && <IntroSection />}
                 <ProtectionMarquee />
                 <ProblemSection />
                 <TrustSection />

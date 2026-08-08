@@ -2,6 +2,7 @@ import React from "react";
 import { HelpCircle, Shield, Eye } from "lucide-react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
+import { motion } from "motion/react";
 import SectionBadge from "./SectionBadge";
 import ScanCard from "./ScanCard";
 
@@ -257,14 +258,14 @@ const COLORS = [
   "border-[#FB923C]/40 text-[#FB923C] bg-[#FB923C]/5"
 ];
 
-const IntroSection = React.memo(function IntroSection() {
+const IntroSection = React.memo(function IntroSection({ transparent = false }: { transparent?: boolean }) {
   const { language } = useTranslation();
   const { ecoMode } = useEcoMode();
   const content = DICT[language] || DICT.en;
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B]" 
+      className={`relative w-full py-16 sm:py-20 px-4 ${transparent ? "bg-transparent" : "bg-[#0A0A0B]"}`} 
       id="intro-simplified"
     >
       <div className="max-w-6xl mx-auto relative z-10">
@@ -288,29 +289,38 @@ const IntroSection = React.memo(function IntroSection() {
               const IconComponent = ICONS[idx];
               const colorClass = COLORS[idx];
               return (
-                <ScanCard key={idx} className="h-full justify-between">
-                  <div>
-                    {/* Step Tag */}
-                    <div className="flex items-center justify-between mb-6">
-                      <span className="font-mono text-[10px] font-bold tracking-wider text-gray-500 uppercase">
-                        {step.tag}
-                      </span>
-                      <div className={`p-2 border ${colorClass}`}>
-                        <IconComponent className="w-4 h-4" />
+                <motion.div
+                  key={idx}
+                  initial={transparent ? { opacity: 0, y: -60 } : false}
+                  whileInView={transparent ? { opacity: 1, y: 0 } : undefined}
+                  viewport={transparent ? { once: true, margin: "-60px" } : undefined}
+                  transition={{ duration: 0.7, delay: idx * 0.12, ease: "easeOut" }}
+                  className="h-full"
+                >
+                  <ScanCard className="h-full justify-between">
+                    <div>
+                      {/* Step Tag */}
+                      <div className="flex items-center justify-between mb-6">
+                        <span className="font-mono text-[10px] font-bold tracking-wider text-gray-500 uppercase">
+                          {step.tag}
+                        </span>
+                        <div className={`p-2 border ${colorClass}`}>
+                          <IconComponent className="w-4 h-4" />
+                        </div>
                       </div>
+
+                      {/* Title */}
+                      <h3 className="font-display font-medium text-lg text-[#F5F5F0] mb-3 group-hover:text-[#3B82F6] transition-all duration-300">
+                        {step.title}
+                      </h3>
+
+                      {/* Desc */}
+                      <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">
+                        {step.desc}
+                      </p>
                     </div>
-
-                    {/* Title */}
-                    <h3 className="font-display font-medium text-lg text-[#F5F5F0] mb-3 group-hover:text-[#3B82F6] transition-all duration-300">
-                      {step.title}
-                    </h3>
-
-                    {/* Desc */}
-                    <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">
-                      {step.desc}
-                    </p>
-                  </div>
-                </ScanCard>
+                  </ScanCard>
+                </motion.div>
               );
             })}
           </div>
