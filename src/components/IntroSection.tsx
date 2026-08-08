@@ -258,6 +258,8 @@ const COLORS = [
   "border-[#FB923C]/40 text-[#FB923C] bg-[#FB923C]/5"
 ];
 
+export const INTRO_DICT = DICT;
+
 const IntroSection = React.memo(function IntroSection({ transparent = false }: { transparent?: boolean }) {
   const { language } = useTranslation();
   const { ecoMode } = useEcoMode();

@@ -3,6 +3,7 @@ const NetworkBackground = lazy(() => import("./components/NetworkBackground"));
 const CinematicScene = lazy(() => import("./components/CinematicScene"));
 import { isWebGLAvailable, type CinematicPhases } from "./components/CinematicScene";
 import AssembledLogo from "./components/AssembledLogo";
+import { INTRO_DICT } from "./components/IntroSection";
 
 const hudTranslations: Record<string, { core: string; nodes: string; mode: string }> = {
   ru: { core: "ЛОКАЛЬНОЕ ЯДРО", nodes: "АКТИВНЫЕ УЗЛЫ", mode: "РЕЖИМ ЗАЩИТЫ" },
@@ -144,17 +145,20 @@ export default function App() {
 
   // Pinned DOM overlays that ride on top of the 3D flight, driven by progress.
   const cLabelT = cinematicProgress > 0.48 ? Math.min(1, (cinematicProgress - 0.48) / 0.15) : 0;
-  const cLabelOut = cinematicProgress > 0.78 ? Math.max(0, 1 - (cinematicProgress - 0.78) / 0.12) : 1;
+  const cLabelOut = cinematicProgress > 0.7 ? Math.max(0, 1 - (cinematicProgress - 0.7) / 0.08) : 1;
   const cLabelOp = cLabelT * cLabelOut;
   const cHudT = cinematicProgress > 0.6 ? Math.min(1, (cinematicProgress - 0.6) / 0.12) : 0;
-  const cHudOut = cinematicProgress > 0.8 ? Math.max(0, 1 - (cinematicProgress - 0.8) / 0.1) : 1;
+  const cHudOut = cinematicProgress > 0.72 ? Math.max(0, 1 - (cinematicProgress - 0.72) / 0.08) : 1;
   const cHudOp = cHudT * cHudOut;
   const cArrowT = cinematicProgress > 0.85 ? Math.min(1, (cinematicProgress - 0.85) / 0.1) : 0;
+  // "Всё просто о TrustNode" labels fade in at the very end, above the Earth shot.
+  const introContent = INTRO_DICT[language] || INTRO_DICT.en;
+  const cIntroOp = cinematicProgress > 0.9 ? Math.min(1, (cinematicProgress - 0.9) / 0.08) : 0;
   // 2D logo assembly overlay: assembles as the new constellations open, holds during
-  // the hover, then fades as the camera turns toward Earth.
+  // the hover, then fades as the camera kicks into the Star Wars warp.
   const cLogoOp = Math.max(
     0,
-    Math.min(1, (cinematicProgress - 0.45) / 0.12) * (1 - Math.max(0, (cinematicProgress - 0.78) / 0.1))
+    Math.min(1, (cinematicProgress - 0.45) / 0.12) * (1 - Math.max(0, (cinematicProgress - 0.7) / 0.08))
   );
   const cLogoProgress = Math.max(0, Math.min(1, (cinematicProgress - 0.45) / 0.3));
 
@@ -724,6 +728,32 @@ export default function App() {
                                 {t.assembly?.rightSub || "// НИКАКОЙ ТЕЛЕМЕТРИИ"}
                               </span>
                             </motion.div>
+                          </div>
+                        </div>
+
+                        {/* "Всё просто о TrustNode" — three step labels ride at the top of
+                            the frame while Earth fills the bottom of the screen */}
+                        <div
+                          className="absolute inset-x-0 top-[9vh] flex flex-col items-center gap-3 px-4 transition-opacity duration-300"
+                          style={{ opacity: cIntroOp }}
+                        >
+                          <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.3em] text-[#3B82F6] uppercase font-bold">
+                            {introContent.badge}
+                          </span>
+                          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4">
+                            {introContent.steps.map((step, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center gap-2 border border-[#3C404A]/70 bg-[#12141A]/60 px-3.5 py-2 rounded-sm"
+                              >
+                                <span className="font-mono text-[8px] sm:text-[9px] tracking-[0.15em] text-[#2DD4BF] uppercase font-bold">
+                                  {step.tag}
+                                </span>
+                                <span className="font-display text-[11px] sm:text-sm text-[#F5F5F0] whitespace-nowrap">
+                                  {step.title}
+                                </span>
+                              </div>
+                            ))}
                           </div>
                         </div>
 
