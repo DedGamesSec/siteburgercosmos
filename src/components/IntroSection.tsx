@@ -1,5 +1,5 @@
 import React from "react";
-import { HelpCircle, Shield, Eye, ArrowRight } from "lucide-react";
+import { HelpCircle, Shield, Eye } from "lucide-react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
 import SectionBadge from "./SectionBadge";
@@ -312,13 +312,6 @@ const IntroSection = React.memo(function IntroSection() {
                       {step.desc}
                     </p>
                   </div>
-
-                  {/* Connecting arrow indicator for visual flow (except last card) */}
-                  {idx < 2 && (
-                    <div className="hidden md:flex absolute top-1/2 -right-4 -translate-y-1/2 z-20 w-8 h-8 rounded-sm bg-[#0A0A0B] border border-[#3C404A] items-center justify-center text-gray-500">
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </div>
-                  )}
                 </ScanCard>
               );
             })}
