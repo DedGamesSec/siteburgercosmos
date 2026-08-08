@@ -305,6 +305,22 @@ export default function NetworkBackground({
 
       const projectionRadius = Math.max(width, height) * 0.58 * zoomFactor;
 
+      // Scroll-linked outward flight position: during warp every object rushes away
+      // from the screen center. Near objects (small z) fly further/faster, so the
+      // real depth data drives the Star Wars tunnel feel. Frozen when scrolling stops.
+      const warpPos = (x: number, y: number, z: number) => {
+        if (warp <= 0.02) return { x, y, depthK: 1 };
+        const dx = x - centerX;
+        const dy = y - centerY;
+        const r = Math.hypot(dx, dy);
+        if (r <= 0.5) return { x, y, depthK: 1 };
+        const ux = dx / r;
+        const uy = dy / r;
+        const depthK = Math.max(0.12, Math.min(1, 120 / Math.max(z, 1)));
+        const shift = warp * (isMobile ? 90 : 130) * depthK;
+        return { x: x + ux * shift, y: y + uy * shift, depthK };
+      };
+
       // Recalculate astronomical positions if interval passed or empty
       if (time - lastAstroCalcTime > astroCalcInterval || currentStarCoords.length === 0) {
         lastAstroCalcTime = time;
@@ -485,18 +501,22 @@ export default function NetworkBackground({
         }
       }
 
-      // Build quick lookup map for star positions by ID for constellation line drawing
-      const starMap = new Map<string, StarCoord>();
+      // Build quick lookup map for star positions by ID for constellation line drawing.
+      // Warp shift is applied here so lines, tooltips and dots share the same pixels.
+      const starMap = new Map<string, { x: number; y: number; centerDampen: number }>();
+      const drawnStars: { sc: StarCoord; x: number; y: number }[] = [];
       const visibleInteractiveObjects: ProjectedObject[] = [];
 
       for (let i = 0; i < currentStarCoords.length; i++) {
         const sc = currentStarCoords[i];
-        starMap.set(sc.star.id, sc);
+        const wp = warpPos(sc.x, sc.y, sc.z);
+        starMap.set(sc.star.id, { x: wp.x, y: wp.y, centerDampen: sc.centerDampen });
+        drawnStars.push({ sc, x: wp.x, y: wp.y });
         visibleInteractiveObjects.push({
           id: sc.star.id,
           type: "STAR",
-          x: sc.x,
-          y: sc.y,
+          x: wp.x,
+          y: wp.y,
           size: sc.size,
           titleRu: getRussianName(sc.star.nameEn || sc.star.id, language),
           subtitleRu: sc.star.constellationCode ? `${getSkyLabel("constellation", language)}: ${getRussianName(sc.star.constellationCode, language) || sc.star.constellationCode}` : undefined,
@@ -506,11 +526,12 @@ export default function NetworkBackground({
       }
 
       for (const p of currentPlanetCoords) {
+        const wp = warpPos(p.x, p.y, p.z);
         visibleInteractiveObjects.push({
           id: p.id,
           type: "PLANET",
-          x: p.x,
-          y: p.y,
+          x: wp.x,
+          y: wp.y,
           size: p.size,
           titleRu: p.nameRu,
           techInfo: `${getSkyLabel("altitude", language)}: ${p.alt.toFixed(1)}°`
@@ -518,11 +539,12 @@ export default function NetworkBackground({
       }
 
       for (const sb of currentSmallBodyCoords) {
+        const wp = warpPos(sb.x, sb.y, sb.z);
         visibleInteractiveObjects.push({
           id: sb.id,
           type: sb.type,
-          x: sb.x,
-          y: sb.y,
+          x: wp.x,
+          y: wp.y,
           size: 2.2,
           titleRu: sb.nameRu,
           techInfo: `${getSkyLabel("keplerianOrbitAlt", language)}: ${sb.alt.toFixed(1)}°`
@@ -564,35 +586,35 @@ export default function NetworkBackground({
       }
 
       // DRAW STARS
-      for (let i = 0; i < currentStarCoords.length; i++) {
-        const sc = currentStarCoords[i];
+      for (let i = 0; i < drawnStars.length; i++) {
+        const st = drawnStars[i];
+        const sc = st.sc;
         const isHovered = hoveredConstellationRef.current === sc.star.constellationCode;
 
         ctx.save();
         ctx.globalAlpha = sc.alpha * (isHovered ? 1 : sc.centerDampen);
 
         // Star Wars hyperspace streaks: each star stretches into a line radiating from
-        // the screen center. Length scales with warp progress and with how close the
-        // star is (real depth in ly drives the parallax feel of the flight).
+        // the screen center. Length scales with warp and with how close the star is.
         if (warp > 0.02) {
-          const dx = sc.x - centerX;
-          const dy = sc.y - centerY;
+          const dx = st.x - centerX;
+          const dy = st.y - centerY;
           const r = Math.hypot(dx, dy);
           if (r > 0.5) {
             const ux = dx / r;
             const uy = dy / r;
             const depthK = Math.max(0.12, Math.min(1, 120 / Math.max(sc.z, 1)));
-            const len = warp * (isMobile ? 22 : 34) * depthK;
-            const tailX = sc.x - ux * len;
-            const tailY = sc.y - uy * len;
-            const grad = ctx.createLinearGradient(tailX, tailY, sc.x, sc.y);
+            const len = warp * (isMobile ? 26 : 40) * depthK;
+            const tailX = st.x - ux * len;
+            const tailY = st.y - uy * len;
+            const grad = ctx.createLinearGradient(tailX, tailY, st.x, st.y);
             grad.addColorStop(0, "rgba(226, 232, 240, 0)");
             grad.addColorStop(1, `rgba(226, 232, 240, ${(0.55 * warp).toFixed(3)})`);
             ctx.strokeStyle = grad;
             ctx.lineWidth = 1.1;
             ctx.beginPath();
             ctx.moveTo(tailX, tailY);
-            ctx.lineTo(sc.x, sc.y);
+            ctx.lineTo(st.x, st.y);
             ctx.stroke();
           }
         }
@@ -605,7 +627,7 @@ export default function NetworkBackground({
         }
 
         ctx.beginPath();
-        ctx.arc(sc.x, sc.y, isHovered ? sc.size * 1.3 : sc.size, 0, Math.PI * 2);
+        ctx.arc(st.x, st.y, isHovered ? sc.size * 1.3 : sc.size, 0, Math.PI * 2);
         ctx.fillStyle = isHovered ? "#FFFFFF" : sc.star.mag < 0.5 ? "#F8FAFC" : "#E2E8F0";
         ctx.fill();
         ctx.restore();
@@ -613,12 +635,13 @@ export default function NetworkBackground({
 
       // DRAW PLANETS & SUN/MOON
       for (const p of currentPlanetCoords) {
+        const wp = warpPos(p.x, p.y, p.z);
         ctx.save();
         ctx.globalAlpha = p.centerDampen;
         ctx.shadowColor = p.color;
         ctx.shadowBlur = 10 * moonGlow;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.arc(wp.x, wp.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
         ctx.fill();
         ctx.restore();
@@ -627,22 +650,25 @@ export default function NetworkBackground({
       // DRAW COMETS & ASTEROIDS
       if (!reducedMotionMode) {
         for (const sb of currentSmallBodyCoords) {
+          const wp = warpPos(sb.x, sb.y, sb.z);
+          const sx = wp.x;
+          const sy = wp.y;
           ctx.save();
           ctx.globalAlpha = sb.centerDampen;
           if (sb.type === "COMET") {
             // Draw glowing bluish tail pointing away from center/Sun
-            const dx = sb.x - centerX;
-            const dy = sb.y - centerY;
+            const dx = sx - centerX;
+            const dy = sy - centerY;
             const len = Math.hypot(dx, dy) || 1;
-            const tailX = sb.x + (dx / len) * 16;
-            const tailY = sb.y + (dy / len) * 16;
+            const tailX = sx + (dx / len) * 16;
+            const tailY = sy + (dy / len) * 16;
 
-            const grad = ctx.createLinearGradient(sb.x, sb.y, tailX, tailY);
+            const grad = ctx.createLinearGradient(sx, sy, tailX, tailY);
             grad.addColorStop(0, "rgba(125, 211, 252, 0.85)");
             grad.addColorStop(1, "rgba(56, 189, 248, 0)");
 
             ctx.beginPath();
-            ctx.moveTo(sb.x, sb.y);
+            ctx.moveTo(sx, sy);
             ctx.lineTo(tailX, tailY);
             ctx.strokeStyle = grad;
             ctx.lineWidth = 2.5;
@@ -652,13 +678,13 @@ export default function NetworkBackground({
             ctx.shadowColor = "#38BDF8";
             ctx.shadowBlur = 8 * moonGlow;
             ctx.beginPath();
-            ctx.arc(sb.x, sb.y, 2.0, 0, Math.PI * 2);
+            ctx.arc(sx, sy, 2.0, 0, Math.PI * 2);
             ctx.fillStyle = "#E0F2FE";
             ctx.fill();
           } else {
             // Asteroid dot
             ctx.beginPath();
-            ctx.arc(sb.x, sb.y, 1.3, 0, Math.PI * 2);
+            ctx.arc(sx, sy, 1.3, 0, Math.PI * 2);
             ctx.fillStyle = "#94A3B8";
             ctx.fill();
           }
@@ -673,6 +699,11 @@ export default function NetworkBackground({
           // Smooth 60fps interpolation using orbital velocity
           sat.x += sat.vx * dt;
           sat.y += sat.vy * dt;
+          const wp = warpPos(sat.x, sat.y, sat.z);
+          const sx = wp.x;
+          const sy = wp.y;
+          const wdx = sx - sat.x;
+          const wdy = sy - sat.y;
 
           // Draw fading trail
           if (sat.trail.length > 1) {
@@ -681,14 +712,14 @@ export default function NetworkBackground({
               const p = (tIdx + 1) / sat.trail.length;
               const pNext = (tIdx + 2) / sat.trail.length;
               ctx.beginPath();
-              ctx.moveTo(sat.trail[tIdx].x, sat.trail[tIdx].y);
-              ctx.lineTo(sat.trail[tIdx + 1].x, sat.trail[tIdx + 1].y);
+              ctx.moveTo(sat.trail[tIdx].x + wdx, sat.trail[tIdx].y + wdy);
+              ctx.lineTo(sat.trail[tIdx + 1].x + wdx, sat.trail[tIdx + 1].y + wdy);
               ctx.strokeStyle = `rgba(255, 230, 180, ${pNext * 0.55 * sat.centerDampen})`;
               ctx.lineWidth = 1.2 * pNext;
               ctx.stroke();
 
               ctx.beginPath();
-              ctx.arc(sat.trail[tIdx].x, sat.trail[tIdx].y, 1.2 * pNext, 0, Math.PI * 2);
+              ctx.arc(sat.trail[tIdx].x + wdx, sat.trail[tIdx].y + wdy, 1.2 * pNext, 0, Math.PI * 2);
               ctx.fillStyle = `rgba(255, 240, 210, ${p * 0.7 * sat.centerDampen})`;
               ctx.fill();
             }
@@ -699,7 +730,7 @@ export default function NetworkBackground({
           ctx.save();
           ctx.globalAlpha = sat.centerDampen;
           ctx.beginPath();
-          ctx.arc(sat.x, sat.y, 2.2, 0, Math.PI * 2);
+          ctx.arc(sx, sy, 2.2, 0, Math.PI * 2);
           ctx.fillStyle = "rgba(255, 250, 240, 1)"; // warm white
           ctx.shadowColor = "#FDE68A"; // warm gold/amber
           ctx.shadowBlur = 8 * moonGlow;
@@ -709,8 +740,8 @@ export default function NetworkBackground({
           visibleInteractiveObjects.push({
             id: sat.id,
             type: "SATELLITE",
-            x: sat.x,
-            y: sat.y,
+            x: sx,
+            y: sy,
             size: 2.5,
             titleRu: sat.nameRu,
             techInfo: `${getSkyLabel("orbit", language)}: ${sat.alt.toFixed(1)}° // ${getSkyLabel("az", language)}: ${sat.az.toFixed(0)}°`

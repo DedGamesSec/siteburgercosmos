@@ -44,7 +44,7 @@ import NewsSection from "./components/NewsSection";
 import ProtectionMarquee from "./components/ProtectionMarquee";
 import DamageCalculator from "./components/DamageCalculator";
 import FaqSection from "./components/FaqSection";
-import { motion, AnimatePresence, useInView } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { useTranslation } from "./i18n/LanguageContext";
 import { useNavigation, PageId } from "./navigation/NavigationContext";
 import { useEcoMode } from "./context/EcoModeContext";
@@ -104,34 +104,46 @@ export default function App() {
   const vh = windowHeight || 800;
 
   const section2Ref = useRef<HTMLDivElement>(null);
-  const isSection2InView = useInView(section2Ref, { once: true, margin: "-100px" });
-  const [logoProgress, setLogoProgress] = useState(0);
-
-  // Hyperspace flight is driven purely by scroll: it peaks when the logo-assembly
-  // block fills the screen and freezes the moment the user stops scrolling.
-  const [warpProgress, setWarpProgress] = useState(0);
+  // One continuous scroll-driven cinematic: we fly through the starfield, past the
+  // "TrustNode" title, while the logo assembles — all from a single progress value.
+  // It builds 0->1 as the logo block approaches, holds while it's on screen, then
+  // eases out behind the content that follows. Stops the instant scrolling stops.
+  const [sceneProgress, setSceneProgress] = useState(0);
   const warpRAFRef = useRef(0);
 
+  // Scroll-driven fly-past of the hero title; disabled in eco mode (no motion).
+  const flyBy = ecoMode ? 0 : sceneProgress;
+
   useEffect(() => {
-    const computeWarp = () => {
+    const computeScene = () => {
       const el = section2Ref.current;
       const vh = windowHeight || window.innerHeight;
       if (!el) {
-        setWarpProgress(0);
+        setSceneProgress(0);
         return;
       }
       const rect = el.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, 1 - Math.abs(rect.top) / (vh * 0.6)));
-      setWarpProgress(p);
+      let p: number;
+      if (rect.top > 0) {
+        // Approaching: 0 (hero fills the screen) -> 1 (logo block fills the screen)
+        p = 1 - Math.min(1, Math.max(0, rect.top / vh));
+      } else if (rect.top > -vh) {
+        // Logo block still on screen: hold the flight at full strength
+        p = 1;
+      } else {
+        // Block scrolled past: ease the flight back to 0 behind the following content
+        p = 1 - Math.min(1, Math.max(0, (-rect.top - vh) / vh));
+      }
+      setSceneProgress(p);
     };
     const onScroll = () => {
       if (warpRAFRef.current) return;
       warpRAFRef.current = requestAnimationFrame(() => {
         warpRAFRef.current = 0;
-        computeWarp();
+        computeScene();
       });
     };
-    computeWarp();
+    computeScene();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
@@ -140,25 +152,6 @@ export default function App() {
       if (warpRAFRef.current) cancelAnimationFrame(warpRAFRef.current);
     };
   }, [windowHeight]);
-
-  useEffect(() => {
-    if (isSection2InView) {
-      let start: number | null = null;
-      const duration = 1200; // 1.2s animation
-      const animate = (timestamp: number) => {
-        if (!start) start = timestamp;
-        const elapsed = timestamp - start;
-        const p = Math.min(1, elapsed / duration);
-        // Cubic ease-out
-        const easedP = 1 - Math.pow(1 - p, 3);
-        setLogoProgress(easedP);
-        if (p < 1) {
-          requestAnimationFrame(animate);
-        }
-      };
-      requestAnimationFrame(animate);
-    }
-  }, [isSection2InView]);
 
   // Dynamic Page Metadata & SEO Management
   useEffect(() => {
@@ -454,7 +447,7 @@ export default function App() {
       {/* Fixed Network Background (Acts as the uniform starfield throughout) */}
       <div className="fixed inset-0 w-full h-full pointer-events-none">
         <Suspense fallback={<SkyPlaceholder />}>
-          <NetworkBackground zoomFactor={zoomFactor} warpProgress={warpProgress} isEcoMode={ecoMode} onSkyStatusChange={setSkyStatus} language={language} />
+          <NetworkBackground zoomFactor={zoomFactor} warpProgress={sceneProgress} isEcoMode={ecoMode} onSkyStatusChange={setSkyStatus} language={language} />
         </Suspense>
       </div>
 
@@ -493,7 +486,12 @@ export default function App() {
                   {/* SECTION 1: HERO TITLE (100dvh) */}
                   <div 
                     className="relative w-full flex items-center justify-center px-4 select-none pointer-events-none"
-                    style={{ height: "100dvh" }}
+                    style={{
+                      height: "100dvh",
+                      opacity: Math.max(0, 1 - flyBy * 1.35),
+                      transform: `scale(${1 + 0.14 * flyBy})`,
+                      transformOrigin: "center center"
+                    }}
                     id="main-hero-section-container"
                   >
                     {/* Title and Status Badge Container */}
@@ -601,8 +599,8 @@ export default function App() {
                         {/* Left Status Label */}
                         <motion.div
                           style={{
-                            opacity: logoProgress > 0.15 ? Math.min(1, (logoProgress - 0.15) / 0.85) : 0,
-                            x: logoProgress > 0.15 ? -40 * (1 - Math.min(1, (logoProgress - 0.15) / 0.85)) : -40
+                            opacity: sceneProgress > 0.15 ? Math.min(1, (sceneProgress - 0.15) / 0.85) : 0,
+                            x: sceneProgress > 0.15 ? -40 * (1 - Math.min(1, (sceneProgress - 0.15) / 0.85)) : -40
                           }}
                           className="flex flex-col items-center lg:items-end text-center lg:text-right w-full lg:w-64"
                         >
@@ -616,14 +614,14 @@ export default function App() {
 
                         {/* Central Logo */}
                         <div className="flex items-center justify-center shrink-0">
-                          <AssembledLogo progress={logoProgress} ecoMode={ecoMode} />
+                          <AssembledLogo progress={sceneProgress} ecoMode={ecoMode} />
                         </div>
 
                         {/* Right Status Label */}
                         <motion.div
                           style={{
-                            opacity: logoProgress > 0.15 ? Math.min(1, (logoProgress - 0.15) / 0.85) : 0,
-                            x: logoProgress > 0.15 ? 40 * (1 - Math.min(1, (logoProgress - 0.15) / 0.85)) : 40
+                            opacity: sceneProgress > 0.15 ? Math.min(1, (sceneProgress - 0.15) / 0.85) : 0,
+                            x: sceneProgress > 0.15 ? 40 * (1 - Math.min(1, (sceneProgress - 0.15) / 0.85)) : 40
                           }}
                           className="flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-64"
                         >
@@ -638,7 +636,7 @@ export default function App() {
 
                       {/* Minimalist HUD Status Bar */}
                       <AnimatePresence>
-                        {logoProgress > 0.6 && (
+                        {sceneProgress > 0.6 && (
                           <motion.div
                             initial="hidden"
                             animate="visible"
@@ -676,7 +674,7 @@ export default function App() {
                     </motion.div>
                     
                     {/* Bottom Area of Section 2 with Dynamic Dome Navigator */}
-                    {logoProgress > 0.1 && (
+                    {sceneProgress > 0.1 && (
                       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center shrink-0">
                         <button
                           onClick={() => {
