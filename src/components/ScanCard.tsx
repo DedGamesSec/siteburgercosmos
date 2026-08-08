@@ -48,32 +48,11 @@ const ScanCard = React.forwardRef<HTMLDivElement, ScanCardProps>(
         id={id}
         onClick={onClick}
         className={`relative ${padding} rounded-2xl bg-[#0A0A0B]/95 border ${borderColor} hover:border-[#3B82F6]/40 transition-all duration-300 group flex flex-col overflow-hidden ${cardClassName}`}
-        style={{
-          boxShadow: "var(--shadow-card, 0 1px 2px rgba(0,0,0,0.06))",
-          ["--accent-color" as string]: `rgba(${accent}, 0.35)`,
-        }}
         onMouseEnter={() => { if (!ecoMode) setScan("active"); }}
         onMouseLeave={() => {
           if (!ecoMode) setScan((s) => (s === "active" ? "exiting" : s));
         }}
       >
-        {/* Dot-grid texture (Supabase-style) — subtle, fades in on hover */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{
-            backgroundImage: "radial-gradient(rgba(59,130,246,0.12) 1px, transparent 1px)",
-            backgroundSize: "22px 22px",
-            maskImage: "radial-gradient(ellipse at top, black 0%, transparent 75%)",
-            WebkitMaskImage: "radial-gradient(ellipse at top, black 0%, transparent 75%)",
-          }}
-        />
-        {/* Accent glow — soft bloom around the card on hover */}
-        <div
-          className="absolute -inset-px rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{
-            boxShadow: "0 0 24px -8px var(--accent-color)",
-          }}
-        />
         {scanning && (
           <div className="absolute inset-x-0 top-0 h-full pointer-events-none overflow-hidden rounded-2xl">
             <motion.div

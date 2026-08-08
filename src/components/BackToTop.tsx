@@ -36,8 +36,8 @@ export default function BackToTop() {
   return (
     <button
       onClick={goTop}
-      aria-label={t.backTop}
-      title={t.backTop}
+      aria-label={t.backToTop}
+      title={t.backToTop}
       className={`fixed bottom-20 right-4 md:right-6 z-[40] flex items-center justify-center w-11 h-11 rounded-full border border-[#3B82F6]/40 bg-[#0A0A0B]/85 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 backdrop-blur-md transition-all duration-300 cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.4)] ${
         visible && !isCookieBannerVisible ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-3 pointer-events-none"
       } ${scrolled ? "" : ""}`}

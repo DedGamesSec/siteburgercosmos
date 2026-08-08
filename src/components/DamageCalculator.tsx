@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { Calculator, ShieldCheck } from "lucide-react";
-import CountUp from "react-countup";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
 import SectionBadge from "./SectionBadge";
@@ -117,17 +116,7 @@ export default function DamageCalculator() {
             <div
               className={`font-display font-medium text-4xl sm:text-6xl text-[#3B82F6] tracking-tighter mb-3 ${ecoMode ? "" : "transition-colors duration-300"}`}
             >
-              {ecoMode ? (
-                formatter.format(prevented)
-              ) : (
-                <CountUp
-                  key={language}
-                  end={prevented}
-                  duration={1.1}
-                  separator=","
-                  formattingFn={(v) => formatter.format(Math.round(v))}
-                />
-              )}
+              {formatter.format(prevented)}
             </div>
             <div className="flex items-center justify-center gap-2 font-sans text-sm text-gray-300">
               <ShieldCheck className="w-4 h-4 text-[#3B82F6]" />
