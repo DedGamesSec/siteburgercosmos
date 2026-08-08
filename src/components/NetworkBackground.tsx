@@ -687,7 +687,7 @@ export default function NetworkBackground({
 
   return (
     <div
-      className="absolute inset-0 w-full h-full bg-[#121212] pointer-events-none overflow-hidden"
+      className="absolute inset-0 w-full h-full bg-[#0A0A0B] pointer-events-none overflow-hidden"
       id="network-background-container"
     >
       <canvas
@@ -698,7 +698,7 @@ export default function NetworkBackground({
       {/* Interactive Floating Tooltip */}
       {hoveredItem && (
         <div
-          className="fixed z-50 px-3.5 py-2 rounded-xl bg-[#242424]/95 backdrop-blur-md border border-[#3ecf8e]/50 text-[#fafafa] pointer-events-none transition-all duration-75 flex flex-col gap-0.5 animate-fade-in"
+          className="fixed z-50 px-3.5 py-2 rounded-xl bg-[#12141A]/95 backdrop-blur-md border border-[#3B82F6]/50 text-[#F5F5F0] pointer-events-none transition-all duration-75 flex flex-col gap-0.5 animate-fade-in"
           style={{
             left: Math.min(window.innerWidth - 250, tooltipPos.x + 16),
             top: Math.max(16, Math.min(window.innerHeight - 90, tooltipPos.y - 14)),

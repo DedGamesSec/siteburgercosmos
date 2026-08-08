@@ -158,9 +158,9 @@ export default function PageNavigationFooter({ currentPage }: PageNavigationFoot
   };
 
   return (
-    <div className="w-full py-10 px-4 border-t border-[#2e2e2e]/30 bg-[#121212]/90 relative overflow-hidden select-none" id="page-nav-footer">
-      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#3ecf8e]/20 to-transparent pointer-events-none" />
-      <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[500px] h-[150px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+    <div className="w-full py-10 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]/90 relative overflow-hidden select-none" id="page-nav-footer">
+      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#3B82F6]/20 to-transparent pointer-events-none" />
+      <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[500px] h-[150px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
 
       <div className="max-w-5xl mx-auto flex flex-col items-center">
         <motion.div
@@ -170,27 +170,27 @@ export default function PageNavigationFooter({ currentPage }: PageNavigationFoot
           className="group relative w-full md:max-w-2xl cursor-pointer"
         >
           <ScanCard
-            accent="62,207,142"
-            borderColor="border-[#2e2e2e]/30"
-            cardClassName="bg-[#242424] backdrop-blur-md hover:border-[#3ecf8e]/45 hover:shadow-glow-md"
+            accent="59,130,246"
+            borderColor="border-[#3C404A]/30"
+            cardClassName="bg-[#12141A] backdrop-blur-md hover:border-[#3B82F6]/45 hover:shadow-glow-md"
             onClick={handleNextNavigation}
             padding="p-6 sm:p-8"
             className="sm:flex-row sm:items-center sm:justify-between gap-6"
           >
           {/* Accent light overlay */}
-          <div className="absolute -inset-px rounded-xl bg-gradient-to-r from-[#3ecf8e]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+          <div className="absolute -inset-px rounded-xl bg-gradient-to-r from-[#3B82F6]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
           
           <div className="relative z-10">
             {/* Small Monospaced Badge */}
             <div className="flex items-center gap-1.5 mb-2.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#3ecf8e] animate-pulse" />
-              <span className="font-mono text-[9px] sm:text-[10px] font-bold tracking-[0.18em] text-[#3ecf8e] uppercase">
+              <Sparkles className="w-3.5 h-3.5 text-[#3B82F6] animate-pulse" />
+              <span className="font-mono text-[9px] sm:text-[10px] font-bold tracking-[0.18em] text-[#3B82F6] uppercase">
                 {nextLabel}
               </span>
             </div>
 
             {/* Next Page Title */}
-            <h4 className="font-display font-bold text-xl sm:text-2xl text-[#fafafa] group-hover:text-[#3ecf8e] transition-colors mb-2">
+            <h4 className="font-display font-bold text-xl sm:text-2xl text-[#F5F5F0] group-hover:text-[#3B82F6] transition-colors mb-2">
               {pageLabel}
             </h4>
             
@@ -202,7 +202,7 @@ export default function PageNavigationFooter({ currentPage }: PageNavigationFoot
 
           {/* Action indicator arrow */}
           <div className="relative z-10 flex items-center gap-2 self-end sm:self-center shrink-0">
-            <div className="w-10 h-10 rounded-full border border-[#3ecf8e]/20 bg-[#3ecf8e]/5 group-hover:border-[#3ecf8e]/50 group-hover:bg-[#3ecf8e]/15 flex items-center justify-center text-[#3ecf8e] group-hover:text-white transition-all duration-300 group-hover:scale-[1.05]">
+            <div className="w-10 h-10 rounded-full border border-[#3B82F6]/20 bg-[#3B82F6]/5 group-hover:border-[#3B82F6]/50 group-hover:bg-[#3B82F6]/15 flex items-center justify-center text-[#3B82F6] group-hover:text-white transition-all duration-300 group-hover:scale-[1.05]">
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </div>
           </div>

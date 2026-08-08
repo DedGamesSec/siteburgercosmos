@@ -63,29 +63,29 @@ return (
     <ScanCard
       ref={ref}
       id={stat.id}
-      cardClassName="hover:shadow-[0_8px_35px_rgba(62,207,142,0.12)]"
+      cardClassName="hover:shadow-[0_8px_35px_rgba(59,130,246,0.12)]"
     >
       <div className="min-h-[170px] flex flex-col">
 
         {/* Micro-badge styled icon wrapper */}
         <div className="relative inline-flex items-center justify-center mb-6">
-          <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-[#242424] border border-[#3ecf8e]/10 shadow-glow-sm group-hover:border-[#3ecf8e]/30 transition-all duration-300 group-hover:scale-[1.05]">
-            <stat.Icon className="w-5 h-5 text-[#3ecf8e]" />
+          <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-[#12141A] border border-[#3B82F6]/10 shadow-glow-sm group-hover:border-[#3B82F6]/30 transition-all duration-300 group-hover:scale-[1.05]">
+            <stat.Icon className="w-5 h-5 text-[#3B82F6]" />
           </div>
         </div>
 
         {/* Big typography for values */}
-        <div className="font-display font-black text-2xl sm:text-3xl lg:text-[24px] xl:text-[28px] leading-tight text-[#fafafa] tracking-tight mb-2 group-hover:text-[#3ecf8e] transition-colors duration-300">
+        <div className="font-display font-black text-2xl sm:text-3xl lg:text-[24px] xl:text-[28px] leading-tight text-[#F5F5F0] tracking-tight mb-2 group-hover:text-[#3B82F6] transition-colors duration-300">
           {ecoMode ? stat.val : <AnimatedStatNumber value={stat.val} start={inView} />}
         </div>
 
         {/* Small title */}
-        <div className="font-mono text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-[#3ecf8e] mb-4">
+        <div className="font-mono text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-[#3B82F6] mb-4">
           {stat.label}
         </div>
       </div>
 
-      <p className="font-sans text-xs text-gray-400 leading-relaxed border-t border-[#2e2e2e]/30 pt-4 mt-2 relative z-10">
+      <p className="font-sans text-xs text-gray-400 leading-relaxed border-t border-[#3C404A]/30 pt-4 mt-2 relative z-10">
         {stat.desc}
       </p>
     </ScanCard>
@@ -104,25 +104,25 @@ const TrustSection = React.memo(function TrustSection() {
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#2e2e2e]/30 bg-[#121212]" 
+      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]" 
       id="trust-section"
     >
       {/* Absolute radial light strictly behind the center of cards */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2e2e2e] border border-[#3ecf8e]/20 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#3ecf8e] animate-pulse" />
-            <span className="font-mono text-[10px] sm:text-xs font-semibold tracking-wider text-[#3ecf8e] uppercase">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3C404A] border border-[#3B82F6]/20 mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
+            <span className="font-mono text-[10px] sm:text-xs font-semibold tracking-wider text-[#3B82F6] uppercase">
               {t.trust.badge}
             </span>
           </div>
 
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#fafafa] tracking-tight mb-6">
-            {t.trust.title} <span className="text-[#3ecf8e]">{t.trust.titleHighlight}</span>
+          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+            {t.trust.title} <span className="text-[#3B82F6]">{t.trust.titleHighlight}</span>
           </h2>
 
           <p className="font-sans text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">

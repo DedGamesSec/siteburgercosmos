@@ -18,7 +18,7 @@ export default function ProtectionMarquee() {
 
   return (
     <div
-      className="marquee relative w-full overflow-hidden border-y border-[#2e2e2e]/40 bg-[#121212] py-3.5 select-none"
+      className="marquee relative w-full overflow-hidden border-y border-[#3C404A]/40 bg-[#0A0A0B] py-3.5 select-none"
       aria-hidden="true"
     >
       <div
@@ -33,9 +33,9 @@ export default function ProtectionMarquee() {
                   key={`${copy}-${idx}`}
                   className="flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider text-gray-400"
                 >
-                  <Icon className="w-3.5 h-3.5 text-[#3ecf8e]" />
+                  <Icon className="w-3.5 h-3.5 text-[#3B82F6]" />
                   {item}
-                  <span className="ml-6 w-1.5 h-1.5 rounded-full bg-[#3ecf8e]/40" />
+                  <span className="ml-6 w-1.5 h-1.5 rounded-full bg-[#3B82F6]/40" />
                 </span>
               );
             })}

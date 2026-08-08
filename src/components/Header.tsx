@@ -109,8 +109,8 @@ export default function Header() {
         onClick={() => handlePageNavigation(page.id)}
         className={`font-sans text-sm font-medium text-left transition-colors py-2.5 px-3 rounded-xl border cursor-pointer ${
           isActive
-            ? "text-[#3ecf8e] bg-[#3ecf8e]/10 border-[#3ecf8e]/20"
-            : "text-gray-300 hover:text-[#3ecf8e] border-transparent"
+            ? "text-[#3B82F6] bg-[#3B82F6]/10 border-[#3B82F6]/20"
+            : "text-gray-300 hover:text-[#3B82F6] border-transparent"
         }`}
       >
         {getPageLabel(page.id)}
@@ -125,19 +125,19 @@ export default function Header() {
         key={page.id}
         onClick={() => handlePageNavigation(page.id)}
         className={`relative font-sans text-sm font-medium whitespace-nowrap px-2.5 py-2 rounded-xl transition-colors cursor-pointer ${
-          isActive ? "text-[#3ecf8e]" : "text-gray-300 hover:text-white"
+          isActive ? "text-[#3B82F6]" : "text-gray-300 hover:text-white"
         }`}
         aria-current={isActive ? "page" : undefined}
       >
         {isActive && (
           <>
             {ecoMode ? (
-              <div className="absolute inset-0 rounded-xl bg-[#3ecf8e]/10 border border-[#3ecf8e]/25" />
+              <div className="absolute inset-0 rounded-xl bg-[#3B82F6]/10 border border-[#3B82F6]/25" />
             ) : (
               <motion.div
                 layoutId="nav-active-pill"
                 transition={{ type: "spring", stiffness: 500, damping: 40 }}
-                className="absolute inset-0 rounded-xl bg-[#3ecf8e]/10 border border-[#3ecf8e]/25"
+                className="absolute inset-0 rounded-xl bg-[#3B82F6]/10 border border-[#3B82F6]/25"
               />
             )}
           </>
@@ -164,7 +164,7 @@ export default function Header() {
           rel="noopener noreferrer"
           aria-label={label}
           title={label}
-          className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#121212]/60 border border-[#3ecf8e]/30 text-[#3ecf8e] hover:text-white hover:bg-[#3ecf8e]/20 transition-all duration-300"
+          className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
         >
           <Icon className="w-4 h-4" />
         </a>
@@ -175,7 +175,7 @@ export default function Header() {
         rel="noopener noreferrer"
         aria-label="Product Radar"
         title="Product Radar"
-        className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#121212]/60 border border-[#3ecf8e]/30 text-[#3ecf8e] hover:text-white hover:bg-[#3ecf8e]/20 transition-all duration-300"
+        className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
       >
         <Radar className="w-4 h-4" />
       </a>
@@ -193,7 +193,7 @@ export default function Header() {
       className={`${utilityButtonClass} ${
         ecoMode
           ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400 shadow-glow-success"
-          : "bg-[#121212]/60 border-[#3ecf8e]/30 text-[#3ecf8e] hover:text-white hover:bg-[#3ecf8e]/20"
+          : "bg-[#0A0A0B]/60 border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20"
       }`}
     >
       <Leaf className="w-4 h-4" />
@@ -208,7 +208,7 @@ export default function Header() {
       className={`${utilityButtonClass} ${
         seniorMode
           ? "bg-amber-500/15 border-amber-500/40 text-amber-400 shadow-glow-warn"
-          : "bg-[#121212]/60 border-[#3ecf8e]/30 text-[#3ecf8e] hover:text-white hover:bg-[#3ecf8e]/20"
+          : "bg-[#0A0A0B]/60 border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20"
       }`}
     >
       <ALargeSmall className="w-4 h-4" />
@@ -219,7 +219,7 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled || activePage !== "home"
-          ? "bg-[#121212]/85 backdrop-blur-md border-b border-[#2e2e2e]/30 shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
+          ? "bg-[#0A0A0B]/85 backdrop-blur-md border-b border-[#3C404A]/30 shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
           : "bg-transparent"
       }`}
       style={{
@@ -245,8 +245,8 @@ export default function Header() {
           </div>
 
           <div className="flex flex-col">
-            <span className="font-display font-bold text-lg text-[#fafafa] tracking-tight">
-              Trust<span className="text-[#3ecf8e]">Node</span>
+            <span className="font-display font-bold text-lg text-[#F5F5F0] tracking-tight">
+              Trust<span className="text-[#3B82F6]">Node</span>
             </span>
             <span className="font-mono text-[8px] text-gray-500 uppercase tracking-widest leading-none">
               {t.brand.tagline}
@@ -265,7 +265,7 @@ export default function Header() {
         {/* Right: utility buttons */}
         <div className="hidden lg:flex items-center justify-end gap-2 shrink-0 justify-self-end">
           {renderSocialButtons()}
-          <div className="w-px h-6 bg-[#2e2e2e]/40" />
+          <div className="w-px h-6 bg-[#3C404A]/40" />
           {renderEcoButton()}
           {renderSeniorButton()}
           <LanguageSwitcher variant="desktop" />
@@ -274,7 +274,7 @@ export default function Header() {
         {/* Mobile: hamburger toggle */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden col-start-3 justify-self-end p-2.5 rounded-xl bg-[#2e2e2e]/40 border border-[#2e2e2e]/50 text-gray-400 hover:text-[#3ecf8e] transition-colors cursor-pointer"
+          className="lg:hidden col-start-3 justify-self-end p-2.5 rounded-xl bg-[#3C404A]/40 border border-[#3C404A]/50 text-gray-400 hover:text-[#3B82F6] transition-colors cursor-pointer"
           id="mobile-menu-toggle"
           aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
@@ -287,7 +287,7 @@ export default function Header() {
       {/* Mobile menu drawer (below lg breakpoint) */}
       {isOpen && (
         <div
-          className="lg:hidden absolute top-[100%] left-0 right-0 bg-[#121212]/98 border-t border-[#2e2e2e]/50 shadow-2xl animate-fade-in max-h-[calc(100dvh-64px)] overflow-y-auto"
+          className="lg:hidden absolute top-[100%] left-0 right-0 bg-[#0A0A0B]/98 border-t border-[#3C404A]/50 shadow-2xl animate-fade-in max-h-[calc(100dvh-64px)] overflow-y-auto"
           id="mobile-drawer"
         >
           <div className="max-w-6xl mx-auto flex flex-col gap-3 px-4 py-6">
@@ -295,7 +295,7 @@ export default function Header() {
               {navPages.map((page) => renderNavButton(page))}
             </nav>
 
-            <div className="h-px bg-[#2e2e2e]/30 my-1" />
+            <div className="h-px bg-[#3C404A]/30 my-1" />
 
             <div className="flex items-center gap-2">
               {renderEcoButton()}
@@ -308,7 +308,7 @@ export default function Header() {
       {/* Non-blocking mode toast confirmation */}
       <div
         aria-live="polite"
-        className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 rounded-xl border border-[#3ecf8e]/30 bg-[#121212]/95 text-[#fafafa] font-sans text-xs shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-md transition-all duration-300 ${toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"}`}
+        className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 rounded-xl border border-[#3B82F6]/30 bg-[#0A0A0B]/95 text-[#F5F5F0] font-sans text-xs shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-md transition-all duration-300 ${toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"}`}
       >
         {toast}
       </div>

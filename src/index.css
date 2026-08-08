@@ -8,57 +8,76 @@
 @source not "../**/*.md";
 
 @theme {
-  /* Typography: Manrope (Circular substitute) + JetBrains Mono (Source Code Pro substitute) */
-  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* Typography: Exo 2 + Jura + JetBrains Mono — единый шрифтовой язык с ботом
+     (bot/card_generator.py: Exo2 для чисел/заголовков, Jura для подписей/текста) */
+  --font-sans: "Jura", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Exo 2", "Jura", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  /* Supabase-style palette — monochrome surfaces + rationed phosphor green */
-  --color-phosphor-green: #3ecf8e;
-  --color-mint-pulse: #00c573;
-  --color-forest-depth: #1f4b37;
-  --color-midnight-emerald: #006239;
-  --color-snow: #fafafa;
-  --color-silver-mist: #b4b4b4;
-  --color-smoke: #898989;
-  --color-graphite: #4d4d4d;
-  --color-slate: #393939;
-  --color-charcoal: #2e2e2e;
-  --color-ash: #242424;
-  --color-obsidian: #121212;
+  /* Шкала типографики (design tokens): caption 12px … display 72px */
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.5;
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.43;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5;
+  --text-subheading: 1.125rem;
+  --text-subheading--line-height: 1.38;
+  --text-heading-sm: 1.5rem;
+  --text-heading-sm--line-height: 1.33;
+  --text-heading: 2.25rem;
+  --text-heading--line-height: 1.2;
+  --text-display: 4.5rem;
+  --text-display--line-height: 1;
 
-  /* 4-тирная статусная семантика (наследие bot/card_generator.py) */
-  --color-status-info: #3ecf8e;   /* news — нейтральная информация */
+  /* Шкала отступов (design tokens): 8px … 224px */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-7: 64px;
+  --space-8: 80px;
+  --space-9: 96px;
+  --space-10: 112px;
+  --space-11: 128px;
+  --space-12: 224px;
+
+  /* Радиус-словарь (design tokens): lg 8px, lg-2 11px, 2xl 16px, full 9999px */
+  --radius-lg: 8px;
+  --radius-lg-2: 11px;
+  --radius-2xl: 16px;
+  --radius-full: 9999px;
+
+  /* Тень по умолчанию (design tokens: shadow-sm) */
+  --shadow-sm: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px;
+
+  /* Поверхности (design tokens) — на исходной синей палитре */
+  --color-obsidian-canvas: #0A0A0B;
+  --color-ash-card: #12141A;
+  --color-charcoal-border: #3C404A;
+
+  /* Акцентная синяя пара (исходная палитра) */
+  --color-accent: #3B82F6;
+  --color-accent-soft: #6FB1FF;
+  --color-snow: #F5F5F0;
+  --color-silver-mist: #8B8F9C;
+
+  /* 4-тирная статусная семантика — точные hex из bot/card_generator.py (ACCENT_DARK) */
+  --color-status-info: #3B82F6;   /* news — нейтральная информация */
   --color-status-danger: #EF4444; /* real_threat — критично/угроза */
   --color-status-warn: #FB923C;   /* medium — средний риск / частично готово */
   --color-status-safe: #2DD4BF;   /* safe — безопасно / готово */
 
-  /* Нейтральные графитовые панели */
-  --color-panel: #242424;
-  --color-panel-border: #2e2e2e;
-
-  /* Монохромная шкала серого (общая замена дефолтной Tailwind gray-* на палитру Supabase) */
-  --color-gray-100: #fafafa;
-  --color-gray-200: #b4b4b4;
-  --color-gray-300: #b4b4b4;
-  --color-gray-400: #898989;
-  --color-gray-500: #898989;
-  --color-gray-600: #4d4d4d;
-  --color-gray-700: #393939;
-  --color-gray-800: #2e2e2e;
-  --color-gray-900: #242424;
-  --color-gray-950: #121212;
-
-  /* Радиус-словарь: 9999px кнопки, 16px карточки, 8px инпуты */
-  --radius-tags: 9999px;
-  --radius-cards: 16px;
-  --radius-inputs: 8px;
-  --radius-buttons: 9999px;
+  /* Нейтральные графитовые панели (panel_fill/border_c из bot/card_generator.py) */
+  --color-panel: #12141A;
+  --color-panel-border: #3C404A;
 
   /* Тени: только для активных/интерактивных индикаторов статуса, не для статичных карточек */
-  --shadow-glow-sm: 0 0 12px rgba(62, 207, 142, 0.15);
-  --shadow-glow-md: 0 0 24px rgba(62, 207, 142, 0.2);
-  --shadow-glow-lg: 0 0 40px rgba(62, 207, 142, 0.25);
+  --shadow-glow-sm: 0 0 12px rgba(59, 130, 246, 0.15);
+  --shadow-glow-md: 0 0 24px rgba(59, 130, 246, 0.2);
+  --shadow-glow-lg: 0 0 40px rgba(59, 130, 246, 0.25);
   --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.25);
   --shadow-glow-success: 0 0 20px rgba(45, 212, 191, 0.15);
   --shadow-glow-warn: 0 0 20px rgba(251, 146, 60, 0.15);
@@ -68,7 +87,7 @@
   html {
     scrollbar-gutter: stable;
     scrollbar-width: thin;
-    scrollbar-color: #2e2e2e #121212;
+    scrollbar-color: #3C404A #0A0A0B;
   }
 
   html::-webkit-scrollbar {
@@ -76,17 +95,17 @@
   }
 
   html::-webkit-scrollbar-track {
-    background: #121212;
+    background: #0A0A0B;
   }
 
   html::-webkit-scrollbar-thumb {
-    background: #2e2e2e;
+    background: #3C404A;
     border-radius: 5px;
-    border: 2px solid #121212;
+    border: 2px solid #0A0A0B;
   }
 
   html::-webkit-scrollbar-thumb:hover {
-    background: #242424;
+    background: #12141A;
   }
 
   html, body {
@@ -96,14 +115,14 @@
     padding: 0;
   }
   body {
-    background-color: #121212;
-    color: #fafafa;
-    font-family: 'Manrope', sans-serif;
+    background-color: #0A0A0B;
+    color: #F5F5F0;
+    font-family: 'Jura', sans-serif;
     -webkit-tap-highlight-color: transparent;
   }
 
   :focus-visible {
-    outline: 2px solid #3ecf8e;
+    outline: 2px solid #3B82F6;
     outline-offset: 2px;
   }
 
@@ -162,9 +181,9 @@
 /* AppSecuritySection: brief RGB-split glitch on hover */
 @keyframes appsec-glitch {
   0%   { transform: translate(0, 0); text-shadow: 0 0 0 transparent; }
-  20%  { transform: translate(-1.5px, 0.5px); text-shadow: 1.5px 0 #3ecf8e, -1.5px 0 rgba(255,80,120,0.6); clip-path: inset(0 0 55% 0); }
-  40%  { transform: translate(1px, -0.5px); text-shadow: -1px 0 rgba(255,80,120,0.6), 1px 0 #3ecf8e; clip-path: inset(45% 0 0 0); }
-  60%  { transform: translate(-0.5px, 0); text-shadow: 0.5px 0 #3ecf8e, -0.5px 0 rgba(255,80,120,0.5); }
+  20%  { transform: translate(-1.5px, 0.5px); text-shadow: 1.5px 0 #3B82F6, -1.5px 0 rgba(255,80,120,0.6); clip-path: inset(0 0 55% 0); }
+  40%  { transform: translate(1px, -0.5px); text-shadow: -1px 0 rgba(255,80,120,0.6), 1px 0 #3B82F6; clip-path: inset(45% 0 0 0); }
+  60%  { transform: translate(-0.5px, 0); text-shadow: 0.5px 0 #3B82F6, -0.5px 0 rgba(255,80,120,0.5); }
   100% { transform: translate(0, 0); text-shadow: 0 0 0 transparent; }
 }
 .group:hover .appsec-glitch {

@@ -270,10 +270,10 @@ const TIMELINE_BY_LANG: Partial<Record<LanguageCode, Array<{ badge: string; titl
 };
 
 const TIMELINE_ICONS = [
-  <GraduationCap className="w-5 h-5 text-[#3ecf8e]" />,
-  <Award className="w-5 h-5 text-[#3ecf8e]" />,
-  <Compass className="w-5 h-5 text-[#3ecf8e]" />,
-  <Code2 className="w-5 h-5 text-[#3ecf8e]" />
+  <GraduationCap className="w-5 h-5 text-[#3B82F6]" />,
+  <Award className="w-5 h-5 text-[#3B82F6]" />,
+  <Compass className="w-5 h-5 text-[#3B82F6]" />,
+  <Code2 className="w-5 h-5 text-[#3B82F6]" />
 ];
 
 interface TimelineCardProps {
@@ -293,30 +293,30 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ item, index, ecoMode }) => 
     >
       <ScanCard className="h-full justify-between">
       {/* Top Accent line */}
-      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#3ecf8e]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#3B82F6]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       {/* Milestone dot pinned to the top-left corner of the selected card;
           hidden on all others until hovered */}
       {!ecoMode && (
-        <div className="absolute top-3 left-3 w-2.5 h-2.5 rounded-full border border-[#3ecf8e] bg-[#3ecf8e] opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-glow-md" />
+        <div className="absolute top-3 left-3 w-2.5 h-2.5 rounded-full border border-[#3B82F6] bg-[#3B82F6] opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-glow-md" />
       )}
       <div>
         {/* Header Row */}
         <div className="flex items-center justify-between gap-4 mb-6">
-          <div className={`w-10 h-10 rounded-xl bg-[#242424] flex items-center justify-center border transition-colors duration-300 ${inView ? "border-[#3ecf8e]/50 text-[#3ecf8e]" : "border-[#3ecf8e]/10"}`}>
+          <div className={`w-10 h-10 rounded-xl bg-[#12141A] flex items-center justify-center border transition-colors duration-300 ${inView ? "border-[#3B82F6]/50 text-[#3B82F6]" : "border-[#3B82F6]/10"}`}>
             {item.icon}
           </div>
-          <span className="font-mono text-[10px] sm:text-xs tracking-widest text-[#00c573] uppercase font-bold bg-[#3ecf8e]/10 px-3 py-1.5 rounded-xl border border-[#3ecf8e]/30">
+          <span className="font-mono text-[10px] sm:text-xs tracking-widest text-[#6FB1FF] uppercase font-bold bg-[#3B82F6]/10 px-3 py-1.5 rounded-xl border border-[#3B82F6]/30">
             {item.badge}
           </span>
         </div>
 
-        <h3 className="font-display font-bold text-lg sm:text-xl text-[#fafafa] mb-3 group-hover:text-[#3ecf8e] transition-all duration-300">
+        <h3 className="font-display font-bold text-lg sm:text-xl text-[#F5F5F0] mb-3 group-hover:text-[#3B82F6] transition-all duration-300">
           {item.title}
         </h3>
       </div>
 
-      <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed border-t border-[#2e2e2e]/30 pt-4 mt-2">
+      <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed border-t border-[#3C404A]/30 pt-4 mt-2">
         {item.desc}
       </p>
       </ScanCard>
@@ -350,11 +350,11 @@ const OriginStorySection = React.memo(function OriginStorySection() {
 
   return (
     <section 
-      className="relative w-full pt-8 pb-16 sm:pt-10 sm:pb-20 px-4 border-t border-[#2e2e2e]/30 bg-[#121212]" 
+      className="relative w-full pt-8 pb-16 sm:pt-10 sm:pb-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]" 
       id="origin-story"
     >
       {/* Background radial lights */}
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.015)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.015)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         
@@ -367,7 +367,7 @@ const OriginStorySection = React.memo(function OriginStorySection() {
             className="mb-6"
           />
           
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#fafafa] tracking-tight mb-6">
+          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
             {title}
           </h2>
           
@@ -388,8 +388,8 @@ const OriginStorySection = React.memo(function OriginStorySection() {
             >
               <defs>
                 <linearGradient id="timeline-grad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3ecf8e" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#3ecf8e" stopOpacity="0.9" />
+                  <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.9" />
                 </linearGradient>
               </defs>
               <motion.line

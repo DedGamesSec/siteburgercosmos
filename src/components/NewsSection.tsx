@@ -55,7 +55,7 @@ function renderTextWithLinks(text: string, keyPrefix: string): ReactNode[] {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#3ecf8e] underline decoration-[#3ecf8e]/40 underline-offset-2 hover:text-white hover:decoration-white transition-colors break-all"
+          className="text-[#3B82F6] underline decoration-[#3B82F6]/40 underline-offset-2 hover:text-white hover:decoration-white transition-colors break-all"
         >
           {url}
         </a>,
@@ -81,14 +81,14 @@ function renderTextWithLinks(text: string, keyPrefix: string): ReactNode[] {
 function SourceBadge({ source }: { source: "telegram" | "vk" }) {
   if (source === "telegram") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#3ecf8e]/10 border border-[#3ecf8e]/30 text-[#a7e8cf]">
+      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#2AABEE]/10 border border-[#2AABEE]/30 text-[#7EC9F2]">
         <Send className="w-3 h-3" />
         <span className="font-mono text-[10px] font-bold tracking-wider uppercase">Telegram</span>
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#2eae74]/10 border border-[#2eae74]/30 text-[#a7e8cf]">
+    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#0077FF]/10 border border-[#0077FF]/30 text-[#7EB6FF]">
       <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current" aria-hidden="true">
         <path d={VK_ICON_PATH} />
       </svg>
@@ -107,15 +107,15 @@ export default function NewsSection() {
   if (!Array.isArray(news) || news.length === 0) {
     return (
       <section
-        className="relative w-full py-16 sm:py-20 px-4 border-t border-[#2e2e2e]/30 bg-[#121212] overflow-hidden"
+        className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden"
         id="news"
       >
         <div className="max-w-3xl mx-auto relative z-10 text-center">
           <SectionBadge variant="pill" label={t.news.badge} className="mb-6" />
-          <h1 className="font-display font-bold text-3xl sm:text-5xl text-[#fafafa] tracking-tight mb-6">
+          <h1 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
             {t.news.title}
           </h1>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#2e2e2e] border border-[#3ecf8e]/20 font-mono text-[11px] text-gray-400">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#3C404A] border border-[#3B82F6]/20 font-mono text-[11px] text-gray-400">
             {t.news.emptyTitle}
           </div>
           <p className="font-sans text-xs text-gray-600 mt-4 max-w-md mx-auto leading-relaxed">
@@ -156,15 +156,15 @@ export default function NewsSection() {
 
   return (
     <section
-        className="relative w-full py-16 sm:py-20 px-4 border-t border-[#2e2e2e]/30 bg-[#121212] overflow-hidden"
+        className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden"
         id="news"
       >
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.04)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.04)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="max-w-5xl mx-auto relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
           <SectionBadge variant="pill" label={t.news.badge} className="mb-6" />
-          <h1 className="font-display font-bold text-3xl sm:text-5xl text-[#fafafa] tracking-tight mb-6">
+          <h1 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
             {t.news.title}
           </h1>
         </div>
@@ -183,7 +183,7 @@ export default function NewsSection() {
                 transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.2), ease: "easeOut" }}
               >
                 <ScanCard
-                  borderColor={isExpanded ? "border-[#3ecf8e]/30" : "border-white/[0.04]"}
+                  borderColor={isExpanded ? "border-[#3B82F6]/30" : "border-white/[0.04]"}
                 >
                 <div className="flex items-center justify-between gap-3">
                   <SourceBadge source={item.source} />
@@ -193,7 +193,7 @@ export default function NewsSection() {
                 <div className="my-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
                 {item.imageUrl && (
-                  <div className="mb-4 rounded-xl overflow-hidden border border-white/[0.04] flex justify-center bg-[#242424]">
+                  <div className="mb-4 rounded-xl overflow-hidden border border-white/[0.04] flex justify-center bg-[#12141A]">
                     <img
                       src={item.imageUrl}
                       alt=""
@@ -219,7 +219,7 @@ export default function NewsSection() {
                   <button
                     type="button"
                     onClick={() => toggleExpand(item.id)}
-                    className="mt-3 font-mono text-[11px] font-bold tracking-wider text-[#3ecf8e] hover:text-white transition-colors uppercase cursor-pointer"
+                    className="mt-3 font-mono text-[11px] font-bold tracking-wider text-[#3B82F6] hover:text-white transition-colors uppercase cursor-pointer"
                     aria-expanded={isExpanded}
                   >
                     {isExpanded ? t.news.showLess : t.news.showMore}
@@ -231,7 +231,7 @@ export default function NewsSection() {
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold tracking-wider text-gray-400 hover:text-[#3ecf8e] transition-colors uppercase"
+                    className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold tracking-wider text-gray-400 hover:text-[#3B82F6] transition-colors uppercase"
                   >
                     {t.news.readIn.replace("{source}", item.source === "telegram" ? "Telegram" : "VK")}
                     <ExternalLink className="w-3 h-3" />

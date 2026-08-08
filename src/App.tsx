@@ -17,7 +17,7 @@ const hudTranslations: Record<string, { core: string; nodes: string; mode: strin
 };
 
 function SkyPlaceholder() {
-  return <div className="absolute inset-0 w-full h-full bg-[#121212] pointer-events-none" />;
+  return <div className="absolute inset-0 w-full h-full bg-[#0A0A0B] pointer-events-none" />;
 }
 import ProblemSection from "./components/ProblemSection";
 import IntroSection from "./components/IntroSection";
@@ -406,14 +406,14 @@ export default function App() {
 
   return (
     <div 
-      className="relative w-full max-w-full overflow-x-hidden bg-[#121212] selection:bg-[#3ecf8e]/30 selection:text-[#fafafa]"
+      className="relative w-full max-w-full overflow-x-hidden bg-[#0A0A0B] selection:bg-[#3B82F6]/30 selection:text-[#F5F5F0]"
       style={{ minHeight: "100vh" }}
       id="app-container"
     >
       {/* Skip to content link (keyboard/screen-reader users) */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[999] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-[#3ecf8e] focus:text-white focus:font-sans focus:text-sm"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[999] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-[#3B82F6] focus:text-white focus:font-sans focus:text-sm"
       >
         {t.skipToContent}
       </a>
@@ -472,7 +472,7 @@ export default function App() {
                     >
                       {/* Status Badge */}
                       <div 
-                        className={`inline-flex flex-col items-center justify-center px-4 py-1.5 ${!ecoMode && skyStatus ? "rounded-sm gap-1 py-2" : "rounded-sm"} bg-[#242424]/80 border border-[#2e2e2e] shadow-glow-sm mb-8 transition-all duration-300`}
+                        className={`inline-flex flex-col items-center justify-center px-4 py-1.5 ${!ecoMode && skyStatus ? "rounded-sm gap-1 py-2" : "rounded-sm"} bg-[#12141A]/80 border border-[#3C404A] shadow-glow-sm mb-8 transition-all duration-300`}
                         id="status-badge"
                       >
                         <div className="inline-flex items-center gap-2.5">
@@ -485,7 +485,7 @@ export default function App() {
                           </span>
                         </div>
                         {!ecoMode && skyStatus && (
-                          <span className="font-mono text-[10px] sm:text-xs font-medium tracking-[0.12em] text-[#3ecf8e]/85 text-center">
+                          <span className="font-mono text-[10px] sm:text-xs font-medium tracking-[0.12em] text-[#3B82F6]/85 text-center">
                             {skyStatus}
                           </span>
                         )}
@@ -496,8 +496,8 @@ export default function App() {
                         className="font-display font-bold text-5xl sm:text-7xl md:text-[120px] lg:text-[140px] xl:text-[150px] leading-[0.9] tracking-tight mb-6"
                         id="main-title"
                       >
-                        <span className="text-[#fafafa]">Trust</span>
-                        <span className="text-[#3ecf8e]">Node</span>
+                        <span className="text-[#F5F5F0]">Trust</span>
+                        <span className="text-[#3B82F6]">Node</span>
                       </h1>
 
                       {/* Monospaced Bracketed Subtitle */}
@@ -525,7 +525,7 @@ export default function App() {
                         className="flex flex-col items-center gap-2 cursor-pointer group pointer-events-auto z-30 transition-opacity duration-300"
                         id="scroll-indicator-container"
                       >
-                        <span className="font-mono text-[10px] tracking-[0.25em] text-[#3ecf8e] group-hover:text-[#2DD4BF] transition-colors uppercase font-bold">
+                        <span className="font-mono text-[10px] tracking-[0.25em] text-[#3B82F6] group-hover:text-[#2DD4BF] transition-colors uppercase font-bold">
                           {t.hero.scrollStart}
                         </span>
                         <svg 
@@ -572,10 +572,10 @@ export default function App() {
                           }}
                           className="flex flex-col items-center lg:items-end text-center lg:text-right w-full lg:w-64"
                         >
-                          <span className="font-display font-extrabold text-xl sm:text-2xl text-[#fafafa] tracking-tight">
+                          <span className="font-display font-extrabold text-xl sm:text-2xl text-[#F5F5F0] tracking-tight">
                             {t.assembly?.leftPrimary || "OFFLINE-FIRST"}
                           </span>
-                          <span className="font-mono text-[9px] sm:text-[10px] text-[#3ecf8e] tracking-wider mt-1.5 uppercase">
+                          <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
                             {t.assembly?.leftSub || "// ДАННЫЕ НЕ ПОКИДАЮТ УСТРОЙСТВО"}
                           </span>
                         </motion.div>
@@ -593,10 +593,10 @@ export default function App() {
                           }}
                           className="flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-64"
                         >
-                          <span className="font-display font-extrabold text-xl sm:text-2xl text-[#fafafa] tracking-tight">
+                          <span className="font-display font-extrabold text-xl sm:text-2xl text-[#F5F5F0] tracking-tight">
                             {t.assembly?.rightPrimary || "ZERO TELEMETRY"}
                           </span>
-                          <span className="font-mono text-[9px] sm:text-[10px] text-[#3ecf8e] tracking-wider mt-1.5 uppercase">
+                          <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
                             {t.assembly?.rightSub || "// НИКАКОЙ ТЕЛЕМЕТРИИ"}
                           </span>
                         </motion.div>
@@ -630,7 +630,7 @@ export default function App() {
                                   hidden: { opacity: 0, y: 10, scale: 0.95 },
                                   visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
                                 }}
-                                className="font-mono text-[9px] sm:text-[11px] tracking-[0.1em] font-semibold text-[#3ecf8e] bg-[#242424]/60 border border-[#2e2e2e] px-3.5 py-1.5 rounded-sm whitespace-nowrap"
+                                className="font-mono text-[9px] sm:text-[11px] tracking-[0.1em] font-semibold text-[#3B82F6] bg-[#12141A]/60 border border-[#3C404A] px-3.5 py-1.5 rounded-sm whitespace-nowrap"
                               >
                                 {text}
                               </motion.div>
@@ -651,9 +651,9 @@ export default function App() {
                           className="flex flex-col items-center gap-3 cursor-pointer group z-30 transition-all duration-300 pointer-events-auto"
                           id="enter-dome-arrow-btn"
                         >
-                          <div className="relative flex items-center justify-center w-10 h-10 rounded-sm border border-[#2e2e2e] bg-[#242424]/60 group-hover:border-[#2DD4BF] group-hover:shadow-glow-success transition-all duration-300">
+                          <div className="relative flex items-center justify-center w-10 h-10 rounded-sm border border-[#3C404A] bg-[#12141A]/60 group-hover:border-[#2DD4BF] group-hover:shadow-glow-success transition-all duration-300">
                             <svg 
-                              className="w-5 h-5 text-[#b4b4b4] group-hover:text-[#2DD4BF] transition-colors translate-y-0 group-hover:translate-y-0.5 transition-transform animate-bounce" 
+                              className="w-5 h-5 text-[#8B8F9C] group-hover:text-[#2DD4BF] transition-colors translate-y-0 group-hover:translate-y-0.5 transition-transform animate-bounce" 
                               fill="none" 
                               stroke="currentColor" 
                               strokeWidth="2.5" 
@@ -662,7 +662,7 @@ export default function App() {
                               <path strokeLinecap="round" strokeLinejoin="round" d="M19 13l-7 7-7-7m14-6l-7 7-7-7" />
                             </svg>
                           </div>
-                          <span className="font-mono text-[9px] tracking-[0.3em] text-[#b4b4b4] group-hover:text-[#2DD4BF] transition-colors uppercase font-bold animate-pulse mt-2">
+                          <span className="font-mono text-[9px] tracking-[0.3em] text-[#8B8F9C] group-hover:text-[#2DD4BF] transition-colors uppercase font-bold animate-pulse mt-2">
                             {t.hero.enterDome}
                           </span>
                         </button>
@@ -673,14 +673,14 @@ export default function App() {
               </div>
 
               {/* CORE LANDING CONTENT (NORMAL DOCUMENT FLOW) */}
-              <div ref={coreLandingRef} className="relative z-20 w-full flex flex-col bg-[#121212]/90 backdrop-blur-sm shadow-[0_-30px_60px_rgba(18,18,18,0.95)]" id="core-landing-page">
+              <div ref={coreLandingRef} className="relative z-20 w-full flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm shadow-[0_-30px_60px_rgba(10,10,11,0.95)]" id="core-landing-page">
                 {showReplayIntro && (
                   <div className="max-w-6xl mx-auto w-full px-4 pt-8 pb-2 flex justify-start">
                     <button
                       onClick={() => {
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
-                      className="font-mono text-[9px] text-gray-500 hover:text-[#3ecf8e] transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-[#2e2e2e]/60 bg-[#242424]/60 cursor-pointer hover:border-[#3ecf8e]/50"
+                      className="font-mono text-[9px] text-gray-500 hover:text-[#3B82F6] transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-[#3C404A]/60 bg-[#12141A]/60 cursor-pointer hover:border-[#3B82F6]/50"
                       id="replay-intro-btn"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -712,7 +712,7 @@ export default function App() {
               className="w-full min-h-[100vh] flex flex-col justify-between"
             >
               <Breadcrumbs currentPage={activePage} />
-              <div className="flex-1 flex flex-col bg-[#121212]/90 backdrop-blur-sm">
+              <div className="flex-1 flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm">
                 <HowItWorksSection />
                 <KiraAssistantSection />
               </div>
@@ -731,7 +731,7 @@ export default function App() {
               className="w-full min-h-[100vh] flex flex-col justify-between"
             >
               <Breadcrumbs currentPage={activePage} />
-              <div className="flex-1 flex flex-col bg-[#121212]/90 backdrop-blur-sm">
+              <div className="flex-1 flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm">
                 <AppSecuritySection />
                 <RealDevelopmentSection onlyRoadmap={false} />
               </div>
@@ -750,7 +750,7 @@ export default function App() {
               className="w-full min-h-[100vh] flex flex-col justify-between"
             >
               <Breadcrumbs currentPage={activePage} />
-              <div className="flex-1 flex flex-col bg-[#121212]/90 backdrop-blur-sm">
+              <div className="flex-1 flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm">
                 <RealDevelopmentSection onlyRoadmap={true} />
               </div>
               <PageNavigationFooter currentPage={activePage} />
@@ -768,7 +768,7 @@ export default function App() {
               className="w-full min-h-[100vh] flex flex-col justify-between"
             >
               <Breadcrumbs currentPage={activePage} />
-              <div className="flex-1 flex flex-col bg-[#121212]/90 backdrop-blur-sm">
+              <div className="flex-1 flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm">
                 <OriginStorySection />
               </div>
               <PageNavigationFooter currentPage={activePage} />
@@ -785,7 +785,7 @@ export default function App() {
               className="w-full min-h-[100vh] flex flex-col justify-between"
             >
               <Breadcrumbs currentPage={activePage} />
-              <div className="flex-1 flex flex-col bg-[#121212]/90 backdrop-blur-sm">
+              <div className="flex-1 flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm">
                 <EarlyAccessPage />
                 <FaqSection />
               </div>
@@ -804,7 +804,7 @@ export default function App() {
               className="w-full min-h-[100vh] flex flex-col justify-between"
             >
               <Breadcrumbs currentPage={activePage} />
-              <div className="flex-1 flex flex-col bg-[#121212]/90 backdrop-blur-sm">
+              <div className="flex-1 flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm">
                 <ComparisonSection />
               </div>
               <PageNavigationFooter currentPage={activePage} />
@@ -822,7 +822,7 @@ export default function App() {
               className="w-full min-h-[100vh] flex flex-col justify-between"
             >
               <Breadcrumbs currentPage={activePage} />
-              <div className="flex-1 flex flex-col bg-[#121212]/90 backdrop-blur-sm">
+              <div className="flex-1 flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm">
                 <NewsSection />
               </div>
               <PageNavigationFooter currentPage={activePage} />
@@ -840,7 +840,7 @@ export default function App() {
               className="w-full min-h-[100vh] flex flex-col justify-between"
             >
               <Breadcrumbs currentPage={activePage} />
-              <div className="flex-1 flex flex-col bg-[#121212]/90 backdrop-blur-sm">
+              <div className="flex-1 flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm">
                 <NotFoundPage />
               </div>
               <Footer />

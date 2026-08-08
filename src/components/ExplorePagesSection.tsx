@@ -217,22 +217,22 @@ export default function ExplorePagesSection() {
         id={`explore-${page.id}-card`}
         onClick={() => navigateTo(page.id)}
         cardClassName={`cursor-pointer shadow-[0_4px_30px_rgba(0,0,0,0.6)] ${
-          page.id === "how-it-works" ? "shadow-[0_4px_35px_rgba(62,207,142,0.08)]" : ""
+          page.id === "how-it-works" ? "shadow-[0_4px_35px_rgba(59,130,246,0.08)]" : ""
         } ${extraClass}`}
-        borderColor={page.id === "how-it-works" ? "border-[#3ecf8e]/30" : "border-[#2e2e2e]/50"}
+        borderColor={page.id === "how-it-works" ? "border-[#3B82F6]/30" : "border-[#3C404A]/50"}
         className="h-full justify-between"
       >
         <div>
           <div className="flex items-center justify-between mb-6">
-            <div className="w-11 h-11 rounded-xl bg-[#121212]/80 border border-[#3ecf8e]/25 flex items-center justify-center text-[#3ecf8e] group-hover:shadow-glow-lg transition-all">
+            <div className="w-11 h-11 rounded-xl bg-[#0A0A0B]/80 border border-[#3B82F6]/25 flex items-center justify-center text-[#3B82F6] group-hover:shadow-glow-lg transition-all">
               {Icon && <Icon className="w-5 h-5" />}
             </div>
-            <span className="font-mono text-xs tracking-widest text-[#3ecf8e] font-bold bg-[#3ecf8e]/5 px-3 py-1.5 rounded border border-[#3ecf8e]/15">
+            <span className="font-mono text-xs tracking-widest text-[#3B82F6] font-bold bg-[#3B82F6]/5 px-3 py-1.5 rounded border border-[#3B82F6]/15">
               {badge}
             </span>
           </div>
 
-          <h3 className="font-display font-bold text-lg sm:text-xl text-[#fafafa] group-hover:text-[#3ecf8e] transition-colors mb-3">
+          <h3 className="font-display font-bold text-lg sm:text-xl text-[#F5F5F0] group-hover:text-[#3B82F6] transition-colors mb-3">
             {t.pageNames[page.labelKey]}
           </h3>
           <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed mb-6">
@@ -240,7 +240,7 @@ export default function ExplorePagesSection() {
           </p>
         </div>
 
-        <span className="inline-flex justify-center w-full font-mono text-sm font-bold text-[#3ecf8e] group-hover:text-white transition-all">
+        <span className="inline-flex justify-center w-full font-mono text-sm font-bold text-[#3B82F6] group-hover:text-white transition-all">
           {cta}
         </span>
       </ScanCard>
@@ -249,21 +249,21 @@ export default function ExplorePagesSection() {
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 overflow-hidden border-t border-[#2e2e2e]/35 bg-[#121212] select-none"
+      className="relative w-full py-16 sm:py-20 px-4 overflow-hidden border-t border-[#3C404A]/35 bg-[#0A0A0B] select-none"
       id="explore-portal-section"
     >
-      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-72 h-72 rounded-full bg-[#3ecf8e]/5 filter blur-[100px] pointer-events-none" />
-      <div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full bg-[#3ecf8e]/5 filter blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-72 h-72 rounded-full bg-[#3B82F6]/5 filter blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full bg-[#3B82F6]/5 filter blur-[120px] pointer-events-none" />
 
       <div className="max-w-5xl mx-auto flex flex-col items-center">
         <div className="text-center max-w-2xl mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#121212]/70 border border-[#3ecf8e]/30 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#3ecf8e] animate-pulse" />
-            <span className="font-mono text-[9px] sm:text-[10px] font-bold tracking-[0.15em] text-[#3ecf8e]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0A0A0B]/70 border border-[#3B82F6]/30 mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
+            <span className="font-mono text-[9px] sm:text-[10px] font-bold tracking-[0.15em] text-[#3B82F6]">
               EXPLORE PROTOCOL PORTAL
             </span>
           </div>
-          <h2 className="font-display font-bold text-2xl sm:text-4xl text-[#fafafa] tracking-tight mb-4">
+          <h2 className="font-display font-bold text-2xl sm:text-4xl text-[#F5F5F0] tracking-tight mb-4">
             {t.explore.title}
           </h2>
           <p className="font-sans text-xs sm:text-sm text-gray-500 max-w-lg mx-auto">
