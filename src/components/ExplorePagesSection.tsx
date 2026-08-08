@@ -257,11 +257,9 @@ export default function ExplorePagesSection() {
 
       <div className="max-w-5xl mx-auto flex flex-col items-center">
         <div className="text-center max-w-2xl mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0A0A0B]/70 border border-[#3B82F6]/30 mb-4">
+          <div className="flex items-center justify-center gap-2 font-mono text-[9px] sm:text-[10px] font-bold tracking-[0.15em] text-[#3B82F6] mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
-            <span className="font-mono text-[9px] sm:text-[10px] font-bold tracking-[0.15em] text-[#3B82F6]">
-              EXPLORE PROTOCOL PORTAL
-            </span>
+            EXPLORE PROTOCOL PORTAL
           </div>
           <h2 className="font-display font-bold text-2xl sm:text-4xl text-[#F5F5F0] tracking-tight mb-4">
             {t.explore.title}

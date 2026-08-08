@@ -23,6 +23,7 @@ import ProblemSection from "./components/ProblemSection";
 import IntroSection from "./components/IntroSection";
 import LiveSimulatorSection from "./components/LiveSimulatorSection";
 import HowItWorksSection from "./components/HowItWorksSection";
+import TrustSection from "./components/TrustSection";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import ExplorePagesSection from "./components/ExplorePagesSection";
@@ -692,6 +693,7 @@ export default function App() {
                 <IntroSection />
                 <ProtectionMarquee />
                 <ProblemSection />
+                <TrustSection />
                 <LiveSimulatorSection />
                 <DamageCalculator />
                 <ExplorePagesSection />

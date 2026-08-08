@@ -36,7 +36,7 @@ const SectionBadge: React.FC<SectionBadgeProps> = ({
   if (variant === "brackets") {
     return (
       <div
-        className={`inline-flex items-center justify-center gap-2 border-b border-[#3B82F6]/25 pb-2 ${className}`}
+        className={`inline-flex items-center justify-center gap-2 ${className}`}
       >
         <span aria-hidden className="font-mono font-semibold text-[#3B82F6]/45">
           [
@@ -51,7 +51,7 @@ const SectionBadge: React.FC<SectionBadgeProps> = ({
 
   return (
     <div
-      className={`inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-[#12141A] border border-[#3B82F6]/30 ${className}`}
+      className={`inline-flex items-center gap-2 ${className}`}
     >
       {icon}
       <span className={LABEL}>{label}</span>

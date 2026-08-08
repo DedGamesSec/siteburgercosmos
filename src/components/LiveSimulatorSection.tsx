@@ -1348,7 +1348,7 @@ const rafTypingRef = useRef<number | null>(null);
               <button
                 onClick={startSimulation}
                 disabled={isPlaying || currentSentenceIdx !== -1}
-                className={`py-3 px-4 rounded-full font-sans text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
+                className={`py-3 px-4 rounded-lg font-sans text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
                   isPlaying || currentSentenceIdx !== -1
                     ? "bg-gray-800 text-gray-500 border border-transparent cursor-not-allowed"
                     : "bg-[#3B82F6] text-[#F5F5F0] hover:bg-[#3B82F6]/90 cursor-pointer shadow-glow-md hover:shadow-glow-lg"

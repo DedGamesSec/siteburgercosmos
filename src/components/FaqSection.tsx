@@ -17,11 +17,9 @@ export default function FaqSection() {
     >
       <div className="max-w-3xl mx-auto relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3C404A] border border-[#3B82F6]/20 mb-6">
+          <div className="flex items-center justify-center gap-2 font-mono text-[10px] sm:text-xs font-semibold tracking-wider text-[#3B82F6] uppercase mb-6">
             <HelpCircle className="w-3.5 h-3.5 text-[#3B82F6]" />
-            <span className="font-mono text-[10px] sm:text-xs font-semibold tracking-wider text-[#3B82F6] uppercase">
-              {t.faq.badge}
-            </span>
+            <span>{t.faq.badge}</span>
           </div>
           <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
             {t.faq.title}

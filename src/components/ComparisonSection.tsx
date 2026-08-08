@@ -426,7 +426,7 @@ export default function ComparisonSection() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 400, damping: 22 }}
         >
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[10px] sm:text-xs">
+          <div className="inline-flex items-center gap-1.5 text-emerald-400 font-mono text-[10px] sm:text-xs">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>{cp.status.yes}</span>
           </div>
@@ -440,7 +440,7 @@ export default function ComparisonSection() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 400, damping: 22 }}
         >
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 font-mono text-[10px] sm:text-xs">
+          <div className="inline-flex items-center gap-1.5 text-rose-400 font-mono text-[10px] sm:text-xs">
             <XCircle className="w-3.5 h-3.5" />
             <span>{cp.status.no}</span>
           </div>
@@ -454,7 +454,7 @@ export default function ComparisonSection() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 400, damping: 22 }}
         >
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 font-mono text-[10px] sm:text-xs">
+          <div className="inline-flex items-center gap-1.5 text-amber-400 font-mono text-[10px] sm:text-xs">
             <HelpCircle className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: "3s" }} />
             <span>{cp.status.inDev}</span>
           </div>
@@ -468,7 +468,7 @@ export default function ComparisonSection() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 400, damping: 22 }}
         >
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 border border-dashed border-blue-400/40 text-blue-400 font-mono text-[10px] sm:text-xs target-pulse">
+          <div className="inline-flex items-center gap-1.5 text-blue-400 font-mono text-[10px] sm:text-xs target-pulse">
             <HelpCircle className="w-3.5 h-3.5 text-blue-400" />
             <span>{localComp.targetIndicator}</span>
           </div>
@@ -498,11 +498,9 @@ export default function ComparisonSection() {
         </button>
 
         {/* Badge */}
-        <div className="inline-flex self-center items-center gap-2 px-3 py-1 bg-[#12141A]/40 border border-[#3B82F6]/20 rounded-full mb-4">
+        <div className="inline-flex self-center items-center gap-2 font-mono text-xs font-bold tracking-[0.18em] text-[#3B82F6] uppercase mb-4">
           <Sparkles className="w-3 h-3 text-[#3B82F6]" />
-          <span className="font-mono text-xs font-bold tracking-[0.18em] text-[#3B82F6] uppercase">
-            {cp.badge}
-          </span>
+          <span>{cp.badge}</span>
         </div>
 
         {/* Title */}
@@ -685,7 +683,7 @@ export default function ComparisonSection() {
             href="https://t.me/TrustNode_team"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#3B82F6] text-white font-sans text-xs font-bold hover:bg-[#3B82F6]/90 transition-all cursor-pointer shadow-glow-md hover:shadow-glow-lg"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#3B82F6] text-white font-sans text-xs font-bold hover:bg-[#3B82F6]/90 transition-all cursor-pointer shadow-glow-md hover:shadow-glow-lg"
           >
             <Send className="w-4 h-4" />
             <span>{cp.telegramBtn}</span>

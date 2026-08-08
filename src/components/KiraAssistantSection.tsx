@@ -244,12 +244,12 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
         <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
           <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
             <SectionBadge variant="brackets" label={badgeText} />
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 shadow-glow-warn">
+            <div className="inline-flex items-center gap-1.5 font-mono text-[10px] sm:text-xs font-bold tracking-wider text-amber-500 uppercase">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
               </span>
-              <span className="font-mono text-[10px] sm:text-xs font-bold tracking-wider text-amber-500 uppercase">
+              <span>
                 {KIRA_STATUS_BY_LANG[language] || KIRA_STATUS_BY_LANG.en}
               </span>
             </div>

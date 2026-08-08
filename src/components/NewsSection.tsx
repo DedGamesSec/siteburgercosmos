@@ -81,14 +81,14 @@ function renderTextWithLinks(text: string, keyPrefix: string): ReactNode[] {
 function SourceBadge({ source }: { source: "telegram" | "vk" }) {
   if (source === "telegram") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#2AABEE]/10 border border-[#2AABEE]/30 text-[#7EC9F2]">
+      <span className="inline-flex items-center gap-1.5 text-[#7EC9F2]">
         <Send className="w-3 h-3" />
         <span className="font-mono text-[10px] font-bold tracking-wider uppercase">Telegram</span>
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#0077FF]/10 border border-[#0077FF]/30 text-[#7EB6FF]">
+    <span className="inline-flex items-center gap-1.5 text-[#7EB6FF]">
       <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current" aria-hidden="true">
         <path d={VK_ICON_PATH} />
       </svg>
@@ -115,7 +115,7 @@ export default function NewsSection() {
           <h1 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
             {t.news.title}
           </h1>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#3C404A] border border-[#3B82F6]/20 font-mono text-[11px] text-gray-400">
+          <div className="font-mono text-[11px] text-gray-400">
             {t.news.emptyTitle}
           </div>
           <p className="font-sans text-xs text-gray-600 mt-4 max-w-md mx-auto leading-relaxed">

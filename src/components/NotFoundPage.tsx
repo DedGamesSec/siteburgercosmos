@@ -38,7 +38,7 @@ export default function NotFoundPage() {
 
   return (
     <div className="w-full min-h-[85vh] flex flex-col items-center justify-center px-4 pt-28 pb-16 text-center select-none bg-[#0A0A0B]">
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3C404A]/50 border border-[#3B82F6]/40 text-[#3B82F6] font-mono text-xs mb-6 tracking-widest shadow-glow-md">
+      <div className="inline-flex items-center gap-2 text-[#3B82F6] font-mono text-xs mb-6 tracking-widest">
         <ShieldAlert className="w-4 h-4 animate-pulse" />
         <span>{t404.badge}</span>
       </div>
@@ -53,7 +53,7 @@ export default function NotFoundPage() {
 
       <button
         onClick={() => navigateTo("home")}
-        className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-[#3B82F6] hover:bg-[#3B82F6]/90 text-white font-sans font-semibold text-sm shadow-glow-lg transition-all duration-300 cursor-pointer hover:scale-[1.05]"
+        className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-lg bg-[#3B82F6] hover:bg-[#3B82F6]/90 text-white font-sans font-semibold text-sm shadow-glow-lg transition-all duration-300 cursor-pointer hover:scale-[1.05]"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>{t404.btn}</span>

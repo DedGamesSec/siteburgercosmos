@@ -48,11 +48,9 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3C404A] border border-[#3B82F6]/20 mb-6">
+          <div className="flex items-center justify-center gap-2 font-mono text-[10px] sm:text-xs font-semibold tracking-wider text-[#3B82F6] uppercase mb-6">
             <Shield className="w-4.5 h-4.5 text-[#3B82F6]" />
-            <span className="font-mono text-[10px] sm:text-xs font-semibold tracking-wider text-[#3B82F6] uppercase">
-              {displayBadge}
-            </span>
+            <span>{displayBadge}</span>
           </div>
           
           <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
@@ -132,7 +130,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       referrerPolicy="no-referrer"
                     />
                   </picture>
-                  <div className="absolute top-4 right-4 z-20 px-3 py-1 rounded-full bg-[#3C404A]/90 border border-amber-500/30 font-mono text-[9px] font-bold text-amber-500 tracking-wider">
+                  <div className="absolute top-4 right-4 z-20 font-mono text-[9px] font-bold text-amber-500 tracking-wider">
                     {currentAward.badge}
                   </div>
                 </div>
@@ -204,7 +202,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       referrerPolicy="no-referrer"
                     />
                   </picture>
-                  <div className="absolute top-4 right-4 z-20 px-3 py-1 rounded-full bg-[#3C404A]/90 border border-cyan-500/30 font-mono text-[9px] font-bold text-cyan-500 tracking-wider">
+                  <div className="absolute top-4 right-4 z-20 font-mono text-[9px] font-bold text-cyan-500 tracking-wider">
                     {currentGraph.badge}
                   </div>
                 </div>
@@ -351,7 +349,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   <ScanCard accent="16,185,129" borderColor="border-emerald-500/30" cardClassName="shadow-glow-success" className="h-full justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
-                        <span className="font-mono text-[10px] sm:text-xs text-emerald-300 uppercase tracking-widest bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
+                        <span className="font-mono text-[10px] sm:text-xs text-emerald-300 uppercase tracking-widest">
                           {rmp.readyMvp}
                         </span>
                         <span className="font-mono text-sm text-gray-300">v1.2.0</span>
@@ -393,7 +391,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   <ScanCard accent="59,130,246" borderColor="border-[#3B82F6]/30" cardClassName="shadow-glow-sm" className="h-full justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
-                        <span className="font-mono text-[10px] sm:text-xs text-[#6FB1FF] uppercase tracking-widest bg-[#0A0A0B]/60 border border-[#3B82F6]/40 px-2.5 py-0.5 rounded-full">
+                        <span className="font-mono text-[10px] sm:text-xs text-[#6FB1FF] uppercase tracking-widest">
                           {rmp.underDevelopment}
                         </span>
                         <span className="font-mono text-sm text-gray-300">v2.0-alpha</span>
@@ -419,7 +417,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   <ScanCard accent="251,191,36" borderColor="border-amber-500/30" cardClassName="shadow-glow-warn" className="h-full justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
-                        <span className="font-mono text-[10px] sm:text-xs text-amber-400 uppercase tracking-widest bg-amber-950/60 border border-amber-500/40 px-2.5 py-0.5 rounded-full">
+                        <span className="font-mono text-[10px] sm:text-xs text-amber-400 uppercase tracking-widest">
                           {rmp.conceptualSpec}
                         </span>
                         <span className="font-mono text-sm text-gray-300">v3.0-design</span>
@@ -1604,7 +1602,7 @@ ${tkt.inventory}`;
         <button
           onClick={handleInference}
           disabled={isTesting || !inputText.trim()}
-          className="w-full py-2.5 rounded-full font-mono text-xs font-bold text-white bg-[#3B82F6] hover:bg-blue-600 shadow-glow-md hover:shadow-glow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-2.5 rounded-lg font-mono text-xs font-bold text-white bg-[#3B82F6] hover:bg-blue-600 shadow-glow-md hover:shadow-glow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {isTesting ? (
             <>
@@ -1778,7 +1776,7 @@ ${tkt.inventory}`;
             <div className="flex flex-wrap sm:flex-nowrap gap-2">
               <button
                 onClick={handleOpenTelegram}
-                className="flex-1 py-2.5 rounded-full bg-[#3B82F6] hover:bg-blue-600 font-mono text-[11px] font-bold text-white flex items-center justify-center gap-1.5 transition-all shadow-glow-sm"
+                className="flex-1 py-2.5 rounded-lg bg-[#3B82F6] hover:bg-blue-600 font-mono text-[11px] font-bold text-white flex items-center justify-center gap-1.5 transition-all shadow-glow-sm"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{dict.btnTg}</span>
