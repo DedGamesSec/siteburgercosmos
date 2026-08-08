@@ -4,6 +4,7 @@ import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
 import SectionBadge from "./SectionBadge";
 import ScanCard from "./ScanCard";
+import PlanetCinematic from "./PlanetCinematic";
 
 const CURRENCY_BY_LANG: Record<string, string> = {
   ru: "RUB",
@@ -44,6 +45,9 @@ export default function DamageCalculator() {
       className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B] overflow-hidden"
     >
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+
+      {/* Scroll-driven planet: an ocean world drifting in from the bottom */}
+      <PlanetCinematic type="ocean" side="bottom" disabled={ecoMode} />
 
       <div className="max-w-4xl mx-auto relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">

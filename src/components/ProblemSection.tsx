@@ -4,9 +4,12 @@ import { motion, AnimatePresence } from "motion/react";
 import { ShieldAlert, EyeOff, WifiOff, Phone, ServerOff } from "lucide-react";
 import SectionBadge from "./SectionBadge";
 import ScanCard from "./ScanCard";
+import PlanetCinematic from "./PlanetCinematic";
+import { useEcoMode } from "../context/EcoModeContext";
 
 const ProblemSection = React.memo(function ProblemSection() {
   const { t, language } = useTranslation();
+  const { ecoMode } = useEcoMode();
 
   const SIM_LABELS: Record<string, Record<string, string>> = {
     ru: { call: "ВХОДЯЩИЙ ЗВОНОК", alert: "УГРОЗА ОБНАРУЖЕНА", soc: "Атака соц-инженерии", leak: "УТЕЧКА", messenger: "Телеграм", cloud: "Облако", broken: "СТАНДАРТНАЯ ЗАЩИТА ОТКЛЮЧЕНА" },
@@ -210,6 +213,9 @@ const ProblemSection = React.memo(function ProblemSection() {
     >
       {/* Background glow accent */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.04)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+
+      {/* Scroll-driven planet: a rocky world drifting in from the left */}
+      <PlanetCinematic type="rocky" side="left" disabled={ecoMode} />
 
       <div className="max-w-6xl mx-auto relative z-10">
         

@@ -4,6 +4,7 @@ import { useInView } from "motion/react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
 import ScanCard from "./ScanCard";
+import PlanetCinematic from "./PlanetCinematic";
 
 const STAT_ICONS = [FileText, Award, Compass, Percent];
 
@@ -94,6 +95,7 @@ return (
 
 const TrustSection = React.memo(function TrustSection() {
   const { t } = useTranslation();
+  const { ecoMode } = useEcoMode();
   const stats = t.trust.stats.map((stat, i) => ({
     id: `stat-${i + 1}`,
     Icon: STAT_ICONS[i],
@@ -104,11 +106,14 @@ const TrustSection = React.memo(function TrustSection() {
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B]" 
+      className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B] overflow-hidden" 
       id="trust-section"
     >
       {/* Absolute radial light strictly behind the center of cards */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+
+      {/* Scroll-driven planet: a ringed gas giant drifting in from the right */}
+      <PlanetCinematic type="ringed" side="right" disabled={ecoMode} />
 
       <div className="max-w-6xl mx-auto relative z-10">
         

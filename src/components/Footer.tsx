@@ -7,6 +7,7 @@ import { useNavigation } from "../navigation/NavigationContext";
 import { useEcoMode } from "../context/EcoModeContext";
 import { FOOTER_SITEMAP_PAGES } from "../navigation/pages.config";
 import { PRODUCT_RADAR_URL } from "./Header";
+import PlanetCinematic from "./PlanetCinematic";
 
 const SiTelegramIcon = SiTelegram as React.ComponentType<any>;
 const SiVkIcon = SiVk as React.ComponentType<any>;
@@ -67,7 +68,10 @@ const Footer = React.memo(function Footer() {
       style={{ paddingBottom: "max(3rem, env(safe-area-inset-bottom))" }}
       id="footer"
     >
-      <div className="max-w-6xl mx-auto grid gap-x-8 gap-y-6 footer-grid">
+      {/* Scroll-driven planet: a calm ocean world drifting in from the bottom */}
+      <PlanetCinematic type="ocean" side="bottom" disabled={ecoMode} />
+
+      <div className="max-w-6xl mx-auto grid gap-x-8 gap-y-6 footer-grid relative z-10">
 
         {/* Brand Identity вЂ” centered, full-width first row */}
         <div className="footer-area-brand flex flex-col items-center gap-1 text-center">

@@ -5,6 +5,8 @@ import { PAGES_CONFIG } from "../navigation/pages.config";
 import { Home, Cpu, ShieldCheck, Map, Users, BarChart3, Download, Newspaper } from "lucide-react";
 import type { LanguageCode } from "../i18n/languages";
 import ScanCard from "./ScanCard";
+import PlanetCinematic from "./PlanetCinematic";
+import { useEcoMode } from "../context/EcoModeContext";
 
 const PAGE_ICONS: Record<string, React.ElementType> = {
   home: Home,
@@ -201,6 +203,7 @@ const PAGE_CTA: Record<string, LangDict> = {
 export default function ExplorePagesSection() {
   const { t, language } = useTranslation();
   const { activePage, navigateTo } = useNavigation();
+  const { ecoMode } = useEcoMode();
   const visiblePages = HEADER_PAGES.filter((p) => p.id !== activePage);
   const gridPages = visiblePages.filter((p) => p.id !== "download");
   const downloadPage = visiblePages.find((p) => p.id === "download");
@@ -254,6 +257,9 @@ export default function ExplorePagesSection() {
     >
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-72 h-72 rounded-full bg-[#3B82F6]/5 filter blur-[100px] pointer-events-none" />
       <div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full bg-[#3B82F6]/5 filter blur-[120px] pointer-events-none" />
+
+      {/* Scroll-driven planet: a bright gas giant drifting in from the right */}
+      <PlanetCinematic type="gas" side="right" disabled={ecoMode} />
 
       <div className="max-w-5xl mx-auto flex flex-col items-center">
         <div className="text-center max-w-2xl mb-12 sm:mb-16">
