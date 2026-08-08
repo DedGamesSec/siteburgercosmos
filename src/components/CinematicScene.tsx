@@ -121,7 +121,7 @@ function buildStarLayer(codes: string[]): THREE.Points {
         vAlpha = aAlpha;
         vColor = aColor;
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = min(30.0, aSize * (620.0 / max(1.0, -mv.z)));
+        gl_PointSize = max(2.2, min(32.0, aSize * (620.0 / max(1.0, -mv.z))));
         gl_Position = projectionMatrix * mv;
       }
     `,
@@ -133,10 +133,10 @@ function buildStarLayer(codes: string[]): THREE.Points {
       void main() {
         vec2 c = gl_PointCoord - vec2(0.5);
         float d = length(c);
-        float core = smoothstep(0.12, 0.0, d);
-        float halo = smoothstep(0.5, 0.1, d);
+        float core = smoothstep(0.14, 0.0, d);
+        float halo = smoothstep(0.5, 0.12, d);
         float a = (core + halo * 0.45) * vAlpha * uOpacity;
-        if (a < 0.02) discard;
+        if (a < 0.008) discard;
         gl_FragColor = vec4(vColor, a);
       }
     `
@@ -229,7 +229,7 @@ function buildBackgroundSky(count: number, radius: number): THREE.Points {
         vAlpha = aAlpha;
         vColor = aColor;
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = min(5.0, aSize * (420.0 / max(1.0, -mv.z)));
+        gl_PointSize = max(1.8, min(5.0, aSize * (420.0 / max(1.0, -mv.z))));
         gl_Position = projectionMatrix * mv;
       }
     `,
@@ -242,7 +242,7 @@ function buildBackgroundSky(count: number, radius: number): THREE.Points {
         vec2 c = gl_PointCoord - vec2(0.5);
         float d = length(c);
         float a = smoothstep(0.5, 0.06, d) * vAlpha * uOpacity;
-        if (a < 0.015) discard;
+        if (a < 0.006) discard;
         gl_FragColor = vec4(vColor, a);
       }
     `
