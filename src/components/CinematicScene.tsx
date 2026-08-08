@@ -286,7 +286,7 @@ function buildNightLights(): THREE.Mesh {
     `
   });
   const mesh = new THREE.Mesh(geo, mat);
-  mesh.scale.setScalar(1.0);
+  mesh.scale.setScalar(EARTH_R);
   return mesh;
 }
 
@@ -322,7 +322,9 @@ function buildAtmosphere(): THREE.Mesh {
       }
     `
   });
-  return new THREE.Mesh(geo, mat);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.scale.setScalar(EARTH_R);
+  return mesh;
 }
 
 // Greenwich Mean Sidereal Time in radians for a given date. This is the real,
@@ -366,18 +368,22 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x04050a, 1);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 4000);
     camera.position.set(0, 6, 120);
 
-    const ambient = new THREE.AmbientLight(0x33415e, 0.6);
+    // Near-black ambient keeps the night side of Earth truly dark, with a crisp
+    // day/night terminator like real photography.
+    const ambient = new THREE.AmbientLight(0x33415e, 0.08);
     scene.add(ambient);
-    const sun = new THREE.DirectionalLight(0xffffff, 2.4);
+    const sun = new THREE.DirectionalLight(0xffffff, 3.0);
     sun.position.set(90, 110, 220);
     scene.add(sun);
-    const fill = new THREE.DirectionalLight(0x3b82f6, 0.35);
+    const fill = new THREE.DirectionalLight(0x3b82f6, 0.12);
     fill.position.set(-60, -30, -80);
     scene.add(fill);
 
@@ -405,15 +411,18 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     const earth = new THREE.Mesh(earthGeo, earthMat);
     earth.position.copy(EARTH_POS);
     earth.rotation.z = (23.44 * Math.PI) / 180; // axial tilt
+    earth.renderOrder = 1;
     scene.add(earth);
 
     const night = buildNightLights();
     night.position.copy(EARTH_POS);
     night.rotation.z = (23.44 * Math.PI) / 180;
+    night.renderOrder = 3;
     scene.add(night);
 
     const atmo = buildAtmosphere();
     atmo.position.copy(EARTH_POS);
+    atmo.renderOrder = 4;
     scene.add(atmo);
 
     const cloudsGeo = new THREE.SphereGeometry(EARTH_R * 1.014, 96, 96);
@@ -428,26 +437,27 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     const clouds = new THREE.Mesh(cloudsGeo, cloudsMat);
     clouds.position.copy(EARTH_POS);
     clouds.rotation.z = (23.44 * Math.PI) / 180;
+    clouds.renderOrder = 2;
     scene.add(clouds);
 
     const loader = new THREE.TextureLoader();
     const baseUrl = import.meta.env.BASE_URL;
 
     const loadTex = (path: string) => loader.load(`${baseUrl}textures/${path}`);
-    const dayTex = loadTex("earth.jpg");
+    const dayTex = loadTex("earth_blue_marble_4k.jpg");
     dayTex.colorSpace = THREE.SRGBColorSpace;
     earthMat.map = dayTex;
 
-    const normalTex = loadTex("earth_normal_2048.jpg");
-    normalTex.wrapS = normalTex.wrapT = THREE.ClampToEdgeWrapping;
-    earthMat.normalMap = normalTex;
-    earthMat.normalScale = new THREE.Vector2(1.4, 1.4);
+    const bumpTex = loadTex("earth_bump_4k.jpg");
+    bumpTex.wrapS = bumpTex.wrapT = THREE.ClampToEdgeWrapping;
+    earthMat.bumpMap = bumpTex;
+    earthMat.bumpScale = 1.5;
 
     const specTex = loadTex("earth_specular_2048.jpg");
     earthMat.specularMap = specTex;
     earthMat.needsUpdate = true;
 
-    const cloudsTex = loadTex("earth_clouds_1024.png");
+    const cloudsTex = loadTex("earth_clouds_4k.png");
     cloudsTex.colorSpace = THREE.SRGBColorSpace;
     cloudsMat.map = cloudsTex;
     cloudsMat.needsUpdate = true;
@@ -456,27 +466,25 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     nightTex.colorSpace = THREE.SRGBColorSpace;
     (night.material as THREE.ShaderMaterial).uniforms.uNight.value = nightTex;
 
-    // Camera keyframes. Narrative: the TRUSTNODE title sits in the original starry
-    // sky (camera tilted up into the northern constellations) -> we fly INTO the
-    // stars (constellation lines fall away) -> new constellations open as the logo
-    // assembles, with a brief hover -> then a turn toward Earth and an approach
-    // that ends on a large, crisp planet.
+    // Camera keyframes. A straight, smooth flight: the TRUSTNODE title sits in the
+    // northern sky, we fly straight INTO the stars, hover while the logo assembles,
+    // then turn toward Earth and approach. No sideways weaving.
     const kf: Keyframe[] = [
       { p: 0, pos: new THREE.Vector3(0, 6, 120), look: new THREE.Vector3(0, 26, 0) },
       { p: phases.underEnd * 0.5, pos: new THREE.Vector3(0, 5, 70), look: new THREE.Vector3(0, 24, 0) },
       { p: phases.underEnd, pos: new THREE.Vector3(0, 4, 20), look: new THREE.Vector3(0, 14, 0) },
-      { p: lerp(phases.underEnd, phases.orbitEnd, 0.4), pos: new THREE.Vector3(9, 3, -14), look: new THREE.Vector3(0, -2, 8) },
-      { p: lerp(phases.underEnd, phases.orbitEnd, 0.75), pos: new THREE.Vector3(0, 2, -38), look: new THREE.Vector3(0, -4, 6) },
-      { p: phases.orbitEnd, pos: new THREE.Vector3(-8, 2, -14), look: new THREE.Vector3(0, 0, 4) },
-      { p: phases.throughEnd, pos: new THREE.Vector3(0, 3, 10), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.throughEnd, phases.assemblyEnd, 0.5), pos: new THREE.Vector3(0, 3, 0), look: new THREE.Vector3(0, 0, 0) },
-      { p: phases.assemblyEnd, pos: new THREE.Vector3(0, 3, -6), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.45), pos: new THREE.Vector3(0, 3, -6), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.85), pos: new THREE.Vector3(0, 3, -6), look: new THREE.Vector3(0, -15, 120) },
-      { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 40), look: new THREE.Vector3(0, -45, 800) },
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.35), pos: new THREE.Vector3(0, -4, 180), look: new THREE.Vector3(0, -45, 800) },
+      { p: lerp(phases.underEnd, phases.orbitEnd, 0.5), pos: new THREE.Vector3(0, 3, -12), look: new THREE.Vector3(0, 6, 0) },
+      { p: phases.orbitEnd, pos: new THREE.Vector3(0, 2, -38), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.orbitEnd, phases.throughEnd, 0.5), pos: new THREE.Vector3(0, 2, -40), look: new THREE.Vector3(0, 0, 0) },
+      { p: phases.throughEnd, pos: new THREE.Vector3(0, 2, -34), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.throughEnd, phases.assemblyEnd, 0.5), pos: new THREE.Vector3(0, 2, -26), look: new THREE.Vector3(0, 0, 0) },
+      { p: phases.assemblyEnd, pos: new THREE.Vector3(0, 2, -22), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.45), pos: new THREE.Vector3(0, 2, -22), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.85), pos: new THREE.Vector3(0, 2, -22), look: new THREE.Vector3(0, -12, 80) },
+      { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 20), look: new THREE.Vector3(0, -45, 800) },
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.35), pos: new THREE.Vector3(0, -4, 160), look: new THREE.Vector3(0, -45, 800) },
       { p: lerp(phases.turnEnd, phases.approachEnd, 0.6), pos: new THREE.Vector3(0, -2, 300), look: new THREE.Vector3(0, -45, 800) },
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.82), pos: new THREE.Vector3(0, -1, 370), look: new THREE.Vector3(0, -45, 800) },
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.82), pos: new THREE.Vector3(0, 0, 380), look: new THREE.Vector3(0, -45, 800) },
       { p: phases.approachEnd, pos: new THREE.Vector3(0, 0, 430), look: new THREE.Vector3(0, -45, 800) },
       { p: 1, pos: new THREE.Vector3(0, 0, 430), look: new THREE.Vector3(0, -45, 800) }
     ];
@@ -515,7 +523,7 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       // Earth fades in after the turn
       const earthIn = smooth(phases.turnEnd * 0.9, phases.turnEnd * 1.1, p);
       earthMat.opacity = earthIn;
-      cloudsMat.opacity = earthIn * 0.85;
+      cloudsMat.opacity = earthIn * 0.7;
       (atmo.material as THREE.ShaderMaterial).opacity = earthIn;
       (night.material as THREE.ShaderMaterial).opacity = earthIn;
 
