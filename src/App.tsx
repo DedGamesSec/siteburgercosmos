@@ -107,6 +107,40 @@ export default function App() {
   const isSection2InView = useInView(section2Ref, { once: true, margin: "-100px" });
   const [logoProgress, setLogoProgress] = useState(0);
 
+  // Hyperspace flight is driven purely by scroll: it peaks when the logo-assembly
+  // block fills the screen and freezes the moment the user stops scrolling.
+  const [warpProgress, setWarpProgress] = useState(0);
+  const warpRAFRef = useRef(0);
+
+  useEffect(() => {
+    const computeWarp = () => {
+      const el = section2Ref.current;
+      const vh = windowHeight || window.innerHeight;
+      if (!el) {
+        setWarpProgress(0);
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, 1 - Math.abs(rect.top) / (vh * 0.6)));
+      setWarpProgress(p);
+    };
+    const onScroll = () => {
+      if (warpRAFRef.current) return;
+      warpRAFRef.current = requestAnimationFrame(() => {
+        warpRAFRef.current = 0;
+        computeWarp();
+      });
+    };
+    computeWarp();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (warpRAFRef.current) cancelAnimationFrame(warpRAFRef.current);
+    };
+  }, [windowHeight]);
+
   useEffect(() => {
     if (isSection2InView) {
       let start: number | null = null;
@@ -420,7 +454,7 @@ export default function App() {
       {/* Fixed Network Background (Acts as the uniform starfield throughout) */}
       <div className="fixed inset-0 w-full h-full pointer-events-none">
         <Suspense fallback={<SkyPlaceholder />}>
-          <NetworkBackground zoomFactor={zoomFactor} warpProgress={0} isEcoMode={ecoMode} onSkyStatusChange={setSkyStatus} language={language} />
+          <NetworkBackground zoomFactor={zoomFactor} warpProgress={warpProgress} isEcoMode={ecoMode} onSkyStatusChange={setSkyStatus} language={language} />
         </Suspense>
       </div>
 

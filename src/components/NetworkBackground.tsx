@@ -51,6 +51,13 @@ export default function NetworkBackground({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const reducedMotionMode = activeEcoMode || prefersReducedMotion;
 
+  // Scroll-driven warp progress (0..1). Stored in a ref so per-frame scroll updates
+  // don't restart the render-loop effect.
+  const warpProgressRef = useRef(warpProgress);
+  useEffect(() => {
+    warpProgressRef.current = warpProgress;
+  }, [warpProgress]);
+
   useSkyActivation(reducedMotionMode);
   const [hoveredItem, setHoveredItem] = useState<ProjectedObject | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -263,6 +270,9 @@ export default function NetworkBackground({
       const starList = REAL_STARS.slice(0, Math.max(24, Math.floor(REAL_STARS.length * starDensity)));
 
       const moonGlow = moonGlowMultiplierRef.current;
+
+      // Hyperspace warp strength (0..1), scroll-driven. Frozen the moment scrolling stops.
+      const warp = reducedMotionMode ? 0 : warpProgressRef.current;
 
       // 0. Horizon twilight glow if Sun altitude is between -6° and +6°
       const sunAlt = sunAltitudeRef.current;
@@ -561,6 +571,32 @@ export default function NetworkBackground({
         ctx.save();
         ctx.globalAlpha = sc.alpha * (isHovered ? 1 : sc.centerDampen);
 
+        // Star Wars hyperspace streaks: each star stretches into a line radiating from
+        // the screen center. Length scales with warp progress and with how close the
+        // star is (real depth in ly drives the parallax feel of the flight).
+        if (warp > 0.02) {
+          const dx = sc.x - centerX;
+          const dy = sc.y - centerY;
+          const r = Math.hypot(dx, dy);
+          if (r > 0.5) {
+            const ux = dx / r;
+            const uy = dy / r;
+            const depthK = Math.max(0.12, Math.min(1, 120 / Math.max(sc.z, 1)));
+            const len = warp * (isMobile ? 22 : 34) * depthK;
+            const tailX = sc.x - ux * len;
+            const tailY = sc.y - uy * len;
+            const grad = ctx.createLinearGradient(tailX, tailY, sc.x, sc.y);
+            grad.addColorStop(0, "rgba(226, 232, 240, 0)");
+            grad.addColorStop(1, `rgba(226, 232, 240, ${(0.55 * warp).toFixed(3)})`);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 1.1;
+            ctx.beginPath();
+            ctx.moveTo(tailX, tailY);
+            ctx.lineTo(sc.x, sc.y);
+            ctx.stroke();
+          }
+        }
+
         // Чёткие точки, без blur-свечения вокруг звёзд (как в bot/card_generator.py):
         // звёзды — чистые круги, свечение только на активной (hovered) звезде.
         if (isHovered) {
@@ -697,7 +733,7 @@ export default function NetworkBackground({
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [zoomFactor, warpProgress, reducedMotionMode, language]);
+  }, [zoomFactor, reducedMotionMode, language]);
 
   return (
     <div
