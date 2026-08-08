@@ -68,6 +68,15 @@ import { motion, AnimatePresence } from "motion/react";
 import { useTranslation } from "./i18n/LanguageContext";
 import { useNavigation, PageId } from "./navigation/NavigationContext";
 import { useEcoMode } from "./context/EcoModeContext";
+import ScanCard from "./components/ScanCard";
+import { HelpCircle, Shield, Eye } from "lucide-react";
+
+const INTRO_ICONS = [HelpCircle, Shield, Eye];
+const INTRO_COLORS = [
+  "border-[#3B82F6]/40 text-[#3B82F6] bg-[#3B82F6]/5",
+  "border-[#2DD4BF]/40 text-[#2DD4BF] bg-[#2DD4BF]/5",
+  "border-[#FB923C]/40 text-[#FB923C] bg-[#FB923C]/5"
+];
 
 export default function App() {
   const { t, language } = useTranslation();
@@ -747,23 +756,42 @@ export default function App() {
                           <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed text-center max-w-xl">
                             {introContent.subtitle}
                           </p>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-4xl mt-1">
-                            {introContent.steps.map((step, idx) => (
-                              <div
-                                key={idx}
-                                className="border border-[#3C404A]/70 bg-[#12141A]/60 px-3.5 py-3 rounded-sm"
-                              >
-                                <span className="font-mono text-[8px] sm:text-[9px] tracking-[0.15em] text-[#2DD4BF] uppercase font-bold">
-                                  {step.tag}
-                                </span>
-                                <span className="block font-display text-[11px] sm:text-sm text-[#F5F5F0] mt-1">
-                                  {step.title}
-                                </span>
-                                <p className="font-sans text-[10px] sm:text-xs text-gray-400 leading-relaxed mt-1.5">
-                                  {step.desc}
-                                </p>
-                              </div>
-                            ))}
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 w-full max-w-4xl mt-1">
+                            {introContent.steps.map((step, idx) => {
+                              const IconComponent = INTRO_ICONS[idx];
+                              const colorClass = INTRO_COLORS[idx];
+                              return (
+                                <motion.div
+                                  key={idx}
+                                  initial={{ opacity: 0, y: -60 }}
+                                  animate={{
+                                    opacity: cinematicProgress > 0.9 ? 1 : 0,
+                                    y: cinematicProgress > 0.9 ? 0 : -60
+                                  }}
+                                  transition={{ duration: 0.7, delay: idx * 0.12, ease: "easeOut" }}
+                                  className="h-full"
+                                >
+                                  <ScanCard padding="p-4 sm:p-5" className="h-full justify-between">
+                                    <div>
+                                      <div className="flex items-center justify-between mb-3 sm:mb-4">
+                                        <span className="font-mono text-[9px] sm:text-[10px] font-bold tracking-wider text-gray-500 uppercase">
+                                          {step.tag}
+                                        </span>
+                                        <div className={`p-1.5 sm:p-2 border ${colorClass}`}>
+                                          <IconComponent className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                        </div>
+                                      </div>
+                                      <h3 className="font-display font-medium text-sm sm:text-lg text-[#F5F5F0] mb-1.5 sm:mb-3">
+                                        {step.title}
+                                      </h3>
+                                      <p className="font-sans text-[10px] sm:text-xs text-gray-400 leading-relaxed">
+                                        {step.desc}
+                                      </p>
+                                    </div>
+                                  </ScanCard>
+                                </motion.div>
+                              );
+                            })}
                           </div>
                         </div>
 

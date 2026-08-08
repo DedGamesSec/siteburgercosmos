@@ -443,11 +443,11 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 160), look: new THREE.Vector3(0, -30, 320) },
       { p: lerp(phases.turnEnd, phases.approachEnd, 0.35), pos: new THREE.Vector3(0, -4, 300), look: new THREE.Vector3(0, -45, 800) },
       { p: lerp(phases.turnEnd, phases.approachEnd, 0.6), pos: new THREE.Vector3(0, -8, 400), look: new THREE.Vector3(0, -35, 800) },
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.8), pos: new THREE.Vector3(0, -12, 440), look: new THREE.Vector3(0, -5, 800) },
-      // Final framing: we settle and tilt the view up so Earth sits in the bottom
-      // ~third of the screen, showing the top ~1/3 of the globe. The camera stays
-      // far enough from the planet for crisp 4K texture quality.
-      { p: phases.approachEnd, pos: new THREE.Vector3(0, -12, 440), look: new THREE.Vector3(0, 80, 800) },
+      // The final framing is reached and then held absolutely steady (identical
+      // keyframes from approachEnd to 1) so the planet sits at the same distance
+      // from the top edge of the screen while the intro cards settle over it.
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.8), pos: new THREE.Vector3(0, -12, 440), look: new THREE.Vector3(0, 40, 800) },
+      { p: phases.approachEnd, pos: new THREE.Vector3(0, -12, 440), look: new THREE.Vector3(0, 180, 800) },
       { p: 1, pos: new THREE.Vector3(0, -12, 440), look: new THREE.Vector3(0, 180, 800) }
     ];
 
