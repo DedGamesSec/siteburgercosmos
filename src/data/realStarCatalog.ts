@@ -5,6 +5,7 @@ export interface RealStar {
   dec: number; // Degrees (-90..90)
   mag: number; // Visual magnitude
   constellationCode?: string;
+  distLy?: number; // Real distance from Earth in light years (for 3D parallax)
 }
 
 export interface ConstellationAsterism {
@@ -187,8 +188,73 @@ for (let i = 0; i < 70; i++) {
     nameEn: `Star HR-${1000 + i}`,
     ra,
     dec,
-    mag
+    mag,
+    // Deterministic pseudo-real distance (60..3200 ly) so background stars get 3D depth too
+    distLy: Math.round(60 + Math.abs(Math.sin(i * 12.9898) * 3140))
   });
+}
+
+// Real distances (in light years) for the ~107 brightest named stars.
+// Values are approximate (Hipparcos / Gaia parallax based).
+export const STAR_DISTANCES_LY: Record<string, number> = {
+  // Ursa Major
+  dubhe: 123, merak: 80, phecda: 83, megrez: 81, alioth: 81, mizar: 83, alkaid: 101, alcor: 82,
+  // Ursa Minor
+  polaris: 433, kochab: 130, pherkad: 480, yildun: 170, eps_umi: 345, zeta_umi: 380, eta_umi: 97,
+  // Orion
+  betelgeuse: 548, rigel: 860, bellatrix: 250, saiph: 650, alnitak: 800, alnilam: 1340, mintaka: 1200, meissa: 1100,
+  // Cassiopeia
+  schedar: 230, caph: 54, gamma_cas: 610, ruchbah: 100, segin: 440,
+  // Cygnus
+  deneb: 1550, albireo: 430, sadr: 1800, gienah: 720, delta_cyg: 170,
+  // Taurus
+  aldebaran: 65, elnath: 134, alcyone: 440, zeta_tau: 420, ain: 150,
+  // Canis Major
+  sirius: 8.6, adhara: 430, wezen: 1600, mirzam: 500, aludra: 2000,
+  // Canis Minor
+  procyon: 11.4, gomeisa: 170,
+  // Leo
+  regulus: 79, algieba: 130, denebola: 36, zosma: 58, epsilon_leo: 250,
+  // Scorpius
+  antares: 550, shaula: 700, sargas: 300, dschubba: 400, graffias: 400,
+  // Pegasus
+  enif: 670, scheat: 200, markab: 133, algenib: 390,
+  // Andromeda
+  alpheratz: 97, mirach: 200, almach: 350,
+  // Boötes
+  arcturus: 36.7, izar: 210, muphrid: 37, seginus: 85,
+  // Lyra
+  vega: 25, sheliak: 960, sulafat: 620,
+  // Aquila
+  altair: 16.7, tarazed: 460, alshain: 45,
+  // Auriga
+  capella: 42.9, menkalinan: 81, mahsim: 700,
+  // Gemini
+  pollux: 33.8, castor: 51, alhena: 109,
+  // Virgo
+  spica: 250, porrima: 38, vindemiatrix: 110,
+  // Perseus
+  mirfak: 510, algol: 93,
+  // Centaurus
+  rigil_kent: 4.37, hadar: 390, menkent: 59,
+  // Crux
+  acrux: 320, mimosa: 280, gacrux: 88,
+  // Sagittarius
+  kaus_aus: 140, nunki: 230, ascella: 90,
+  // Cepheus
+  alderamin: 49, alfirk: 600, errai: 45,
+  // Draco
+  eltanin: 150, rastaban: 380, thuban: 300,
+  // Hercules
+  kornephoros: 140, rasalgethi: 360,
+  // Corona Borealis
+  alphecca: 75,
+  // Standalone bright stars
+  canopus: 310, fomalhaut: 25, alphard: 177, hamal: 66, diphda: 96, rasalhague: 47
+};
+
+export function getStarDistanceLy(id: string): number {
+  return STAR_DISTANCES_LY[id] ?? 300;
 }
 
 // Constellation asterisms linking bright stars
