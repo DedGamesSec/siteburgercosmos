@@ -290,43 +290,6 @@ function buildNightLights(): THREE.Mesh {
   return mesh;
 }
 
-// Fresnel atmosphere glow around the limb.
-function buildAtmosphere(): THREE.Mesh {
-  const geo = new THREE.SphereGeometry(1.06, 96, 96);
-  const mat = new THREE.ShaderMaterial({
-    uniforms: {
-      uColor: { value: new THREE.Color("#3b82f6") }
-    },
-    transparent: true,
-    depthWrite: false,
-    side: THREE.BackSide,
-    blending: THREE.AdditiveBlending,
-    vertexShader: `
-      varying vec3 vNormal;
-      varying vec3 vView;
-      void main() {
-        vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        vView = normalize(-mv.xyz);
-        vNormal = normalize(normalMatrix * normal);
-        gl_Position = projectionMatrix * mv;
-      }
-    `,
-    fragmentShader: `
-      precision mediump float;
-      varying vec3 vNormal;
-      varying vec3 vView;
-      uniform vec3 uColor;
-      void main() {
-        float rim = pow(1.0 - abs(dot(normalize(vNormal), normalize(vView))), 2.2);
-        gl_FragColor = vec4(uColor, rim * 0.55);
-      }
-    `
-  });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.scale.setScalar(EARTH_R);
-  return mesh;
-}
-
 // Greenwich Mean Sidereal Time in radians for a given date. This is the real,
 // continuous rotation of the Earth relative to the stars.
 function gmstRadians(date: Date): number {
@@ -383,9 +346,6 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     const sun = new THREE.DirectionalLight(0xffffff, 3.0);
     sun.position.set(90, 110, 220);
     scene.add(sun);
-    const fill = new THREE.DirectionalLight(0x3b82f6, 0.12);
-    fill.position.set(-60, -30, -80);
-    scene.add(fill);
 
     // Real sky. One dense, realistic backdrop (faint stars, Milky Way band, color
     // temperature) is always on; the bright catalog stars layer on top with real
@@ -419,11 +379,6 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     night.rotation.z = (23.44 * Math.PI) / 180;
     night.renderOrder = 3;
     scene.add(night);
-
-    const atmo = buildAtmosphere();
-    atmo.position.copy(EARTH_POS);
-    atmo.renderOrder = 4;
-    scene.add(atmo);
 
     const cloudsGeo = new THREE.SphereGeometry(EARTH_R * 1.014, 96, 96);
     const cloudsMat = new THREE.MeshPhongMaterial({
@@ -524,7 +479,6 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       const earthIn = smooth(phases.turnEnd * 0.9, phases.turnEnd * 1.1, p);
       earthMat.opacity = earthIn;
       cloudsMat.opacity = earthIn * 0.7;
-      (atmo.material as THREE.ShaderMaterial).opacity = earthIn;
       (night.material as THREE.ShaderMaterial).opacity = earthIn;
 
       // Sky reveal: the realistic backdrop is always on. The bright real stars are
@@ -538,14 +492,6 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       (starsSouth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.55, 0.68, 0.87, 0.97);
 
       sampleCamera(p);
-
-      // Gentle float while hovering at the assembled logo
-      const hover = smooth(0.58, 0.66, p) * (1 - smooth(0.74, 0.82, p));
-      if (hover > 0) {
-        camera.position.y += Math.sin(time * 0.0012) * 1.2 * hover;
-        camera.position.x += Math.cos(time * 0.0009) * 0.8 * hover;
-        camera.lookAt(currentLook);
-      }
 
       renderer.render(scene, camera);
     };
