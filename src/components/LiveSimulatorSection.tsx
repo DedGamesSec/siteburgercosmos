@@ -5,8 +5,6 @@ import { LanguageCode } from "../i18n/languages";
 import { motion, AnimatePresence } from "motion/react";
 import SectionBadge from "./SectionBadge";
 import ScanCard from "./ScanCard";
-import PlanetCinematic from "./PlanetCinematic";
-import { useEcoMode } from "../context/EcoModeContext";
 
 interface Scenario {
   id: string;
@@ -963,7 +961,6 @@ const CONSOLE_LOGS_BY_LANG: Partial<Record<LanguageCode, Record<string, string[]
 
 export const LiveSimulatorSection = React.memo(function LiveSimulatorSection() {
   const { language } = useTranslation();
-  const { ecoMode } = useEcoMode();
   const title = SIMULATOR_TITLE[language] || SIMULATOR_TITLE.en;
   const subtitle = SIMULATOR_SUBTITLE[language] || SIMULATOR_SUBTITLE.en;
 
@@ -1186,9 +1183,6 @@ const rafTypingRef = useRef<number | null>(null);
       {/* Visual tech matrix background decoration */}
       <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-[#3B82F6]/[0.015] to-transparent pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
-
-      {/* Scroll-driven planet: an icy world drifting in from the top */}
-      <PlanetCinematic type="ice" side="top" disabled={ecoMode} />
 
       <div className="max-w-6xl mx-auto relative z-10">
         
