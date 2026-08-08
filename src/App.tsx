@@ -744,7 +744,7 @@ export default function App() {
                         {/* "Всё просто о TrustNode" — full intro content over the
                             Earth screen: badge, title, subtitle and three step cards */}
                         <div
-                          className="absolute inset-x-0 top-[5vh] flex flex-col items-center gap-3 sm:gap-4 px-4 transition-opacity duration-500"
+                          className="absolute inset-x-0 top-0 flex flex-col items-center gap-3 sm:gap-4 px-4 pt-[14vh] sm:pt-[16vh] pb-[22vh] transition-opacity duration-500"
                           style={{ opacity: cIntroOp }}
                         >
                           <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.3em] text-[#3B82F6] uppercase font-bold">
@@ -771,7 +771,7 @@ export default function App() {
                                   transition={{ duration: 0.7, delay: idx * 0.12, ease: "easeOut" }}
                                   className="h-full"
                                 >
-                                  <ScanCard padding="p-4 sm:p-5" className="h-full justify-between">
+                                  <ScanCard padding="p-4 sm:p-5" cardClassName="h-full" className="h-full justify-between">
                                     <div>
                                       <div className="flex items-center justify-between mb-3 sm:mb-4">
                                         <span className="font-mono text-[9px] sm:text-[10px] font-bold tracking-wider text-gray-500 uppercase">

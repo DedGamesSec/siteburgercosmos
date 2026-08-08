@@ -251,12 +251,13 @@ function buildBackgroundSky(count: number, radius: number): THREE.Points {
 }
 
 // Night-lights: a shader sphere that only shows city lights on the dark side.
-function buildNightLights(): THREE.Mesh {
-  const geo = new THREE.SphereGeometry(1.002, 96, 96);
+function buildNightLights(segments: number): THREE.Mesh {
+  const geo = new THREE.SphereGeometry(1.002, segments, segments);
   const mat = new THREE.ShaderMaterial({
     uniforms: {
       uNight: { value: null },
-      uSunDir: { value: new THREE.Vector3(0.35, 0.4, 0.85).normalize() }
+      uSunDir: { value: new THREE.Vector3(0.35, 0.4, 0.85).normalize() },
+      uOpacity: { value: 0 }
     },
     transparent: true,
     depthWrite: false,
@@ -276,11 +277,12 @@ function buildNightLights(): THREE.Mesh {
       varying vec3 vNormal;
       uniform sampler2D uNight;
       uniform vec3 uSunDir;
+      uniform float uOpacity;
       void main() {
         float d = dot(normalize(vNormal), uSunDir);
         float nf = 1.0 - smoothstep(-0.12, 0.28, d);
         vec3 night = texture2D(uNight, vUv).rgb;
-        float a = max(0.0, nf) * 0.95;
+        float a = max(0.0, nf) * 0.95 * uOpacity;
         gl_FragColor = vec4(night * a, a);
       }
     `
@@ -300,7 +302,7 @@ function gmstRadians(date: Date): number {
 }
 
 const EARTH_POS = new THREE.Vector3(0, -45, 800);
-const EARTH_R = 130;
+const EARTH_R = 170;
 
 interface Keyframe {
   p: number;
@@ -327,8 +329,13 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     if (!isWebGLAvailable()) return;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-    const isMobile = window.innerWidth < 768;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
+    const width = window.innerWidth;
+    const isMobile = width < 768;
+    const isTablet = width >= 768 && width < 1024;
+    // Adaptive rendering: phones get a lower pixel ratio and fewer stars/segments,
+    // tablets a middle tier, desktops full quality.
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : isTablet ? 1.5 : 2);
+    renderer.setPixelRatio(pixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x04050a, 1);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -350,7 +357,8 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     // Real sky. One dense, realistic backdrop (faint stars, Milky Way band, color
     // temperature) is always on; the bright catalog stars layer on top with real
     // parallax so the flight flies past actual stars. No constellation lines.
-    const background = buildBackgroundSky(5200, 1400);
+    const bgCount = isMobile ? 2400 : isTablet ? 3800 : 5200;
+    const background = buildBackgroundSky(bgCount, 1400);
     scene.add(background);
     const starsNorth = buildStarLayer(SKY_GROUP_NORTH);
     scene.add(starsNorth);
@@ -360,7 +368,8 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     scene.add(starsSouth);
 
     // Professional Earth: day texture + relief + ocean specular + clouds + night lights
-    const earthGeo = new THREE.SphereGeometry(EARTH_R, 128, 128);
+    const earthSeg = isMobile ? 64 : isTablet ? 96 : 128;
+    const earthGeo = new THREE.SphereGeometry(EARTH_R, earthSeg, earthSeg);
     const earthMat = new THREE.MeshPhongMaterial({
       color: 0xffffff,
       specular: 0x334455,
@@ -374,13 +383,13 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     earth.renderOrder = 1;
     scene.add(earth);
 
-    const night = buildNightLights();
+    const night = buildNightLights(earthSeg);
     night.position.copy(EARTH_POS);
     night.rotation.z = (23.44 * Math.PI) / 180;
     night.renderOrder = 3;
     scene.add(night);
 
-    const cloudsGeo = new THREE.SphereGeometry(EARTH_R * 1.014, 96, 96);
+    const cloudsGeo = new THREE.SphereGeometry(EARTH_R * 1.014, earthSeg, earthSeg);
     const cloudsMat = new THREE.MeshPhongMaterial({
       color: 0xffffff,
       transparent: true,
@@ -425,8 +434,8 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     // NO Earth anywhere on screen. The TRUSTNODE logo assembles in front of the
     // stars while the camera hovers. Then the camera smoothly turns and glides
     // toward Earth (no warp, no streaks): Earth fades in far ahead, we approach it
-    // and settle with the planet's limb in the lower third of the frame (top ~1/3
-    // of the globe on screen, crisp quality).
+    // and settle with the planet's top limb in the lower half of the frame (big,
+    // crisp planet, constant distance from the top edge).
     const kf: Keyframe[] = [
       { p: 0, pos: new THREE.Vector3(0, 6, 120), look: new THREE.Vector3(0, 26, 0) },
       { p: phases.underEnd * 0.5, pos: new THREE.Vector3(0, 5, 70), look: new THREE.Vector3(0, 24, 0) },
@@ -488,7 +497,7 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       const earthIn = smooth(0.82, 0.9, p);
       earthMat.opacity = earthIn;
       cloudsMat.opacity = earthIn * 0.7;
-      (night.material as THREE.ShaderMaterial).opacity = earthIn;
+      (night.material as THREE.ShaderMaterial).uniforms.uOpacity.value = earthIn;
 
       // Sky reveal: the realistic backdrop is always on. The bright real stars are
       // grouped by sky region so the flight moves from the northern sky into the
@@ -520,6 +529,9 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     const onResize = () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
+      const onMobile = w < 768;
+      const onTablet = w >= 768 && w < 1024;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, onMobile ? 1.25 : onTablet ? 1.5 : 2));
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
