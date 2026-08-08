@@ -250,39 +250,6 @@ function buildBackgroundSky(count: number, radius: number): THREE.Points {
   return new THREE.Points(geo, mat);
 }
 
-// Hyperspace warp: long thin streaks streaming past while the camera jumps toward
-// Earth (Star Wars style). Distributed along the flight corridor so the camera flies
-// through them; they converge toward the direction of travel for the warp sensation.
-function buildWarpLines(count: number): THREE.LineSegments {
-  const positions = new Float32Array(count * 6);
-  for (let i = 0; i < count; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const radius = 40 + Math.random() * 180;
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius * 0.7;
-    const z0 = -80 + Math.random() * 980;
-    const len = 90 + Math.random() * 260;
-    positions[i * 6] = x;
-    positions[i * 6 + 1] = y;
-    positions[i * 6 + 2] = z0;
-    positions[i * 6 + 3] = x;
-    positions[i * 6 + 4] = y;
-    positions[i * 6 + 5] = z0 + len;
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-  const mat = new THREE.LineBasicMaterial({
-    color: 0xbfd4ff,
-    transparent: true,
-    opacity: 0,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false
-  });
-  const lines = new THREE.LineSegments(geo, mat);
-  lines.frustumCulled = false;
-  return lines;
-}
-
 // Night-lights: a shader sphere that only shows city lights on the dark side.
 function buildNightLights(): THREE.Mesh {
   const geo = new THREE.SphereGeometry(1.002, 96, 96);
@@ -392,12 +359,6 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     const starsSouth = buildStarLayer(SKY_GROUP_SOUTH);
     scene.add(starsSouth);
 
-    // Star Wars-style hyperdrive streaks: thin lines parallel to the flight axis
-    // that stream past the camera during the warp window after the logo.
-    const warpLines = buildWarpLines(900);
-    scene.add(warpLines);
-    const warpMat = warpLines.material as THREE.LineBasicMaterial;
-
     // Professional Earth: day texture + relief + ocean specular + clouds + night lights
     const earthGeo = new THREE.SphereGeometry(EARTH_R, 128, 128);
     const earthMat = new THREE.MeshPhongMaterial({
@@ -460,12 +421,12 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     nightTex.colorSpace = THREE.SRGBColorSpace;
     (night.material as THREE.ShaderMaterial).uniforms.uNight.value = nightTex;
 
-    // Camera keyframes. New choreography: the flight starts in pure deep space with
+    // Camera keyframes. Choreography: the flight starts in pure deep space with
     // NO Earth anywhere on screen. The TRUSTNODE logo assembles in front of the
-    // stars while the camera hovers. Then a Star Wars-style warp: the camera
-    // accelerates forward and streak lines stream past. Only after the warp does
-    // Earth appear far ahead; we approach it and settle with the planet's limb in
-    // the lower third of the frame (top ~1/3 of the globe on screen, crisp quality).
+    // stars while the camera hovers. Then the camera smoothly turns and glides
+    // toward Earth (no warp, no streaks): Earth fades in far ahead, we approach it
+    // and settle with the planet's limb in the lower third of the frame (top ~1/3
+    // of the globe on screen, crisp quality).
     const kf: Keyframe[] = [
       { p: 0, pos: new THREE.Vector3(0, 6, 120), look: new THREE.Vector3(0, 26, 0) },
       { p: phases.underEnd * 0.5, pos: new THREE.Vector3(0, 5, 70), look: new THREE.Vector3(0, 24, 0) },
@@ -476,13 +437,12 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       { p: phases.throughEnd, pos: new THREE.Vector3(0, 2, -34), look: new THREE.Vector3(0, 0, 0) },
       { p: lerp(phases.throughEnd, phases.assemblyEnd, 0.5), pos: new THREE.Vector3(0, 2, -26), look: new THREE.Vector3(0, 0, 0) },
       { p: phases.assemblyEnd, pos: new THREE.Vector3(0, 2, -22), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.35), pos: new THREE.Vector3(0, 2, -22), look: new THREE.Vector3(0, 0, 0) },
-      // Warp kicks in: fast forward flight, streaks fly past, still no Earth.
-      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.55), pos: new THREE.Vector3(0, 2, 40), look: new THREE.Vector3(0, -6, 60) },
-      { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 180), look: new THREE.Vector3(0, -20, 240) },
-      // Warp ends: Earth appears far away, we approach it.
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.35), pos: new THREE.Vector3(0, -4, 330), look: new THREE.Vector3(0, -45, 800) },
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.6), pos: new THREE.Vector3(0, -8, 420), look: new THREE.Vector3(0, -35, 800) },
+      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.4), pos: new THREE.Vector3(0, 2, -22), look: new THREE.Vector3(0, 0, 0) },
+      // Smooth, gentle turn toward Earth: no warp, no streaks — the logo screen
+      // stays pure space, then we ease forward as Earth fades in far ahead.
+      { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 160), look: new THREE.Vector3(0, -30, 320) },
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.35), pos: new THREE.Vector3(0, -4, 300), look: new THREE.Vector3(0, -45, 800) },
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.6), pos: new THREE.Vector3(0, -8, 400), look: new THREE.Vector3(0, -35, 800) },
       { p: lerp(phases.turnEnd, phases.approachEnd, 0.8), pos: new THREE.Vector3(0, -12, 440), look: new THREE.Vector3(0, -5, 800) },
       // Final framing: we settle and tilt the view up so Earth sits in the bottom
       // ~third of the screen, showing the top ~1/3 of the globe. The camera stays
@@ -522,17 +482,13 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       night.rotation.y = earth.rotation.y;
       clouds.rotation.y = earth.rotation.y + 0.003 * (time / 1000);
 
-      // Earth fades in only AFTER the warp, far away, so during the logo the planet
-      // is nowhere on screen. It appears small ahead and we fly toward it.
-      const earthIn = smooth(0.8, 0.88, p);
+      // Earth fades in only AFTER the logo screen is fully gone (cLogoOp ends at
+      // 0.78 in App.tsx) so the planet is nowhere on screen while the logo shows.
+      // It appears small ahead and we glide toward it, no warp.
+      const earthIn = smooth(0.82, 0.9, p);
       earthMat.opacity = earthIn;
       cloudsMat.opacity = earthIn * 0.7;
       (night.material as THREE.ShaderMaterial).opacity = earthIn;
-
-      // Warp streaks: appear right after the logo assembles, peak during the fast
-      // forward jump, and dissolve as Earth fades in far ahead.
-      const warpFade = smooth(0.66, 0.73, p) * (1 - smooth(0.8, 0.87, p));
-      warpMat.opacity = warpFade * 0.7;
 
       // Sky reveal: the realistic backdrop is always on. The bright real stars are
       // grouped by sky region so the flight moves from the northern sky into the
@@ -592,8 +548,6 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
         pt.geometry.dispose();
         (pt.material as THREE.Material).dispose();
       });
-      warpLines.geometry.dispose();
-      warpMat.dispose();
       renderer.dispose();
       if (renderer.domElement.parentElement === container) {
         container.removeChild(renderer.domElement);

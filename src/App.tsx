@@ -151,11 +151,12 @@ export default function App() {
   const cHudOut = cinematicProgress > 0.72 ? Math.max(0, 1 - (cinematicProgress - 0.72) / 0.08) : 1;
   const cHudOp = cHudT * cHudOut;
   const cArrowT = cinematicProgress > 0.85 ? Math.min(1, (cinematicProgress - 0.85) / 0.1) : 0;
-  // "Всё просто о TrustNode" labels fade in at the very end, above the Earth shot.
+  // "Всё просто о TrustNode" full intro content fades in at the very end, over
+  // the Earth shot: badge, title, subtitle and three step cards.
   const introContent = INTRO_DICT[language] || INTRO_DICT.en;
   const cIntroOp = cinematicProgress > 0.9 ? Math.min(1, (cinematicProgress - 0.9) / 0.08) : 0;
   // 2D logo assembly overlay: assembles as the new constellations open, holds during
-  // the hover, then fades as the camera kicks into the Star Wars warp.
+  // the hover, then fades as the camera turns toward Earth.
   const cLogoOp = Math.max(
     0,
     Math.min(1, (cinematicProgress - 0.45) / 0.12) * (1 - Math.max(0, (cinematicProgress - 0.7) / 0.08))
@@ -731,27 +732,36 @@ export default function App() {
                           </div>
                         </div>
 
-                        {/* "Всё просто о TrustNode" — three step labels ride at the top of
-                            the frame while Earth fills the bottom of the screen */}
+                        {/* "Всё просто о TrustNode" — full intro content over the
+                            Earth screen: badge, title, subtitle and three step cards */}
                         <div
-                          className="absolute inset-x-0 top-[9vh] flex flex-col items-center gap-3 px-4 transition-opacity duration-300"
+                          className="absolute inset-x-0 top-[5vh] flex flex-col items-center gap-3 sm:gap-4 px-4 transition-opacity duration-500"
                           style={{ opacity: cIntroOp }}
                         >
                           <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.3em] text-[#3B82F6] uppercase font-bold">
                             {introContent.badge}
                           </span>
-                          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4">
+                          <h2 className="font-display font-medium text-xl sm:text-3xl text-[#F5F5F0] tracking-tighter text-center max-w-3xl">
+                            {introContent.title}
+                          </h2>
+                          <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed text-center max-w-xl">
+                            {introContent.subtitle}
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-4xl mt-1">
                             {introContent.steps.map((step, idx) => (
                               <div
                                 key={idx}
-                                className="flex items-center gap-2 border border-[#3C404A]/70 bg-[#12141A]/60 px-3.5 py-2 rounded-sm"
+                                className="border border-[#3C404A]/70 bg-[#12141A]/60 px-3.5 py-3 rounded-sm"
                               >
                                 <span className="font-mono text-[8px] sm:text-[9px] tracking-[0.15em] text-[#2DD4BF] uppercase font-bold">
                                   {step.tag}
                                 </span>
-                                <span className="font-display text-[11px] sm:text-sm text-[#F5F5F0] whitespace-nowrap">
+                                <span className="block font-display text-[11px] sm:text-sm text-[#F5F5F0] mt-1">
                                   {step.title}
                                 </span>
+                                <p className="font-sans text-[10px] sm:text-xs text-gray-400 leading-relaxed mt-1.5">
+                                  {step.desc}
+                                </p>
                               </div>
                             ))}
                           </div>
@@ -949,13 +959,6 @@ export default function App() {
                     </>
                   )}
               </div>
-
-              {/* INTRO CARDS OVER THE EARTH (cinematic mode): transparent, cards slide in from the top */}
-              {cinematicEnabled && (
-                <div className="relative z-10 w-full pointer-events-auto">
-                  <IntroSection transparent />
-                </div>
-              )}
 
               {/* CORE LANDING CONTENT (NORMAL DOCUMENT FLOW) */}
               <div ref={coreLandingRef} className="relative z-20 w-full flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm shadow-[0_-30px_60px_rgba(10,10,11,0.95)]" id="core-landing-page">
