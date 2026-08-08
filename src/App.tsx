@@ -143,19 +143,20 @@ export default function App() {
   const flyBy = ecoMode ? 0 : cinematicEnabled ? cinematicProgress : sceneProgress;
 
   // Pinned DOM overlays that ride on top of the 3D flight, driven by progress.
-  const cLabelT = cinematicProgress > 0.45 ? Math.min(1, (cinematicProgress - 0.45) / 0.15) : 0;
-  const cLabelOut = cinematicProgress > 0.72 ? Math.max(0, 1 - (cinematicProgress - 0.72) / 0.12) : 1;
+  const cLabelT = cinematicProgress > 0.48 ? Math.min(1, (cinematicProgress - 0.48) / 0.15) : 0;
+  const cLabelOut = cinematicProgress > 0.78 ? Math.max(0, 1 - (cinematicProgress - 0.78) / 0.12) : 1;
   const cLabelOp = cLabelT * cLabelOut;
   const cHudT = cinematicProgress > 0.6 ? Math.min(1, (cinematicProgress - 0.6) / 0.12) : 0;
-  const cHudOut = cinematicProgress > 0.78 ? Math.max(0, 1 - (cinematicProgress - 0.78) / 0.1) : 1;
+  const cHudOut = cinematicProgress > 0.8 ? Math.max(0, 1 - (cinematicProgress - 0.8) / 0.1) : 1;
   const cHudOp = cHudT * cHudOut;
   const cArrowT = cinematicProgress > 0.85 ? Math.min(1, (cinematicProgress - 0.85) / 0.1) : 0;
-  // 2D logo assembly overlay: assembles through the "through -> assembly" phases
+  // 2D logo assembly overlay: assembles as the new constellations open, holds during
+  // the hover, then fades as the camera turns toward Earth.
   const cLogoOp = Math.max(
     0,
-    Math.min(1, (cinematicProgress - 0.3) / 0.12) * (1 - Math.max(0, (cinematicProgress - 0.72) / 0.1))
+    Math.min(1, (cinematicProgress - 0.45) / 0.12) * (1 - Math.max(0, (cinematicProgress - 0.78) / 0.1))
   );
-  const cLogoProgress = Math.max(0, Math.min(1, (cinematicProgress - 0.3) / 0.35));
+  const cLogoProgress = Math.max(0, Math.min(1, (cinematicProgress - 0.45) / 0.3));
 
   useEffect(() => {
     const computeScene = () => {

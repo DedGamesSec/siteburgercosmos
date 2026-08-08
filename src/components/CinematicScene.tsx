@@ -421,27 +421,30 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     nightTex.colorSpace = THREE.SRGBColorSpace;
     (night.material as THREE.ShaderMaterial).uniforms.uNight.value = nightTex;
 
-    // Camera keyframes. The flight: fast forward through the real starfield -> a
-    // weaving pass (2D logo assembly happens in the DOM on top) -> turn toward
-    // Earth -> approach until it fills the lower part of the screen.
+    // Camera keyframes. Narrative: the TRUSTNODE title sits in the original starry
+    // sky -> we fly INTO the stars (constellation lines fall away) -> new
+    // constellations open as the logo assembles, with a brief hover -> then a turn
+    // toward Earth and a close approach until the planet fills the frame.
     const kf: Keyframe[] = [
       { p: 0, pos: new THREE.Vector3(0, 6, 120), look: new THREE.Vector3(0, 0, 0) },
       { p: phases.underEnd * 0.5, pos: new THREE.Vector3(0, 5, 70), look: new THREE.Vector3(0, 0, 0) },
       { p: phases.underEnd, pos: new THREE.Vector3(0, 4, 20), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.underEnd, phases.orbitEnd, 0.35), pos: new THREE.Vector3(9, 3, -12), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.underEnd, phases.orbitEnd, 0.65), pos: new THREE.Vector3(0, 2, -34), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.underEnd, phases.orbitEnd, 0.92), pos: new THREE.Vector3(-9, 2, -10), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.orbitEnd, phases.throughEnd, 0.35), pos: new THREE.Vector3(0, 3, 18), look: new THREE.Vector3(0, 1, 0) },
-      { p: phases.throughEnd, pos: new THREE.Vector3(0, 4, -26), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.throughEnd, phases.assemblyEnd, 0.5), pos: new THREE.Vector3(0, 4, -44), look: new THREE.Vector3(0, 0, 0) },
-      { p: phases.assemblyEnd, pos: new THREE.Vector3(0, 4, -44), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.3), pos: new THREE.Vector3(0, 3, -24), look: new THREE.Vector3(0, -15, 140) },
-      { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 30), look: new THREE.Vector3(0, -60, 800) },
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.45), pos: new THREE.Vector3(0, -4, 150), look: new THREE.Vector3(0, -30, 810) },
-      { p: phases.approachEnd, pos: new THREE.Vector3(0, 6, 340), look: new THREE.Vector3(0, 25, 820) },
-      { p: 1, pos: new THREE.Vector3(0, 6, 340), look: new THREE.Vector3(0, 25, 820) }
+      { p: lerp(phases.underEnd, phases.orbitEnd, 0.4), pos: new THREE.Vector3(9, 3, -14), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.underEnd, phases.orbitEnd, 0.75), pos: new THREE.Vector3(0, 2, -38), look: new THREE.Vector3(0, 0, 0) },
+      { p: phases.orbitEnd, pos: new THREE.Vector3(-8, 2, -14), look: new THREE.Vector3(0, 0, 0) },
+      { p: phases.throughEnd, pos: new THREE.Vector3(0, 3, 10), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.throughEnd, phases.assemblyEnd, 0.5), pos: new THREE.Vector3(0, 3, 0), look: new THREE.Vector3(0, 0, 0) },
+      { p: phases.assemblyEnd, pos: new THREE.Vector3(0, 3, -6), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.45), pos: new THREE.Vector3(0, 3, -6), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.85), pos: new THREE.Vector3(0, 3, -6), look: new THREE.Vector3(0, -15, 120) },
+      { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 40), look: new THREE.Vector3(0, -45, 800) },
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.45), pos: new THREE.Vector3(0, -8, 300), look: new THREE.Vector3(0, -40, 800) },
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.8), pos: new THREE.Vector3(0, -14, 520), look: new THREE.Vector3(0, -42, 800) },
+      { p: phases.approachEnd, pos: new THREE.Vector3(0, -10, 650), look: new THREE.Vector3(0, 90, 800) },
+      { p: 1, pos: new THREE.Vector3(0, -10, 650), look: new THREE.Vector3(0, 90, 800) }
     ];
 
+    const currentLook = new THREE.Vector3(0, 0, 0);
     const sampleCamera = (p: number) => {
       let i = Math.max(0, kf.findIndex((k) => p <= k.p) - 1);
       if (i < 0) i = 0;
@@ -450,7 +453,8 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       const span = Math.max(1e-5, b.p - a.p);
       const t = smooth(a.p, b.p, p);
       camera.position.lerpVectors(a.pos, b.pos, t);
-      camera.lookAt(b.look.clone().lerp(a.look, 1 - t));
+      currentLook.lerpVectors(a.look, b.look, t);
+      camera.lookAt(currentLook);
     };
 
     let raf = 0;
@@ -478,21 +482,32 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       (atmo.material as THREE.ShaderMaterial).opacity = earthIn;
       (night.material as THREE.ShaderMaterial).opacity = earthIn;
 
-      // Progressive sky reveal: north from the start, mid declinations open deeper
-      // in, then far south, then deep dust. Everything thins out as Earth fills the
-      // view on approach.
-      const skyFade = (fadeInStart: number, fadeInEnd: number, fadeOutStart: number, fadeOutEnd: number) =>
-        smooth(fadeInStart, fadeInEnd, p) * (1 - smooth(fadeOutStart, fadeOutEnd, p));
-      (starsNorth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = 1 - smooth(0.72, 0.88, p);
-      (starsMid.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.18, 0.34, 0.74, 0.9);
-      (starsSouth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.42, 0.58, 0.76, 0.92);
-      (deepA.material as THREE.ShaderMaterial).uniforms.uOpacity.value = smooth(0.62, 0.78, p);
-      (deepB.material as THREE.ShaderMaterial).uniforms.uOpacity.value = smooth(0.72, 0.9, p);
-      (consNorth.material as THREE.LineBasicMaterial).opacity = skyFade(0, 0.12, 0.7, 0.86);
-      (consMid.material as THREE.LineBasicMaterial).opacity = skyFade(0.24, 0.4, 0.74, 0.9);
-      (consSouth.material as THREE.LineBasicMaterial).opacity = skyFade(0.5, 0.64, 0.76, 0.92);
+      // Progressive sky reveal, tied to the narrative:
+      // - The original north sky (constellation lines included) is the backdrop for
+      //   the TRUSTNODE title; its lines fall away as we fly into the deep.
+      // - New constellations open while the logo assembles and hovers.
+      // - Deep dust appears during the turn; everything thins as Earth fills the view.
+      const skyFade = (inA: number, inB: number, outA: number, outB: number) =>
+        smooth(inA, inB, p) * (1 - smooth(outA, outB, p));
+      (starsNorth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = 1 - smooth(0.6, 0.85, p);
+      (starsMid.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.42, 0.55, 0.82, 0.94);
+      (starsSouth.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.55, 0.68, 0.84, 0.95);
+      (deepA.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.68, 0.8, 1, 1);
+      (deepB.material as THREE.ShaderMaterial).uniforms.uOpacity.value = skyFade(0.75, 0.88, 1, 1);
+      (consNorth.material as THREE.LineBasicMaterial).opacity = skyFade(0, 0.06, 0.08, 0.22);
+      (consMid.material as THREE.LineBasicMaterial).opacity = skyFade(0.45, 0.58, 0.82, 0.94);
+      (consSouth.material as THREE.LineBasicMaterial).opacity = skyFade(0.6, 0.72, 0.84, 0.95);
 
       sampleCamera(p);
+
+      // Gentle float while hovering at the assembled logo
+      const hover = smooth(0.58, 0.66, p) * (1 - smooth(0.74, 0.82, p));
+      if (hover > 0) {
+        camera.position.y += Math.sin(time * 0.0012) * 1.2 * hover;
+        camera.position.x += Math.cos(time * 0.0009) * 0.8 * hover;
+        camera.lookAt(currentLook);
+      }
+
       renderer.render(scene, camera);
     };
 
