@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Mic, Bot, Phone, PhoneOff, AlertTriangle, ShieldCheck, Play, RotateCcw, Cpu, Terminal } from "lucide-react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { LanguageCode } from "../i18n/languages";
@@ -1177,12 +1177,12 @@ const rafTypingRef = useRef<number | null>(null);
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden" 
+      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#2e2e2e]/30 bg-[#121212] overflow-hidden" 
       id="live-simulator"
     >
       {/* Visual tech matrix background decoration */}
-      <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-[#3B82F6]/[0.015] to-transparent pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-[#3ecf8e]/[0.015] to-transparent pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         
@@ -1190,7 +1190,7 @@ const rafTypingRef = useRef<number | null>(null);
         <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
           <SectionBadge variant="brackets" label={sui.consoleBadge} className="mb-6" />
           
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#fafafa] tracking-tight mb-6">
             {title}
           </h2>
           
@@ -1214,8 +1214,8 @@ const rafTypingRef = useRef<number | null>(null);
                 isPlaying ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
               } ${
                 activeScenarioIdx === idx
-                  ? "bg-[#3B82F6]/15 border-[#3B82F6] text-[#3B82F6] shadow-glow-sm"
-                  : "bg-[#0A0A0B]/60 border-white/[0.04] text-gray-400 hover:text-[#F5F5F0] hover:bg-white/[0.02]"
+                  ? "bg-[#3ecf8e]/15 border-[#3ecf8e] text-[#3ecf8e] shadow-glow-sm"
+                  : "bg-[#121212]/60 border-white/[0.04] text-gray-400 hover:text-[#fafafa] hover:bg-white/[0.02]"
               }`}
             >
               <Cpu className="w-3.5 h-3.5" />
@@ -1228,7 +1228,7 @@ const rafTypingRef = useRef<number | null>(null);
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto items-stretch">
           
           {/* PHONE CALL SIMULATOR COLUMN (Col 5) */}
-          <ScanCard accent="59,130,246" cardClassName="lg:col-span-5 shadow-2xl min-h-[500px]" className="flex-col justify-between" padding="p-6 sm:p-8">
+          <ScanCard accent="62,207,142" cardClassName="lg:col-span-5 shadow-2xl min-h-[500px]" className="flex-col justify-between" padding="p-6 sm:p-8">
             
             {/* Flashing Intrusion Danger Ambient Cover */}
             <AnimatePresence>
@@ -1245,8 +1245,8 @@ const rafTypingRef = useRef<number | null>(null);
 
             {/* Simulated Phone UI Header */}
             <div className="flex items-center justify-between z-10">
-              <div className="flex items-center gap-1.5 bg-white/[0.02] border border-white/[0.05] px-2.5 py-1 rounded-xl font-mono text-[11px] text-[#3B82F6]">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
+              <div className="flex items-center gap-1.5 bg-white/[0.02] border border-white/[0.05] px-2.5 py-1 rounded-xl font-mono text-[11px] text-[#3ecf8e]">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#3ecf8e] animate-pulse" />
                 <span>{sui.secureLine}</span>
               </div>
               <span className="font-mono text-[10px] text-gray-500">
@@ -1256,7 +1256,7 @@ const rafTypingRef = useRef<number | null>(null);
 
             {/* Caller Active Badge / Interactive Headpiece */}
             <div className="flex flex-col items-center justify-center my-8 text-center z-10 relative">
-              <div className="relative w-20 h-20 rounded-full bg-[#12141A] border border-white/[0.05] flex items-center justify-center mb-4">
+              <div className="relative w-20 h-20 rounded-full bg-[#242424] border border-white/[0.05] flex items-center justify-center mb-4">
                 {/* Active Caller waves */}
                 {isPlaying && (
                   <>
@@ -1264,19 +1264,19 @@ const rafTypingRef = useRef<number | null>(null);
                     <div className="absolute -inset-2 rounded-full border border-[#EF4444]/20 animate-ping" style={{ animationDuration: "3.5s" }} />
                   </>
                 )}
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${threatLevel >= 75 ? "bg-[#EF4444]/10 border border-[#EF4444]/30" : "bg-[#3B82F6]/10 border border-[#3B82F6]/20"}`}>
-                  <Phone className={`w-6 h-6 ${threatLevel >= 75 ? "text-[#EF4444]" : "text-[#3B82F6]"} ${isPlaying ? "animate-pulse" : ""}`} />
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${threatLevel >= 75 ? "bg-[#EF4444]/10 border border-[#EF4444]/30" : "bg-[#3ecf8e]/10 border border-[#3ecf8e]/20"}`}>
+                  <Phone className={`w-6 h-6 ${threatLevel >= 75 ? "text-[#EF4444]" : "text-[#3ecf8e]"} ${isPlaying ? "animate-pulse" : ""}`} />
                 </div>
               </div>
-              <span className="font-mono text-[11px] uppercase text-[#3B82F6] tracking-wider mb-0.5">{callerLabel}</span>
-              <h4 className="font-display font-bold text-base text-[#F5F5F0]">{currentScenario.caller}</h4>
+              <span className="font-mono text-[11px] uppercase text-[#3ecf8e] tracking-wider mb-0.5">{callerLabel}</span>
+              <h4 className="font-display font-bold text-base text-[#fafafa]">{currentScenario.caller}</h4>
               <p className="font-mono text-[10px] text-gray-500 mt-1">{isPlaying ? sui.activeStream : incomingLabel}</p>
             </div>
 
             {/* LIVE DIALOG TRANSCRIPTION CANVAS */}
             <div 
               ref={transcriptionContainerRef}
-              className="flex-1 min-h-[160px] max-h-[220px] overflow-y-auto p-4 rounded-xl bg-[#0A0A0B] border border-white/[0.02] flex flex-col gap-3 relative scrollbar-thin z-10"
+              className="flex-1 min-h-[160px] max-h-[220px] overflow-y-auto p-4 rounded-xl bg-[#121212] border border-white/[0.02] flex flex-col gap-3 relative scrollbar-thin z-10"
             >
               {currentSentenceIdx === -1 ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
@@ -1311,7 +1311,7 @@ const rafTypingRef = useRef<number | null>(null);
                           {sui.liveParsing}
                         </span>
                       </div>
-                      <p className="font-sans text-xs text-[#F5F5F0] leading-relaxed">
+                      <p className="font-sans text-xs text-[#fafafa] leading-relaxed">
                         {highlightTriggers(visibleSentence)}
                       </p>
                     </motion.div>
@@ -1348,10 +1348,10 @@ const rafTypingRef = useRef<number | null>(null);
               <button
                 onClick={startSimulation}
                 disabled={isPlaying || currentSentenceIdx !== -1}
-                className={`py-3 px-4 rounded-xl font-sans text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
+                className={`py-3 px-4 rounded-full font-sans text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
                   isPlaying || currentSentenceIdx !== -1
                     ? "bg-gray-800 text-gray-500 border border-transparent cursor-not-allowed"
-                    : "bg-[#3B82F6] text-[#F5F5F0] hover:bg-[#3B82F6]/90 cursor-pointer shadow-glow-md hover:shadow-glow-lg"
+                    : "bg-[#3ecf8e] text-[#fafafa] hover:bg-[#3ecf8e]/90 cursor-pointer shadow-glow-md hover:shadow-glow-lg"
                 }`}
               >
                 <Play className="w-3.5 h-3.5" />
@@ -1359,7 +1359,7 @@ const rafTypingRef = useRef<number | null>(null);
               </button>
               <button
                 onClick={resetSimulation}
-                className="py-3 px-4 rounded-xl font-sans text-xs font-bold bg-[#12141A] border border-white/[0.05] text-gray-400 hover:text-white hover:bg-white/[0.02] cursor-pointer transition-colors flex items-center justify-center gap-2"
+                className="py-3 px-4 rounded-xl font-sans text-xs font-bold bg-[#242424] border border-white/[0.05] text-gray-400 hover:text-white hover:bg-white/[0.02] cursor-pointer transition-colors flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 {btnReset}
@@ -1372,20 +1372,20 @@ const rafTypingRef = useRef<number | null>(null);
           <div className="lg:col-span-7 flex flex-col justify-between gap-6">
             
             {/* THREAT CLIMBER HUD */}
-            <ScanCard accent="59,130,246" padding="p-6">
+            <ScanCard accent="62,207,142" padding="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-mono text-xs font-bold text-gray-400 uppercase tracking-wider">
                   {threatMeterLabel}
                 </h4>
-                <span className={`font-mono text-xs font-black ${threatLevel >= 75 ? "text-[#EF4444]" : threatLevel >= 40 ? "text-amber-500" : "text-[#3B82F6]"}`}>
+                <span className={`font-mono text-xs font-black ${threatLevel >= 75 ? "text-[#EF4444]" : threatLevel >= 40 ? "text-amber-500" : "text-[#3ecf8e]"}`}>
                   {threatLevel}% {sui.threatFmt}
                 </span>
               </div>
               
               {/* Dynamic Progress Bar */}
-              <div className="w-full h-3.5 bg-[#0A0A0B] rounded-full overflow-hidden border border-white/[0.02] p-[2px]">
+              <div className="w-full h-3.5 bg-[#121212] rounded-full overflow-hidden border border-white/[0.02] p-[2px]">
                 <motion.div 
-                  className={`w-full h-full rounded-full origin-left ${threatLevel >= 75 ? "bg-[#EF4444]" : threatLevel >= 40 ? "bg-amber-500" : "bg-[#3B82F6]"} shadow-[0_0_12px_currentColor]`}
+                  className={`w-full h-full rounded-full origin-left ${threatLevel >= 75 ? "bg-[#EF4444]" : threatLevel >= 40 ? "bg-amber-500" : "bg-[#3ecf8e]"} shadow-[0_0_12px_currentColor]`}
                   initial={{ scaleX: 0.05 }}
                   animate={{ scaleX: threatLevel / 100 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
@@ -1397,10 +1397,10 @@ const rafTypingRef = useRef<number | null>(null);
                 <motion.div 
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="mt-4 p-3 rounded-xl bg-[#101B2B] border border-[#3B82F6]/30 flex items-center justify-center gap-2.5"
+                  className="mt-4 p-3 rounded-xl bg-[#1f4b37] border border-[#3ecf8e]/30 flex items-center justify-center gap-2.5"
                 >
-                  <ShieldCheck className="w-4 h-4 text-[#3B82F6] animate-pulse" />
-                  <span className="font-mono text-[10px] font-black tracking-wider text-[#3B82F6] uppercase">
+                  <ShieldCheck className="w-4 h-4 text-[#3ecf8e] animate-pulse" />
+                  <span className="font-mono text-[10px] font-black tracking-wider text-[#3ecf8e] uppercase">
                     {simulationFinishedLabel}
                   </span>
                 </motion.div>
@@ -1408,7 +1408,7 @@ const rafTypingRef = useRef<number | null>(null);
             </ScanCard>
 
             {/* 7 LAYER PIPELINE STATUS TRACKER */}
-            <ScanCard accent="59,130,246" cardClassName="flex-1" padding="p-6">
+            <ScanCard accent="62,207,142" cardClassName="flex-1" padding="p-6">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-mono text-xs font-bold text-gray-400 uppercase tracking-wider">
@@ -1432,9 +1432,9 @@ const rafTypingRef = useRef<number | null>(null);
                           isActive 
                             ? isThreatLayer && threatLevel >= 75
                               ? "bg-[#2E1010]/50 border-[#EF4444]/40 shadow-glow-danger"
-                              : "bg-[#0B1527]/60 border-[#3B82F6]/35" 
+                              : "bg-[#1f4b37]/60 border-[#3ecf8e]/35" 
                             : isScanning
-                              ? "bg-white/[0.01] border-[#3B82F6]/30 animate-pulse"
+                              ? "bg-white/[0.01] border-[#3ecf8e]/30 animate-pulse"
                               : "bg-transparent border-white/[0.02]"
                         }`}
                       >
@@ -1443,7 +1443,7 @@ const rafTypingRef = useRef<number | null>(null);
                             isActive
                               ? isThreatLayer && threatLevel >= 75
                                 ? "bg-[#EF4444]"
-                                : "bg-[#3B82F6]"
+                                : "bg-[#3ecf8e]"
                               : isScanning
                                 ? "bg-amber-400 animate-ping"
                                 : "bg-gray-800"
@@ -1463,7 +1463,7 @@ const rafTypingRef = useRef<number | null>(null);
                           isActive
                             ? isThreatLayer && threatLevel >= 75
                               ? "bg-[#EF4444]/15 text-[#EF4444]"
-                              : "bg-[#3B82F6]/15 text-[#3B82F6]"
+                              : "bg-[#3ecf8e]/15 text-[#3ecf8e]"
                             : isScanning
                               ? "bg-amber-400/10 text-amber-400"
                               : "bg-transparent text-gray-700"
@@ -1480,19 +1480,19 @@ const rafTypingRef = useRef<number | null>(null);
             </ScanCard>
 
             {/* REAL-TIME ENCRYPTED TERMINAL CONSOLE */}
-            <ScanCard accent="59,130,246" cardClassName="h-48" className="flex-col justify-between" padding="p-5">
+            <ScanCard accent="62,207,142" cardClassName="h-48" className="flex-col justify-between" padding="p-5">
               <div className="flex items-center gap-2 border-b border-white/[0.04] pb-2 mb-2">
                 <Terminal className="w-4 h-4 text-gray-500" />
                 <span className="font-mono text-[15px] text-gray-200 uppercase tracking-widest font-bold">
                   {logsLabel}
                 </span>
-                <span className="ml-auto w-2 h-2 rounded-full bg-[#3B82F6] animate-ping" />
+                <span className="ml-auto w-2 h-2 rounded-full bg-[#3ecf8e] animate-ping" />
               </div>
 
               <div className="flex-1 overflow-y-auto font-mono text-[12px] text-gray-400 text-left space-y-1.5 scrollbar-thin">
                 {consoleLogs.map((log, index) => {
                   let colorClass = "text-gray-400";
-                  if (log.startsWith("[OK]")) colorClass = "text-[#3B82F6]";
+                  if (log.startsWith("[OK]")) colorClass = "text-[#3ecf8e]";
                   else if (log.startsWith("[SUCCESS]") || log.startsWith("[DOME")) colorClass = "text-[#10B981] font-bold";
                   else if (log.startsWith("[WARN]")) colorClass = "text-amber-500";
                   else if (log.startsWith("[CRITICAL]") || log.startsWith("[ALERT]") || log.startsWith("[BLOCKED]")) colorClass = "text-[#EF4444] font-black";

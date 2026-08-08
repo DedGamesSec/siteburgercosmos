@@ -207,11 +207,11 @@ const FEATURES_BY_LANG: Partial<Record<LanguageCode, Array<{ title: string; desc
 };
 
 const FEATURE_ICONS = [
-  <Cpu className="w-5 h-5 text-[#3B82F6]" />,
-  <WifiOff className="w-5 h-5 text-[#3B82F6]" />,
-  <HardDrive className="w-5 h-5 text-[#3B82F6]" />,
-  <FileText className="w-5 h-5 text-[#3B82F6]" />,
-  <Bot className="w-5 h-5 text-[#3B82F6]" />
+  <Cpu className="w-5 h-5 text-[#3ecf8e]" />,
+  <WifiOff className="w-5 h-5 text-[#3ecf8e]" />,
+  <HardDrive className="w-5 h-5 text-[#3ecf8e]" />,
+  <FileText className="w-5 h-5 text-[#3ecf8e]" />,
+  <Bot className="w-5 h-5 text-[#3ecf8e]" />
 ];
 
 const KiraAssistantSection = React.memo(function KiraAssistantSection() {
@@ -231,12 +231,12 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]" 
+      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#2e2e2e]/30 bg-[#121212]" 
       id="kira-assistant"
     >
       {/* Background soft visual grid element */}
-      <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#3B82F6]/20 to-transparent pointer-events-none" />
-      <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#3ecf8e]/20 to-transparent pointer-events-none" />
+      <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         
@@ -255,7 +255,7 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
             </div>
           </div>
           
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#fafafa] tracking-tight mb-6">
             {title}
           </h2>
           
@@ -268,7 +268,7 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center max-w-5xl mx-auto">
           
           {/* Visual Voice Wave Simulation Block */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center p-8 rounded-xl bg-[#0A0A0B] border border-white/[0.04] relative overflow-hidden min-h-[300px]">
+          <div className="lg:col-span-5 flex flex-col items-center justify-center p-8 rounded-xl bg-[#121212] border border-white/[0.04] relative overflow-hidden min-h-[300px]">
             <div className="absolute top-4 left-4 font-mono text-[9px] text-amber-500 tracking-wider uppercase flex items-center gap-1.5">
               <Radio className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
               KIRA CONCEPT // DESIGN PHASE
@@ -279,24 +279,24 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
               {!ecoMode && (
                 <>
                   <motion.div
-                    className="absolute w-24 h-24 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
+                    className="absolute w-24 h-24 rounded-full bg-[#3ecf8e]/10 border border-[#3ecf8e]/25"
                     animate={{ scale: [0.7, 1.15], opacity: [0.7, 0] }}
                     transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 0 }}
                   />
                   <motion.div
-                    className="absolute w-24 h-24 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
+                    className="absolute w-24 h-24 rounded-full bg-[#3ecf8e]/10 border border-[#3ecf8e]/25"
                     animate={{ scale: [0.7, 1.15], opacity: [0.6, 0] }}
                     transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 0.8 }}
                   />
                   <motion.div
-                    className="absolute w-24 h-24 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
+                    className="absolute w-24 h-24 rounded-full bg-[#3ecf8e]/10 border border-[#3ecf8e]/25"
                     animate={{ scale: [0.7, 1.15], opacity: [0.5, 0] }}
                     transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 1.6 }}
                   />
                 </>
               )}
-              <div className={`absolute w-16 h-16 rounded-full bg-[#3B82F6]/20 border border-[#3B82F6]/30 ${ecoMode ? "" : "animate-pulse"}`} />
-              <div className="w-12 h-12 rounded-full bg-[#3B82F6] flex items-center justify-center shadow-glow-lg">
+              <div className={`absolute w-16 h-16 rounded-full bg-[#3ecf8e]/20 border border-[#3ecf8e]/30 ${ecoMode ? "" : "animate-pulse"}`} />
+              <div className="w-12 h-12 rounded-full bg-[#3ecf8e] flex items-center justify-center shadow-glow-lg">
                 <Bot className="w-6 h-6 text-white" />
               </div>
             </div>
@@ -306,7 +306,7 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
               {EQ_BASE.map((height, idx) => {
                 const props = {
                   key: idx,
-                  className: "w-[2px] bg-[#3B82F6]/60 rounded-full",
+                  className: "w-[2px] bg-[#3ecf8e]/60 rounded-full",
                 };
                 if (ecoMode) {
                   return <div {...props} style={{ height: `${height}px` }} />;
@@ -335,11 +335,11 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
                 padding="p-4"
                 className="flex-row items-start gap-4"
               >
-                <div className="w-10 h-10 rounded-xl bg-[#12141A]/50 border border-[#3B82F6]/15 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-[#242424]/50 border border-[#3ecf8e]/15 flex items-center justify-center shrink-0">
                   {feat.icon}
                 </div>
                 <div>
-                  <h4 className="font-display font-bold text-base text-[#F5F5F0] mb-1 group-hover:text-[#3B82F6] transition-all duration-300">
+                  <h4 className="font-display font-bold text-base text-[#fafafa] mb-1 group-hover:text-[#3ecf8e] transition-all duration-300">
                     {feat.title}
                   </h4>
                   <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">

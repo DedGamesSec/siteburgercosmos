@@ -27,7 +27,7 @@ const ScanCard = React.forwardRef<HTMLDivElement, ScanCardProps>(
     {
       icon,
       title,
-      accent = "59,130,246",
+      accent = "62,207,142",
       className = "",
       borderColor = "border-white/[0.04]",
       cardClassName = "",
@@ -47,7 +47,7 @@ const ScanCard = React.forwardRef<HTMLDivElement, ScanCardProps>(
         ref={ref}
         id={id}
         onClick={onClick}
-        className={`relative ${padding} rounded-xl bg-[#0A0A0B]/95 border ${borderColor} hover:border-[#3B82F6]/40 transition-all duration-300 group flex flex-col overflow-hidden ${cardClassName}`}
+        className={`relative ${padding} rounded-xl bg-[#121212]/95 border ${borderColor} hover:border-[#3ecf8e]/40 transition-all duration-300 group flex flex-col overflow-hidden ${cardClassName}`}
         onMouseEnter={() => { if (!ecoMode) setScan("active"); }}
         onMouseLeave={() => {
           if (!ecoMode) setScan((s) => (s === "active" ? "exiting" : s));
@@ -76,12 +76,12 @@ const ScanCard = React.forwardRef<HTMLDivElement, ScanCardProps>(
 
         <div className={`relative z-10 flex flex-col flex-1 ${className}`}>
           {icon && (
-            <div className="w-10 h-10 rounded-xl bg-[#12141A] flex items-center justify-center border border-[#3B82F6]/10 shrink-0 group-hover:border-[#3B82F6]/30 transition-all duration-300 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-[#242424] flex items-center justify-center border border-[#3ecf8e]/10 shrink-0 group-hover:border-[#3ecf8e]/30 transition-all duration-300 mb-4">
               {icon}
             </div>
           )}
           {title !== undefined && (
-            <h3 className="font-display font-bold text-base sm:text-lg text-[#F5F5F0] mb-2 group-hover:text-[#3B82F6] transition-all duration-300">
+            <h3 className="font-display font-bold text-base sm:text-lg text-[#fafafa] mb-2 group-hover:text-[#3ecf8e] transition-all duration-300">
               {title}
             </h3>
           )}

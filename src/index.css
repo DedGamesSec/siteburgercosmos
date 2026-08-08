@@ -8,27 +8,57 @@
 @source not "../**/*.md";
 
 @theme {
-  /* Typography: Exo 2 + Jura + JetBrains Mono — единый шрифтовой язык с ботом
-     (bot/card_generator.py: Exo2 для чисел/заголовков, Jura для подписей/текста) */
-  --font-sans: "Jura", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: "Exo 2", "Jura", ui-sans-serif, system-ui, sans-serif;
+  /* Typography: Manrope (Circular substitute) + JetBrains Mono (Source Code Pro substitute) */
+  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  /* 4-тирная статусная семантика — точные hex из bot/card_generator.py (ACCENT_DARK) */
-  --color-status-info: #3B82F6;   /* news — нейтральная информация */
+  /* Supabase-style palette — monochrome surfaces + rationed phosphor green */
+  --color-phosphor-green: #3ecf8e;
+  --color-mint-pulse: #00c573;
+  --color-forest-depth: #1f4b37;
+  --color-midnight-emerald: #006239;
+  --color-snow: #fafafa;
+  --color-silver-mist: #b4b4b4;
+  --color-smoke: #898989;
+  --color-graphite: #4d4d4d;
+  --color-slate: #393939;
+  --color-charcoal: #2e2e2e;
+  --color-ash: #242424;
+  --color-obsidian: #121212;
+
+  /* 4-тирная статусная семантика (наследие bot/card_generator.py) */
+  --color-status-info: #3ecf8e;   /* news — нейтральная информация */
   --color-status-danger: #EF4444; /* real_threat — критично/угроза */
   --color-status-warn: #FB923C;   /* medium — средний риск / частично готово */
   --color-status-safe: #2DD4BF;   /* safe — безопасно / готово */
 
-  /* Нейтральные графитовые панели (panel_fill/border_c из bot/card_generator.py) */
-  --color-panel: #12141A;
-  --color-panel-border: #3C404A;
+  /* Нейтральные графитовые панели */
+  --color-panel: #242424;
+  --color-panel-border: #2e2e2e;
 
-  /* Тени: только для активных/интерактивных индикаторов статуса, не для статичных карточек.
-     Базовые оттенки приведены к 4-тирной палитре, а не к декоративному синему #3B82F6. */
-  --shadow-glow-sm: 0 0 12px rgba(59, 130, 246, 0.15);
-  --shadow-glow-md: 0 0 24px rgba(59, 130, 246, 0.2);
-  --shadow-glow-lg: 0 0 40px rgba(59, 130, 246, 0.25);
+  /* Монохромная шкала серого (общая замена дефолтной Tailwind gray-* на палитру Supabase) */
+  --color-gray-100: #fafafa;
+  --color-gray-200: #b4b4b4;
+  --color-gray-300: #b4b4b4;
+  --color-gray-400: #898989;
+  --color-gray-500: #898989;
+  --color-gray-600: #4d4d4d;
+  --color-gray-700: #393939;
+  --color-gray-800: #2e2e2e;
+  --color-gray-900: #242424;
+  --color-gray-950: #121212;
+
+  /* Радиус-словарь: 9999px кнопки, 16px карточки, 8px инпуты */
+  --radius-tags: 9999px;
+  --radius-cards: 16px;
+  --radius-inputs: 8px;
+  --radius-buttons: 9999px;
+
+  /* Тени: только для активных/интерактивных индикаторов статуса, не для статичных карточек */
+  --shadow-glow-sm: 0 0 12px rgba(62, 207, 142, 0.15);
+  --shadow-glow-md: 0 0 24px rgba(62, 207, 142, 0.2);
+  --shadow-glow-lg: 0 0 40px rgba(62, 207, 142, 0.25);
   --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.25);
   --shadow-glow-success: 0 0 20px rgba(45, 212, 191, 0.15);
   --shadow-glow-warn: 0 0 20px rgba(251, 146, 60, 0.15);
@@ -38,7 +68,7 @@
   html {
     scrollbar-gutter: stable;
     scrollbar-width: thin;
-    scrollbar-color: #3C404A #0A0A0B;
+    scrollbar-color: #2e2e2e #121212;
   }
 
   html::-webkit-scrollbar {
@@ -46,17 +76,17 @@
   }
 
   html::-webkit-scrollbar-track {
-    background: #0A0A0B;
+    background: #121212;
   }
 
   html::-webkit-scrollbar-thumb {
-    background: #3C404A;
+    background: #2e2e2e;
     border-radius: 5px;
-    border: 2px solid #0A0A0B;
+    border: 2px solid #121212;
   }
 
   html::-webkit-scrollbar-thumb:hover {
-    background: #12141A;
+    background: #242424;
   }
 
   html, body {
@@ -66,14 +96,14 @@
     padding: 0;
   }
   body {
-    background-color: #0A0A0B;
-    color: #F5F5F0;
-    font-family: 'Jura', sans-serif;
+    background-color: #121212;
+    color: #fafafa;
+    font-family: 'Manrope', sans-serif;
     -webkit-tap-highlight-color: transparent;
   }
 
   :focus-visible {
-    outline: 2px solid #3B82F6;
+    outline: 2px solid #3ecf8e;
     outline-offset: 2px;
   }
 
@@ -132,9 +162,9 @@
 /* AppSecuritySection: brief RGB-split glitch on hover */
 @keyframes appsec-glitch {
   0%   { transform: translate(0, 0); text-shadow: 0 0 0 transparent; }
-  20%  { transform: translate(-1.5px, 0.5px); text-shadow: 1.5px 0 #3B82F6, -1.5px 0 rgba(255,80,120,0.6); clip-path: inset(0 0 55% 0); }
-  40%  { transform: translate(1px, -0.5px); text-shadow: -1px 0 rgba(255,80,120,0.6), 1px 0 #3B82F6; clip-path: inset(45% 0 0 0); }
-  60%  { transform: translate(-0.5px, 0); text-shadow: 0.5px 0 #3B82F6, -0.5px 0 rgba(255,80,120,0.5); }
+  20%  { transform: translate(-1.5px, 0.5px); text-shadow: 1.5px 0 #3ecf8e, -1.5px 0 rgba(255,80,120,0.6); clip-path: inset(0 0 55% 0); }
+  40%  { transform: translate(1px, -0.5px); text-shadow: -1px 0 rgba(255,80,120,0.6), 1px 0 #3ecf8e; clip-path: inset(45% 0 0 0); }
+  60%  { transform: translate(-0.5px, 0); text-shadow: 0.5px 0 #3ecf8e, -0.5px 0 rgba(255,80,120,0.5); }
   100% { transform: translate(0, 0); text-shadow: 0 0 0 transparent; }
 }
 .group:hover .appsec-glitch {

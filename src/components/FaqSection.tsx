@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { HelpCircle, ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslation } from "../i18n/LanguageContext";
@@ -13,17 +13,17 @@ export default function FaqSection() {
   return (
     <section
       id="faq"
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden"
+      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#2e2e2e]/30 bg-[#121212] overflow-hidden"
     >
       <div className="max-w-3xl mx-auto relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3C404A] border border-[#3B82F6]/20 mb-6">
-            <HelpCircle className="w-3.5 h-3.5 text-[#3B82F6]" />
-            <span className="font-mono text-[10px] sm:text-xs font-semibold tracking-wider text-[#3B82F6] uppercase">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2e2e2e] border border-[#3ecf8e]/20 mb-6">
+            <HelpCircle className="w-3.5 h-3.5 text-[#3ecf8e]" />
+            <span className="font-mono text-[10px] sm:text-xs font-semibold tracking-wider text-[#3ecf8e] uppercase">
               {t.faq.badge}
             </span>
           </div>
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#fafafa] tracking-tight mb-6">
             {t.faq.title}
           </h2>
           <p className="font-sans text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
@@ -38,8 +38,8 @@ export default function FaqSection() {
               <ScanCard
                 key={index}
                 padding="p-0"
-                borderColor={isOpen ? "border-[#3B82F6]/30" : "border-white/[0.06]"}
-                cardClassName="bg-[#12141A]"
+                borderColor={isOpen ? "border-[#3ecf8e]/30" : "border-white/[0.06]"}
+                cardClassName="bg-[#242424]"
               >
                 <button
                   type="button"
@@ -49,12 +49,12 @@ export default function FaqSection() {
                   className="w-full flex items-center justify-between gap-4 p-5 sm:p-6 text-left cursor-pointer"
                 >
                   <span
-                    className={`font-display font-bold text-sm sm:text-base ${isOpen ? "text-[#F5F5F0]" : "text-gray-300"}`}
+                    className={`font-display font-bold text-sm sm:text-base ${isOpen ? "text-[#fafafa]" : "text-gray-300"}`}
                   >
                     {item.q}
                   </span>
                   <ChevronDown
-                    className={`w-5 h-5 shrink-0 transition-transform duration-300 text-[#3B82F6] ${isOpen ? "rotate-180" : ""}`}
+                    className={`w-5 h-5 shrink-0 transition-transform duration-300 text-[#3ecf8e] ${isOpen ? "rotate-180" : ""}`}
                   />
                 </button>
                 <AnimatePresence initial={false}>

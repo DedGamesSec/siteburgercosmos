@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { ChevronRight, Home } from "lucide-react";
 import { useNavigation, PageId } from "../navigation/NavigationContext";
 import { useTranslation } from "../i18n/LanguageContext";
@@ -19,17 +19,17 @@ export default function Breadcrumbs({ currentPage }: BreadcrumbsProps) {
   if (currentPage === "home" || !isConfiguredPage) return null;
 
   return (
-    <div className="w-full bg-[#0A0A0B]/80 backdrop-blur-md border-b border-[#3C404A]/30 pt-20 pb-3 px-4 z-40">
+    <div className="w-full bg-[#121212]/80 backdrop-blur-md border-b border-[#2e2e2e]/30 pt-20 pb-3 px-4 z-40">
       <div className="max-w-6xl mx-auto flex items-center gap-2 text-xs font-mono">
         <button
           onClick={() => navigateTo("home")}
-          className="flex items-center gap-1.5 text-gray-400 hover:text-[#3B82F6] transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 text-gray-400 hover:text-[#3ecf8e] transition-colors cursor-pointer"
         >
           <Home className="w-3.5 h-3.5" />
           <span>{labels.home}</span>
         </button>
         <ChevronRight className="w-3.5 h-3.5 text-gray-600" />
-        <span className="text-[#3B82F6] font-semibold">{currentLabel}</span>
+        <span className="text-[#3ecf8e] font-semibold">{currentLabel}</span>
       </div>
     </div>
   );

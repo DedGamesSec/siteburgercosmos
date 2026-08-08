@@ -468,8 +468,8 @@ export default function ComparisonSection() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 400, damping: 22 }}
         >
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 border border-dashed border-blue-400/40 text-blue-400 font-mono text-[10px] sm:text-xs target-pulse">
-            <HelpCircle className="w-3.5 h-3.5 text-blue-400" />
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#3ecf8e]/10 border border-dashed border-[#3ecf8e]/40 text-[#00c573] font-mono text-[10px] sm:text-xs target-pulse">
+            <HelpCircle className="w-3.5 h-3.5 text-[#00c573]" />
             <span>{localComp.targetIndicator}</span>
           </div>
         </motion.div>
@@ -480,33 +480,33 @@ export default function ComparisonSection() {
   };
 
   return (
-    <div className="relative w-full min-h-screen pt-8 pb-16 px-4 flex flex-col items-center justify-start bg-[#0A0A0B] overflow-hidden select-none" id="comparison-root">
+    <div className="relative w-full min-h-screen pt-8 pb-16 px-4 flex flex-col items-center justify-start bg-[#121212] overflow-hidden select-none" id="comparison-root">
       {/* Dynamic ambient layout grids */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(18,24,38,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(18,24,38,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.04)_0%,transparent_70%)] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.04)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.03)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="w-full max-w-6xl mx-auto flex flex-col relative z-10">
         
         {/* Go back header */}
         <button 
           onClick={() => navigateTo("home")}
-          className="self-start mb-8 font-mono text-xs text-gray-500 hover:text-[#3B82F6] flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/[0.04] bg-white/[0.02] transition-colors cursor-pointer"
+          className="self-start mb-8 font-mono text-xs text-gray-500 hover:text-[#3ecf8e] flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/[0.04] bg-white/[0.02] transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>{localComp.backToMain}</span>
         </button>
 
         {/* Badge */}
-        <div className="inline-flex self-center items-center gap-2 px-3 py-1 bg-[#12141A]/40 border border-[#3B82F6]/20 rounded-full mb-4">
-          <Sparkles className="w-3 h-3 text-[#3B82F6]" />
-          <span className="font-mono text-xs font-bold tracking-[0.18em] text-[#3B82F6] uppercase">
+        <div className="inline-flex self-center items-center gap-2 px-3 py-1 bg-[#242424]/40 border border-[#3ecf8e]/20 rounded-full mb-4">
+          <Sparkles className="w-3 h-3 text-[#3ecf8e]" />
+          <span className="font-mono text-xs font-bold tracking-[0.18em] text-[#3ecf8e] uppercase">
             {cp.badge}
           </span>
         </div>
 
         {/* Title */}
-        <h1 className="font-display font-black text-3xl sm:text-5xl text-[#F5F5F0] text-center tracking-tight mb-4 filter drop-shadow-glow-sm">
+        <h1 className="font-display font-black text-3xl sm:text-5xl text-[#fafafa] text-center tracking-tight mb-4 filter drop-shadow-glow-sm">
           {cp.title}
         </h1>
         <p className="font-sans text-sm sm:text-base text-gray-500 text-center max-w-2xl mx-auto mb-6 leading-relaxed">
@@ -514,15 +514,15 @@ export default function ComparisonSection() {
         </p>
 
         {/* Product status info box */}
-        <div className="max-w-3xl mx-auto mb-8 px-4 py-2.5 rounded-xl border border-blue-500/10 bg-blue-500/[0.02] text-center flex items-center justify-center gap-2">
-          <HelpCircle className="w-4 h-4 text-blue-400 shrink-0 animate-pulse" />
-          <span className="font-sans text-xs text-blue-300 font-medium leading-relaxed">
+        <div className="max-w-3xl mx-auto mb-8 px-4 py-2.5 rounded-xl border border-[#3ecf8e]/10 bg-[#3ecf8e]/[0.02] text-center flex items-center justify-center gap-2">
+          <HelpCircle className="w-4 h-4 text-[#00c573] shrink-0 animate-pulse" />
+          <span className="font-sans text-xs text-[#a7e8cf] font-medium leading-relaxed">
             {localComp.roadmapInfo}
           </span>
         </div>
 
         {/* Interactive Selector badges */}
-        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/20" cardClassName="bg-[#12141A]" padding="p-6 mb-8" className="w-full">
+        <ScanCard accent="62,207,142" borderColor="border-[#2e2e2e]/20" cardClassName="bg-[#242424]" padding="p-6 mb-8" className="w-full">
           {/* Mode Switcher */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6 pb-5 border-b border-white/[0.04]">
             <span className="font-mono text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider font-bold">
@@ -533,7 +533,7 @@ export default function ComparisonSection() {
                 onClick={() => handleModeChange("multi")}
                 className={`px-3 py-1.5 rounded-xl font-sans text-xs font-semibold transition-all duration-300 cursor-pointer ${
                   comparisonMode === "multi"
-                    ? "bg-[#3B82F6] text-white shadow-[0_2px_8px_rgba(59,130,246,0.3)]"
+                    ? "bg-[#3ecf8e] text-white shadow-[0_2px_8px_rgba(62,207,142,0.3)]"
                     : "text-gray-400 hover:text-gray-200"
                 }`}
               >
@@ -543,7 +543,7 @@ export default function ComparisonSection() {
                 onClick={() => handleModeChange("single")}
                 className={`px-3 py-1.5 rounded-xl font-sans text-xs font-semibold transition-all duration-300 cursor-pointer ${
                   comparisonMode === "single"
-                    ? "bg-[#3B82F6] text-white shadow-[0_2px_8px_rgba(59,130,246,0.3)]"
+                    ? "bg-[#3ecf8e] text-white shadow-[0_2px_8px_rgba(62,207,142,0.3)]"
                     : "text-gray-400 hover:text-gray-200"
                 }`}
               >
@@ -568,7 +568,7 @@ export default function ComparisonSection() {
             </button>
             <button
               onClick={() => { setComparisonMode("single"); setSelectedCompIds(["phishbowl"]); }}
-              className="px-3 py-1.5 rounded-xl font-sans text-xs font-semibold border border-dashed border-violet-500/30 bg-violet-500/5 text-violet-400 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all duration-300 cursor-pointer"
+              className="px-3 py-1.5 rounded-xl font-sans text-xs font-semibold border border-dashed border-[#3ecf8e]/30 bg-[#3ecf8e]/5 text-[#3ecf8e] hover:bg-[#3ecf8e]/10 hover:border-[#3ecf8e]/50 transition-all duration-300 cursor-pointer"
             >
               {localComp.presetNiche}
             </button>
@@ -582,7 +582,7 @@ export default function ComparisonSection() {
                   onClick={() => toggleCompetitor(comp.id)}
                   className={`px-3 py-1.5 rounded-xl font-sans text-xs font-semibold border transition-all duration-300 cursor-pointer ${
                     active
-                      ? "bg-[#3B82F6]/15 border-[#3B82F6] text-white shadow-glow-md"
+                      ? "bg-[#3ecf8e]/15 border-[#3ecf8e] text-white shadow-glow-md"
                       : "bg-white/[0.02] border-white/[0.06] text-gray-400 hover:border-white/[0.15] hover:text-gray-200"
                   }`}
                 >
@@ -599,21 +599,21 @@ export default function ComparisonSection() {
         </ScanCard>
 
         {/* Table Container card */}
-        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/30" cardClassName="bg-[#12141A] backdrop-blur-md overflow-hidden mb-8" padding="p-4 sm:p-6" className="w-full">
+        <ScanCard accent="62,207,142" borderColor="border-[#2e2e2e]/30" cardClassName="bg-[#242424] backdrop-blur-md overflow-hidden mb-8" padding="p-4 sm:p-6" className="w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
             className="w-full"
           >
-          <div className="w-full overflow-x-auto rounded-xl border border-white/[0.04] bg-[#0A0A0B]/50">
+          <div className="w-full overflow-x-auto rounded-xl border border-white/[0.04] bg-[#121212]/50">
             <table className="w-full min-w-[900px] border-collapse text-left">
               <thead>
                 <tr className="border-b border-white/[0.06] bg-white/[0.01]">
                   <th className="p-4 sm:p-5 font-mono text-xs sm:text-sm font-extrabold text-gray-500 uppercase tracking-wider w-[24%]">
                     {cp.thFeature}
                   </th>
-                  <th className="p-4 sm:p-5 font-display font-black text-xs sm:text-sm text-[#3B82F6] uppercase tracking-wider w-[19%] bg-[#3B82F6]/5">
+                  <th className="p-4 sm:p-5 font-display font-black text-xs sm:text-sm text-[#3ecf8e] uppercase tracking-wider w-[19%] bg-[#3ecf8e]/5">
                     {cp.thTrustNode}
                   </th>
                   {selectedCompIds.map(compId => {
@@ -642,7 +642,7 @@ export default function ComparisonSection() {
                       </td>
 
                       {/* TrustNode */}
-                      <td className="p-4 sm:p-5 bg-[#3B82F6]/[0.02] border-x border-[#3B82F6]/10 font-sans">
+                      <td className="p-4 sm:p-5 bg-[#3ecf8e]/[0.02] border-x border-[#3ecf8e]/10 font-sans">
                         {renderCellStatus(row.trustNode)}
                       </td>
 
@@ -661,8 +661,8 @@ export default function ComparisonSection() {
                   <td className="p-4 sm:p-5 font-sans text-xs sm:text-sm font-medium text-gray-300">
                     {cp.features.pricing}
                   </td>
-                  <td className="p-4 sm:p-5 bg-[#3B82F6]/[0.02] border-x border-[#3B82F6]/10 font-sans">
-                    <span className="text-[#3B82F6] font-sans text-xs font-semibold">{cp.pricingValues.trustNode}</span>
+                  <td className="p-4 sm:p-5 bg-[#3ecf8e]/[0.02] border-x border-[#3ecf8e]/10 font-sans">
+                    <span className="text-[#3ecf8e] font-sans text-xs font-semibold">{cp.pricingValues.trustNode}</span>
                   </td>
                   {selectedCompIds.map(compId => (
                     <td key={compId} className="p-4 sm:p-5 font-sans">
@@ -677,7 +677,7 @@ export default function ComparisonSection() {
         </ScanCard>
 
         {/* Disclaimer section */}
-        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/30" cardClassName="bg-[#12141A] backdrop-blur-md" padding="p-6 sm:p-8" className="max-w-2xl mx-auto items-center text-center">
+        <ScanCard accent="62,207,142" borderColor="border-[#2e2e2e]/30" cardClassName="bg-[#242424] backdrop-blur-md" padding="p-6 sm:p-8" className="max-w-2xl mx-auto items-center text-center">
           <p className="font-sans text-xs text-gray-500 leading-relaxed mb-6">
             {cp.disclaimer}
           </p>
@@ -685,7 +685,7 @@ export default function ComparisonSection() {
             href="https://t.me/TrustNode_team"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#3B82F6] text-white font-sans text-xs font-bold hover:bg-[#3B82F6]/90 transition-all cursor-pointer shadow-glow-md hover:shadow-glow-lg"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#3ecf8e] text-white font-sans text-xs font-bold hover:bg-[#3ecf8e]/90 transition-all cursor-pointer shadow-glow-md hover:shadow-glow-lg"
           >
             <Send className="w-4 h-4" />
             <span>{cp.telegramBtn}</span>

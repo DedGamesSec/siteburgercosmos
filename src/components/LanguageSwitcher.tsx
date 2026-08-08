@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { Globe, Check } from "lucide-react";
 import { LANGUAGES } from "../i18n/languages";
@@ -75,7 +75,7 @@ export default function LanguageSwitcher({ variant = "desktop" }: LanguageSwitch
   }, [isOpen, close]);
 
   const buttonClass =
-    "inline-flex items-center justify-center w-11 h-11 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300 cursor-pointer";
+    "inline-flex items-center justify-center w-11 h-11 rounded-xl bg-[#121212]/60 border border-[#3ecf8e]/30 text-[#3ecf8e] hover:text-white hover:bg-[#3ecf8e]/20 transition-all duration-300 cursor-pointer";
 
   return (
     <div className="relative" ref={containerRef} id={`language-switcher-${variant}`}>
@@ -97,7 +97,7 @@ export default function LanguageSwitcher({ variant = "desktop" }: LanguageSwitch
             id={MENU_ID}
             role="listbox"
             aria-label="Language"
-            className="fixed z-[9999] w-[min(calc(100vw-16px),20rem)] sm:w-56 max-h-[calc(100vh-16px)] overflow-y-auto grid grid-cols-2 sm:grid-cols-1 rounded-xl border border-[#3C404A] bg-[#0A0A0B] backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.5)] py-1.5 animate-fade-in"
+            className="fixed z-[9999] w-[min(calc(100vw-16px),20rem)] sm:w-56 max-h-[calc(100vh-16px)] overflow-y-auto grid grid-cols-2 sm:grid-cols-1 rounded-xl border border-[#2e2e2e] bg-[#121212] backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.5)] py-1.5 animate-fade-in"
             style={{ top: position.top, left: position.left }}
           >
             {LANGUAGES.map((lang) => (
@@ -110,8 +110,8 @@ export default function LanguageSwitcher({ variant = "desktop" }: LanguageSwitch
                 }}
                 className={`w-full flex items-center justify-between gap-2 px-3.5 py-2 text-sm font-sans text-left transition-colors cursor-pointer ${
                   lang.code === language
-                    ? "text-[#3B82F6] bg-[#3B82F6]/10"
-                    : "text-gray-300 hover:bg-[#3C404A]/50 hover:text-white"
+                    ? "text-[#3ecf8e] bg-[#3ecf8e]/10"
+                    : "text-gray-300 hover:bg-[#2e2e2e]/50 hover:text-white"
                 }`}
                 role="option"
                 aria-selected={lang.code === language}

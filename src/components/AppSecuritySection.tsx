@@ -255,10 +255,10 @@ const FEATURES_BY_LANG: Partial<Record<LanguageCode, Array<{ title: string; desc
 };
 
 const FEATURE_ICONS = [
-  <Lock className="w-5 h-5 text-[#3B82F6]" />,
-  <Shield className="w-5 h-5 text-[#3B82F6]" />,
-  <RefreshCw className="w-5 h-5 text-[#3B82F6]" />,
-  <Eye className="w-5 h-5 text-[#3B82F6]" />
+  <Lock className="w-5 h-5 text-[#3ecf8e]" />,
+  <Shield className="w-5 h-5 text-[#3ecf8e]" />,
+  <RefreshCw className="w-5 h-5 text-[#3ecf8e]" />,
+  <Eye className="w-5 h-5 text-[#3ecf8e]" />
 ];
 
 type ScanState = "idle" | "active" | "exiting";
@@ -275,7 +275,7 @@ const SecurityCard: React.FC<SecurityCardProps> = ({ feat, className, ecoMode })
 
   return (
     <div
-      className={`relative p-6 sm:p-8 rounded-xl bg-[#0A0A0B]/95 border border-white/[0.04] hover:border-[#3B82F6]/40 transition-all duration-300 group flex gap-5 overflow-hidden ${className}`}
+      className={`relative p-6 sm:p-8 rounded-xl bg-[#121212]/95 border border-white/[0.04] hover:border-[#3ecf8e]/40 transition-all duration-300 group flex gap-5 overflow-hidden ${className}`}
       onMouseEnter={() => { if (!ecoMode) setScan("active"); }}
       onMouseLeave={() => {
         if (!ecoMode) setScan((s) => (s === "active" ? "exiting" : s));
@@ -288,8 +288,8 @@ const SecurityCard: React.FC<SecurityCardProps> = ({ feat, className, ecoMode })
           <motion.div
             className="absolute left-0 w-full h-[2px]"
             style={{
-              background: "linear-gradient(to right, transparent, rgba(59,130,246,0.5), transparent)",
-              boxShadow: "0 0 10px rgba(59,130,246,0.35)",
+              background: "linear-gradient(to right, transparent, rgba(62,207,142,0.5), transparent)",
+              boxShadow: "0 0 10px rgba(62,207,142,0.35)",
             }}
             animate={scan === "active" ? { top: ["-12%", "102%"] } : { top: "102%" }}
             transition={
@@ -303,11 +303,11 @@ const SecurityCard: React.FC<SecurityCardProps> = ({ feat, className, ecoMode })
           />
         </div>
       )}
-      <div className="w-10 h-10 rounded-xl bg-[#12141A] flex items-center justify-center border border-[#3B82F6]/10 shrink-0 group-hover:border-[#3B82F6]/30 transition-all duration-300">
+      <div className="w-10 h-10 rounded-xl bg-[#242424] flex items-center justify-center border border-[#3ecf8e]/10 shrink-0 group-hover:border-[#3ecf8e]/30 transition-all duration-300">
         {feat.icon}
       </div>
       <div>
-        <h3 className="font-display font-bold text-base sm:text-lg text-[#F5F5F0] mb-2 group-hover:text-[#3B82F6] transition-all duration-300 group-hover:appsec-glitch">
+        <h3 className="font-display font-bold text-base sm:text-lg text-[#fafafa] mb-2 group-hover:text-[#3ecf8e] transition-all duration-300 group-hover:appsec-glitch">
           {feat.title}
         </h3>
         <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">
@@ -337,12 +337,12 @@ const AppSecuritySection = React.memo(function AppSecuritySection() {
 
   return (
     <section 
-      className="relative w-full pt-8 pb-16 sm:pt-10 sm:pb-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]" 
+      className="relative w-full pt-8 pb-16 sm:pt-10 sm:pb-20 px-4 border-t border-[#2e2e2e]/30 bg-[#121212]" 
       id="app-security"
     >
       {/* Background soft tech visual accents */}
-      <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[#3B82F6]/[0.02] to-transparent pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.02)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+      <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[#3ecf8e]/[0.02] to-transparent pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.02)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         
@@ -356,7 +356,7 @@ const AppSecuritySection = React.memo(function AppSecuritySection() {
         >
           <SectionBadge variant="brackets" label={badgeText} className="mb-6" />
           
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#fafafa] tracking-tight mb-6">
             {title}
           </h2>
           
@@ -386,12 +386,12 @@ const AppSecuritySection = React.memo(function AppSecuritySection() {
         </div>
 
         {/* Technical Architecture Info Row */}
-        <div className="mt-16 p-6 rounded-xl border border-[#3B82F6]/15 bg-[#090F1B]/40 backdrop-blur-md max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-5">
-          <div className="w-12 h-12 rounded-full bg-[#3B82F6]/10 flex items-center justify-center shrink-0 border border-[#3B82F6]/20">
-            <AlertCircle className="w-6 h-6 text-[#3B82F6]" />
+        <div className="mt-16 p-6 rounded-xl border border-[#3ecf8e]/15 bg-[#1f4b37]/40 backdrop-blur-md max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-5">
+          <div className="w-12 h-12 rounded-full bg-[#3ecf8e]/10 flex items-center justify-center shrink-0 border border-[#3ecf8e]/20">
+            <AlertCircle className="w-6 h-6 text-[#3ecf8e]" />
           </div>
           <div className="text-center sm:text-left">
-            <h4 className="font-mono text-xs font-bold text-[#F5F5F0] uppercase tracking-wider mb-1">
+            <h4 className="font-mono text-xs font-bold text-[#fafafa] uppercase tracking-wider mb-1">
               {complianceLabel}
             </h4>
             <p className="font-sans text-[11px] sm:text-xs text-gray-400 leading-relaxed">

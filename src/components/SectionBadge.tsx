@@ -10,7 +10,7 @@ interface SectionBadgeProps {
 }
 
 const LABEL =
-  "font-mono text-[10px] sm:text-xs font-semibold tracking-wider text-[#3B82F6] uppercase";
+  "font-mono text-[10px] sm:text-xs font-semibold tracking-wider text-[#3ecf8e] uppercase";
 
 const SectionBadge: React.FC<SectionBadgeProps> = ({
   variant = "pill",
@@ -24,7 +24,7 @@ const SectionBadge: React.FC<SectionBadgeProps> = ({
         {icon}
         <span
           aria-hidden
-          className="font-mono text-sm sm:text-base font-bold leading-none text-[#3B82F6]/40"
+          className="font-mono text-sm sm:text-base font-bold leading-none text-[#3ecf8e]/40"
         >
           /
         </span>
@@ -36,13 +36,13 @@ const SectionBadge: React.FC<SectionBadgeProps> = ({
   if (variant === "brackets") {
     return (
       <div
-        className={`inline-flex items-center justify-center gap-2 border-b border-[#3B82F6]/25 pb-2 ${className}`}
+        className={`inline-flex items-center justify-center gap-2 border-b border-[#3ecf8e]/25 pb-2 ${className}`}
       >
-        <span aria-hidden className="font-mono font-semibold text-[#3B82F6]/45">
+        <span aria-hidden className="font-mono font-semibold text-[#3ecf8e]/45">
           [
         </span>
         <span className={LABEL}>{label}</span>
-        <span aria-hidden className="font-mono font-semibold text-[#3B82F6]/45">
+        <span aria-hidden className="font-mono font-semibold text-[#3ecf8e]/45">
           ]
         </span>
       </div>
@@ -51,7 +51,7 @@ const SectionBadge: React.FC<SectionBadgeProps> = ({
 
   return (
     <div
-      className={`inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-[#12141A] border border-[#3B82F6]/30 ${className}`}
+      className={`inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-[#242424] border border-[#3ecf8e]/30 ${className}`}
     >
       {icon}
       <span className={LABEL}>{label}</span>

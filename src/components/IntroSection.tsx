@@ -252,7 +252,7 @@ const DICT: Record<string, { badge: string; title: string; subtitle: string; ste
 
 const ICONS = [HelpCircle, Shield, Eye];
 const COLORS = [
-  "border-[#3B82F6]/40 text-[#3B82F6] bg-[#3B82F6]/5",
+  "border-[#3ecf8e]/40 text-[#3ecf8e] bg-[#3ecf8e]/5",
   "border-[#2DD4BF]/40 text-[#2DD4BF] bg-[#2DD4BF]/5",
   "border-[#FB923C]/40 text-[#FB923C] bg-[#FB923C]/5"
 ];
@@ -264,7 +264,7 @@ const IntroSection = React.memo(function IntroSection() {
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/40 bg-[#0A0A0B]" 
+      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#2e2e2e]/40 bg-[#121212]" 
       id="intro-simplified"
     >
       <div className="max-w-6xl mx-auto relative z-10">
@@ -272,7 +272,7 @@ const IntroSection = React.memo(function IntroSection() {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <SectionBadge variant="brackets" label={content.badge} className="mb-6" />
 
-          <h2 className="font-display font-bold text-2xl sm:text-4xl text-[#F5F5F0] tracking-tight mb-4">
+          <h2 className="font-display font-bold text-2xl sm:text-4xl text-[#fafafa] tracking-tight mb-4">
             {content.title}
           </h2>
           
@@ -303,7 +303,7 @@ const IntroSection = React.memo(function IntroSection() {
                     </div>
 
                     {/* Title */}
-                    <h3 className="font-display font-bold text-lg text-[#F5F5F0] mb-3 group-hover:text-[#3B82F6] transition-all duration-300">
+                    <h3 className="font-display font-bold text-lg text-[#fafafa] mb-3 group-hover:text-[#3ecf8e] transition-all duration-300">
                       {step.title}
                     </h3>
 
@@ -315,7 +315,7 @@ const IntroSection = React.memo(function IntroSection() {
 
                   {/* Connecting arrow indicator for visual flow (except last card) */}
                   {idx < 2 && (
-                    <div className="hidden md:flex absolute top-1/2 -right-4 -translate-y-1/2 z-20 w-8 h-8 rounded-sm bg-[#0A0A0B] border border-[#3C404A] items-center justify-center text-gray-500">
+                    <div className="hidden md:flex absolute top-1/2 -right-4 -translate-y-1/2 z-20 w-8 h-8 rounded-sm bg-[#121212] border border-[#2e2e2e] items-center justify-center text-gray-500">
                       <ArrowRight className="w-3.5 h-3.5" />
                     </div>
                   )}

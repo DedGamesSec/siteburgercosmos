@@ -61,10 +61,10 @@ const ProblemSection = React.memo(function ProblemSection() {
   // Accent animated panels, one per problem (kept from the old cards)
   const problemVisuals: React.ReactNode[] = [
     // SOCIAL ENGINEERING CALL SPOOFING
-    <div key="v1" className="w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-white/[0.04] bg-[#12141A] relative flex flex-col justify-between p-4 font-mono">
+    <div key="v1" className="w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-white/[0.04] bg-[#242424] relative flex flex-col justify-between p-4 font-mono">
       <div className="flex justify-between items-center text-[12px] text-gray-500 pb-2 border-b border-white/[0.03]">
         <span>SIM_SLOT_01: ACTIVE</span>
-        <span className="text-[#3B82F6] font-bold">LTE</span>
+        <span className="text-[#3ecf8e] font-bold">LTE</span>
       </div>
 
       <div className="flex flex-col items-center justify-center my-auto text-center">
@@ -114,7 +114,7 @@ const ProblemSection = React.memo(function ProblemSection() {
     </div>,
 
     // PRIVACY LEAKS TO CLOUD SERVERS
-    <div key="v2" className="w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-white/[0.04] bg-[#12141A] relative flex flex-col justify-between p-4 font-mono">
+    <div key="v2" className="w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-white/[0.04] bg-[#242424] relative flex flex-col justify-between p-4 font-mono">
       <div className="flex justify-between items-center text-[12px] text-gray-500">
         <span>SSL_INSPECTOR: TRANSPARENT</span>
         <span className="text-red-400 font-bold">{sim.leak}</span>
@@ -155,7 +155,7 @@ const ProblemSection = React.memo(function ProblemSection() {
     </div>,
 
     // INERT / OFFLINE WITHOUT NETWORK
-    <div key="v3" className="w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-white/[0.04] bg-[#12141A] relative flex flex-col justify-between p-4 font-mono">
+    <div key="v3" className="w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-white/[0.04] bg-[#242424] relative flex flex-col justify-between p-4 font-mono">
       <div className="flex justify-between items-center text-[12px] text-gray-500">
         <span>CONN: DISCONNECTED</span>
         <span className="text-red-400 font-bold">OFFLINE</span>
@@ -205,11 +205,11 @@ const ProblemSection = React.memo(function ProblemSection() {
 
   return (
     <section 
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden" 
+      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#2e2e2e]/30 bg-[#121212] overflow-hidden" 
       id="problem"
     >
       {/* Background glow accent */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.04)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.04)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         
@@ -217,9 +217,9 @@ const ProblemSection = React.memo(function ProblemSection() {
         <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
           <SectionBadge variant="slash" label={t.problem.badge} className="mb-6" />
           
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#fafafa] tracking-tight mb-6">
             {t.problem.titleLine1} <br className="hidden sm:inline" />
-            <span className="text-[#3B82F6]">{t.problem.titleHighlight}</span>
+            <span className="text-[#3ecf8e]">{t.problem.titleHighlight}</span>
           </h2>
           
           <p className="font-sans text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
@@ -239,12 +239,12 @@ const ProblemSection = React.memo(function ProblemSection() {
               <div className={i % 2 === 1 ? "md:order-2" : "md:order-1"}>
                 <ScanCard className="h-full">
                   <div className="flex items-center gap-3 mb-5">
-                    <span className="font-mono text-6xl sm:text-7xl font-black text-[#3C404A] leading-none select-none">
+                    <span className="font-mono text-6xl sm:text-7xl font-black text-[#2e2e2e] leading-none select-none">
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    <div className={`h-[2px] flex-1 ${i === 1 ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-[#3B82F6]/40 to-transparent`} />
+                    <div className={`h-[2px] flex-1 ${i === 1 ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-[#3ecf8e]/40 to-transparent`} />
                   </div>
-                  <h3 className="font-display font-bold text-3xl sm:text-4xl text-[#F5F5F0] mb-4 group-hover:text-[#3B82F6] transition-all duration-300">
+                  <h3 className="font-display font-bold text-3xl sm:text-4xl text-[#fafafa] mb-4 group-hover:text-[#3ecf8e] transition-all duration-300">
                     {problem.title}
                   </h3>
                   <p className="font-sans text-sm sm:text-base text-gray-400 leading-relaxed">

@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Calculator, ShieldCheck } from "lucide-react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
@@ -41,14 +41,14 @@ export default function DamageCalculator() {
   return (
     <section
       id="damage-calculator"
-      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#3C404A]/30 bg-[#0A0A0B] overflow-hidden"
+      className="relative w-full py-16 sm:py-20 px-4 border-t border-[#2e2e2e]/30 bg-[#121212] overflow-hidden"
     >
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-[radial-gradient(circle_at_center,rgba(62,207,142,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
 
       <div className="max-w-4xl mx-auto relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <SectionBadge variant="slash" icon={<Calculator className="w-3.5 h-3.5 text-[#3B82F6]" />} label={t.damageCalc.badge} className="mb-6" />
-          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#F5F5F0] tracking-tight mb-6">
+          <SectionBadge variant="slash" icon={<Calculator className="w-3.5 h-3.5 text-[#3ecf8e]" />} label={t.damageCalc.badge} className="mb-6" />
+          <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#fafafa] tracking-tight mb-6">
             {t.damageCalc.title}
           </h2>
           <p className="font-sans text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
@@ -56,7 +56,7 @@ export default function DamageCalculator() {
           </p>
         </div>
 
-        <ScanCard accent="59,130,246" borderColor="border-white/[0.06]" cardClassName="bg-[#12141A]" padding="p-6 sm:p-10">
+        <ScanCard accent="62,207,142" borderColor="border-white/[0.06]" cardClassName="bg-[#242424]" padding="p-6 sm:p-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
             <div>
               <label htmlFor="calc-calls" className="block font-sans text-sm text-gray-300 mb-3">
@@ -71,19 +71,19 @@ export default function DamageCalculator() {
                 value={calls}
                 onChange={(e) => setCalls(Number(e.target.value))}
                 aria-valuetext={`${calls} ${t.damageCalc.callsLabel}`}
-                className="w-full accent-[#3B82F6] cursor-pointer"
+                className="w-full accent-[#3ecf8e] cursor-pointer"
               />
               <div className="flex items-center justify-between mt-2">
                 {steps.map((s) => (
                   <span
                     key={s}
-                    className={`font-mono text-[10px] ${s === calls ? "text-[#3B82F6] font-bold" : "text-gray-600"}`}
+                    className={`font-mono text-[10px] ${s === calls ? "text-[#3ecf8e] font-bold" : "text-gray-600"}`}
                   >
                     {s}
                   </span>
                 ))}
               </div>
-              <div className="mt-3 font-mono text-sm text-[#F5F5F0]">{calls}</div>
+              <div className="mt-3 font-mono text-sm text-[#fafafa]">{calls}</div>
             </div>
 
             <div>
@@ -99,27 +99,27 @@ export default function DamageCalculator() {
                 value={loss}
                 onChange={(e) => setLoss(Number(e.target.value))}
                 aria-valuetext={`${formatter.format(loss)} (${t.damageCalc.amountLabel})`}
-                className="w-full accent-[#3B82F6] cursor-pointer"
+                className="w-full accent-[#3ecf8e] cursor-pointer"
               />
               <div className="flex items-center justify-between mt-2">
                 <span className="font-mono text-[10px] text-gray-600">{formatter.format(1000)}</span>
                 <span className="font-mono text-[10px] text-gray-600">{formatter.format(1000000)}</span>
               </div>
-              <div className="mt-3 font-mono text-sm text-[#F5F5F0]">{formatter.format(loss)}</div>
+              <div className="mt-3 font-mono text-sm text-[#fafafa]">{formatter.format(loss)}</div>
             </div>
           </div>
 
-          <ScanCard accent="59,130,246" borderColor="border-[#3B82F6]/20" cardClassName="bg-[#12141A]" padding="p-6 sm:p-8" className="items-center text-center">
+          <ScanCard accent="62,207,142" borderColor="border-[#3ecf8e]/20" cardClassName="bg-[#242424]" padding="p-6 sm:p-8" className="items-center text-center">
             <div className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-2">
               {t.damageCalc.resultTitle}
             </div>
             <div
-              className={`font-display font-bold text-4xl sm:text-6xl text-[#3B82F6] tracking-tight mb-3 ${ecoMode ? "" : "transition-colors duration-300"}`}
+              className={`font-display font-bold text-4xl sm:text-6xl text-[#3ecf8e] tracking-tight mb-3 ${ecoMode ? "" : "transition-colors duration-300"}`}
             >
               {formatter.format(prevented)}
             </div>
             <div className="flex items-center justify-center gap-2 font-sans text-sm text-gray-300">
-              <ShieldCheck className="w-4 h-4 text-[#3B82F6]" />
+              <ShieldCheck className="w-4 h-4 text-[#3ecf8e]" />
               {t.damageCalc.savedLabel}
             </div>
           </ScanCard>
