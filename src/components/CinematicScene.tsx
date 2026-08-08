@@ -37,199 +37,191 @@ const smooth = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-// Lowercase 5x7 block glyphs + capital N used for "TrustNode"
-const GLYPHS: Record<string, string[]> = {
-  t: ["..#..", "..#..", "####.", "..#..", "..#..", "..#..", ".##.."],
-  r: [".....", "..##.", ".#..#", ".#...", ".#...", ".#...", "....."],
-  u: [".....", ".#.#.", ".#.#.", ".#.#.", ".#.#.", ".####", "....."],
-  s: [".####", ".#...", ".#...", "..##.", "...#.", ".#...", ".####"],
-  N: ["#...#", "##..#", "#.#.#", "#..##", "#...#", "#...#", "#...#"],
-  o: [".....", ".###.", ".#.#.", ".#.#.", ".#.#.", ".###.", "....."],
-  d: ["....#", "....#", "..###", "..#.#", "..#.#", "..###", "....."],
-  e: [".....", ".###.", ".#.#.", ".###.", ".#...", ".####", "....."]
-};
+// RA (hours 0..24) + Dec (deg -90..90) -> unit direction on the celestial sphere
+function raDecDir(ra: number, dec: number): THREE.Vector3 {
+  const raRad = (ra / 24) * Math.PI * 2;
+  const decRad = (dec * Math.PI) / 180;
+  return new THREE.Vector3(
+    Math.cos(decRad) * Math.cos(raRad),
+    Math.sin(decRad),
+    Math.cos(decRad) * Math.sin(raRad)
+  );
+}
 
-const WORD = ["t", "r", "u", "s", "t", "N", "o", "d", "e"];
+// Real starfield from the site's star catalog: real RA/Dec, real distances for
+// parallax depth, brightness/size from real magnitude.
+function buildRealStarfield(): THREE.Points {
+  const count = REAL_STARS.length;
+  const positions = new Float32Array(count * 3);
+  const sizes = new Float32Array(count);
+  const alphas = new Float32Array(count);
 
-// Deterministic scatter offsets (in world units) used while letters converge
-const LETTER_SCATTER = WORD.map((_, i) => ({
-  x: Math.sin(i * 3.7 + 1.3) * 16,
-  y: Math.cos(i * 2.3 + 0.6) * 11 + 5,
-  z: Math.sin(i * 5.1 + 0.2) * 15 - 10
-}));
+  for (let i = 0; i < count; i++) {
+    const star = REAL_STARS[i];
+    const dir = raDecDir(star.ra, star.dec);
+    // Nearest stars fly past close to the camera; distant ones sit on the far shell
+    const distLy = star.distLy || 400;
+    const radius = lerp(240, 860, clamp01(distLy / 900));
+    positions[i * 3] = dir.x * radius;
+    positions[i * 3 + 1] = dir.y * radius;
+    positions[i * 3 + 2] = dir.z * radius;
+    sizes[i] = Math.max(0.6, 3.4 - star.mag * 0.5);
+    alphas[i] = Math.min(1, Math.max(0.18, 1.1 - star.mag * 0.2));
+  }
 
-const CELL = 0.55;
-const PITCH = 3.4;
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute("aSize", new THREE.BufferAttribute(sizes, 1));
+  geo.setAttribute("aAlpha", new THREE.BufferAttribute(alphas, 1));
 
-const TRUST_COLOR = new THREE.Color("#E8EAED");
-const NODE_COLOR = new THREE.Color("#3B82F6");
+  const mat = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexShader: `
+      attribute float aSize;
+      attribute float aAlpha;
+      varying float vAlpha;
+      void main() {
+        vAlpha = aAlpha;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = aSize * (300.0 / max(1.0, -mv.z));
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: `
+      precision mediump float;
+      varying float vAlpha;
+      void main() {
+        vec2 c = gl_PointCoord - vec2(0.5);
+        float d = length(c);
+        float a = smoothstep(0.5, 0.08, d) * vAlpha;
+        if (a < 0.02) discard;
+        gl_FragColor = vec4(1.0, 1.0, 1.0, a);
+      }
+    `
+  });
 
-// Region "A" = northern sky (visible at the start of the flight)
-const REGION_A_CODES = ["UMA", "UMI", "CAS", "ORI", "TAU", "CMA", "CYG", "LYR"];
-// Region "B" = far-southern sky (the constellations of that specific part of space)
-const REGION_B_CODES = ["CRU", "CEN", "SCO", "AQL", "BOO", "VIR", "SGR", "PEG"];
+  const pts = new THREE.Points(geo, mat);
+  return pts;
+}
 
-const EARTH_POS = new THREE.Vector3(0, -70, 330);
+// Real constellation asterisms drawn from the same catalog.
+function buildConstellationLines(): THREE.LineSegments {
+  const starById = new Map(REAL_STARS.map((s) => [s.id, s]));
+  const R = 780;
+  const lines: number[] = [];
+  for (const asterism of CONSTELLATION_LINES) {
+    for (const [a, b] of asterism.lines) {
+      const sa = starById.get(a);
+      const sb = starById.get(b);
+      if (!sa || !sb) continue;
+      const pa = raDecDir(sa.ra, sa.dec).multiplyScalar(R);
+      const pb = raDecDir(sb.ra, sb.dec).multiplyScalar(R);
+      lines.push(pa.x, pa.y, pa.z, pb.x, pb.y, pb.z);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(lines, 3));
+  const mat = new THREE.LineBasicMaterial({
+    color: 0x7fa8ff,
+    transparent: true,
+    opacity: 0.16
+  });
+  return new THREE.LineSegments(geo, mat);
+}
+
+// Night-lights: a shader sphere that only shows city lights on the dark side.
+function buildNightLights(): THREE.Mesh {
+  const geo = new THREE.SphereGeometry(1.002, 96, 96);
+  const mat = new THREE.ShaderMaterial({
+    uniforms: {
+      uNight: { value: null },
+      uSunDir: { value: new THREE.Vector3(0.35, 0.4, 0.85).normalize() }
+    },
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexShader: `
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      void main() {
+        vUv = uv;
+        vNormal = normalize(mat3(modelMatrix) * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      precision mediump float;
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      uniform sampler2D uNight;
+      uniform vec3 uSunDir;
+      void main() {
+        float d = dot(normalize(vNormal), uSunDir);
+        float nf = 1.0 - smoothstep(-0.12, 0.28, d);
+        vec3 night = texture2D(uNight, vUv).rgb;
+        float a = max(0.0, nf) * 0.95;
+        gl_FragColor = vec4(night * a, a);
+      }
+    `
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.scale.setScalar(1.0);
+  return mesh;
+}
+
+// Fresnel atmosphere glow around the limb.
+function buildAtmosphere(): THREE.Mesh {
+  const geo = new THREE.SphereGeometry(1.06, 96, 96);
+  const mat = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: { value: new THREE.Color("#3b82f6") }
+    },
+    transparent: true,
+    depthWrite: false,
+    side: THREE.BackSide,
+    blending: THREE.AdditiveBlending,
+    vertexShader: `
+      varying vec3 vNormal;
+      varying vec3 vView;
+      void main() {
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vView = normalize(-mv.xyz);
+        vNormal = normalize(normalMatrix * normal);
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: `
+      precision mediump float;
+      varying vec3 vNormal;
+      varying vec3 vView;
+      uniform vec3 uColor;
+      void main() {
+        float rim = pow(1.0 - abs(dot(normalize(vNormal), normalize(vView))), 2.2);
+        gl_FragColor = vec4(uColor, rim * 0.55);
+      }
+    `
+  });
+  return new THREE.Mesh(geo, mat);
+}
+
+// Greenwich Mean Sidereal Time in radians for a given date. This is the real,
+// continuous rotation of the Earth relative to the stars.
+function gmstRadians(date: Date): number {
+  const jd = date.getTime() / 86400000 + 2440587.5;
+  const d = jd - 2451545.0;
+  const gmstDeg = (280.46061837 + 360.98564736629 * d) % 360;
+  return (gmstDeg * Math.PI) / 180;
+}
+
+const EARTH_POS = new THREE.Vector3(0, -45, 800);
 const EARTH_R = 130;
 
 interface Keyframe {
   p: number;
   pos: THREE.Vector3;
   look: THREE.Vector3;
-}
-
-function buildLogo(): { group: THREE.Group; letters: THREE.Group[] } {
-  const group = new THREE.Group();
-  const letters: THREE.Group[] = [];
-
-  WORD.forEach((glyphKey, li) => {
-    const glyph = GLYPHS[glyphKey];
-    const letter = new THREE.Group();
-    const color = li < 5 ? TRUST_COLOR : NODE_COLOR;
-    const mat = new THREE.MeshStandardMaterial({
-      color,
-      emissive: color.clone().multiplyScalar(0.35),
-      metalness: 0.55,
-      roughness: 0.3,
-      transparent: true
-    });
-    const geo = new THREE.BoxGeometry(CELL, CELL, CELL * 1.15);
-    for (let row = 0; row < 7; row++) {
-      const line = glyph[row];
-      if (!line) continue;
-      for (let col = 0; col < 5; col++) {
-        if (line[col] !== "#") continue;
-        const box = new THREE.Mesh(geo, mat);
-        box.position.set(
-          (col - 2) * (CELL + 0.06),
-          (row - 3) * (CELL + 0.06),
-          0
-        );
-        letter.add(box);
-      }
-    }
-    const slotX = (li - 4) * PITCH;
-    const scatter = LETTER_SCATTER[li];
-    letter.userData.slotX = slotX;
-    letter.userData.scatter = scatter;
-    letter.position.set(slotX + scatter.x, scatter.y, scatter.z);
-    letter.rotation.set(scatter.y * 0.05, scatter.x * 0.05, scatter.z * 0.04);
-    group.add(letter);
-    letters.push(letter);
-  });
-
-  group.rotation.set(0.08, 0.18, 0.04);
-  return { group, letters };
-}
-
-function buildConstellationRegion(codes: string[], radius: number): THREE.Group {
-  const group = new THREE.Group();
-  const points: number[] = [];
-  const lines: number[] = [];
-  const starById = new Map(REAL_STARS.map((s) => [s.id, s]));
-
-  const project = (star: (typeof REAL_STARS)[number]) => {
-    const ra = (star.ra / 12) * Math.PI;
-    const dec = (star.dec * Math.PI) / 180;
-    return new THREE.Vector3(
-      radius * Math.cos(dec) * Math.cos(ra),
-      radius * Math.sin(dec),
-      radius * Math.cos(dec) * Math.sin(ra)
-    );
-  };
-
-  for (const code of codes) {
-    const asterism = CONSTELLATION_LINES.find((c) => c.code === code);
-    if (!asterism) continue;
-    for (const [a, b] of asterism.lines) {
-      const sa = starById.get(a);
-      const sb = starById.get(b);
-      if (!sa || !sb) continue;
-      const pa = project(sa);
-      const pb = project(sb);
-      lines.push(pa.x, pa.y, pa.z, pb.x, pb.y, pb.z);
-    }
-    for (const star of REAL_STARS) {
-      if (star.constellationCode !== code) continue;
-      const p = project(star);
-      points.push(p.x, p.y, p.z);
-    }
-  }
-
-  if (lines.length > 0) {
-    const lineGeo = new THREE.BufferGeometry();
-    lineGeo.setAttribute("position", new THREE.Float32BufferAttribute(lines, 3));
-    const lineMat = new THREE.LineBasicMaterial({
-      color: 0x4f8cff,
-      transparent: true,
-      opacity: 0.28
-    });
-    const seg = new THREE.LineSegments(lineGeo, lineMat);
-    group.add(seg);
-  }
-
-  if (points.length > 0) {
-    const ptGeo = new THREE.BufferGeometry();
-    ptGeo.setAttribute("position", new THREE.Float32BufferAttribute(points, 3));
-    const ptMat = new THREE.PointsMaterial({
-      color: 0xbcd3ff,
-      size: 1.4,
-      transparent: true,
-      opacity: 0.85,
-      sizeAttenuation: true
-    });
-    const pts = new THREE.Points(ptGeo, ptMat);
-    group.add(pts);
-  }
-
-  return group;
-}
-
-function buildStarfield(count: number, radius: number, brightness: number): THREE.Points {
-  const positions = new Float32Array(count * 3);
-  const sizes = new Float32Array(count);
-  for (let i = 0; i < count; i++) {
-    const u = Math.random();
-    const v = Math.random();
-    const theta = 2 * Math.PI * u;
-    const phi = Math.acos(2 * v - 1);
-    const r = radius * (0.85 + Math.random() * 0.3);
-    positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-    positions[i * 3 + 1] = r * Math.cos(phi);
-    positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-    sizes[i] = 0.6 + Math.random() * 1.6;
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-  geo.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
-  const mat = new THREE.PointsMaterial({
-    color: new THREE.Color(1, 1, 1).multiplyScalar(brightness),
-    size: 1.2,
-    sizeAttenuation: true,
-    transparent: true,
-    opacity: 0.9
-  });
-  return new THREE.Points(geo, mat);
-}
-
-function buildOrbitRing(radius: number, count: number, color: number): THREE.Points {
-  const positions = new Float32Array(count * 3);
-  for (let i = 0; i < count; i++) {
-    const a = (i / count) * Math.PI * 2;
-    positions[i * 3] = Math.cos(a) * radius;
-    positions[i * 3 + 1] = Math.sin(a) * radius * 0.25;
-    positions[i * 3 + 2] = 0;
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-  const mat = new THREE.PointsMaterial({
-    color,
-    size: 0.5,
-    sizeAttenuation: true,
-    transparent: true,
-    opacity: 0.8
-  });
-  return new THREE.Points(geo, mat);
 }
 
 export default function CinematicScene({ progress, phases, active = true }: CinematicSceneProps) {
@@ -254,114 +246,115 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
     const isMobile = window.innerWidth < 768;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x05060a, 1);
+    renderer.setClearColor(0x04050a, 1);
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1200);
-    camera.position.set(0, 2, 80);
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 4000);
+    camera.position.set(0, 6, 120);
 
-    scene.add(new THREE.AmbientLight(0x5566aa, 0.7));
-    const sun = new THREE.DirectionalLight(0xffffff, 1.6);
-    sun.position.set(30, 20, 40);
+    const ambient = new THREE.AmbientLight(0x33415e, 0.6);
+    scene.add(ambient);
+    const sun = new THREE.DirectionalLight(0xffffff, 2.4);
+    sun.position.set(90, 110, 220);
     scene.add(sun);
-    const sunB = new THREE.DirectionalLight(0x3b82f6, 0.4);
-    sunB.position.set(-20, -10, -30);
-    scene.add(sunB);
+    const fill = new THREE.DirectionalLight(0x3b82f6, 0.35);
+    fill.position.set(-60, -30, -80);
+    scene.add(fill);
 
-    // Starfield (two layers: far shell + closer dust)
-    const starCount = isMobile ? 2200 : 4200;
-    const starsFar = buildStarfield(starCount, 600, 0.85);
-    const starsNear = buildStarfield(isMobile ? 500 : 900, 260, 1);
-    scene.add(starsFar);
-    scene.add(starsNear);
+    // Real sky: catalog stars + real constellation asterisms
+    const stars = buildRealStarfield();
+    scene.add(stars);
+    const consLines = buildConstellationLines();
+    scene.add(consLines);
 
-    // 3D block logo "TrustNode" + cosmic stuff around it
-    const { group: logoGroup, letters } = buildLogo();
-    scene.add(logoGroup);
-
-    const ringA = buildOrbitRing(11, 90, 0x3b82f6);
-    ringA.position.set(0, 1, 0);
-    ringA.rotation.x = 1.2;
-    const ringB = buildOrbitRing(14, 70, 0x2dd4bf);
-    ringB.position.set(0, -1, 0);
-    ringB.rotation.x = -1.1;
-    ringB.rotation.z = 0.7;
-    scene.add(ringA);
-    scene.add(ringB);
-
-    // Constellations: region A visible first, region B fades in as we fly deeper
-    const consA = buildConstellationRegion(REGION_A_CODES, 240);
-    const consB = buildConstellationRegion(REGION_B_CODES, 240);
-    scene.add(consA);
-    scene.add(consB);
-    const setConsOpacity = (group: THREE.Group, opacity: number) => {
-      group.children.forEach((child) => {
-        const mat = (child as THREE.Mesh).material as THREE.Material | THREE.Material[];
-        const target = Array.isArray(mat) ? mat[0] : mat;
-        if (target && "opacity" in target) target.opacity = opacity;
-      });
-    };
-
-    // Earth with NASA texture + atmosphere glow
-    const earthGeo = new THREE.SphereGeometry(EARTH_R, isMobile ? 48 : 64, isMobile ? 48 : 64);
+    // Professional Earth: day texture + relief + ocean specular + clouds + night lights
+    const earthGeo = new THREE.SphereGeometry(EARTH_R, 128, 128);
     const earthMat = new THREE.MeshPhongMaterial({
-      color: 0x4f7fcf,
-      specular: 0x223344,
-      shininess: 12,
+      color: 0xffffff,
+      specular: 0x334455,
+      shininess: 18,
       transparent: true,
       opacity: 0
     });
     const earth = new THREE.Mesh(earthGeo, earthMat);
     earth.position.copy(EARTH_POS);
-    earth.rotation.z = 0.41; // axial tilt
+    earth.rotation.z = (23.44 * Math.PI) / 180; // axial tilt
     scene.add(earth);
 
-    const loader = new THREE.TextureLoader();
-    loader.load(`${import.meta.env.BASE_URL}textures/earth.jpg`, (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      earthMat.map = tex;
-      earthMat.color.set(0xffffff);
-      earthMat.needsUpdate = true;
-    });
+    const night = buildNightLights();
+    night.position.copy(EARTH_POS);
+    night.rotation.z = (23.44 * Math.PI) / 180;
+    scene.add(night);
 
-    const atmoGeo = new THREE.SphereGeometry(EARTH_R * 1.045, 48, 48);
-    const atmoMat = new THREE.MeshBasicMaterial({
-      color: 0x3b82f6,
-      transparent: true,
-      opacity: 0,
-      side: THREE.BackSide,
-      blending: THREE.AdditiveBlending
-    });
-    const atmo = new THREE.Mesh(atmoGeo, atmoMat);
+    const atmo = buildAtmosphere();
     atmo.position.copy(EARTH_POS);
     scene.add(atmo);
 
-    // Camera keyframes (progress -> position/lookAt). Word faces +z.
+    const cloudsGeo = new THREE.SphereGeometry(EARTH_R * 1.014, 96, 96);
+    const cloudsMat = new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      specular: 0x111111,
+      shininess: 4
+    });
+    const clouds = new THREE.Mesh(cloudsGeo, cloudsMat);
+    clouds.position.copy(EARTH_POS);
+    clouds.rotation.z = (23.44 * Math.PI) / 180;
+    scene.add(clouds);
+
+    const loader = new THREE.TextureLoader();
+    const baseUrl = import.meta.env.BASE_URL;
+
+    const loadTex = (path: string) => loader.load(`${baseUrl}textures/${path}`);
+    const dayTex = loadTex("earth_atmos_2048.jpg");
+    dayTex.colorSpace = THREE.SRGBColorSpace;
+    earthMat.map = dayTex;
+
+    const normalTex = loadTex("earth_normal_2048.jpg");
+    normalTex.wrapS = normalTex.wrapT = THREE.ClampToEdgeWrapping;
+    earthMat.normalMap = normalTex;
+    earthMat.normalScale = new THREE.Vector2(1.4, 1.4);
+
+    const specTex = loadTex("earth_specular_2048.jpg");
+    earthMat.specularMap = specTex;
+    earthMat.needsUpdate = true;
+
+    const cloudsTex = loadTex("earth_clouds_1024.png");
+    cloudsTex.colorSpace = THREE.SRGBColorSpace;
+    cloudsMat.map = cloudsTex;
+    cloudsMat.needsUpdate = true;
+
+    const nightTex = loadTex("earth_lights_2048.png");
+    nightTex.colorSpace = THREE.SRGBColorSpace;
+    (night.material as THREE.ShaderMaterial).uniforms.uNight.value = nightTex;
+
+    // Camera keyframes. The flight: fast forward through the real starfield -> a
+    // weaving pass (2D logo assembly happens in the DOM on top) -> turn toward
+    // Earth -> approach until it fills the lower part of the screen.
     const kf: Keyframe[] = [
-      { p: 0, pos: new THREE.Vector3(0, 2, 80), look: new THREE.Vector3(0, 0, 0) },
-      { p: phases.underEnd * 0.25, pos: new THREE.Vector3(0, -4, 40), look: new THREE.Vector3(0, -1, 0) },
-      { p: phases.underEnd * 0.55, pos: new THREE.Vector3(0, -8, 16), look: new THREE.Vector3(0, -2, 0) },
-      { p: phases.underEnd, pos: new THREE.Vector3(6, -7, -10), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.underEnd, phases.orbitEnd, 0.25), pos: new THREE.Vector3(18, 3, 6), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.underEnd, phases.orbitEnd, 0.5), pos: new THREE.Vector3(0, 5, -20), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.underEnd, phases.orbitEnd, 0.82), pos: new THREE.Vector3(-18, 1, 4), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.orbitEnd, phases.throughEnd, 0.15), pos: new THREE.Vector3(0, 1, 18), look: new THREE.Vector3(0, 1, 0) },
-      { p: lerp(phases.orbitEnd, phases.throughEnd, 0.55), pos: new THREE.Vector3(0, 1, 3), look: new THREE.Vector3(0, 1, 0) },
-      { p: phases.throughEnd, pos: new THREE.Vector3(0, 2, -12), look: new THREE.Vector3(0, 1, 0) },
-      { p: lerp(phases.throughEnd, phases.assemblyEnd, 0.4), pos: new THREE.Vector3(0, 3, -19), look: new THREE.Vector3(0, 0, 0) },
-      { p: phases.assemblyEnd, pos: new THREE.Vector3(0, 3, -19), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.3), pos: new THREE.Vector3(0, 1, -14), look: new THREE.Vector3(0, -30, 140) },
-      { p: phases.turnEnd, pos: new THREE.Vector3(0, -1, 8), look: new THREE.Vector3(0, -60, 300) },
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.45), pos: new THREE.Vector3(0, -4, 46), look: new THREE.Vector3(0, -40, 320) },
-      { p: phases.approachEnd, pos: new THREE.Vector3(0, 4, 95), look: new THREE.Vector3(0, 60, 360) },
-      { p: 1, pos: new THREE.Vector3(0, 4, 95), look: new THREE.Vector3(0, 60, 360) }
+      { p: 0, pos: new THREE.Vector3(0, 6, 120), look: new THREE.Vector3(0, 0, 0) },
+      { p: phases.underEnd * 0.5, pos: new THREE.Vector3(0, 5, 70), look: new THREE.Vector3(0, 0, 0) },
+      { p: phases.underEnd, pos: new THREE.Vector3(0, 4, 20), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.underEnd, phases.orbitEnd, 0.35), pos: new THREE.Vector3(9, 3, -12), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.underEnd, phases.orbitEnd, 0.65), pos: new THREE.Vector3(0, 2, -34), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.underEnd, phases.orbitEnd, 0.92), pos: new THREE.Vector3(-9, 2, -10), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.orbitEnd, phases.throughEnd, 0.35), pos: new THREE.Vector3(0, 3, 18), look: new THREE.Vector3(0, 1, 0) },
+      { p: phases.throughEnd, pos: new THREE.Vector3(0, 4, -26), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.throughEnd, phases.assemblyEnd, 0.5), pos: new THREE.Vector3(0, 4, -44), look: new THREE.Vector3(0, 0, 0) },
+      { p: phases.assemblyEnd, pos: new THREE.Vector3(0, 4, -44), look: new THREE.Vector3(0, 0, 0) },
+      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.3), pos: new THREE.Vector3(0, 3, -24), look: new THREE.Vector3(0, -15, 140) },
+      { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 30), look: new THREE.Vector3(0, -60, 800) },
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.45), pos: new THREE.Vector3(0, -4, 150), look: new THREE.Vector3(0, -30, 810) },
+      { p: phases.approachEnd, pos: new THREE.Vector3(0, 6, 340), look: new THREE.Vector3(0, 25, 820) },
+      { p: 1, pos: new THREE.Vector3(0, 6, 340), look: new THREE.Vector3(0, 25, 820) }
     ];
 
     const sampleCamera = (p: number) => {
-      const i = Math.max(0, kf.findIndex((k, idx) => idx > 0 && p <= k.p && p >= kf[idx - 1].p) < 0
-        ? kf.length - 2
-        : Math.max(0, kf.findIndex((k) => p <= k.p) - 1));
+      let i = Math.max(0, kf.findIndex((k) => p <= k.p) - 1);
+      if (i < 0) i = 0;
       const a = kf[i];
       const b = kf[Math.min(i + 1, kf.length - 1)];
       const span = Math.max(1e-5, b.p - a.p);
@@ -381,58 +374,19 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       prev = time;
       const p = progressRef.current;
 
-      // Earth rotates in real time (clearly visible, not real-world speed)
-      earth.rotation.y += dt * 0.05;
-      atmo.rotation.y = earth.rotation.y;
-
-      // Ambient cosmic motion around the logo (subtle)
-      ringA.rotation.y += dt * 0.08;
-      ringB.rotation.y -= dt * 0.06;
-
-      // Letters converge from scattered positions into the assembled word
-      const asm = smooth(0.28, phases.assemblyEnd * 0.92, p);
-      for (let i = 0; i < letters.length; i++) {
-        const letter = letters[i];
-        const slotX = letter.userData.slotX as number;
-        const s = letter.userData.scatter as { x: number; y: number; z: number };
-        const easeOut = 1 - Math.pow(1 - asm, 3);
-        letter.position.set(
-          lerp(slotX + s.x, slotX, easeOut),
-          lerp(s.y, 0, easeOut),
-          lerp(s.z, 0, easeOut)
-        );
-        letter.rotation.set(
-          lerp(s.y * 0.05, 0, easeOut),
-          lerp(s.x * 0.05, 0, easeOut),
-          lerp(s.z * 0.04, 0, easeOut)
-        );
-        // Letters spread vertically during the "fly through" passage
-        const spreadT = smooth(phases.orbitEnd, phases.throughEnd * 0.7, p) *
-          (1 - smooth(phases.throughEnd * 0.7, phases.throughEnd * 1.15, p));
-        letter.position.y += (i % 2 === 0 ? 1 : -1) * spreadT * 7;
-      }
-
-      // Logo material visibility (fades out after the ship turns)
-      const logoFade = 1 - smooth(phases.assemblyEnd, phases.turnEnd * 1.05, p);
-      letters.forEach((letter) => {
-        letter.traverse((child) => {
-          if ((child as THREE.Mesh).isMesh) {
-            const m = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
-            m.opacity = 0.25 + logoFade * 0.75;
-          }
-        });
-      });
-
-      // Constellations crossfade: region A -> region B
-      const aFade = 1 - smooth(0.55, phases.assemblyEnd * 1.05, p);
-      const bFade = smooth(0.62, phases.assemblyEnd * 1.15, p);
-      setConsOpacity(consA, 0.28 * aFade);
-      setConsOpacity(consB, 0.32 * bFade);
+      // Earth rotates strictly in sync with real time (GMST) + a gentle extra spin
+      // so the motion is clearly visible even on a short flight.
+      const gmst = gmstRadians(new Date());
+      earth.rotation.y = -gmst + 3.2 + p * 2.2;
+      night.rotation.y = earth.rotation.y;
+      clouds.rotation.y = earth.rotation.y + 0.003 * (time / 1000);
 
       // Earth fades in after the turn
-      const earthIn = smooth(phases.turnEnd * 0.85, phases.turnEnd * 1.1, p);
+      const earthIn = smooth(phases.turnEnd * 0.9, phases.turnEnd * 1.1, p);
       earthMat.opacity = earthIn;
-      atmoMat.opacity = earthIn * 0.35;
+      cloudsMat.opacity = earthIn * 0.85;
+      (atmo.material as THREE.ShaderMaterial).opacity = earthIn;
+      (night.material as THREE.ShaderMaterial).opacity = earthIn;
 
       sampleCamera(p);
       renderer.render(scene, camera);
@@ -476,6 +430,10 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
           else mat?.dispose();
         }
       });
+      stars.geometry.dispose();
+      (stars.material as THREE.Material).dispose();
+      consLines.geometry.dispose();
+      (consLines.material as THREE.Material).dispose();
       renderer.dispose();
       if (renderer.domElement.parentElement === container) {
         container.removeChild(renderer.domElement);

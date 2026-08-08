@@ -150,6 +150,12 @@ export default function App() {
   const cHudOut = cinematicProgress > 0.78 ? Math.max(0, 1 - (cinematicProgress - 0.78) / 0.1) : 1;
   const cHudOp = cHudT * cHudOut;
   const cArrowT = cinematicProgress > 0.85 ? Math.min(1, (cinematicProgress - 0.85) / 0.1) : 0;
+  // 2D logo assembly overlay: assembles through the "through -> assembly" phases
+  const cLogoOp = Math.max(
+    0,
+    Math.min(1, (cinematicProgress - 0.3) / 0.12) * (1 - Math.max(0, (cinematicProgress - 0.72) / 0.1))
+  );
+  const cLogoProgress = Math.max(0, Math.min(1, (cinematicProgress - 0.3) / 0.35));
 
   useEffect(() => {
     const computeScene = () => {
@@ -685,6 +691,20 @@ export default function App() {
                               <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
                                 {t.assembly?.leftSub || "// ДАННЫЕ НЕ ПОКИДАЮТ УСТРОЙСТВО"}
                               </span>
+                            </motion.div>
+
+                            <div className="w-32 sm:w-44 shrink-0 hidden lg:block" />
+
+                            <motion.div
+                              style={{
+                                opacity: cLogoOp,
+                                scale: 0.9 + cLogoOp * 0.1,
+                                pointerEvents: "none"
+                              }}
+                              className="shrink-0"
+                              id="cinematic-assembled-logo"
+                            >
+                              <AssembledLogo progress={cLogoProgress} ecoMode={ecoMode} className="scale-[0.55] sm:scale-[0.7] transition-transform duration-300 origin-center" />
                             </motion.div>
 
                             <div className="w-32 sm:w-44 shrink-0 hidden lg:block" />
