@@ -410,28 +410,61 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const loader = new THREE.TextureLoader();
     const baseUrl = import.meta.env.BASE_URL;
 
-    const loadTex = (path: string) => loader.load(`${baseUrl}textures/${path}`);
-    const dayTex = loadTex("earth_daymap_8k.jpg");
+    // The satellite maps are 8K (8192x4096). Some integrated/mobile GPUs cap
+    // maxTextureSize at 4096 and silently reject the upload, so the planet would
+    // render as a black sphere against black space (it looks "missing"). Downscale
+    // any texture that exceeds the GPU limit so the Earth always appears.
+    const maxTexSize = renderer.capabilities.maxTextureSize || 4096;
+    const dayReady = { value: false };
+
+    const loadSized = (path: string, onReady?: () => void): THREE.Texture => {
+      const tex = loader.load(
+        `${baseUrl}textures/${path}`,
+        () => {
+            const img = tex.image as HTMLImageElement | undefined;
+          if (img && img.width > maxTexSize && maxTexSize >= 128) {
+            const scale = maxTexSize / img.width;
+            const canvas = document.createElement("canvas");
+            canvas.width = maxTexSize;
+            canvas.height = Math.max(1, Math.round(img.height * scale));
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              tex.image = canvas as unknown as HTMLImageElement;
+              tex.needsUpdate = true;
+            }
+          }
+          onReady?.();
+        },
+        undefined,
+        () => onReady?.()
+      );
+      return tex;
+    };
+
+    const dayTex = loadSized("earth_daymap_8k.jpg", () => {
+      dayReady.value = true;
+    });
     dayTex.colorSpace = THREE.SRGBColorSpace;
     dayTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     earthMat.map = dayTex;
 
-    const normalTex = loadTex("earth_normal_8k.jpg");
+    const normalTex = loadSized("earth_normal_8k.jpg");
     normalTex.wrapS = normalTex.wrapT = THREE.ClampToEdgeWrapping;
     earthMat.normalMap = normalTex;
     earthMat.normalScale.set(0.9, 0.9);
 
-    const specTex = loadTex("earth_specular_8k.jpg");
+    const specTex = loadSized("earth_specular_8k.jpg");
     earthMat.specularMap = specTex;
     earthMat.needsUpdate = true;
 
-    const cloudsTex = loadTex("earth_clouds_4k.jpg");
+    const cloudsTex = loadSized("earth_clouds_4k.jpg");
     cloudsTex.colorSpace = THREE.SRGBColorSpace;
     cloudsTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     cloudsMat.map = cloudsTex;
     cloudsMat.needsUpdate = true;
 
-    const nightTex = loadTex("earth_nightmap_8k.jpg");
+    const nightTex = loadSized("earth_nightmap_8k.jpg");
     nightTex.colorSpace = THREE.SRGBColorSpace;
     (night.material as THREE.ShaderMaterial).uniforms.uNight.value = nightTex;
 
@@ -517,8 +550,11 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
 
       // Earth fades in only AFTER the logo screen is fully gone (cLogoOp ends at
       // 0.78 in App.tsx) so the planet is nowhere on screen while the logo shows.
-      // It appears small ahead and we glide toward it, no warp.
-      const earthIn = smooth(0.82, 0.9, p);
+      // It appears small ahead and we glide toward it, no warp. The day texture is
+      // 8K and loads asynchronously — if it isn't ready yet the planet would fade
+      // in as an empty black sphere, so the fade waits for it (and still shows a
+      // plain lit sphere if the download ever fails, via the error fallback).
+      const earthIn = dayReady.value ? smooth(0.82, 0.9, p) : 0;
       earthMat.opacity = earthIn;
       cloudsMat.opacity = earthIn * 0.7;
       (night.material as THREE.ShaderMaterial).uniforms.uOpacity.value = earthIn;
