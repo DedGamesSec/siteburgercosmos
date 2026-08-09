@@ -313,11 +313,14 @@ export interface LiveSatellite {
   id: string;
   name: string;
   satrec: satellite.SatRec;
+  line1: string;
+  line2: string;
   trail: { x: number; y: number }[];
 }
 
 /**
- * Parses TLE text from CelesTrak into usable SatRec objects
+ * Parses TLE text from CelesTrak into usable SatRec objects (the full catalog:
+ * every valid TLE line-pair, so the whole active constellation is available).
  */
 export function parseTLEs(text: string): LiveSatellite[] {
   const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
@@ -330,14 +333,14 @@ export function parseTLEs(text: string): LiveSatellite[] {
       const rawName = lines[i];
       try {
         const satrec = satellite.twoline2satrec(line1, line2);
-        // Keep up to 200 brightest/visual satellites
         sats.push({
           id: `sat_${sats.length}`,
           name: rawName.replace(/\[.*\]/, "").trim(),
           satrec,
+          line1,
+          line2,
           trail: []
         });
-        if (sats.length >= 200) break;
       } catch {
         // Skip invalid TLE
       }

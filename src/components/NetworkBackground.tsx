@@ -489,7 +489,12 @@ export default function NetworkBackground({
             const nextSatCoords: SatCoord[] = [];
             const futureDate = new Date(now.getTime() + 750);
 
-            const satellites = cachedSatellites.slice(0, isMobile ? Math.max(24, Math.floor(cachedSatellites.length * 0.35)) : cachedSatellites.length);
+            // The catalog is now the FULL active payload set (~12k+), far too
+            // many to draw on the 2D sky map. Evenly sample ~120 of them so the
+            // map stays readable while still showing the whole catalog's variety.
+            const maxDraw = isMobile ? 60 : 120;
+            const step = Math.max(1, Math.ceil(cachedSatellites.length / maxDraw));
+            const satellites = cachedSatellites.filter((_, i) => i % step === 0);
             for (let i = 0; i < satellites.length; i++) {
               const sat = satellites[i];
               const look = calculateSatLookAngles(sat.satrec, now, observerLat, observerLon);

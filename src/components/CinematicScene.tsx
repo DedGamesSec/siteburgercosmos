@@ -486,11 +486,11 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     (night.material as THREE.ShaderMaterial).uniforms.uNight.value = nightTex;
 
     // ---- REAL SATELLITES + REAL SUN/MOON -------------------------------
-    // Real LEO satellites from live TLE data (CelesTrak "visual" group) orbit the
-    // planet on their actual orbital planes, and the Sun/Moon sit at their real
-    // geocentric directions. The satellite clock is sped up so the orbits are
-    // visible during the short cinematic, but the positions stay on the real TLE
-    // tracks.
+    // The FULL active payload catalog from live TLE data (CelesTrak "active"
+    // group, ~12k+ real satellites) orbits the planet on its true TLE tracks,
+    // and the Sun/Moon sit at their real geocentric directions. The satellite
+    // clock is sped up so the orbits are visible during the short cinematic,
+    // but the positions stay on the real TLE tracks.
     const realNowBase = new Date();
     const startTime = performance.now();
     const SAT_TIME_MULT = 150; // 1 real second = 2.5 sim minutes (LEO orbit ~90min)
@@ -499,14 +499,20 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // (matching raDecDir below), so swap y/z when converting to scene coordinates.
     const toSceneDir = (x: number, y: number, z: number) => new THREE.Vector3(x, z, y).normalize();
 
-    // Satellite point swarm
-    const MAX_SATS = 40;
+    // Satellite point swarm. SGP4 propagation for the whole catalog (deep-space
+    // GEO/MEO sats are ~200x more expensive than LEO ones) runs in a Web Worker
+    // so it never blocks the main thread; a small main-thread fallback covers the
+    // moment before the worker is ready (and any worker failure).
+    const MAX_SATS = 20000;
+    const ALT_MIN = 200; // above the atmosphere
+    const ALT_MAX = 42000; // include GEO + graveyard orbits
     const satPositions = new Float32Array(MAX_SATS * 3);
     const satGeo = new THREE.BufferGeometry();
     satGeo.setAttribute("position", new THREE.BufferAttribute(satPositions, 3));
+    satGeo.setDrawRange(0, 0);
     const satMat = new THREE.PointsMaterial({
       color: 0xfff2cc,
-      size: 3.4,
+      size: 2.2,
       sizeAttenuation: true,
       transparent: true,
       opacity: 0,
@@ -632,22 +638,64 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     moonGlow.renderOrder = 4;
     scene.add(moonGlow);
 
-    const updateSatellites = () => {
+    const commitSatCount = (n: number) => {
+      satGeo.setDrawRange(0, n);
+      satGeo.attributes.position.needsUpdate = true;
+    };
+
+    let satWorker: Worker | null = null;
+    let satWorkerReady = false;
+    let satWorkerBusy = false;
+
+    const makeSatWorker = () => {
+      try {
+        const w = new Worker(new URL("../workers/satelliteWorker.ts", import.meta.url), { type: "module" });
+        w.onmessage = (e: MessageEvent) => {
+          const d = e.data;
+          if (d && d.type === "ready") {
+            satWorkerReady = true;
+          } else if (d && d.type === "positions") {
+            satWorkerBusy = false;
+            const arr = d.positions as Float32Array;
+            const count = Math.min(d.count as number, MAX_SATS);
+            satPositions.set(arr.subarray(0, count * 3));
+            commitSatCount(count);
+          }
+        };
+        w.onerror = () => {
+          w.terminate();
+          if (satWorker === w) satWorker = null;
+          satWorkerReady = false;
+          satWorkerBusy = false;
+        };
+        return w;
+      } catch {
+        return null;
+      }
+    };
+
+    // Main-thread fallback (runs until the worker is ready, or if it fails):
+    // a rolling window over the catalog keeps each update's cost bounded.
+    const FALLBACK_BUDGET = 600;
+    let fallbackIndex = 0;
+    const updateSatellitesFallback = () => {
       const sats = cachedSatellites;
       if (!sats || sats.length === 0) {
-        satMat.opacity = 0;
+        commitSatCount(0);
         return;
       }
       const simNow = new Date(realNowBase.getTime() + (performance.now() - startTime) * SAT_TIME_MULT);
       let n = 0;
-      for (let i = 0; i < sats.length && n < MAX_SATS; i++) {
+      const total = sats.length;
+      for (let k = 0; k < FALLBACK_BUDGET && n < MAX_SATS; k++) {
+        const s = sats[(fallbackIndex + k) % total];
         try {
-          const pv = satellite.propagate(sats[i].satrec, simNow);
+          const pv = satellite.propagate(s.satrec, simNow);
           if (!pv.position || typeof pv.position === "boolean") continue;
           const pos = pv.position;
           const rKm = Math.hypot(pos.x, pos.y, pos.z);
           const altKm = rKm - 6371;
-          if (altKm < 250 || altKm > 4000) continue;
+          if (altKm < ALT_MIN || altKm > ALT_MAX) continue;
           const dir = toSceneDir(pos.x, pos.y, pos.z);
           const sceneR = EARTH_R * (1.07 + (altKm / 4000) * 0.55);
           satPositions[n * 3] = EARTH_POS.x + dir.x * sceneR;
@@ -658,11 +706,47 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
           // skip invalid TLE
         }
       }
-      for (let i = n * 3; i < MAX_SATS * 3; i++) satPositions[i] = 0;
-      satGeo.attributes.position.needsUpdate = true;
+      fallbackIndex = (fallbackIndex + FALLBACK_BUDGET) % total;
+      commitSatCount(n);
     };
+
+    const updateSatellites = () => {
+      if (satWorker && satWorkerReady) {
+        if (satWorkerBusy) return;
+        satWorkerBusy = true;
+        const simNow = new Date(realNowBase.getTime() + (performance.now() - startTime) * SAT_TIME_MULT);
+        satWorker.postMessage({ type: "tick", simTime: simNow.getTime() });
+      } else {
+        updateSatellitesFallback();
+      }
+    };
+
+    // Seed the worker with the catalog as soon as it has loaded; until then the
+    // main-thread fallback keeps satellites on screen.
+    const initWorker = () => {
+      const sats = cachedSatellites;
+      if (!sats || sats.length === 0 || !satWorker) return;
+      const tles: [string, string, string][] = sats.map((s) => [s.name, s.line1, s.line2]);
+      satWorker.postMessage({
+        type: "init",
+        tles,
+        earthPos: [EARTH_POS.x, EARTH_POS.y, EARTH_POS.z],
+        earthR: EARTH_R,
+        altMin: ALT_MIN,
+        altMax: ALT_MAX
+      });
+    };
+
+    satWorker = makeSatWorker();
     updateSatellites();
     const satTimer = window.setInterval(updateSatellites, 250);
+    const satInitTimer = window.setInterval(() => {
+      if (satWorkerReady) {
+        clearInterval(satInitTimer);
+        return;
+      }
+      initWorker();
+    }, 300);
 
     // Camera keyframes. Choreography: the flight starts in pure deep space with
     // NO Earth anywhere on screen. The TRUSTNODE logo assembles in front of the
@@ -835,6 +919,11 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       clearInterval(activeWatch);
       clearInterval(sunMoonTimer);
       clearInterval(satTimer);
+      clearInterval(satInitTimer);
+      if (satWorker) {
+        satWorker.terminate();
+        satWorker = null;
+      }
       window.removeEventListener("resize", onResize);
       scene.traverse((obj) => {
         if ((obj as THREE.Mesh).isMesh) {

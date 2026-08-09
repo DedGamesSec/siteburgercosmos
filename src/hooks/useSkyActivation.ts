@@ -16,9 +16,9 @@ export function useSkyActivation(activeEcoMode: boolean = false) {
       const fetchTLEs = async () => {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 6000);
+          const timeoutId = setTimeout(() => controller.abort(), 20000);
           const res = await fetch(
-            "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle",
+            "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle",
             { signal: controller.signal }
           );
           clearTimeout(timeoutId);
