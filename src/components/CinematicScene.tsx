@@ -368,13 +368,14 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const starsSouth = buildStarLayer(SKY_GROUP_SOUTH);
     scene.add(starsSouth);
 
-    // Professional Earth: day texture + relief + ocean specular + clouds + night lights
+    // Professional Earth: real satellite maps (Solar System Scope, CC BY 4.0, based on
+// NASA imagery) — day + relief normal + ocean specular + clouds + night lights.
     const earthSeg = isMobile ? 64 : isTablet ? 96 : 128;
     const earthGeo = new THREE.SphereGeometry(EARTH_R, earthSeg, earthSeg);
     const earthMat = new THREE.MeshPhongMaterial({
       color: 0xffffff,
-      specular: 0x334455,
-      shininess: 18,
+      specular: 0x335577,
+      shininess: 22,
       transparent: true,
       opacity: 0
     });
@@ -396,8 +397,9 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       transparent: true,
       opacity: 0,
       depthWrite: false,
-      specular: 0x111111,
-      shininess: 4
+      blending: THREE.AdditiveBlending,
+      specular: 0x000000,
+      shininess: 0
     });
     const clouds = new THREE.Mesh(cloudsGeo, cloudsMat);
     clouds.position.copy(EARTH_POS);
@@ -409,25 +411,27 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const baseUrl = import.meta.env.BASE_URL;
 
     const loadTex = (path: string) => loader.load(`${baseUrl}textures/${path}`);
-    const dayTex = loadTex("earth_blue_marble_4k.jpg");
+    const dayTex = loadTex("earth_daymap_8k.jpg");
     dayTex.colorSpace = THREE.SRGBColorSpace;
+    dayTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     earthMat.map = dayTex;
 
-    const bumpTex = loadTex("earth_bump_4k.jpg");
-    bumpTex.wrapS = bumpTex.wrapT = THREE.ClampToEdgeWrapping;
-    earthMat.bumpMap = bumpTex;
-    earthMat.bumpScale = 1.5;
+    const normalTex = loadTex("earth_normal_8k.jpg");
+    normalTex.wrapS = normalTex.wrapT = THREE.ClampToEdgeWrapping;
+    earthMat.normalMap = normalTex;
+    earthMat.normalScale.set(0.9, 0.9);
 
-    const specTex = loadTex("earth_specular_2048.jpg");
+    const specTex = loadTex("earth_specular_8k.jpg");
     earthMat.specularMap = specTex;
     earthMat.needsUpdate = true;
 
-    const cloudsTex = loadTex("earth_clouds_4k.png");
+    const cloudsTex = loadTex("earth_clouds_4k.jpg");
     cloudsTex.colorSpace = THREE.SRGBColorSpace;
+    cloudsTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     cloudsMat.map = cloudsTex;
     cloudsMat.needsUpdate = true;
 
-    const nightTex = loadTex("earth_lights_2048.png");
+    const nightTex = loadTex("earth_nightmap_8k.jpg");
     nightTex.colorSpace = THREE.SRGBColorSpace;
     (night.material as THREE.ShaderMaterial).uniforms.uNight.value = nightTex;
 
