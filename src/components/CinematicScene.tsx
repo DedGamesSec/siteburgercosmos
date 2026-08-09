@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import * as satellite from "satellite.js";
+import * as Astronomy from "astronomy-engine";
 import { REAL_STARS } from "../data/realStarCatalog";
+import { cachedSatellites, useSkyActivation } from "../hooks/useSkyActivation";
 
 export interface CinematicPhases {
   underEnd: number;
@@ -316,6 +319,8 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
   const progressRefInternal = useRef(progress);
   const activeRef = useRef(active);
 
+  useSkyActivation(false);
+
   useEffect(() => {
     progressRefInternal.current = progress;
   }, [progress]);
@@ -353,7 +358,9 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     scene.add(ambient);
     const sun = new THREE.DirectionalLight(0xffffff, 3.0);
     sun.position.set(90, 110, 220);
+    sun.target.position.copy(EARTH_POS);
     scene.add(sun);
+    scene.add(sun.target);
 
     // Real sky. One dense, realistic backdrop (faint stars, Milky Way band, color
     // temperature) is always on; the bright catalog stars layer on top with real
@@ -468,6 +475,149 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     nightTex.colorSpace = THREE.SRGBColorSpace;
     (night.material as THREE.ShaderMaterial).uniforms.uNight.value = nightTex;
 
+    // ---- REAL SATELLITES + REAL SUN/MOON -------------------------------
+    // Real LEO satellites from live TLE data (CelesTrak "visual" group) orbit the
+    // planet on their actual orbital planes, and the Sun/Moon sit at their real
+    // geocentric directions. The satellite clock is sped up so the orbits are
+    // visible during the short cinematic, but the positions stay on the real TLE
+    // tracks.
+    const realNowBase = new Date();
+    const startTime = performance.now();
+    const SAT_TIME_MULT = 150; // 1 real second = 2.5 sim minutes (LEO orbit ~90min)
+
+    // ECI/TEME frame: +z = north celestial pole. The scene frame has +y = north
+    // (matching raDecDir below), so swap y/z when converting to scene coordinates.
+    const toSceneDir = (x: number, y: number, z: number) => new THREE.Vector3(x, z, y).normalize();
+
+    // Satellite point swarm
+    const MAX_SATS = 40;
+    const satPositions = new Float32Array(MAX_SATS * 3);
+    const satGeo = new THREE.BufferGeometry();
+    satGeo.setAttribute("position", new THREE.BufferAttribute(satPositions, 3));
+    const satMat = new THREE.PointsMaterial({
+      color: 0xfff2cc,
+      size: 3.4,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+    const satellitePoints = new THREE.Points(satGeo, satMat);
+    satellitePoints.renderOrder = 4;
+    scene.add(satellitePoints);
+
+    const realSunDir = new THREE.Vector3(0.35, 0.4, 0.85).normalize();
+    const realMoonDir = new THREE.Vector3(0.4, -0.2, 0.9).normalize();
+    let realSunOk = false;
+    const updateSunMoonDirs = () => {
+      try {
+        const t = new Date();
+        const sv = Astronomy.GeoVector(Astronomy.Body.Sun, t, false);
+        const mv = Astronomy.GeoVector(Astronomy.Body.Moon, t, false);
+        realSunDir.copy(toSceneDir(sv.x, sv.y, sv.z));
+        realMoonDir.copy(toSceneDir(mv.x, mv.y, mv.z));
+        realSunOk = true;
+      } catch {
+        realSunOk = false;
+      }
+    };
+    updateSunMoonDirs();
+    const sunMoonTimer = window.setInterval(updateSunMoonDirs, 60000);
+
+    // Soft radial glow texture for the Sun and Moon halos
+    const makeGlowTex = (inner: string, outer: string) => {
+      const c = document.createElement("canvas");
+      c.width = c.height = 128;
+      const g = c.getContext("2d");
+      if (g) {
+        const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+        grad.addColorStop(0, inner);
+        grad.addColorStop(1, outer);
+        g.fillStyle = grad;
+        g.fillRect(0, 0, 128, 128);
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    };
+
+    // Sun: bright core + large additive glow sprite, placed at the real direction
+    const sunCore = new THREE.Mesh(
+      new THREE.SphereGeometry(16, 24, 24),
+      new THREE.MeshBasicMaterial({ color: 0xfff3c4, transparent: true, opacity: 0, blending: THREE.AdditiveBlending })
+    );
+    sunCore.renderOrder = 5;
+    scene.add(sunCore);
+    const sunGlowTex = makeGlowTex("rgba(255,244,200,0.9)", "rgba(255,214,120,0)");
+    const sunGlow = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: sunGlowTex,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        depthTest: true
+      })
+    );
+    sunGlow.scale.set(220, 220, 1);
+    sunGlow.renderOrder = 4;
+    scene.add(sunGlow);
+
+    // Moon: dim grey body + faint halo sprite at the real direction
+    const moonMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(9, 24, 24),
+      new THREE.MeshBasicMaterial({ color: 0xc8cbd4, transparent: true, opacity: 0 })
+    );
+    moonMesh.renderOrder = 5;
+    scene.add(moonMesh);
+    const moonGlowTex = makeGlowTex("rgba(210,215,230,0.5)", "rgba(200,210,230,0)");
+    const moonGlow = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: moonGlowTex,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        depthTest: true
+      })
+    );
+    moonGlow.scale.set(70, 70, 1);
+    moonGlow.renderOrder = 4;
+    scene.add(moonGlow);
+
+    const updateSatellites = () => {
+      const sats = cachedSatellites;
+      if (!sats || sats.length === 0) {
+        satMat.opacity = 0;
+        return;
+      }
+      const simNow = new Date(realNowBase.getTime() + (performance.now() - startTime) * SAT_TIME_MULT);
+      let n = 0;
+      for (let i = 0; i < sats.length && n < MAX_SATS; i++) {
+        try {
+          const pv = satellite.propagate(sats[i].satrec, simNow);
+          if (!pv.position || typeof pv.position === "boolean") continue;
+          const pos = pv.position;
+          const rKm = Math.hypot(pos.x, pos.y, pos.z);
+          const altKm = rKm - 6371;
+          if (altKm < 250 || altKm > 4000) continue;
+          const dir = toSceneDir(pos.x, pos.y, pos.z);
+          const sceneR = EARTH_R * (1.07 + (altKm / 4000) * 0.55);
+          satPositions[n * 3] = EARTH_POS.x + dir.x * sceneR;
+          satPositions[n * 3 + 1] = EARTH_POS.y + dir.y * sceneR;
+          satPositions[n * 3 + 2] = EARTH_POS.z + dir.z * sceneR;
+          n++;
+        } catch {
+          // skip invalid TLE
+        }
+      }
+      for (let i = n * 3; i < MAX_SATS * 3; i++) satPositions[i] = 0;
+      satGeo.attributes.position.needsUpdate = true;
+    };
+    updateSatellites();
+    const satTimer = window.setInterval(updateSatellites, 250);
+
     // Camera keyframes. Choreography: the flight starts in pure deep space with
     // NO Earth anywhere on screen. The TRUSTNODE logo assembles in front of the
     // stars while the camera hovers. Then the camera smoothly turns and glides
@@ -559,6 +709,25 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       cloudsMat.opacity = earthIn * 0.7;
       (night.material as THREE.ShaderMaterial).uniforms.uOpacity.value = earthIn;
 
+      // Sun/Moon orbit around the planet's position at their real directions,
+      // fading in with the Earth so they never spoil the logo screen.
+      if (realSunOk) {
+        sun.position.copy(realSunDir).multiplyScalar(2000);
+        sun.target.position.copy(EARTH_POS);
+        (night.material as THREE.ShaderMaterial).uniforms.uSunDir.value.copy(realSunDir);
+      }
+      const sunDist = EARTH_R * 6.2;
+      const moonDist = EARTH_R * 2.6;
+      sunCore.position.copy(realSunDir).multiplyScalar(sunDist).add(EARTH_POS);
+      sunGlow.position.copy(realSunDir).multiplyScalar(sunDist + 4).add(EARTH_POS);
+      moonMesh.position.copy(realMoonDir).multiplyScalar(moonDist).add(EARTH_POS);
+      moonGlow.position.copy(realMoonDir).multiplyScalar(moonDist + 2).add(EARTH_POS);
+      sunCore.material.opacity = earthIn;
+      (sunGlow.material as THREE.SpriteMaterial).opacity = earthIn * 0.8;
+      moonMesh.material.opacity = earthIn * 0.85;
+      (moonGlow.material as THREE.SpriteMaterial).opacity = earthIn * 0.5;
+      satMat.opacity = earthIn * 0.9;
+
       // Sky reveal: the realistic backdrop is always on. The bright real stars are
       // grouped by sky region so the flight moves from the northern sky into the
       // mid/southern constellations; everything thins as Earth fills the view.
@@ -606,6 +775,8 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     return () => {
       stop();
       clearInterval(activeWatch);
+      clearInterval(sunMoonTimer);
+      clearInterval(satTimer);
       window.removeEventListener("resize", onResize);
       scene.traverse((obj) => {
         if ((obj as THREE.Mesh).isMesh) {
@@ -620,6 +791,10 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
         pt.geometry.dispose();
         (pt.material as THREE.Material).dispose();
       });
+      satGeo.dispose();
+      satMat.dispose();
+      sunGlowTex.dispose();
+      moonGlowTex.dispose();
       renderer.dispose();
       if (renderer.domElement.parentElement === container) {
         container.removeChild(renderer.domElement);
