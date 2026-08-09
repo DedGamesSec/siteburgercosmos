@@ -156,7 +156,7 @@ export default function App() {
   // runs by itself on page load like a video, no scrolling required. The scroll
   // position can only pull the progress forward (never backward), so the flight
   // is one continuous forward sequence.
-  const AUTO_PLAY_MS = 15000;
+  const AUTO_PLAY_MS = 12000;
   useEffect(() => {
     if (!cinematicEnabled) return;
     if (activePage !== "home") return;
@@ -195,9 +195,9 @@ export default function App() {
   // the hover, then fades as the camera turns toward Earth.
   const cLogoOp = Math.max(
     0,
-    Math.min(1, (cinematicProgress - 0.45) / 0.12) * (1 - Math.max(0, (cinematicProgress - 0.7) / 0.08))
+    Math.min(1, (cinematicProgress - 0.46) / 0.06) * (1 - Math.max(0, (cinematicProgress - 0.66) / 0.06))
   );
-  const cLogoProgress = Math.max(0, Math.min(1, (cinematicProgress - 0.45) / 0.3));
+  const cLogoProgress = Math.max(0, Math.min(1, (cinematicProgress - 0.46) / 0.16));
 
   useEffect(() => {
     const computeScene = () => {
@@ -789,17 +789,16 @@ export default function App() {
                             {introContent.steps.map((step, idx) => {
                               const IconComponent = INTRO_ICONS[idx];
                               const colorClass = INTRO_COLORS[idx];
+                              const cardStart = 0.9 + idx * 0.025;
+                              const cardIn = Math.max(0, Math.min(1, (cinematicProgress - cardStart) / 0.045));
+                              const cardY = -70 * (1 - cardIn);
+                              const cardScale = 0.75 + cardIn * 0.25;
                               return (
                                 <motion.div
                                   key={idx}
-                                  initial={{ opacity: 0, y: -60, scale: 0.8 }}
-                                  animate={{
-                                    opacity: cinematicProgress > 0.9 ? 1 : 0,
-                                    y: cinematicProgress > 0.9 ? 0 : -60,
-                                    scale: cinematicProgress > 0.9 ? 1 : 0.8
-                                  }}
-                                  transition={{ duration: 0.7, delay: idx * 0.12, ease: "easeOut" }}
                                   className="h-full"
+                                  initial={false}
+                                  style={{ opacity: cardIn, y: cardY, scale: cardScale, willChange: "transform, opacity" }}
                                 >
                                   <ScanCard padding="p-4 sm:p-5" cardClassName="h-full" className="h-full justify-between">
                                     <div>
