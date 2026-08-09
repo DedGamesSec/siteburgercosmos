@@ -512,7 +512,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     satGeo.setDrawRange(0, 0);
     const satMat = new THREE.PointsMaterial({
       color: 0xfff2cc,
-      size: 2.2,
+      size: 1.6,
       sizeAttenuation: true,
       transparent: true,
       opacity: 0,
@@ -764,8 +764,12 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       { p: phases.throughEnd, pos: new THREE.Vector3(0, 2, -34), look: new THREE.Vector3(0, 0, 0) },
       { p: lerp(phases.throughEnd, phases.assemblyEnd, 0.5), pos: new THREE.Vector3(0, 2, -26), look: new THREE.Vector3(0, 0, 0) },
       { p: phases.assemblyEnd, pos: new THREE.Vector3(0, 2, -22), look: new THREE.Vector3(0, 0, 0) },
-      // Smooth, gentle turn toward Earth: no warp, no streaks — the logo screen
-      // stays pure space, then we ease forward as Earth fades in far ahead.
+      // After the logo leaves: a straight forward glide — no flip, no lunge. The
+      // camera just keeps flying ahead (+z) with a gentle descent while the view
+      // eases toward the Earth, then the existing approach below takes over.
+      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.25), pos: new THREE.Vector3(0, 1.2, 20), look: new THREE.Vector3(0, -4, 200) },
+      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.5), pos: new THREE.Vector3(0, 0.4, 75), look: new THREE.Vector3(0, -12, 260) },
+      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.75), pos: new THREE.Vector3(0, -0.8, 130), look: new THREE.Vector3(0, -21, 295) },
       { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 160), look: new THREE.Vector3(0, -30, 320) },
       { p: lerp(phases.turnEnd, phases.approachEnd, 0.35), pos: new THREE.Vector3(0, -4, 300), look: new THREE.Vector3(0, -45, 800) },
       { p: lerp(phases.turnEnd, phases.approachEnd, 0.6), pos: new THREE.Vector3(0, -8, 400), look: new THREE.Vector3(0, -35, 800) },
@@ -868,7 +872,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       const moonIn = smooth(0.79, 0.86, p);
       moonMesh.material.opacity = moonIn;
       (moonGlow.material as THREE.SpriteMaterial).opacity = moonIn * 0.8;
-      satMat.opacity = earthIn * 0.9;
+      satMat.opacity = earthIn * 0.8;
 
       // Sky reveal: the realistic backdrop is always on. The bright real stars are
       // grouped by sky region so the flight moves from the northern sky into the

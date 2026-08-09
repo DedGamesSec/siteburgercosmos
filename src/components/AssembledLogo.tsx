@@ -115,12 +115,26 @@ export default function AssembledLogo({ progress = 0, progressRef, phaseStart = 
   const linesRef = useRef<SVGGElement>(null);
   const clipCircleRef = useRef<SVGCircleElement>(null);
   const nodeRefs = useRef<(SVGCircleElement | null)[]>([]);
+  const doneRef = useRef(false);
 
   useEffect(() => {
     if (!progressRef) return;
     const total = Math.max(0.0001, phaseSpan);
     const apply = () => {
       const globalP = progressRef.current;
+      // Once the logo has fully assembled AND its parent overlay has faded it out
+      // (opacity 0), stop the per-frame DOM writes and infinite CSS animations —
+      // they would otherwise keep burning CPU on an invisible SVG forever.
+      if (!isEcoOrStatic && globalP > phaseStart + total + 0.12) {
+        if (!doneRef.current) {
+          doneRef.current = true;
+          nodeRefs.current.forEach((node) => {
+            if (node) node.style.animation = "none";
+          });
+          if (breatheRef.current) breatheRef.current.style.animation = "none";
+        }
+        return;
+      }
       const p = isEcoOrStatic ? 1 : Math.max(0, Math.min(1, (globalP - phaseStart) / total));
       const cProgress = isEcoOrStatic ? 1 : Math.min(1, p / 0.72);
       const easeOut = isEcoOrStatic ? 0 : Math.pow(1 - cProgress, 2.5);
