@@ -460,16 +460,35 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       { p: 1, pos: new THREE.Vector3(0, -12, 440), look: new THREE.Vector3(0, 180, 800) }
     ];
 
+    // Catmull-Rom spline through the keyframes: the camera glides through every
+    // point with continuous velocity (no stop/start at keyframe seams), so the
+    // auto-played flight reads as one smooth video.
     const currentLook = new THREE.Vector3(0, 0, 0);
+    const tmp = new THREE.Vector3();
+    const catmull = (out: THREE.Vector3, p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, p3: THREE.Vector3, t: number) => {
+      const t2 = t * t;
+      const t3 = t2 * t;
+      out
+        .copy(p0).multiplyScalar(-0.5 * t3 + t2 - 0.5 * t)
+        .addScaledVector(p1, 1.5 * t3 - 2.5 * t2 + 1)
+        .addScaledVector(p2, -1.5 * t3 + 2 * t2 + 0.5 * t)
+        .addScaledVector(p3, 0.5 * t3 - 0.5 * t2);
+      return out;
+    };
     const sampleCamera = (p: number) => {
-      let i = Math.max(0, kf.findIndex((k) => p <= k.p) - 1);
-      if (i < 0) i = 0;
-      const a = kf[i];
-      const b = kf[Math.min(i + 1, kf.length - 1)];
-      const span = Math.max(1e-5, b.p - a.p);
-      const t = smooth(a.p, b.p, p);
-      camera.position.lerpVectors(a.pos, b.pos, t);
-      currentLook.lerpVectors(a.look, b.look, t);
+      const n = kf.length;
+      // Find the segment kf[i] -> kf[i+1] that p falls into.
+      let i = 0;
+      while (i < n - 2 && p > kf[i + 1].p) i++;
+      const span = Math.max(1e-5, kf[i + 1].p - kf[i].p);
+      const t = Math.min(1, Math.max(0, (p - kf[i].p) / span));
+      const p0 = kf[Math.max(0, i - 1)];
+      const p1 = kf[i];
+      const p2 = kf[Math.min(i + 1, n - 1)];
+      const p3 = kf[Math.min(i + 2, n - 1)];
+      catmull(camera.position, p0.pos, p1.pos, p2.pos, p3.pos, t);
+      catmull(tmp, p0.look, p1.look, p2.look, p3.look, t);
+      currentLook.copy(tmp);
       camera.lookAt(currentLook);
     };
 
