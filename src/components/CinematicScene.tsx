@@ -25,7 +25,8 @@ export function isWebGLAvailable(): boolean {
 }
 
 interface CinematicSceneProps {
-  progress: number; // 0..1 scroll-driven cinematic progress
+  progress?: number; // 0..1 scroll-driven cinematic progress (legacy, unused when progressRef given)
+  progressRef?: { current: number }; // shared mutable progress, read per-frame without React re-render
   phases: CinematicPhases;
   active?: boolean; // when false the render loop pauses (intro scrolled past)
 }
@@ -310,13 +311,13 @@ interface Keyframe {
   look: THREE.Vector3;
 }
 
-export default function CinematicScene({ progress, phases, active = true }: CinematicSceneProps) {
+export default function CinematicScene({ progress = 0, progressRef, phases, active = true }: CinematicSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef(progress);
+  const progressRefInternal = useRef(progress);
   const activeRef = useRef(active);
 
   useEffect(() => {
-    progressRef.current = progress;
+    progressRefInternal.current = progress;
   }, [progress]);
 
   useEffect(() => {
@@ -501,7 +502,7 @@ export default function CinematicScene({ progress, phases, active = true }: Cine
       raf = requestAnimationFrame(render);
       const dt = Math.min(0.05, (time - prev) / 1000);
       prev = time;
-      const p = progressRef.current;
+      const p = progressRef ? progressRef.current : progressRefInternal.current;
 
       // Earth rotates strictly in sync with real time (GMST) + a gentle extra spin
       // so the motion is clearly visible even on a short flight.

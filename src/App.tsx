@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, useMemo, Suspense, lazy } from "react";
+import { useState, useEffect, useRef, Suspense, lazy } from "react";
 const NetworkBackground = lazy(() => import("./components/NetworkBackground"));
 const CinematicScene = lazy(() => import("./components/CinematicScene"));
 import { isWebGLAvailable, type CinematicPhases } from "./components/CinematicScene";
+import CinematicOverlays from "./components/CinematicOverlays";
+import { cinematicProgressRef, setCinematicProgressValue } from "./lib/cinematicStore";
 import AssembledLogo from "./components/AssembledLogo";
-import { INTRO_DICT } from "./components/IntroSection";
 
 const hudTranslations: Record<string, { core: string; nodes: string; mode: string }> = {
   ru: { core: "ЛОКАЛЬНОЕ ЯДРО", nodes: "АКТИВНЫЕ УЗЛЫ", mode: "РЕЖИМ ЗАЩИТЫ" },
@@ -70,15 +71,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { useTranslation } from "./i18n/LanguageContext";
 import { useNavigation, PageId } from "./navigation/NavigationContext";
 import { useEcoMode } from "./context/EcoModeContext";
-import ScanCard from "./components/ScanCard";
-import { HelpCircle, Shield, Eye } from "lucide-react";
-
-const INTRO_ICONS = [HelpCircle, Shield, Eye];
-const INTRO_COLORS = [
-  "border-[#3B82F6]/40 text-[#3B82F6] bg-[#3B82F6]/5",
-  "border-[#2DD4BF]/40 text-[#2DD4BF] bg-[#2DD4BF]/5",
-  "border-[#FB923C]/40 text-[#FB923C] bg-[#FB923C]/5"
-];
 
 export default function App() {
   const { t, language } = useTranslation();
@@ -146,7 +138,7 @@ export default function App() {
   // legacy flight corridor + assembled logo block are replaced by the 3D fly-by
   // (under the logo -> orbit -> through the letters -> assembly -> turn -> Earth).
   const cinematicCorridorRef = useRef<HTMLDivElement>(null);
-  const [cinematicProgress, setCinematicProgress] = useState(0);
+  const heroSectionRef = useRef<HTMLDivElement>(null);
   const [cinematicActive, setCinematicActive] = useState(false);
   const [cinematicReplay, setCinematicReplay] = useState(0);
   const [webglReady] = useState(() => isWebGLAvailable());
@@ -155,7 +147,8 @@ export default function App() {
   // Auto-play: the whole flight (title -> logo assembly -> turn -> Earth -> cards)
   // runs by itself on page load like a video, no scrolling required. The scroll
   // position can only pull the progress forward (never backward), so the flight
-  // is one continuous forward sequence.
+  // is one continuous forward sequence. Progress lives in a shared mutable ref —
+  // the render loop reads it per frame, so no React re-render happens at 60fps.
   const AUTO_PLAY_MS = 12000;
   useEffect(() => {
     if (!cinematicEnabled) return;
@@ -166,7 +159,7 @@ export default function App() {
     const tick = (now: number) => {
       if (cancelled) return;
       const t = Math.min(1, (now - start) / AUTO_PLAY_MS);
-      setCinematicProgress((prev) => Math.max(prev, t));
+      setCinematicProgressValue(Math.max(cinematicProgressRef.current, t));
       if (t < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
@@ -177,27 +170,7 @@ export default function App() {
   }, [cinematicEnabled, cinematicReplay, activePage]);
 
   // Scroll-driven fly-past of the hero title; disabled in eco mode (no motion).
-  const flyBy = ecoMode ? 0 : cinematicEnabled ? cinematicProgress : sceneProgress;
-
-  // Pinned DOM overlays that ride on top of the 3D flight, driven by progress.
-  const cLabelT = cinematicProgress > 0.48 ? Math.min(1, (cinematicProgress - 0.48) / 0.15) : 0;
-  const cLabelOut = cinematicProgress > 0.7 ? Math.max(0, 1 - (cinematicProgress - 0.7) / 0.08) : 1;
-  const cLabelOp = cLabelT * cLabelOut;
-  const cHudT = cinematicProgress > 0.6 ? Math.min(1, (cinematicProgress - 0.6) / 0.12) : 0;
-  const cHudOut = cinematicProgress > 0.72 ? Math.max(0, 1 - (cinematicProgress - 0.72) / 0.08) : 1;
-  const cHudOp = cHudT * cHudOut;
-  const cArrowT = cinematicProgress > 0.85 ? Math.min(1, (cinematicProgress - 0.85) / 0.1) : 0;
-  // "Всё просто о TrustNode" full intro content fades in at the very end, over
-  // the Earth shot: badge, title, subtitle and three step cards.
-  const introContent = INTRO_DICT[language] || INTRO_DICT.en;
-  const cIntroOp = cinematicProgress > 0.9 ? Math.min(1, (cinematicProgress - 0.9) / 0.08) : 0;
-  // 2D logo assembly overlay: assembles as the new constellations open, holds during
-  // the hover, then fades as the camera turns toward Earth.
-  const cLogoOp = Math.max(
-    0,
-    Math.min(1, (cinematicProgress - 0.46) / 0.06) * (1 - Math.max(0, (cinematicProgress - 0.66) / 0.06))
-  );
-  const cLogoProgress = Math.max(0, Math.min(1, (cinematicProgress - 0.46) / 0.16));
+  const flyBy = ecoMode ? 0 : cinematicEnabled ? cinematicProgressRef.current : sceneProgress;
 
   useEffect(() => {
     const computeScene = () => {
@@ -252,7 +225,6 @@ export default function App() {
       const core = coreLandingRef.current;
       const vh = windowHeight || window.innerHeight;
       if (!el) {
-        setCinematicProgress((prev) => Math.max(prev, 0));
         setCinematicActive(false);
         return;
       }
@@ -260,7 +232,7 @@ export default function App() {
       const absTop = window.scrollY + rect.top;
       const totalScroll = Math.max(vh, absTop + rect.height - vh);
       const p = Math.min(1, Math.max(0, window.scrollY / totalScroll));
-      setCinematicProgress((prev) => Math.max(prev, p));
+      setCinematicProgressValue(Math.max(cinematicProgressRef.current, p));
       const coreRect = core?.getBoundingClientRect();
       setCinematicActive(!coreRect || coreRect.top > 0);
     };
@@ -617,11 +589,16 @@ export default function App() {
                   
                   {/* SECTION 1: HERO TITLE (100dvh) */}
                   <div 
+                    ref={heroSectionRef}
                     className="relative z-20 w-full flex items-center justify-center px-4 select-none pointer-events-none"
                     style={{
                       height: "100dvh",
-                      opacity: Math.max(0, 1 - Math.min(1, flyBy / 0.45)),
-                      transform: `scale(${1 + 0.14 * Math.min(1, flyBy / 0.45)})`,
+                      ...(cinematicEnabled
+                        ? {}
+                        : {
+                            opacity: Math.max(0, 1 - Math.min(1, flyBy / 0.45)),
+                            transform: `scale(${1 + 0.14 * Math.min(1, flyBy / 0.45)})`
+                          }),
                       transformOrigin: "center center"
                     }}
                     id="main-hero-section-container"
@@ -714,166 +691,16 @@ export default function App() {
                       id="cinematic-corridor"
                     >
                       <Suspense fallback={<SkyPlaceholder />}>
-                        <CinematicScene progress={cinematicProgress} phases={CINEMATIC_PHASES} active={cinematicActive} />
+                        <CinematicScene progressRef={cinematicProgressRef} phases={CINEMATIC_PHASES} active={cinematicActive} />
                       </Suspense>
 
-                      {/* HUD overlays pinned over the 3D flight */}
-                      <div className="fixed inset-0 z-10 pointer-events-none select-none">
-                        {/* Status labels during assembly */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-16 w-full max-w-5xl mx-auto px-4">
-                            <motion.div
-                              style={{
-                                opacity: cLabelOp,
-                                x: cLabelOp > 0 ? -40 * (1 - Math.min(1, cLabelOp)) : -40
-                              }}
-                              className="flex flex-col items-center lg:items-end text-center lg:text-right w-full lg:w-64"
-                            >
-                              <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
-                                {t.assembly?.leftPrimary || "OFFLINE-FIRST"}
-                              </span>
-                              <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
-                                {t.assembly?.leftSub || "// ДАННЫЕ НЕ ПОКИДАЮТ УСТРОЙСТВО"}
-                              </span>
-                            </motion.div>
-
-                            <div className="w-32 sm:w-44 shrink-0 hidden lg:block" />
-
-                            <motion.div
-                              style={{
-                                opacity: cLogoOp,
-                                scale: 0.9 + cLogoOp * 0.1,
-                                pointerEvents: "none"
-                              }}
-                              className="shrink-0"
-                              id="cinematic-assembled-logo"
-                            >
-                              <AssembledLogo progress={cLogoProgress} ecoMode={ecoMode} className="scale-[0.55] sm:scale-[0.7] transition-transform duration-300 origin-center" />
-                            </motion.div>
-
-                            <div className="w-32 sm:w-44 shrink-0 hidden lg:block" />
-
-                            <motion.div
-                              style={{
-                                opacity: cLabelOp,
-                                x: cLabelOp > 0 ? 40 * (1 - Math.min(1, cLabelOp)) : 40
-                              }}
-                              className="flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-64"
-                            >
-                              <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
-                                {t.assembly?.rightPrimary || "ZERO TELEMETRY"}
-                              </span>
-                              <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
-                                {t.assembly?.rightSub || "// НИКАКОЙ ТЕЛЕМЕТРИИ"}
-                              </span>
-                            </motion.div>
-                          </div>
-                        </div>
-
-                        {/* "Всё просто о TrustNode" — full intro content over the
-                            Earth screen: badge, title, subtitle and three step cards */}
-                        <div
-                          className="absolute inset-x-0 top-0 flex flex-col items-center gap-3 sm:gap-4 px-4 pt-[14vh] sm:pt-[16vh] pb-[22vh] transition-opacity duration-500"
-                          style={{ opacity: cIntroOp }}
-                        >
-                          <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.3em] text-[#3B82F6] uppercase font-bold">
-                            {introContent.badge}
-                          </span>
-                          <h2 className="font-display font-medium text-xl sm:text-3xl text-[#F5F5F0] tracking-tighter text-center max-w-3xl">
-                            {introContent.title}
-                          </h2>
-                          <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed text-center max-w-xl">
-                            {introContent.subtitle}
-                          </p>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 w-full max-w-4xl mt-1">
-                            {introContent.steps.map((step, idx) => {
-                              const IconComponent = INTRO_ICONS[idx];
-                              const colorClass = INTRO_COLORS[idx];
-                              const cardStart = 0.9 + idx * 0.025;
-                              const cardIn = Math.max(0, Math.min(1, (cinematicProgress - cardStart) / 0.045));
-                              const cardY = -70 * (1 - cardIn);
-                              const cardScale = 0.75 + cardIn * 0.25;
-                              return (
-                                <motion.div
-                                  key={idx}
-                                  className="h-full"
-                                  initial={false}
-                                  style={{ opacity: cardIn, y: cardY, scale: cardScale, willChange: "transform, opacity" }}
-                                >
-                                  <ScanCard padding="p-4 sm:p-5" cardClassName="h-full" className="h-full justify-between">
-                                    <div>
-                                      <div className="flex items-center justify-between mb-3 sm:mb-4">
-                                        <span className="font-mono text-[9px] sm:text-[10px] font-bold tracking-wider text-gray-500 uppercase">
-                                          {step.tag}
-                                        </span>
-                                        <div className={`p-1.5 sm:p-2 border ${colorClass}`}>
-                                          <IconComponent className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                                        </div>
-                                      </div>
-                                      <h3 className="font-display font-medium text-sm sm:text-lg text-[#F5F5F0] mb-1.5 sm:mb-3">
-                                        {step.title}
-                                      </h3>
-                                      <p className="font-sans text-[10px] sm:text-xs text-gray-400 leading-relaxed">
-                                        {step.desc}
-                                      </p>
-                                    </div>
-                                  </ScanCard>
-                                </motion.div>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Minimalist HUD status bar */}
-                        <div
-                          className="absolute inset-x-0 bottom-[20vh] flex justify-center transition-opacity duration-300"
-                          style={{ opacity: cHudOp }}
-                        >
-                          <div className="flex flex-wrap items-center justify-center gap-3">
-                            {[
-                              hudTranslations[language]?.core || hudTranslations.en.core,
-                              hudTranslations[language]?.nodes || hudTranslations.en.nodes,
-                              hudTranslations[language]?.mode || hudTranslations.en.mode
-                            ].map((text, idx) => (
-                              <span
-                                key={idx}
-                                className="font-mono text-[9px] sm:text-[11px] tracking-[0.1em] font-semibold text-[#3B82F6] bg-[#12141A]/60 border border-[#3C404A] px-3.5 py-1.5 rounded-sm whitespace-nowrap"
-                              >
-                                {text}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Enter-dome navigator at the end of the flight */}
-                        <div
-                          className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center transition-opacity duration-300"
-                          style={{ opacity: cArrowT }}
-                        >
-                          <button
-                            onClick={() => {
-                              window.scrollTo({ top: coreLandingRef.current?.offsetTop ?? vh * 2, behavior: "smooth" });
-                            }}
-                            className="flex flex-col items-center gap-3 cursor-pointer group z-30 transition-all duration-300 pointer-events-auto"
-                            id="enter-dome-arrow-btn"
-                          >
-                            <div className="relative flex items-center justify-center w-10 h-10 rounded-sm border border-[#3C404A] bg-[#12141A]/60 group-hover:border-[#2DD4BF] group-hover:shadow-glow-success transition-all duration-300">
-                              <svg
-                                className="w-5 h-5 text-[#8B8F9C] group-hover:text-[#2DD4BF] transition-colors translate-y-0 group-hover:translate-y-0.5 transition-transform animate-bounce"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                viewBox="0 0 24 24"
-                              >
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 13l-7 7-7-7m14-6l-7 7-7-7" />
-                              </svg>
-                            </div>
-                            <span className="font-mono text-[9px] tracking-[0.3em] text-[#8B8F9C] group-hover:text-[#2DD4BF] transition-colors uppercase font-bold animate-pulse mt-2">
-                              {t.hero.enterDome}
-                            </span>
-                          </button>
-                        </div>
-                      </div>
+                      <CinematicOverlays
+                        progressRef={cinematicProgressRef}
+                        heroRef={heroSectionRef}
+                        onEnterDome={() => {
+                          window.scrollTo({ top: coreLandingRef.current?.offsetTop ?? vh * 2, behavior: "smooth" });
+                        }}
+                      />
                     </div>
                   ) : (
                     <>
@@ -1024,7 +851,7 @@ export default function App() {
                     <button
                       onClick={() => {
                         if (cinematicEnabled) {
-                          setCinematicProgress(0);
+                          setCinematicProgressValue(0);
                           setCinematicReplay((k) => k + 1);
                         }
                         window.scrollTo({ top: 0, behavior: "smooth" });
