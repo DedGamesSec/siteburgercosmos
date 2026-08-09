@@ -25,9 +25,10 @@ const FLIGHT_CORRIDOR_DVH = 150;
 
 // 3D cinematic corridor: the WebGL flight through the 3D logo + approach to Earth.
 // This corridor replaces the legacy empty corridor when WebGL is available.
-// Shorter than a full scroll-stretch because the flight now auto-plays like a
-// video at the top of the page; scrolling only fast-forwards the sequence.
-const CINEMATIC_CORRIDOR_DVH = 180;
+// The flight auto-plays like a video at the top of the page, so the corridor is
+// kept minimal — just enough scroll room to reach the real site content quickly
+// once the flight is over. Scrolling only fast-forwards the sequence.
+const CINEMATIC_CORRIDOR_DVH = 60;
 
 // Phase boundaries of the cinematic flight, as fractions of the corridor scroll.
 const CINEMATIC_PHASES: CinematicPhases = {
@@ -76,7 +77,6 @@ export default function App() {
   const { t, language } = useTranslation();
   const { activePage } = useNavigation();
   const { ecoMode, toggleEcoMode } = useEcoMode();
-  const [showReplayIntro, setShowReplayIntro] = useState(false);
   const [windowHeight, setWindowHeight] = useState(0);
   const [activeMobileCard, setActiveMobileCard] = useState(0);
   const [userInteractedWithMobileCards, setUserInteractedWithMobileCards] = useState(false);
@@ -109,21 +109,6 @@ export default function App() {
 
   const coreLandingRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const target = coreLandingRef.current;
-    if (!target) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowReplayIntro(entry.isIntersecting);
-      },
-      { root: null, threshold: 0.05 },
-    );
-
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [activePage]);
-
   const vh = windowHeight || 800;
 
   const section2Ref = useRef<HTMLDivElement>(null);
@@ -140,9 +125,34 @@ export default function App() {
   const cinematicCorridorRef = useRef<HTMLDivElement>(null);
   const heroSectionRef = useRef<HTMLDivElement>(null);
   const [cinematicActive, setCinematicActive] = useState(false);
-  const [cinematicReplay, setCinematicReplay] = useState(0);
   const [webglReady] = useState(() => isWebGLAvailable());
   const cinematicEnabled = webglReady && !ecoMode;
+
+  // The header stays hidden while the cinematic intro plays, then fades in once
+  // the core landing content scrolls into view. On non-cinematic pages it's shown
+  // straight away.
+  const [showHeader, setShowHeader] = useState(() => activePage !== "home" || !cinematicEnabled);
+  useEffect(() => {
+    if (activePage !== "home") {
+      setShowHeader(true);
+      return;
+    }
+    if (!cinematicEnabled) {
+      setShowHeader(true);
+      return;
+    }
+    const target = coreLandingRef.current;
+    if (!target) {
+      setShowHeader(false);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowHeader(entry.isIntersecting),
+      { root: null, threshold: 0.05 },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [activePage, cinematicEnabled]);
 
   // Auto-play: the whole flight (title -> logo assembly -> turn -> Earth -> cards)
   // runs by itself on page load like a video, no scrolling required. The scroll
@@ -167,7 +177,7 @@ export default function App() {
       cancelled = true;
       cancelAnimationFrame(raf);
     };
-  }, [cinematicEnabled, cinematicReplay, activePage]);
+  }, [cinematicEnabled, activePage]);
 
   // Scroll-driven fly-past of the hero title; disabled in eco mode (no motion).
   const flyBy = ecoMode ? 0 : cinematicEnabled ? cinematicProgressRef.current : sceneProgress;
@@ -532,9 +542,6 @@ export default function App() {
   // Continuous zoom factor for the starfield
   const zoomFactor = 1.05;
 
-  // Beautiful Header is always visible for instant navigation
-  const showHeader = true;
-
   return (
     <div 
       className="relative w-full max-w-full overflow-x-hidden bg-[#0A0A0B] selection:bg-[#3B82F6]/30 selection:text-[#F5F5F0]"
@@ -559,9 +566,9 @@ export default function App() {
       <div 
         className="transition-all duration-300 fixed top-0 left-0 right-0 z-50"
         style={{ 
-          opacity: 1, 
-          transform: "translateY(0)",
-          pointerEvents: "auto" 
+          opacity: showHeader ? 1 : 0, 
+          transform: showHeader ? "translateY(0)" : "translateY(-100%)",
+          pointerEvents: showHeader ? "auto" : "none" 
         }}
       >
         <Header />
@@ -612,6 +619,7 @@ export default function App() {
                       id="main-hero-section"
                     >
                       {/* Status Badge */}
+                      {!cinematicEnabled && (
                       <div 
                         className={`inline-flex flex-col items-center justify-center px-4 py-1.5 ${!ecoMode && skyStatus ? "rounded-sm gap-1 py-2" : "rounded-sm"} bg-[#12141A]/80 border border-[#3C404A] shadow-glow-sm mb-8 transition-all duration-300`}
                         id="status-badge"
@@ -631,6 +639,7 @@ export default function App() {
                           </span>
                         )}
                       </div>
+                      )}
 
                       {/* Huge Hero Title */}
                       <h1 
@@ -642,16 +651,19 @@ export default function App() {
                       </h1>
 
                       {/* Monospaced Bracketed Subtitle */}
+                      {!cinematicEnabled && (
                       <p 
                         className="font-mono text-xs sm:text-sm tracking-[0.22em] text-gray-500 max-w-2xl px-2"
                         id="main-subtitle"
                       >
                         {t.hero.titleSub}
                       </p>
+                      )}
 
                     </motion.div>
 
                     {/* Scroll Down Indicator */}
+                    {!cinematicEnabled && (
                     <motion.div 
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -680,6 +692,7 @@ export default function App() {
                         </svg>
                       </button>
                     </motion.div>
+                    )}
                   </div>
 
                   {cinematicEnabled ? (
@@ -846,26 +859,6 @@ export default function App() {
 
               {/* CORE LANDING CONTENT (NORMAL DOCUMENT FLOW) */}
               <div ref={coreLandingRef} className="relative z-20 w-full flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm shadow-[0_-30px_60px_rgba(10,10,11,0.95)]" id="core-landing-page">
-                {showReplayIntro && (
-                  <div className="max-w-6xl mx-auto w-full px-4 pt-8 pb-2 flex justify-start">
-                    <button
-                      onClick={() => {
-                        if (cinematicEnabled) {
-                          setCinematicProgressValue(0);
-                          setCinematicReplay((k) => k + 1);
-                        }
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="font-mono text-[9px] text-gray-500 hover:text-[#3B82F6] transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-[#3C404A]/60 bg-[#12141A]/60 cursor-pointer hover:border-[#3B82F6]/50"
-                      id="replay-intro-btn"
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                      </svg>
-                      <span>{t.replayIntro}</span>
-                    </button>
-                  </div>
-                )}
                 {!cinematicEnabled && <IntroSection />}
                 <ProtectionMarquee />
                 <ProblemSection />
