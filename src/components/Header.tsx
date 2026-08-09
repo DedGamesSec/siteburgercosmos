@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Menu, X, Leaf, ALargeSmall, Radar } from "lucide-react";
+import { Menu, X, Leaf, ALargeSmall } from "lucide-react";
 import { motion } from "motion/react";
-import { SiTelegram, SiVk, SiTiktok, SiGithub } from "react-icons/si";
 import MiniLogo from "./MiniLogo";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "../i18n/LanguageContext";
@@ -11,13 +10,8 @@ import { useEcoMode } from "../context/EcoModeContext";
 import { HEADER_PAGES } from "../navigation/pages.config";
 import { announce } from "../i18n/Announcer";
 
-const SiTelegramIcon = SiTelegram as React.ComponentType<any>;
-const SiVkIcon = SiVk as React.ComponentType<any>;
-const SiTiktokIcon = SiTiktok as React.ComponentType<any>;
-const SiGithubIcon = SiGithub as React.ComponentType<any>;
-
-export const RUSTORE_URL = "https://www.rustore.ru/catalog/app/com.frauddetector.app";
 export const PRODUCT_RADAR_URL = "https://productradar.ru/product/trustnode/";
+export const RUSTORE_URL = "https://www.rustore.ru/catalog/app/com.frauddetector.app";
 export const GITHUB_APK_URL = "https://github.com/TrustNodeLab/trustnodelab.github.io/releases/download/1.2.0/app-arm64-v8a-release.apk";
 
 export default function Header() {
@@ -147,41 +141,6 @@ export default function Header() {
     );
   };
 
-  const socialLinks = [
-    { href: "https://t.me/TrustNode_team", label: "Telegram", Icon: SiTelegramIcon },
-    { href: "https://vk.com/trustnode", label: "VK", Icon: SiVkIcon },
-    { href: "https://github.com/TrustNodeLab", label: "GitHub", Icon: SiGithubIcon },
-    { href: "https://www.tiktok.com/@trusrnode?_r=1&_t=ZS-97fr5YVyPCs", label: "TikTok", Icon: SiTiktokIcon },
-  ] as const;
-
-  const renderSocialButtons = (extraClass = "") => (
-    <div className={`flex items-center gap-2 ${extraClass}`}>
-      {socialLinks.map(({ href, label, Icon }) => (
-        <a
-          key={label}
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={label}
-          title={label}
-          className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
-        >
-          <Icon className="w-4 h-4" />
-        </a>
-      ))}
-      <a
-        href={PRODUCT_RADAR_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Product Radar"
-        title="Product Radar"
-        className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
-      >
-        <Radar className="w-4 h-4" />
-      </a>
-    </div>
-  );
-
   const utilityButtonClass =
     "inline-flex items-center justify-center w-9 h-9 rounded-xl border transition-all duration-300 cursor-pointer";
 
@@ -264,8 +223,6 @@ export default function Header() {
 
         {/* Right: utility buttons */}
         <div className="hidden lg:flex items-center justify-end gap-2 shrink-0 justify-self-end">
-          {renderSocialButtons()}
-          <div className="w-px h-6 bg-[#3C404A]/40" />
           {renderEcoButton()}
           {renderSeniorButton()}
           <LanguageSwitcher variant="desktop" />
