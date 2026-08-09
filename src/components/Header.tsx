@@ -164,7 +164,7 @@ export default function Header() {
           rel="noopener noreferrer"
           aria-label={label}
           title={label}
-          className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
+          className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
         >
           <Icon className="w-4 h-4" />
         </a>
@@ -175,7 +175,7 @@ export default function Header() {
         rel="noopener noreferrer"
         aria-label="Product Radar"
         title="Product Radar"
-        className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
+        className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#0A0A0B]/60 border border-[#3B82F6]/30 text-[#3B82F6] hover:text-white hover:bg-[#3B82F6]/20 transition-all duration-300"
       >
         <Radar className="w-4 h-4" />
       </a>
@@ -183,7 +183,7 @@ export default function Header() {
   );
 
   const utilityButtonClass =
-    "inline-flex items-center justify-center w-11 h-11 rounded-xl border transition-all duration-300 cursor-pointer";
+    "inline-flex items-center justify-center w-9 h-9 rounded-xl border transition-all duration-300 cursor-pointer";
 
   const renderEcoButton = () => (
     <button
@@ -224,9 +224,9 @@ export default function Header() {
       }`}
       style={{
         paddingTop: scrolled || activePage !== "home"
-          ? "max(0.75rem, env(safe-area-inset-top))"
-          : "max(1.25rem, env(safe-area-inset-top))",
-        paddingBottom: scrolled || activePage !== "home" ? "0.75rem" : "1.25rem",
+          ? "max(0.5rem, env(safe-area-inset-top))"
+          : "max(0.75rem, env(safe-area-inset-top))",
+        paddingBottom: scrolled || activePage !== "home" ? "0.5rem" : "0.75rem",
         paddingLeft: "max(1rem, env(safe-area-inset-left))",
         paddingRight: "max(1rem, env(safe-area-inset-right))",
       }}
@@ -240,12 +240,12 @@ export default function Header() {
           onClick={() => handlePageNavigation("home")}
           id="header-logo-container"
         >
-          <div className="w-12 h-14 flex items-center justify-center">
+          <div className="w-9 h-10 flex items-center justify-center">
             <MiniLogo />
           </div>
 
           <div className="flex flex-col">
-            <span className="font-display font-medium text-lg text-[#F5F5F0] tracking-tighter">
+            <span className="font-display font-medium text-base text-[#F5F5F0] tracking-tighter">
               Trust<span className="text-[#3B82F6]">Node</span>
             </span>
             <span className="font-mono text-[8px] text-gray-500 uppercase tracking-widest leading-none">
@@ -274,7 +274,7 @@ export default function Header() {
         {/* Mobile: hamburger toggle */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden col-start-3 justify-self-end p-2.5 rounded-xl bg-[#3C404A]/40 border border-[#3C404A]/50 text-gray-400 hover:text-[#3B82F6] transition-colors cursor-pointer"
+          className="lg:hidden col-start-3 justify-self-end p-2 rounded-xl bg-[#3C404A]/40 border border-[#3C404A]/50 text-gray-400 hover:text-[#3B82F6] transition-colors cursor-pointer"
           id="mobile-menu-toggle"
           aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
