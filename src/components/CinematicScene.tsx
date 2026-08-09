@@ -4,28 +4,10 @@ import * as satellite from "satellite.js";
 import * as Astronomy from "astronomy-engine";
 import { REAL_STARS } from "../data/realStarCatalog";
 import { cachedSatellites, useSkyActivation } from "../hooks/useSkyActivation";
+import { isWebGLAvailable, type CinematicPhases } from "./cinematicShared";
 
-export interface CinematicPhases {
-  underEnd: number;
-  orbitEnd: number;
-  throughEnd: number;
-  assemblyEnd: number;
-  turnEnd: number;
-  approachEnd: number;
-}
-
-export function isWebGLAvailable(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    const canvas = document.createElement("canvas");
-    return !!(
-      window.WebGLRenderingContext &&
-      (canvas.getContext("webgl2") || canvas.getContext("webgl"))
-    );
-  } catch {
-    return false;
-  }
-}
+export { isWebGLAvailable };
+export type { CinematicPhases };
 
 interface CinematicSceneProps {
   progress?: number; // 0..1 scroll-driven cinematic progress (legacy, unused when progressRef given)
@@ -427,7 +409,6 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     clouds.renderOrder = 2;
     scene.add(clouds);
 
-    const loader = new THREE.TextureLoader();
     const baseUrl = import.meta.env.BASE_URL;
 
     // The satellite maps are 8K (8192x4096). On phones we force a 2048 cap so the
@@ -438,29 +419,57 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const mobileTexCap = isMobile ? 2048 : Number.MAX_SAFE_INTEGER;
     const dayReady = { value: false };
 
+    // Decode (and resize) textures off the main thread. The old path used an
+    // <img> + TextureLoader: each 8K JPEG was decoded synchronously on the main
+    // thread the moment it arrived, and all five maps land in the first seconds
+    // of the intro — those stalls read as freezes at the very start of the
+    // flight. createImageBitmap decodes + resizes on worker threads instead, and
+    // only the final GPU upload touches the main thread (spread over frames).
     const loadSized = (path: string, onReady?: () => void): THREE.Texture => {
-      const tex = loader.load(
-        `${baseUrl}textures/${path}`,
-        () => {
-            const img = tex.image as HTMLImageElement | undefined;
-          const cap = Math.min(mobileTexCap, maxTexSize);
-          if (img && img.width > cap && cap >= 128) {
-            const scale = cap / img.width;
-            const canvas = document.createElement("canvas");
-            canvas.width = cap;
-            canvas.height = Math.max(1, Math.round(img.height * scale));
-            const ctx = canvas.getContext("2d");
-            if (ctx) {
-              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-              tex.image = canvas as unknown as HTMLImageElement;
+      const tex = new THREE.Texture();
+      const url = `${baseUrl}textures/${path}`;
+      const cap = Math.min(mobileTexCap, maxTexSize);
+
+      const apply = (img: ImageBitmap | HTMLImageElement, width: number) => {
+        if (width > cap && cap >= 128 && typeof createImageBitmap === "function") {
+          createImageBitmap(img, { resizeWidth: cap, resizeQuality: "medium" })
+            .then((scaled) => {
+              tex.image = scaled;
               tex.needsUpdate = true;
-            }
-          }
-          onReady?.();
-        },
-        undefined,
-        () => onReady?.()
-      );
+              onReady?.();
+            })
+            .catch(() => {
+              tex.image = img;
+              tex.needsUpdate = true;
+              onReady?.();
+            });
+          return;
+        }
+        tex.image = img;
+        tex.needsUpdate = true;
+        onReady?.();
+      };
+
+      if (typeof createImageBitmap === "function" && typeof fetch === "function") {
+        fetch(url)
+          .then((r) => {
+            if (!r.ok) throw new Error(String(r.status));
+            return r.blob();
+          })
+          .then((blob) => createImageBitmap(blob))
+          .then((img) => apply(img, img.width))
+          .catch(() => {
+            const img = new Image();
+            img.onload = () => apply(img, img.naturalWidth);
+            img.onerror = () => onReady?.();
+            img.src = url;
+          });
+      } else {
+        const img = new Image();
+        img.onload = () => apply(img, img.naturalWidth);
+        img.onerror = () => onReady?.();
+        img.src = url;
+      }
       return tex;
     };
 
@@ -555,7 +564,11 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
         realSunOk = false;
       }
     };
-    updateSunMoonDirs();
+    // The first frame must be cheap: two full GeoVector ephemeris solves block
+    // the main thread for tens of ms, so defer the boot until the loop is already
+    // drawing (defaults are used for the first moments; the real directions land
+    // a frame later, long before the Sun/Moon are visible at p~0.8).
+    let sunMoonBootTimer = window.setTimeout(updateSunMoonDirs, 50);
     const sunMoonTimer = window.setInterval(updateSunMoonDirs, 60000);
 
     // Soft radial glow texture for the Sun and Moon halos
@@ -959,6 +972,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     return () => {
       stop();
       clearInterval(activeWatch);
+      clearTimeout(sunMoonBootTimer);
       clearInterval(sunMoonTimer);
       clearInterval(satTimer);
       clearInterval(satInitTimer);

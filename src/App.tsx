@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, Suspense, lazy } from "react";
 const NetworkBackground = lazy(() => import("./components/NetworkBackground"));
 const CinematicScene = lazy(() => import("./components/CinematicScene"));
-import { isWebGLAvailable, type CinematicPhases } from "./components/CinematicScene";
+import { isWebGLAvailable, type CinematicPhases } from "./components/cinematicShared";
 import CinematicOverlays from "./components/CinematicOverlays";
 import { cinematicProgressRef, setCinematicProgressValue, subscribeCinematic, getCinematicProgress } from "./lib/cinematicStore";
 import AssembledLogo from "./components/AssembledLogo";
