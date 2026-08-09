@@ -543,19 +543,49 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     };
 
     // Sun: real granulation map (Solar System Scope 8k, CC BY 4.0) on a bright core
-    // + a large additive glow sprite, placed at the real direction. The additive
-    // blend lets the texture's dark voids stay transparent against the stars.
+    // + a large additive glow sprite, placed at the real direction. The core is
+    // self-luminous with solar limb darkening (brighter center, darker rim) so it
+    // reads as a real glowing sphere instead of a flat additive disc.
     const sunTex = loadSized("sun_8k.jpg");
     sunTex.colorSpace = THREE.SRGBColorSpace;
     sunTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     const sunCore = new THREE.Mesh(
-      new THREE.SphereGeometry(16, 48, 48),
-      new THREE.MeshBasicMaterial({
-        map: sunTex,
-        color: 0xffffff,
+      new THREE.SphereGeometry(24, 64, 64),
+      new THREE.ShaderMaterial({
+        uniforms: {
+          uMap: { value: sunTex },
+          uOpacity: { value: 0 }
+        },
         transparent: true,
-        opacity: 0,
-        blending: THREE.AdditiveBlending
+        depthWrite: false,
+        vertexShader: `
+          varying vec2 vUv;
+          varying vec3 vNormal;
+          varying vec3 vView;
+          void main() {
+            vUv = uv;
+            vNormal = normalize(normalMatrix * normal);
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
+            vView = normalize(-mv.xyz);
+            gl_Position = projectionMatrix * mv;
+          }
+        `,
+        fragmentShader: `
+          precision mediump float;
+          uniform sampler2D uMap;
+          uniform float uOpacity;
+          varying vec2 vUv;
+          varying vec3 vNormal;
+          varying vec3 vView;
+          void main() {
+            vec3 n = normalize(vNormal);
+            vec3 v = normalize(vView);
+            float mu = max(0.0, dot(n, v));
+            float limb = 0.15 + 0.85 * pow(mu, 0.38);
+            vec3 col = texture2D(uMap, vUv).rgb * limb;
+            gl_FragColor = vec4(col, uOpacity);
+          }
+        `
       })
     );
     sunCore.renderOrder = 5;
@@ -575,14 +605,14 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     sunGlow.renderOrder = 4;
     scene.add(sunGlow);
 
-    // Moon: real surface map (Solar System Scope 8k, CC BY 4.0) lit by the same
+    // Moon: real surface map (Solar System Scope 2k, CC BY 4.0) lit by the same
     // sun light as Earth, so its terminator matches the real phase. A faint halo
     // sprite sits at the real direction too.
-    const moonTex = loadSized("moon_8k.jpg");
+    const moonTex = loadSized("moon_2k.jpg");
     moonTex.colorSpace = THREE.SRGBColorSpace;
     moonTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     const moonMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(9, 48, 48),
+      new THREE.SphereGeometry(12, 48, 48),
       new THREE.MeshPhongMaterial({
         map: moonTex,
         color: 0xffffff,
@@ -756,10 +786,14 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       // locked to Earth. Both fade in with the Earth.
       sunCore.rotation.y = 0.02 * (time / 1000);
       sunCore.rotation.z = 0.006 * (time / 1000);
-      sunCore.material.opacity = earthIn;
-      (sunGlow.material as THREE.SpriteMaterial).opacity = earthIn * 0.8;
-      moonMesh.material.opacity = earthIn * 0.85;
-      (moonGlow.material as THREE.SpriteMaterial).opacity = earthIn * 0.5;
+      (sunCore.material as THREE.ShaderMaterial).uniforms.uOpacity.value = earthIn;
+      (sunGlow.material as THREE.SpriteMaterial).opacity = earthIn * 0.6;
+      // The Moon sits close to the Earth along the approach axis, so at the final
+      // framing it is hidden behind the planet. Fade it in slightly ahead of the
+      // Earth so it is clearly visible alongside the planet while we close in.
+      const moonIn = smooth(0.79, 0.86, p);
+      moonMesh.material.opacity = moonIn;
+      (moonGlow.material as THREE.SpriteMaterial).opacity = moonIn * 0.7;
       satMat.opacity = earthIn * 0.9;
 
       // Sky reveal: the realistic backdrop is always on. The bright real stars are
