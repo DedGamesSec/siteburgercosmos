@@ -140,37 +140,38 @@
     outline-offset: 2px;
   }
 
-  /* Default text is another ~10% smaller (reduced twice for desktop reading) */
+  /* Default text: sized at what used to be senior mode, so it reads clearly on
+     any device. Senior mode is a step larger still. */
   html {
-    font-size: 97%;
-  }
-
-  @media (max-width: 640px) {
-    html {
-      font-size: 86%;
-    }
-  }
-
-  @media (max-width: 380px) {
-    html {
-      font-size: 77%;
-    }
-  }
-
-  /* Senior-friendly mode: text sized at the former normal mode */
-  html.senior-mode {
     font-size: 120%;
   }
 
   @media (max-width: 640px) {
-    html.senior-mode {
+    html {
       font-size: 106%;
     }
   }
 
   @media (max-width: 380px) {
-    html.senior-mode {
+    html {
       font-size: 94%;
+    }
+  }
+
+  /* Senior-friendly mode: a full step up from the (already readable) default */
+  html.senior-mode {
+    font-size: 150%;
+  }
+
+  @media (max-width: 640px) {
+    html.senior-mode {
+      font-size: 132%;
+    }
+  }
+
+  @media (max-width: 380px) {
+    html.senior-mode {
+      font-size: 118%;
     }
   }
 }
