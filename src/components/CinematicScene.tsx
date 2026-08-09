@@ -307,6 +307,13 @@ function gmstRadians(date: Date): number {
 
 const EARTH_POS = new THREE.Vector3(0, -45, 800);
 const EARTH_R = 170;
+// Real solar-system proportions with Earth's radius as the reference unit:
+// Moon ~0.27 Earth radii in radius at ~60 Earth radii distance; the Sun (~109
+// Earth radii across, ~23,000 Earth radii away) lies far beyond the camera far
+// plane, so it renders as a glowing light source at its real direction instead
+// of a scaled mesh.
+const MOON_R = EARTH_R * 0.2727;
+const MOON_DIST = EARTH_R * 60.3;
 
 interface Keyframe {
   p: number;
@@ -349,7 +356,10 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 4000);
+    // Far plane is raised so the real-scale Moon (~10,250 scene units out) stays
+    // in view. Depth precision near the Earth is unaffected (it is set by the near
+    // plane, which stays at 0.1).
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 12000);
     camera.position.set(0, 6, 120);
 
     // Near-black ambient keeps the night side of Earth truly dark, with a crisp
@@ -550,60 +560,14 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       return tex;
     };
 
-    // Sun: real granulation map (Solar System Scope 8k, CC BY 4.0) on a round,
-    // self-luminous core with solar limb darkening (bright center, dark rim), plus
-    // a small soft halo. It sits far from the Earth (the moon orbits at ~2.6 Earth
-    // radii, the sun is pushed out to ~15) so it reads as a real distant star, not
-    // a flat pancake glued next to the planet.
-    const sunTex = loadSized("sun_8k.jpg");
-    sunTex.colorSpace = THREE.SRGBColorSpace;
-    sunTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
-    const sunCore = new THREE.Mesh(
-      new THREE.SphereGeometry(40, 64, 64),
-      new THREE.ShaderMaterial({
-        uniforms: {
-          uMap: { value: sunTex },
-          uOpacity: { value: 0 }
-        },
-        transparent: true,
-        depthWrite: false,
-        vertexShader: `
-          varying vec2 vUv;
-          varying vec3 vNormal;
-          varying vec3 vView;
-          void main() {
-            vUv = uv;
-            vNormal = normalize(normalMatrix * normal);
-            vec4 mv = modelViewMatrix * vec4(position, 1.0);
-            vView = normalize(-mv.xyz);
-            gl_Position = projectionMatrix * mv;
-          }
-        `,
-        fragmentShader: `
-          precision mediump float;
-          uniform sampler2D uMap;
-          uniform float uOpacity;
-          varying vec2 vUv;
-          varying vec3 vNormal;
-          varying vec3 vView;
-          void main() {
-            vec3 n = normalize(vNormal);
-            vec3 v = normalize(vView);
-            float mu = max(0.0, dot(n, v));
-            float limb = 0.25 + 0.75 * pow(mu, 0.35);
-            vec3 col = texture2D(uMap, vUv).rgb * limb;
-            gl_FragColor = vec4(col, uOpacity);
-          }
-        `
-      })
-    );
-    sunCore.renderOrder = 5;
-    scene.add(sunCore);
-    // A compact, faint halo hugging the disc instead of a huge flat glow.
-    const sunGlowTex = makeGlowTex("rgba(255,244,200,0.5)", "rgba(255,214,120,0)");
-    const sunGlow = new THREE.Sprite(
+    // Sun: a real sun reads as a blinding glowing object, not a solid textured
+    // ball. Its true radius and distance are far beyond the camera range, so it
+    // is rendered as a bright core plus a soft halo along the real direction — a
+    // glowing "thing" in the sky, ~8,000 units out (well beyond the star shell).
+    const sunCoreTex = makeGlowTex("rgba(255,255,252,1)", "rgba(255,244,210,0)");
+    const sunCoreGlow = new THREE.Sprite(
       new THREE.SpriteMaterial({
-        map: sunGlowTex,
+        map: sunCoreTex,
         transparent: true,
         opacity: 0,
         blending: THREE.AdditiveBlending,
@@ -611,23 +575,41 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
         depthTest: true
       })
     );
-    sunGlow.scale.set(150, 150, 1);
-    sunGlow.renderOrder = 4;
-    scene.add(sunGlow);
+    sunCoreGlow.scale.set(120, 120, 1);
+    sunCoreGlow.renderOrder = 5;
+    scene.add(sunCoreGlow);
+    const sunHaloTex = makeGlowTex("rgba(255,246,210,0.5)", "rgba(255,210,110,0)");
+    const sunHalo = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: sunHaloTex,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        depthTest: true
+      })
+    );
+    sunHalo.scale.set(280, 280, 1);
+    sunHalo.renderOrder = 4;
+    scene.add(sunHalo);
 
-    // Moon: real surface map (Solar System Scope 2k, CC BY 4.0) lit by the same
-    // sun light as Earth, so its terminator matches the real phase. A faint halo
-    // sprite sits at the real direction too.
+    // Moon: real surface map (Solar System Scope 2k, CC BY 4.0), true size
+    // (0.27 Earth radii) at its real ~60 Earth-radii distance, lit by the same
+    // sun light as Earth so its terminator matches the real phase. A faint halo
+    // sprite makes the small distant disc readable.
     const moonTex = loadSized("moon_2k.jpg");
     moonTex.colorSpace = THREE.SRGBColorSpace;
     moonTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     const moonMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(12, 48, 48),
+      new THREE.SphereGeometry(MOON_R, 40, 40),
       new THREE.MeshPhongMaterial({
         map: moonTex,
         color: 0xffffff,
         specular: 0x222222,
         shininess: 3,
+        // A faint self-glow keeps the unlit side of the tiny disc visible
+        // against black space, like real astrophotography.
+        emissive: 0x1a2230,
         transparent: true,
         opacity: 0
       })
@@ -646,7 +628,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
         depthTest: true
       })
     );
-    moonGlow.scale.set(70, 70, 1);
+    moonGlow.scale.set(200, 200, 1);
     moonGlow.renderOrder = 4;
     scene.add(moonGlow);
 
@@ -779,34 +761,29 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       cloudsMat.opacity = earthIn * 0.7;
       (night.material as THREE.ShaderMaterial).uniforms.uOpacity.value = earthIn;
 
-      // Sun/Moon orbit around the planet's position at their real directions,
-      // fading in with the Earth so they never spoil the logo screen.
+      // Sun/Moon sit at their real geocentric directions and fade in with the
+      // Earth so they never spoil the logo screen. The Sun is a glowing light
+      // source far out beyond the star shell; the Moon is a true-scale small
+      // sphere ~60 Earth radii away, reading as a small disc with a halo.
       if (realSunOk) {
         sun.position.copy(realSunDir).multiplyScalar(2000);
         sun.target.position.copy(EARTH_POS);
         (night.material as THREE.ShaderMaterial).uniforms.uSunDir.value.copy(realSunDir);
       }
-      // The scene compresses the inner solar system (the moon orbits at ~2.6 Earth
-      // radii), so the sun is placed far out (~15 radii) to keep the distance from
-      // the Earth believable while staying inside the camera far plane.
-      const sunDist = EARTH_R * 15;
-      const moonDist = EARTH_R * 2.6;
-      sunCore.position.copy(visualSunDir).multiplyScalar(sunDist).add(EARTH_POS);
-      sunGlow.position.copy(visualSunDir).multiplyScalar(sunDist + 4).add(EARTH_POS);
-      moonMesh.position.copy(realMoonDir).multiplyScalar(moonDist).add(EARTH_POS);
-      moonGlow.position.copy(realMoonDir).multiplyScalar(moonDist + 2).add(EARTH_POS);
-      // The Sun rotates slowly on its real ~25-day axis; the Moon stays tidally
-      // locked to Earth. Both fade in with the Earth.
-      sunCore.rotation.y = 0.02 * (time / 1000);
-      sunCore.rotation.z = 0.006 * (time / 1000);
-      (sunCore.material as THREE.ShaderMaterial).uniforms.uOpacity.value = earthIn;
-      (sunGlow.material as THREE.SpriteMaterial).opacity = earthIn * 0.45;
-      // The Moon sits close to the Earth along the approach axis, so at the final
-      // framing it is hidden behind the planet. Fade it in slightly ahead of the
-      // Earth so it is clearly visible alongside the planet while we close in.
+      const SUN_RENDER_DIST = 8000;
+      sunCoreGlow.position.copy(visualSunDir).multiplyScalar(SUN_RENDER_DIST).add(EARTH_POS);
+      sunHalo.position.copy(visualSunDir).multiplyScalar(SUN_RENDER_DIST + 30).add(EARTH_POS);
+      moonMesh.position.copy(realMoonDir).multiplyScalar(MOON_DIST).add(EARTH_POS);
+      moonGlow.position.copy(realMoonDir).multiplyScalar(MOON_DIST + MOON_R).add(EARTH_POS);
+      // A gentle shimmer makes the Sun feel like a living glow.
+      const sunPulse = 0.85 + 0.15 * Math.sin(time / 320);
+      (sunCoreGlow.material as THREE.SpriteMaterial).opacity = earthIn * sunPulse;
+      (sunHalo.material as THREE.SpriteMaterial).opacity = earthIn * 0.5;
+      // The Moon fades in slightly ahead of the Earth so it is clearly visible
+      // alongside the planet while we close in.
       const moonIn = smooth(0.79, 0.86, p);
       moonMesh.material.opacity = moonIn;
-      (moonGlow.material as THREE.SpriteMaterial).opacity = moonIn * 0.7;
+      (moonGlow.material as THREE.SpriteMaterial).opacity = moonIn * 0.8;
       satMat.opacity = earthIn * 0.9;
 
       // Sky reveal: the realistic backdrop is always on. The bright real stars are
@@ -874,9 +851,9 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       });
       satGeo.dispose();
       satMat.dispose();
-      sunGlowTex.dispose();
+      sunCoreTex.dispose();
+      sunHaloTex.dispose();
       moonGlowTex.dispose();
-      sunTex.dispose();
       moonTex.dispose();
       renderer.dispose();
       if (renderer.domElement.parentElement === container) {
