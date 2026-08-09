@@ -3,7 +3,6 @@ import AssembledLogo from "./AssembledLogo";
 import ScanCard from "./ScanCard";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useEcoMode } from "../context/EcoModeContext";
-import { useCinematicProgress } from "../lib/cinematicStore";
 import { INTRO_DICT } from "./IntroSection";
 import { HelpCircle, Shield, Eye } from "lucide-react";
 
@@ -14,28 +13,18 @@ const INTRO_COLORS = [
   "border-[#FB923C]/40 text-[#FB923C] bg-[#FB923C]/5"
 ];
 
-const hudTranslations: Record<string, { core: string; nodes: string; mode: string }> = {
-  ru: { core: "ЛОКАЛЬНОЕ ЯДРО", nodes: "АКТИВНЫЕ УЗЛЫ", mode: "РЕЖИМ ЗАЩИТЫ" },
-  en: { core: "LOCAL CORE", nodes: "ACTIVE NODES", mode: "PROTECTION MODE" },
-  es: { core: "NÚCLEO LOCAL", nodes: "NODOS ACTIVOS", mode: "MODO DE PROTECCIÓN" },
-  zh: { core: "本地核心", nodes: "活动节点", mode: "防护模式" },
-  tr: { core: "YEREL ÇEKİRDEK", nodes: "AKTİF DÜĞÜMLER", mode: "KORUMA MODU" },
-  hi: { core: "स्थानीय कोर", nodes: "सक्रिय नोड्स", mode: "सुरक्षा मोड" },
-  ar: { core: "النواة المحلية", nodes: "العقد النشطة", mode: "وضع الحماية" },
-  pt: { core: "NÚCLEO LOCAL", nodes: "NÓS ATIVOS", mode: "MODO DE PROTEÇÃO" },
-  fr: { core: "NOYAU LOCAL", nodes: "NŒUDS ACTIFS", mode: "MODE DE PROTECTION" },
-  de: { core: "LOKALER KERN", nodes: "AKTIVE KNOTEN", mode: "SCHUTZMODUS" },
-  ja: { core: "ローカルコア", nodes: "アクティブノード", mode: "保護モード" }
-};
-
-// The 2D logo assembly SVG. It needs to re-render as progress advances, but it's a
-// tiny isolated subtree, so it subscribes to the progress store directly instead of
-// re-rendering the whole page every frame.
-function LogoAssembly({ ecoMode }: { ecoMode: boolean }) {
-  const p = useCinematicProgress();
-  const cLogoProgress = Math.max(0, Math.min(1, (p - 0.46) / 0.16));
+// The 2D logo assembly SVG. It's driven imperatively from a rAF loop (direct DOM
+// writes via AssembledLogo's progressRef mode), so it never causes a React
+// re-render while the flight advances.
+function LogoAssembly({ ecoMode, progressRef }: { ecoMode: boolean; progressRef: { current: number } }) {
   return (
-    <AssembledLogo progress={cLogoProgress} ecoMode={ecoMode} className="scale-[0.55] sm:scale-[0.7] origin-center" />
+    <AssembledLogo
+      progressRef={progressRef}
+      phaseStart={0.44}
+      phaseSpan={0.16}
+      ecoMode={ecoMode}
+      className="scale-[0.55] sm:scale-[0.7] origin-center"
+    />
   );
 }
 
@@ -54,7 +43,6 @@ export default function CinematicOverlays({ progressRef, heroRef, onEnterDome }:
   const rightLabelRef = useRef<HTMLDivElement>(null);
   const logoWrapRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
-  const hudRef = useRef<HTMLDivElement>(null);
   const arrowRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -71,40 +59,41 @@ export default function CinematicOverlays({ progressRef, heroRef, onEnterDome }:
       lastP = p;
 
       if (heroRef.current) {
-        const f = Math.min(1, p / 0.45);
+        const f = Math.min(1, p / 0.52);
         heroRef.current.style.opacity = String(Math.max(0, 1 - f));
         heroRef.current.style.transform = `scale(${1 + 0.14 * f})`;
       }
 
-      const cLabelT = p > 0.48 ? Math.min(1, (p - 0.48) / 0.15) : 0;
-      const cLabelOut = p > 0.7 ? Math.max(0, 1 - (p - 0.7) / 0.08) : 1;
-      const cLabelOp = cLabelT * cLabelOut;
+      // OFFLINE-FIRST / ZERO TELEMETRY sweep across the center: the left word
+      // enters from off-screen left, crosses the assembled logo in the middle and
+      // exits off-screen right; the right word mirrors it. Fully DOM-driven, no
+      // re-render, no transitions fighting the per-frame transform.
+      const labelSweep = p > 0.42 ? Math.min(1, Math.max(0, (p - 0.42) / 0.3)) : 0;
+      const labelOp = labelSweep > 0
+        ? Math.min(1, labelSweep / 0.15) * Math.min(1, (1 - labelSweep) / 0.15)
+        : 0;
       const cLogoOp = Math.max(
         0,
-        Math.min(1, (p - 0.46) / 0.06) * (1 - Math.max(0, (p - 0.66) / 0.06))
+        Math.min(1, (p - 0.44) / 0.08) * (1 - Math.max(0, (p - 0.66) / 0.06))
       );
-      const cHudT = p > 0.6 ? Math.min(1, (p - 0.6) / 0.12) : 0;
-      const cHudOut = p > 0.72 ? Math.max(0, 1 - (p - 0.72) / 0.08) : 1;
-      const cHudOp = cHudT * cHudOut;
       const cArrowT = p > 0.85 ? Math.min(1, (p - 0.85) / 0.1) : 0;
       const cIntroOp = p > 0.9 ? Math.min(1, (p - 0.9) / 0.08) : 0;
 
       if (leftLabelRef.current) {
-        const x = cLabelOp > 0 ? -40 * (1 - Math.min(1, cLabelOp)) : -40;
-        leftLabelRef.current.style.opacity = String(cLabelOp);
-        leftLabelRef.current.style.transform = `translateX(${x}px)`;
+        const x = -120 + 240 * labelSweep;
+        leftLabelRef.current.style.opacity = String(labelOp);
+        leftLabelRef.current.style.transform = `translateX(${x}vw)`;
       }
       if (rightLabelRef.current) {
-        const x = cLabelOp > 0 ? 40 * (1 - Math.min(1, cLabelOp)) : 40;
-        rightLabelRef.current.style.opacity = String(cLabelOp);
-        rightLabelRef.current.style.transform = `translateX(${x}px)`;
+        const x = 120 - 240 * labelSweep;
+        rightLabelRef.current.style.opacity = String(labelOp);
+        rightLabelRef.current.style.transform = `translateX(${x}vw)`;
       }
       if (logoWrapRef.current) {
         logoWrapRef.current.style.opacity = String(cLogoOp);
         logoWrapRef.current.style.transform = `scale(${0.9 + cLogoOp * 0.1})`;
       }
       if (introRef.current) introRef.current.style.opacity = String(cIntroOp);
-      if (hudRef.current) hudRef.current.style.opacity = String(cHudOp);
       if (arrowRef.current) arrowRef.current.style.opacity = String(cArrowT);
 
       cardRefs.current.forEach((el, idx) => {
@@ -145,7 +134,7 @@ export default function CinematicOverlays({ progressRef, heroRef, onEnterDome }:
             id="cinematic-assembled-logo"
             style={{ opacity: 0, pointerEvents: "none" }}
           >
-            <LogoAssembly ecoMode={ecoMode} />
+            <LogoAssembly ecoMode={ecoMode} progressRef={progressRef} />
           </div>
 
           <div className="w-32 sm:w-44 shrink-0 hidden lg:block" />
@@ -215,28 +204,6 @@ export default function CinematicOverlays({ progressRef, heroRef, onEnterDome }:
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* Minimalist HUD status bar */}
-      <div
-        ref={hudRef}
-        className="absolute inset-x-0 bottom-[20vh] flex justify-center"
-        style={{ opacity: 0 }}
-      >
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          {[
-            hudTranslations[language]?.core || hudTranslations.en.core,
-            hudTranslations[language]?.nodes || hudTranslations.en.nodes,
-            hudTranslations[language]?.mode || hudTranslations.en.mode
-          ].map((text, idx) => (
-            <span
-              key={idx}
-              className="font-mono text-[9px] sm:text-[11px] tracking-[0.1em] font-semibold text-[#3B82F6] bg-[#12141A]/60 border border-[#3C404A] px-3.5 py-1.5 rounded-sm whitespace-nowrap"
-            >
-              {text}
-            </span>
-          ))}
         </div>
       </div>
 

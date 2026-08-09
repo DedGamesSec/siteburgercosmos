@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 interface AssembledLogoProps {
-  progress: number; // scroll assembly progress (0 to 1)
+  progress?: number; // scroll assembly progress (0 to 1), prop-driven mode
+  progressRef?: { current: number }; // imperative mode: global cinematic progress
+  phaseStart?: number; // imperative mode: global progress where assembly begins
+  phaseSpan?: number; // imperative mode: global progress span of the assembly
   className?: string;
   isStatic?: boolean;
   ecoMode?: boolean;
@@ -88,7 +91,7 @@ const SHIELD_PATHS = [
   { d: "M146 336H142V305H146V336Z", fill: "#FAFCFE" },
 ];
 
-export default function AssembledLogo({ progress, className, isStatic = false, ecoMode = false }: AssembledLogoProps) {
+export default function AssembledLogo({ progress = 0, progressRef, phaseStart = 0, phaseSpan = 1, className, isStatic = false, ecoMode = false }: AssembledLogoProps) {
   const isEcoOrStatic = isStatic || ecoMode;
 
   // 1. Circles assembly progress (reaches 100% when global progress is at 0.7)
@@ -101,10 +104,72 @@ export default function AssembledLogo({ progress, className, isStatic = false, e
   const lineProgress = isEcoOrStatic ? 1 : Math.max(0, (progress - 0.28) / 0.72);
   
   // Outer radius of circular reveal mask centered at shield centroid (144, 172)
-  const maskRadius = lineProgress * 300; 
+  const maskRadius = lineProgress * 300;
+
+  // Imperative mode: when a live progress ref is supplied the SVG is driven with
+  // direct DOM writes from a rAF loop, so the flight never causes a React re-render
+  // (and never fights a re-render mid-frame). The prop-driven mode is unchanged.
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const haloRef = useRef<HTMLDivElement>(null);
+  const linesRef = useRef<SVGGElement>(null);
+  const clipCircleRef = useRef<SVGCircleElement>(null);
+  const nodeRefs = useRef<(SVGCircleElement | null)[]>([]);
+
+  useEffect(() => {
+    if (!progressRef) return;
+    const total = Math.max(0.0001, phaseSpan);
+    const apply = () => {
+      const globalP = progressRef.current;
+      const p = isEcoOrStatic ? 1 : Math.max(0, Math.min(1, (globalP - phaseStart) / total));
+      const cProgress = isEcoOrStatic ? 1 : Math.min(1, p / 0.72);
+      const easeOut = isEcoOrStatic ? 0 : Math.pow(1 - cProgress, 2.5);
+      const lProgress = isEcoOrStatic ? 1 : Math.max(0, (p - 0.28) / 0.72);
+
+      if (haloRef.current) {
+        haloRef.current.style.opacity = String(p * 0.7);
+        haloRef.current.style.transition = "none";
+      }
+      if (linesRef.current) {
+        linesRef.current.style.opacity = String(Math.min(1, lProgress * 1.5));
+        linesRef.current.style.transform = `scale(${0.9 + lProgress * 0.1})`;
+        if (lProgress < 0.98) linesRef.current.setAttribute("clip-path", "url(#line-reveal-clip)");
+        else linesRef.current.removeAttribute("clip-path");
+      }
+      if (clipCircleRef.current) {
+        clipCircleRef.current.setAttribute("r", String(lProgress * 300));
+      }
+      nodeRefs.current.forEach((node, idx) => {
+        if (!node) return;
+        const n = CIRCLE_NODES[idx];
+        node.setAttribute("cx", String(n.cx + n.offX * easeOut));
+        node.setAttribute("cy", String(n.cy + n.offY * easeOut));
+        node.setAttribute("opacity", String(0.15 + cProgress * 0.85));
+        const pulsing = cProgress > 0.95;
+        node.style.animation = pulsing
+          ? `logo-node-pulse 4s ease-in-out infinite`
+          : "none";
+        node.style.animationDelay = pulsing ? `${(idx * 0.23).toFixed(2)}s` : "0s";
+      });
+      if (wrapperRef.current) {
+        wrapperRef.current.style.animation =
+          cProgress >= 1 && !isEcoOrStatic
+            ? "logo-idle-breathe 3.5s ease-in-out infinite"
+            : "none";
+      }
+    };
+    let raf = 0;
+    const loop = () => {
+      raf = requestAnimationFrame(loop);
+      apply();
+    };
+    apply();
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [progressRef, phaseStart, phaseSpan, isEcoOrStatic]);
 
   return (
     <div 
+      ref={wrapperRef}
       className={className || "relative flex items-center justify-center scale-[0.75] min-[375px]:scale-[0.85] sm:scale-100 transition-transform duration-300 origin-center"}
       style={{
         width: "288px",
@@ -120,6 +185,7 @@ export default function AssembledLogo({ progress, className, isStatic = false, e
       {/* Ambient neutral halo strictly behind the logo (no decorative blue glow) */}
       {!isStatic && !ecoMode && (
         <div 
+          ref={haloRef}
           className="absolute bg-[radial-gradient(circle_at_center,rgba(139,143,156,0.18)_0%,rgba(10,10,11,0)_70%)] pointer-events-none transition-opacity duration-300"
           style={{
             width: "600px",
@@ -145,7 +211,7 @@ export default function AssembledLogo({ progress, className, isStatic = false, e
         <defs>
           {/* Dynamic clipping path centered on shield centroid (144, 172) */}
           <clipPath id="line-reveal-clip">
-            <circle cx="144" cy="172" r={maskRadius} />
+            <circle ref={clipCircleRef} cx="144" cy="172" r={maskRadius} />
           </clipPath>
           <style>{`
             @keyframes logo-node-pulse {
@@ -164,6 +230,7 @@ export default function AssembledLogo({ progress, className, isStatic = false, e
 
         {/* SECTION A: Structural Shield Lines (Connected together outwardly via Mask) */}
         <g 
+          ref={linesRef}
           clipPath={lineProgress < 0.98 ? "url(#line-reveal-clip)" : undefined} 
           style={{ 
             opacity: Math.min(1, lineProgress * 1.5),
@@ -196,6 +263,9 @@ export default function AssembledLogo({ progress, className, isStatic = false, e
             return (
               <circle 
                 key={`node-circle-${idx}`}
+                ref={(el) => {
+                  nodeRefs.current[idx] = el;
+                }}
                 cx={currentX} 
                 cy={currentY} 
                 r={node.r} 

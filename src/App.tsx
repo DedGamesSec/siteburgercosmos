@@ -3,22 +3,8 @@ const NetworkBackground = lazy(() => import("./components/NetworkBackground"));
 const CinematicScene = lazy(() => import("./components/CinematicScene"));
 import { isWebGLAvailable, type CinematicPhases } from "./components/CinematicScene";
 import CinematicOverlays from "./components/CinematicOverlays";
-import { cinematicProgressRef, setCinematicProgressValue } from "./lib/cinematicStore";
+import { cinematicProgressRef, setCinematicProgressValue, subscribeCinematic, getCinematicProgress } from "./lib/cinematicStore";
 import AssembledLogo from "./components/AssembledLogo";
-
-const hudTranslations: Record<string, { core: string; nodes: string; mode: string }> = {
-  ru: { core: "ЛОКАЛЬНОЕ ЯДРО", nodes: "АКТИВНЫЕ УЗЛЫ", mode: "РЕЖИМ ЗАЩИТЫ" },
-  en: { core: "LOCAL CORE", nodes: "ACTIVE NODES", mode: "PROTECTION MODE" },
-  es: { core: "NÚCLEO LOCAL", nodes: "NODOS ACTIVOS", mode: "MODO DE PROTECCIÓN" },
-  zh: { core: "本地核心", nodes: "活动节点", mode: "防护模式" },
-  tr: { core: "YEREL ÇEKİRDEK", nodes: "AKTİF DÜĞÜMLER", mode: "KORUMA MODU" },
-  hi: { core: "स्थानीय कोर", nodes: "सक्रिय नोड्स", mode: "सुरक्षा मोड" },
-  ar: { core: "النواة المحلية", nodes: "العقد النشطة", mode: "وضع الحماية" },
-  pt: { core: "NÚCLEO LOCAL", nodes: "NÓS ATIVOS", mode: "MODO DE PROTEÇÃO" },
-  fr: { core: "NOYAU LOCAL", nodes: "NŒUDS ACTIFS", mode: "MODE DE PROTECTION" },
-  de: { core: "LOKALER KERN", nodes: "AKTIVE KNOTEN", mode: "SCHUTZMODUS" },
-  ja: { core: "ローカルコア", nodes: "アクティブノード", mode: "保護モード" }
-};
 
 // Extra scroll distance of open space to fly through between the title and the logo.
 const FLIGHT_CORRIDOR_DVH = 150;
@@ -128,9 +114,9 @@ export default function App() {
   const [webglReady] = useState(() => isWebGLAvailable());
   const cinematicEnabled = webglReady && !ecoMode;
 
-  // The header stays hidden while the cinematic intro plays, then fades in once
-  // the core landing content scrolls into view. On non-cinematic pages it's shown
-  // straight away.
+  // The header stays hidden while the cinematic intro plays, then fades in once the
+  // animation reaches the very end (progress 1.0 = Earth approach complete, cards
+  // settled). On non-cinematic pages it's shown straight away.
   const [showHeader, setShowHeader] = useState(() => activePage !== "home" || !cinematicEnabled);
   useEffect(() => {
     if (activePage !== "home") {
@@ -141,17 +127,14 @@ export default function App() {
       setShowHeader(true);
       return;
     }
-    const target = coreLandingRef.current;
-    if (!target) {
-      setShowHeader(false);
+    if (getCinematicProgress() >= 1) {
+      setShowHeader(true);
       return;
     }
-    const observer = new IntersectionObserver(
-      ([entry]) => setShowHeader(entry.isIntersecting),
-      { root: null, threshold: 0.05 },
-    );
-    observer.observe(target);
-    return () => observer.disconnect();
+    const unsubscribe = subscribeCinematic(() => {
+      if (getCinematicProgress() >= 1) setShowHeader(true);
+    });
+    return unsubscribe;
   }, [activePage, cinematicEnabled]);
 
   // Auto-play: the whole flight (title -> logo assembly -> turn -> Earth -> cards)
@@ -784,43 +767,6 @@ export default function App() {
                               </span>
                             </motion.div>
                           </div>
-
-                          {/* Minimalist HUD Status Bar */}
-                          <AnimatePresence>
-                            {sceneProgress > 0.6 && (
-                              <motion.div
-                                initial="hidden"
-                                animate="visible"
-                                exit="hidden"
-                                variants={{
-                                  visible: {
-                                    transition: {
-                                      staggerChildren: 0.15
-                                    }
-                                  }
-                                }}
-                                className="flex flex-wrap items-center justify-center gap-3 mt-2 pointer-events-none select-none"
-                                id="logo-assembly-hud-bar"
-                              >
-                                {[
-                                  hudTranslations[language]?.core || hudTranslations.en.core,
-                                  hudTranslations[language]?.nodes || hudTranslations.en.nodes,
-                                  hudTranslations[language]?.mode || hudTranslations.en.mode
-                                ].map((text, idx) => (
-                                  <motion.div
-                                    key={idx}
-                                    variants={{
-                                      hidden: { opacity: 0, y: 10, scale: 0.95 },
-                                      visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
-                                    }}
-                                    className="font-mono text-[9px] sm:text-[11px] tracking-[0.1em] font-semibold text-[#3B82F6] bg-[#12141A]/60 border border-[#3C404A] px-3.5 py-1.5 rounded-sm whitespace-nowrap"
-                                  >
-                                    {text}
-                                  </motion.div>
-                                ))}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
 
                         </motion.div>
                         
