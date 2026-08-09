@@ -901,6 +901,22 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
 
       sampleCamera(p);
 
+      // Cinematic life: a gentle lateral sway with a matching banking roll and a
+      // soft vertical bob layered on top of the strictly-forward push-in. The
+      // base path never reverses (no flip), but the camera reads as alive and
+      // flying instead of riding a static rail. It ramps in once the logo clears
+      // the frame and settles back to zero before the final held framing.
+      const dyn = smooth(0.1, 0.24, p) * (1 - smooth(0.86, 0.94, p));
+      if (dyn > 0) {
+        const phase = p * Math.PI * 2 * 1.5;
+        const lateralVel = Math.cos(phase);
+        camera.position.x += Math.sin(phase) * 18 * dyn;
+        camera.position.y += Math.sin(phase * 1.35) * 6 * dyn;
+        camera.lookAt(currentLook);
+        // Bank into the sway (roll ∝ lateral velocity), ~4° peak.
+        camera.rotateZ(lateralVel * 0.07 * dyn);
+      }
+
       renderer.render(scene, camera);
     };
 
@@ -914,7 +930,12 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       cancelAnimationFrame(raf);
     };
 
-    if (activeRef.current) start();
+    // Start the loop unconditionally. `cinematicActive` starts false and only
+    // flips true a tick later (after App's computeCinematic), so waiting for it
+    // here left a visible ~400ms black/static stall at the very start of the
+    // flight. The activeWatch poll below still stops the loop when the corridor
+    // is scrolled past, so starting eagerly costs nothing in the long run.
+    start();
 
     const onResize = () => {
       const w = window.innerWidth;

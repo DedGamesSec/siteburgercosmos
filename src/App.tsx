@@ -150,7 +150,7 @@ export default function App() {
   // position can only pull the progress forward (never backward), so the flight
   // is one continuous forward sequence. Progress lives in a shared mutable ref —
   // the render loop reads it per frame, so no React re-render happens at 60fps.
-  const AUTO_PLAY_MS = 12000;
+  const AUTO_PLAY_MS = 10000;
   useEffect(() => {
     if (!cinematicEnabled) return;
     if (activePage !== "home") return;
