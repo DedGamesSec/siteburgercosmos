@@ -771,35 +771,27 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       initWorker();
     }, 300);
 
-    // Camera keyframes. Choreography: the flight starts in pure deep space with
-    // NO Earth anywhere on screen. The TRUSTNODE logo assembles in front of the
-    // stars while the camera hovers. Then the camera smoothly turns and glides
-    // toward Earth (no warp, no streaks): Earth fades in far ahead, we approach it
-    // and settle with the planet's top limb in the lower half of the frame (big,
-    // crisp planet, constant distance from the top edge).
+    // Camera keyframes. Choreography: ONE single straight push-in. The flight
+    // starts in deep space with NO Earth on screen (Earth fades in far ahead at
+    // p≈0.82), and the camera flies forward along a fixed axis while the look
+    // target drifts along its own straight line toward the planet's top limb.
+    // Every key (p from 0 up to approachEnd) lies exactly on that straight line —
+    // pos descends linearly y:6→-12 while z:120→440, look rises y:26→180 while
+    // z:200→800 — so the Hermite spline reproduces the linear motion exactly:
+    // constant velocity, no overshoot, no flip, no turn. The camera never
+    // reverses direction (the old path dived to z=-38 then had to swing all the
+    // way back to z=440, which read as a cartwheel).
     const kf: Keyframe[] = [
-      { p: 0, pos: new THREE.Vector3(0, 6, 120), look: new THREE.Vector3(0, 26, 0) },
-      { p: phases.underEnd * 0.5, pos: new THREE.Vector3(0, 5, 70), look: new THREE.Vector3(0, 24, 0) },
-      { p: phases.underEnd, pos: new THREE.Vector3(0, 4, 20), look: new THREE.Vector3(0, 14, 0) },
-      { p: lerp(phases.underEnd, phases.orbitEnd, 0.5), pos: new THREE.Vector3(0, 3, -12), look: new THREE.Vector3(0, 6, 0) },
-      { p: phases.orbitEnd, pos: new THREE.Vector3(0, 2, -38), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.orbitEnd, phases.throughEnd, 0.5), pos: new THREE.Vector3(0, 2, -40), look: new THREE.Vector3(0, 0, 0) },
-      { p: phases.throughEnd, pos: new THREE.Vector3(0, 2, -34), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.throughEnd, phases.assemblyEnd, 0.5), pos: new THREE.Vector3(0, 2, -26), look: new THREE.Vector3(0, 0, 0) },
-      { p: phases.assemblyEnd, pos: new THREE.Vector3(0, 2, -22), look: new THREE.Vector3(0, 0, 0) },
-      // After the logo leaves: a straight forward glide — no flip, no lunge. The
-      // camera just keeps flying ahead (+z) with a gentle descent while the view
-      // eases toward the Earth, then the existing approach below takes over.
-      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.25), pos: new THREE.Vector3(0, 1.2, 20), look: new THREE.Vector3(0, -4, 200) },
-      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.5), pos: new THREE.Vector3(0, 0.4, 75), look: new THREE.Vector3(0, -12, 260) },
-      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.75), pos: new THREE.Vector3(0, -0.8, 130), look: new THREE.Vector3(0, -21, 295) },
-      { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 160), look: new THREE.Vector3(0, -30, 320) },
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.35), pos: new THREE.Vector3(0, -4, 300), look: new THREE.Vector3(0, -45, 800) },
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.6), pos: new THREE.Vector3(0, -8, 400), look: new THREE.Vector3(0, -35, 800) },
+      { p: 0, pos: new THREE.Vector3(0, 6, 120), look: new THREE.Vector3(0, 26, 200) },
+      { p: phases.underEnd, pos: new THREE.Vector3(0, 3.6, 162), look: new THREE.Vector3(0, 46, 278) },
+      { p: phases.orbitEnd, pos: new THREE.Vector3(0, 0.1, 224), look: new THREE.Vector3(0, 76, 396) },
+      { p: phases.throughEnd, pos: new THREE.Vector3(0, -2.8, 276), look: new THREE.Vector3(0, 101, 494) },
+      { p: phases.assemblyEnd, pos: new THREE.Vector3(0, -6.1, 336), look: new THREE.Vector3(0, 130, 604) },
+      { p: phases.turnEnd, pos: new THREE.Vector3(0, -8.9, 384), look: new THREE.Vector3(0, 153, 696) },
+      { p: lerp(phases.turnEnd, phases.approachEnd, 0.5), pos: new THREE.Vector3(0, -10.4, 412), look: new THREE.Vector3(0, 167, 748) },
       // The final framing is reached and then held absolutely steady (identical
       // keyframes from approachEnd to 1) so the planet sits at the same distance
       // from the top edge of the screen while the intro cards settle over it.
-      { p: lerp(phases.turnEnd, phases.approachEnd, 0.8), pos: new THREE.Vector3(0, -12, 440), look: new THREE.Vector3(0, 40, 800) },
       { p: phases.approachEnd, pos: new THREE.Vector3(0, -12, 440), look: new THREE.Vector3(0, 180, 800) },
       { p: 1, pos: new THREE.Vector3(0, -12, 440), look: new THREE.Vector3(0, 180, 800) }
     ];
