@@ -24,7 +24,9 @@ const FLIGHT_CORRIDOR_DVH = 150;
 
 // 3D cinematic corridor: the WebGL flight through the 3D logo + approach to Earth.
 // This corridor replaces the legacy empty corridor when WebGL is available.
-const CINEMATIC_CORRIDOR_DVH = 620;
+// Shorter than a full scroll-stretch because the flight now auto-plays like a
+// video at the top of the page; scrolling only fast-forwards the sequence.
+const CINEMATIC_CORRIDOR_DVH = 180;
 
 // Phase boundaries of the cinematic flight, as fractions of the corridor scroll.
 const CINEMATIC_PHASES: CinematicPhases = {
@@ -146,8 +148,33 @@ export default function App() {
   const cinematicCorridorRef = useRef<HTMLDivElement>(null);
   const [cinematicProgress, setCinematicProgress] = useState(0);
   const [cinematicActive, setCinematicActive] = useState(false);
+  const [cinematicReplay, setCinematicReplay] = useState(0);
   const [webglReady] = useState(() => isWebGLAvailable());
   const cinematicEnabled = webglReady && !ecoMode;
+
+  // Auto-play: the whole flight (title -> logo assembly -> turn -> Earth -> cards)
+  // runs by itself on page load like a video, no scrolling required. The scroll
+  // position can only pull the progress forward (never backward), so the flight
+  // is one continuous forward sequence.
+  const AUTO_PLAY_MS = 15000;
+  useEffect(() => {
+    if (!cinematicEnabled) return;
+    if (activePage !== "home") return;
+    const start = performance.now();
+    let raf = 0;
+    let cancelled = false;
+    const tick = (now: number) => {
+      if (cancelled) return;
+      const t = Math.min(1, (now - start) / AUTO_PLAY_MS);
+      setCinematicProgress((prev) => Math.max(prev, t));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+    };
+  }, [cinematicEnabled, cinematicReplay, activePage]);
 
   // Scroll-driven fly-past of the hero title; disabled in eco mode (no motion).
   const flyBy = ecoMode ? 0 : cinematicEnabled ? cinematicProgress : sceneProgress;
@@ -215,7 +242,9 @@ export default function App() {
 
   // Scroll math for the 3D cinematic corridor: progress 0 at the very top of the page,
   // 1 once the corridor has scrolled fully into view (Earth approach fills the screen).
-  // The render loop stays active until the opaque core-landing block covers the viewport.
+  // Scrolling can only push the flight FORWARD (like fast-forwarding a video) — it
+  // never rewinds the auto-played sequence. The render loop stays active until the
+  // opaque core-landing block covers the viewport.
   useEffect(() => {
     if (!cinematicEnabled) return;
     const computeCinematic = () => {
@@ -223,7 +252,7 @@ export default function App() {
       const core = coreLandingRef.current;
       const vh = windowHeight || window.innerHeight;
       if (!el) {
-        setCinematicProgress(0);
+        setCinematicProgress((prev) => Math.max(prev, 0));
         setCinematicActive(false);
         return;
       }
@@ -231,7 +260,7 @@ export default function App() {
       const absTop = window.scrollY + rect.top;
       const totalScroll = Math.max(vh, absTop + rect.height - vh);
       const p = Math.min(1, Math.max(0, window.scrollY / totalScroll));
-      setCinematicProgress(p);
+      setCinematicProgress((prev) => Math.max(prev, p));
       const coreRect = core?.getBoundingClientRect();
       setCinematicActive(!coreRect || coreRect.top > 0);
     };
@@ -995,6 +1024,10 @@ export default function App() {
                   <div className="max-w-6xl mx-auto w-full px-4 pt-8 pb-2 flex justify-start">
                     <button
                       onClick={() => {
+                        if (cinematicEnabled) {
+                          setCinematicProgress(0);
+                          setCinematicReplay((k) => k + 1);
+                        }
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                       className="font-mono text-[9px] text-gray-500 hover:text-[#3B82F6] transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-[#3C404A]/60 bg-[#12141A]/60 cursor-pointer hover:border-[#3B82F6]/50"
