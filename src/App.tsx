@@ -51,7 +51,7 @@ import PageNavigationFooter from "./components/PageNavigationFooter";
 import EarlyAccessPage from "./components/EarlyAccessPage";
 import ComparisonSection from "./components/ComparisonSection";
 import NewsSection from "./components/NewsSection";
-import ProtectionMarquee from "./components/ProtectionMarquee";
+
 import DamageCalculator from "./components/DamageCalculator";
 import FaqSection from "./components/FaqSection";
 import { motion, AnimatePresence } from "motion/react";
@@ -814,7 +814,6 @@ export default function App() {
               {/* CORE LANDING CONTENT (NORMAL DOCUMENT FLOW) */}
               <div ref={coreLandingRef} className="relative z-20 w-full flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm shadow-[0_-30px_60px_rgba(10,10,11,0.95)]" id="core-landing-page">
                 {!cinematicEnabled && <IntroSection />}
-                <ProtectionMarquee />
                 <ProblemSection />
                 <TrustSection />
                 <LiveSimulatorSection />

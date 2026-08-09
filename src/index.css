@@ -275,21 +275,6 @@
   }
 }
 
-/* Hero protection marquee: infinite horizontal loop, pauses on hover */
-@keyframes tn-marquee-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-.marquee-track {
-  animation: tn-marquee-scroll 42s linear infinite;
-  will-change: transform;
-}
-
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
-
 /* Target indicator pulse for comparison table */
 @keyframes target-pulse {
   0%, 100% { opacity: 1; }
