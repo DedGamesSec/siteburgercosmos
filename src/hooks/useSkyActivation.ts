@@ -24,7 +24,7 @@ export function useSkyActivation(activeEcoMode: boolean = false) {
           clearTimeout(timeoutId);
           if (res.ok) {
             const text = await res.text();
-            cachedSatellites = parseTLEs(text);
+            cachedSatellites = await parseTLEs(text);
           } else {
             cachedSatellites = [];
           }

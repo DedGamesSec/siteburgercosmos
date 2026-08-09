@@ -683,9 +683,11 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       }
     };
 
-    // Main-thread fallback (runs until the worker is ready, or if it fails):
-    // a rolling window over the catalog keeps each update's cost bounded.
-    const FALLBACK_BUDGET = 600;
+    // Main-thread fallback (runs only until the worker is ready, or if it fails):
+    // a rolling window over the catalog keeps each update's cost bounded. The
+    // budget is kept small — SGP4 is run synchronously here, and a large window
+    // over the ~12k catalog (incl. expensive GEO/MEO sats) stalls the flight.
+    const FALLBACK_BUDGET = 200;
     let fallbackIndex = 0;
     const updateSatellitesFallback = () => {
       const sats = cachedSatellites;
@@ -729,7 +731,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       // Satellites fade in with the Earth at p~0.82; skip all propagation until
       // the flight approaches, so the logo/title phases don't burn CPU.
       const p = progressRef ? progressRef.current : progressRefInternal.current;
-      if (p < 0.62) return;
+      if (p < 0.8) return;
       if (satWorker && satWorkerReady) {
         if (satWorkerBusy) return;
         satWorkerBusy = true;

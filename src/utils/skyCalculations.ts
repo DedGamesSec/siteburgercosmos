@@ -321,12 +321,19 @@ export interface LiveSatellite {
 /**
  * Parses TLE text from CelesTrak into usable SatRec objects (the full catalog:
  * every valid TLE line-pair, so the whole active constellation is available).
+ * Parsing the full ~12k-satellite catalog is expensive, so the work is chunked
+ * and yields to the event loop between batches — otherwise the main thread
+ * blocks for hundreds of ms right when the network response lands (which is
+ * usually in the middle of the cinematic flight and reads as a freeze).
  */
-export function parseTLEs(text: string): LiveSatellite[] {
+export async function parseTLEs(text: string): Promise<LiveSatellite[]> {
   const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
   const sats: LiveSatellite[] = [];
+  const BATCH = 1200;
+  const wait = () => new Promise<void>((r) => setTimeout(r, 0));
 
   for (let i = 0; i < lines.length - 2; i++) {
+    if (i % BATCH === 0 && i > 0) await wait();
     const line1 = lines[i + 1];
     const line2 = lines[i + 2];
     if (line1.startsWith("1 ") && line2.startsWith("2 ")) {
