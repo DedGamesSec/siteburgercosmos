@@ -542,10 +542,21 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       return tex;
     };
 
-    // Sun: bright core + large additive glow sprite, placed at the real direction
+    // Sun: real granulation map (Solar System Scope 8k, CC BY 4.0) on a bright core
+    // + a large additive glow sprite, placed at the real direction. The additive
+    // blend lets the texture's dark voids stay transparent against the stars.
+    const sunTex = loadSized("sun_8k.jpg");
+    sunTex.colorSpace = THREE.SRGBColorSpace;
+    sunTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     const sunCore = new THREE.Mesh(
-      new THREE.SphereGeometry(16, 24, 24),
-      new THREE.MeshBasicMaterial({ color: 0xfff3c4, transparent: true, opacity: 0, blending: THREE.AdditiveBlending })
+      new THREE.SphereGeometry(16, 48, 48),
+      new THREE.MeshBasicMaterial({
+        map: sunTex,
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending
+      })
     );
     sunCore.renderOrder = 5;
     scene.add(sunCore);
@@ -564,11 +575,24 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     sunGlow.renderOrder = 4;
     scene.add(sunGlow);
 
-    // Moon: dim grey body + faint halo sprite at the real direction
+    // Moon: real surface map (Solar System Scope 8k, CC BY 4.0) lit by the same
+    // sun light as Earth, so its terminator matches the real phase. A faint halo
+    // sprite sits at the real direction too.
+    const moonTex = loadSized("moon_8k.jpg");
+    moonTex.colorSpace = THREE.SRGBColorSpace;
+    moonTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     const moonMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(9, 24, 24),
-      new THREE.MeshBasicMaterial({ color: 0xc8cbd4, transparent: true, opacity: 0 })
+      new THREE.SphereGeometry(9, 48, 48),
+      new THREE.MeshPhongMaterial({
+        map: moonTex,
+        color: 0xffffff,
+        specular: 0x222222,
+        shininess: 3,
+        transparent: true,
+        opacity: 0
+      })
     );
+    moonMesh.rotation.x = -0.06; // match the near-side face towards Earth (tidal lock)
     moonMesh.renderOrder = 5;
     scene.add(moonMesh);
     const moonGlowTex = makeGlowTex("rgba(210,215,230,0.5)", "rgba(200,210,230,0)");
@@ -634,7 +658,6 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       { p: phases.throughEnd, pos: new THREE.Vector3(0, 2, -34), look: new THREE.Vector3(0, 0, 0) },
       { p: lerp(phases.throughEnd, phases.assemblyEnd, 0.5), pos: new THREE.Vector3(0, 2, -26), look: new THREE.Vector3(0, 0, 0) },
       { p: phases.assemblyEnd, pos: new THREE.Vector3(0, 2, -22), look: new THREE.Vector3(0, 0, 0) },
-      { p: lerp(phases.assemblyEnd, phases.turnEnd, 0.4), pos: new THREE.Vector3(0, 2, -22), look: new THREE.Vector3(0, 0, 0) },
       // Smooth, gentle turn toward Earth: no warp, no streaks — the logo screen
       // stays pure space, then we ease forward as Earth fades in far ahead.
       { p: phases.turnEnd, pos: new THREE.Vector3(0, -2, 160), look: new THREE.Vector3(0, -30, 320) },
@@ -648,19 +671,27 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       { p: 1, pos: new THREE.Vector3(0, -12, 440), look: new THREE.Vector3(0, 180, 800) }
     ];
 
-    // Catmull-Rom spline through the keyframes: the camera glides through every
-    // point with continuous velocity (no stop/start at keyframe seams), so the
-    // auto-played flight reads as one smooth video.
+    // Camera path interpolation. The keyframes live at non-uniform progress values
+    // (the flight lingers during the logo assembly, then sweeps into the turn), so a
+    // plain Catmull-Rom normalised per segment is only C1 in its own local parameter:
+    // across segment seams the speed in progress space jumps (and identical duplicate
+    // keyframes would even stall the camera to zero). Instead we build a Hermite
+    // spline whose tangents use the real progress spacing of the keyframes, which is
+    // C1-continuous in progress itself — the camera glides at a continuous speed with
+    // no stops and no jerks at keyframe boundaries.
     const currentLook = new THREE.Vector3(0, 0, 0);
     const tmp = new THREE.Vector3();
-    const catmull = (out: THREE.Vector3, p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, p3: THREE.Vector3, t: number) => {
+    const hermite = (out: THREE.Vector3, k0: Keyframe, k1: Keyframe, k2: Keyframe, k3: Keyframe, t: number, field: "pos" | "look") => {
       const t2 = t * t;
       const t3 = t2 * t;
-      out
-        .copy(p0).multiplyScalar(-0.5 * t3 + t2 - 0.5 * t)
-        .addScaledVector(p1, 1.5 * t3 - 2.5 * t2 + 1)
-        .addScaledVector(p2, -1.5 * t3 + 2 * t2 + 0.5 * t)
-        .addScaledVector(p3, 0.5 * t3 - 0.5 * t2);
+      const h = Math.max(1e-5, k2.p - k1.p);
+      for (let x = 0; x < 3; x++) {
+        const P1 = k1[field].getComponent(x);
+        const P2 = k2[field].getComponent(x);
+        const m1 = (k2[field].getComponent(x) - k0[field].getComponent(x)) / (k2.p - k0.p);
+        const m2 = (k3[field].getComponent(x) - k1[field].getComponent(x)) / (k3.p - k1.p);
+        out.setComponent(x, (2 * t3 - 3 * t2 + 1) * P1 + (t3 - 2 * t2 + t) * h * m1 + (-2 * t3 + 3 * t2) * P2 + (t3 - t2) * h * m2);
+      }
       return out;
     };
     const sampleCamera = (p: number) => {
@@ -668,14 +699,13 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       // Find the segment kf[i] -> kf[i+1] that p falls into.
       let i = 0;
       while (i < n - 2 && p > kf[i + 1].p) i++;
-      const span = Math.max(1e-5, kf[i + 1].p - kf[i].p);
-      const t = Math.min(1, Math.max(0, (p - kf[i].p) / span));
-      const p0 = kf[Math.max(0, i - 1)];
-      const p1 = kf[i];
-      const p2 = kf[Math.min(i + 1, n - 1)];
-      const p3 = kf[Math.min(i + 2, n - 1)];
-      catmull(camera.position, p0.pos, p1.pos, p2.pos, p3.pos, t);
-      catmull(tmp, p0.look, p1.look, p2.look, p3.look, t);
+      const t = Math.min(1, Math.max(0, (p - kf[i].p) / Math.max(1e-5, kf[i + 1].p - kf[i].p)));
+      const k0 = kf[Math.max(0, i - 1)];
+      const k1 = kf[i];
+      const k2 = kf[Math.min(i + 1, n - 1)];
+      const k3 = kf[Math.min(i + 2, n - 1)];
+      hermite(camera.position, k0, k1, k2, k3, t, "pos");
+      hermite(tmp, k0, k1, k2, k3, t, "look");
       currentLook.copy(tmp);
       camera.lookAt(currentLook);
     };
@@ -722,6 +752,10 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       sunGlow.position.copy(realSunDir).multiplyScalar(sunDist + 4).add(EARTH_POS);
       moonMesh.position.copy(realMoonDir).multiplyScalar(moonDist).add(EARTH_POS);
       moonGlow.position.copy(realMoonDir).multiplyScalar(moonDist + 2).add(EARTH_POS);
+      // The Sun rotates slowly on its real ~25-day axis; the Moon stays tidally
+      // locked to Earth. Both fade in with the Earth.
+      sunCore.rotation.y = 0.02 * (time / 1000);
+      sunCore.rotation.z = 0.006 * (time / 1000);
       sunCore.material.opacity = earthIn;
       (sunGlow.material as THREE.SpriteMaterial).opacity = earthIn * 0.8;
       moonMesh.material.opacity = earthIn * 0.85;
@@ -795,6 +829,8 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       satMat.dispose();
       sunGlowTex.dispose();
       moonGlowTex.dispose();
+      sunTex.dispose();
+      moonTex.dispose();
       renderer.dispose();
       if (renderer.domElement.parentElement === container) {
         container.removeChild(renderer.domElement);
