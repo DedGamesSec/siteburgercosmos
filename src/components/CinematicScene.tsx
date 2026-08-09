@@ -411,12 +411,15 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
 
     const baseUrl = import.meta.env.BASE_URL;
 
-    // The satellite maps are 8K (8192x4096). On phones we force a 2048 cap so the
-    // GPU uploads ~16x less texture data (huge mobile fill-rate/memory win); on
-    // other devices we only downscale when the GPU maxTextureSize is lower (some
+    // The satellite maps are 8K (8192x4096). Uploading a full 8K RGBA map to the
+    // GPU is ~134MB of synchronous main-thread work, and all five maps land in
+    // the first seconds of the flight — each upload stalled a frame. Cap desktop
+    // at 4096 (the planet fills well under 1000px on screen, so 8K was ~8x
+    // oversampled — no visible difference, ~4x smaller uploads) and phones at
+    // 2048 (~16x less than 8K). Also clamp to the GPU maxTextureSize (some
     // integrated GPUs cap at 4096 and would silently render the planet black).
     const maxTexSize = renderer.capabilities.maxTextureSize || 4096;
-    const mobileTexCap = isMobile ? 2048 : Number.MAX_SAFE_INTEGER;
+    const mobileTexCap = isMobile ? 2048 : 4096;
     const dayReady = { value: false };
 
     // Decode (and resize) textures off the main thread. The old path used an
@@ -564,11 +567,20 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
         realSunOk = false;
       }
     };
-    // The first frame must be cheap: two full GeoVector ephemeris solves block
-    // the main thread for tens of ms, so defer the boot until the loop is already
-    // drawing (defaults are used for the first moments; the real directions land
-    // a frame later, long before the Sun/Moon are visible at p~0.8).
-    let sunMoonBootTimer = window.setTimeout(updateSunMoonDirs, 50);
+    // The first frames must be cheap: two full GeoVector ephemeris solves block
+    // the main thread for tens of ms, so defer the boot until the browser is idle
+    // (defaults are used until then; the real directions land long before the
+    // Sun/Moon are visible at p~0.8). Fall back to a timed slot if idle never fires.
+    const scheduleSunMoonBoot = () => {
+      if (typeof requestIdleCallback === "function") {
+        requestIdleCallback(() => {
+          updateSunMoonDirs();
+        });
+      } else {
+        setTimeout(updateSunMoonDirs, 1000);
+      }
+    };
+    scheduleSunMoonBoot();
     const sunMoonTimer = window.setInterval(updateSunMoonDirs, 60000);
 
     // Soft radial glow texture for the Sun and Moon halos
@@ -668,6 +680,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     let satWorker: Worker | null = null;
     let satWorkerReady = false;
     let satWorkerBusy = false;
+    let workerInitSent = false;
 
     const makeSatWorker = () => {
       try {
@@ -689,6 +702,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
           if (satWorker === w) satWorker = null;
           satWorkerReady = false;
           satWorkerBusy = false;
+          workerInitSent = false;
         };
         return w;
       } catch {
@@ -756,10 +770,17 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     };
 
     // Seed the worker with the catalog as soon as it has loaded; until then the
-    // main-thread fallback keeps satellites on screen.
+    // main-thread fallback keeps satellites on screen. Init is sent EXACTLY once:
+    // re-posting the ~12k-element catalog every 300ms until "ready" was a repeated
+    // multi-ms structured-clone stall on the main thread during the first seconds
+    // of the flight. The worker replies "ready" when its parse finishes; a
+    // per-frame fallback keeps satellites drawn until then. Retry only happens
+    // after a worker error (which resets workerInitSent).
     const initWorker = () => {
+      if (workerInitSent || !satWorker) return;
       const sats = cachedSatellites;
-      if (!sats || sats.length === 0 || !satWorker) return;
+      if (!sats || sats.length === 0) return;
+      workerInitSent = true;
       const tles: [string, string, string][] = [];
       for (let i = 0; i < sats.length; i += SAT_DECIMATE) {
         const s = sats[i];
@@ -776,10 +797,13 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     };
 
     satWorker = makeSatWorker();
+    initWorker();
     updateSatellites();
     const satTimer = window.setInterval(updateSatellites, SAT_INTERVAL_MS);
+    // Polls only for the worker to become ready so the init can be sent the moment
+    // the catalog arrives; initWorker itself guards against duplicate sends.
     const satInitTimer = window.setInterval(() => {
-      if (satWorkerReady) {
+      if (satWorkerReady || !satWorker) {
         clearInterval(satInitTimer);
         return;
       }
@@ -972,7 +996,6 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     return () => {
       stop();
       clearInterval(activeWatch);
-      clearTimeout(sunMoonBootTimer);
       clearInterval(sunMoonTimer);
       clearInterval(satTimer);
       clearInterval(satInitTimer);
