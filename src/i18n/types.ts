@@ -7,6 +7,10 @@
 export interface ProblemItem {
   title: string;
   desc: string;
+  stat: string;
+  statLabel: string;
+  statSource: string;
+  shotLabels: [string, string];
 }
 
 export interface LayerItem {

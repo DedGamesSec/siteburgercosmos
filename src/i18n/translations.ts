@@ -59,15 +59,27 @@ const ru: Translations = {
     items: [
       {
         title: "Эпидемия соц-инженерии",
-        desc: "Мошенники крадут миллиарды через звонки и мессенджеры, используя продвинутые сценарии психологического давления."
+        desc: "Мошенники крадут миллиарды через звонки и мессенджеры, используя продвинутые сценарии психологического давления.",
+        stat: "295+ млрд ₽",
+        statLabel: "потери россиян от телефонных мошенников в 2024 году",
+        statSource: "Источники: banknn.ru, Сбер / Frank Media, 2025",
+        shotLabels: ["Экран угрозы", "История угроз"]
       },
       {
         title: "Компрометация приватности",
-        desc: "Существующие защитные решения отправляют логи ваших разговоров и переписок на облачные серверы для анализа."
+        desc: "Существующие защитные решения отправляют логи ваших разговоров и переписок на облачные серверы для анализа.",
+        stat: "4,5 млрд",
+        statLabel: "записей персональных данных утекли в сеть за 2023–2025 годы",
+        statSource: "Источник: InfoWatch / d-russia.ru",
+        shotLabels: ["Статистика", "Главный экран"]
       },
       {
         title: "Бесполезность без сети",
-        desc: "Традиционные антифрод-системы мгновенно отключаются и перестают защищать вас, как только пропадает мобильный интернет."
+        desc: "Традиционные антифрод-системы мгновенно отключаются и перестают защищать вас, как только пропадает мобильный интернет.",
+        stat: "2,2 млрд",
+        statLabel: "человек в мире до сих пор живут без интернета",
+        statSource: "Источник: МСЭ / ITU «Факты и цифры», 2025",
+        shotLabels: ["Настройки", "Помощник"]
       }
     ]
   },
@@ -625,15 +637,27 @@ const en: Translations = {
     items: [
       {
         title: "The social-engineering epidemic",
-        desc: "Scammers steal billions through calls and messengers, using advanced psychological-pressure scripts."
+        desc: "Scammers steal billions through calls and messengers, using advanced psychological-pressure scripts.",
+        stat: "295+ billion RUB",
+        statLabel: "in losses from phone scammers in Russia in 2024 alone",
+        statSource: "Sources: banknn.ru, Sber / Frank Media, 2025",
+        shotLabels: ["Threat screen", "Threat history"]
       },
       {
         title: "Privacy compromised",
-        desc: "Existing protection solutions send logs of your calls and messages to cloud servers for analysis."
+        desc: "Existing protection solutions send logs of your calls and messages to cloud servers for analysis.",
+        stat: "4.5 billion",
+        statLabel: "personal-data records leaked in Russia over 2023–2025",
+        statSource: "Source: InfoWatch / d-russia.ru",
+        shotLabels: ["Statistics", "Main screen"]
       },
       {
         title: "Useless without a network",
-        desc: "Traditional anti-fraud systems shut down instantly and stop protecting you the moment mobile internet drops."
+        desc: "Traditional anti-fraud systems shut down instantly and stop protecting you the moment mobile internet drops.",
+        stat: "2.2 billion",
+        statLabel: "people worldwide still live without internet access",
+        statSource: "Source: ITU Facts and Figures, 2025",
+        shotLabels: ["Settings", "Assistant"]
       }
     ]
   },
@@ -1190,15 +1214,27 @@ const es: Translations = {
     items: [
       {
         title: "La epidemia de la ingeniería social",
-        desc: "Los estafadores roban miles de millones mediante llamadas y mensajería, usando guiones avanzados de presión psicológica."
+        desc: "Los estafadores roban miles de millones mediante llamadas y mensajería, usando guiones avanzados de presión psicológica.",
+        stat: "295+ mil millones ₽",
+        statLabel: "en pérdidas por estafas telefónicas en Rusia solo en 2024",
+        statSource: "Fuentes: banknn.ru, Sber / Frank Media, 2025",
+        shotLabels: ["Pantalla de amenaza", "Historial de amenazas"]
       },
       {
         title: "La privacidad comprometida",
-        desc: "Las soluciones de protección actuales envían registros de tus llamadas y mensajes a servidores en la nube para analizarlos."
+        desc: "Las soluciones de protección actuales envían registros de tus llamadas y mensajes a servidores en la nube para analizarlos.",
+        stat: "4500 millones",
+        statLabel: "de registros de datos personales filtrados en Rusia durante 2023–2025",
+        statSource: "Fuente: InfoWatch / d-russia.ru",
+        shotLabels: ["Estadísticas", "Pantalla principal"]
       },
       {
         title: "Inútiles sin conexión",
-        desc: "Los sistemas antifraude tradicionales se desactivan al instante y dejan de protegerte en cuanto se pierde el internet móvil."
+        desc: "Los sistemas antifraude tradicionales se desactivan al instante y dejan de protegerte en cuanto se pierde el internet móvil.",
+        stat: "2200 millones",
+        statLabel: "de personas en el mundo siguen viviendo sin acceso a internet",
+        statSource: "Fuente: ITU Facts and Figures, 2025",
+        shotLabels: ["Ajustes", "Asistente"]
       }
     ]
   },
@@ -1755,15 +1791,27 @@ const zh: Translations = {
     items: [
       {
         title: "社会工程学攻击泛滥",
-        desc: "诈骗分子通过电话和即时通讯软件，利用高级心理施压话术盗取巨额资金。"
+        desc: "诈骗分子通过电话和即时通讯软件，利用高级心理施压话术盗取巨额资金。",
+        stat: "2950亿+卢布",
+        statLabel: "2024年俄罗斯民众因电话诈骗蒙受的损失",
+        statSource: "来源：banknn.ru，Sber / Frank Media，2025",
+        shotLabels: ["威胁界面", "威胁记录"]
       },
       {
         title: "隐私被侵犯",
-        desc: "现有的防护方案会把你的通话和聊天记录上传到云端服务器进行分析。"
+        desc: "现有的防护方案会把你的通话和聊天记录上传到云端服务器进行分析。",
+        stat: "45亿条",
+        statLabel: "2023–2025年俄罗斯泄露的个人数据记录",
+        statSource: "来源：InfoWatch / d-russia.ru",
+        shotLabels: ["统计", "主界面"]
       },
       {
         title: "断网即失效",
-        desc: "传统反欺诈系统一旦手机网络中断，就会立即失效，无法再保护你。"
+        desc: "传统反欺诈系统一旦手机网络中断，就会立即失效，无法再保护你。",
+        stat: "22亿人",
+        statLabel: "全世界至今仍无法上网的人数",
+        statSource: "来源：ITU《事实与数据》，2025",
+        shotLabels: ["设置", "助手"]
       }
     ]
   },
@@ -2320,15 +2368,27 @@ const tr: Translations = {
     items: [
       {
         title: "Sosyal mühendislik salgını",
-        desc: "Dolandırıcılar, gelişmiş psikolojik baskı senaryoları kullanarak aramalar ve mesajlaşma uygulamaları üzerinden milyarlarca lira çalıyor."
+        desc: "Dolandırıcılar, gelişmiş psikolojik baskı senaryoları kullanarak aramalar ve mesajlaşma uygulamaları üzerinden milyarlarca lira çalıyor.",
+        stat: "295+ milyar ₽",
+        statLabel: "yalnızca 2024'te Rusya'da telefon dolandırıcılarından kaynaklanan kayıp",
+        statSource: "Kaynaklar: banknn.ru, Sber / Frank Media, 2025",
+        shotLabels: ["Tehdit ekranı", "Tehdit geçmişi"]
       },
       {
         title: "Gizlilikten ödün verilmesi",
-        desc: "Mevcut koruma çözümleri, analiz için aramalarınızın ve mesajlarınızın günlüklerini bulut sunucularına gönderir."
+        desc: "Mevcut koruma çözümleri, analiz için aramalarınızın ve mesajlarınızın günlüklerini bulut sunucularına gönderir.",
+        stat: "4,5 milyar",
+        statLabel: "2023–2025'te Rusya'da sızdırılan kişisel veri kaydı",
+        statSource: "Kaynak: InfoWatch / d-russia.ru",
+        shotLabels: ["İstatistikler", "Ana ekran"]
       },
       {
         title: "Şebeke olmadan işe yaramaz",
-        desc: "Geleneksel dolandırıcılık önleme sistemleri, mobil internet kesildiği an çalışmayı durdurur ve sizi korumayı bırakır."
+        desc: "Geleneksel dolandırıcılık önleme sistemleri, mobil internet kesildiği an çalışmayı durdurur ve sizi korumayı bırakır.",
+        stat: "2,2 milyar",
+        statLabel: "dünyada hâlâ internet erişimi olmayan insan sayısı",
+        statSource: "Kaynak: ITU Facts and Figures, 2025",
+        shotLabels: ["Ayarlar", "Asistan"]
       }
     ]
   },
@@ -2885,15 +2945,27 @@ const hi: Translations = {
     items: [
       {
         title: "सोशल इंजीनियरिंग की महामारी",
-        desc: "जालसाज़ कॉल और मैसेजिंग ऐप्स के ज़रिए, उन्नत मनोवैज्ञानिक दबाव तकनीकों का इस्तेमाल करके अरबों की चोरी करते हैं।"
+        desc: "जालसाज़ कॉल और मैसेजिंग ऐप्स के ज़रिए, उन्नत मनोवैज्ञानिक दबाव तकनीकों का इस्तेमाल करके अरबों की चोरी करते हैं।",
+        stat: "295+ अरब रूबल",
+        statLabel: "2024 में अकेले रूस में फ़ोन जालसाज़ों से हुआ नुकसान",
+        statSource: "स्रोत: banknn.ru, Sber / Frank Media, 2025",
+        shotLabels: ["खतरा स्क्रीन", "खतरा इतिहास"]
       },
       {
         title: "गोपनीयता से समझौता",
-        desc: "मौजूदा सुरक्षा समाधान विश्लेषण के लिए आपकी कॉल और चैट के लॉग क्लाउड सर्वर पर भेज देते हैं।"
+        desc: "मौजूदा सुरक्षा समाधान विश्लेषण के लिए आपकी कॉल और चैट के लॉग क्लाउड सर्वर पर भेज देते हैं।",
+        stat: "4.5 अरब",
+        statLabel: "2023–2025 में रूस में लीक हुए व्यक्तिगत डेटा रिकॉर्ड",
+        statSource: "स्रोत: InfoWatch / d-russia.ru",
+        shotLabels: ["आँकड़े", "मुख्य स्क्रीन"]
       },
       {
         title: "नेटवर्क के बिना बेकार",
-        desc: "पारंपरिक एंटी-फ्रॉड सिस्टम मोबाइल इंटरनेट गायब होते ही तुरंत निष्क्रिय हो जाते हैं और सुरक्षा देना बंद कर देते हैं।"
+        desc: "पारंपरिक एंटी-फ्रॉड सिस्टम मोबाइल इंटरनेट गायब होते ही तुरंत निष्क्रिय हो जाते हैं और सुरक्षा देना बंद कर देते हैं।",
+        stat: "2.2 अरब",
+        statLabel: "दुनिया में ऐसे लोग जिनके पास अब भी इंटरनेट नहीं है",
+        statSource: "स्रोत: ITU Facts and Figures, 2025",
+        shotLabels: ["सेटिंग्स", "सहायक"]
       }
     ]
   },
@@ -3450,15 +3522,27 @@ const ar: Translations = {
     items: [
       {
         title: "وباء الهندسة الاجتماعية",
-        desc: "يسرق المحتالون مليارات عبر المكالمات وتطبيقات المراسلة، مستخدمين أساليب ضغط نفسي متقدمة."
+        desc: "يسرق المحتالون مليارات عبر المكالمات وتطبيقات المراسلة، مستخدمين أساليب ضغط نفسي متقدمة.",
+        stat: "295+ مليار روبل",
+        statLabel: "خسائر الروس من المحتالين عبر الهاتف في 2024 وحدها",
+        statSource: "المصادر: banknn.ru، Sber / Frank Media، 2025",
+        shotLabels: ["شاشة التهديد", "سجل التهديدات"]
       },
       {
         title: "المساس بالخصوصية",
-        desc: "ترسل حلول الحماية الحالية سجلات مكالماتك ورسائلك إلى خوادم سحابية لتحليلها."
+        desc: "ترسل حلول الحماية الحالية سجلات مكالماتك ورسائلك إلى خوادم سحابية لتحليلها.",
+        stat: "4.5 مليار",
+        statLabel: "سجل بيانات شخصي تسرّب في روسيا خلال 2023–2025",
+        statSource: "المصدر: InfoWatch / d-russia.ru",
+        shotLabels: ["الإحصائيات", "الشاشة الرئيسية"]
       },
       {
         title: "عديم الفائدة بدون شبكة",
-        desc: "تتوقف أنظمة مكافحة الاحتيال التقليدية فورًا عن حمايتك بمجرد انقطاع الإنترنت المحمول."
+        desc: "تتوقف أنظمة مكافحة الاحتيال التقليدية فورًا عن حمايتك بمجرد انقطاع الإنترنت المحمول.",
+        stat: "2.2 مليار",
+        statLabel: "شخص حول العالم ما زالوا يعيشون دون وصول للإنترنت",
+        statSource: "المصدر: ITU Facts and Figures، 2025",
+        shotLabels: ["الإعدادات", "المساعد"]
       }
     ]
   },
@@ -4015,15 +4099,27 @@ const pt: Translations = {
     items: [
       {
         title: "A epidemia da engenharia social",
-        desc: "Golpistas roubam bilhões por meio de chamadas e mensageiros, usando roteiros avançados de pressão psicológica."
+        desc: "Golpistas roubam bilhões por meio de chamadas e mensageiros, usando roteiros avançados de pressão psicológica.",
+        stat: "295+ bilhões ₽",
+        statLabel: "em perdas com fraudes por telefone na Rússia só em 2024",
+        statSource: "Fontes: banknn.ru, Sber / Frank Media, 2025",
+        shotLabels: ["Tela de ameaça", "Histórico de ameaças"]
       },
       {
         title: "Privacidade comprometida",
-        desc: "As soluções de proteção existentes enviam registros das suas chamadas e mensagens para servidores na nuvem para análise."
+        desc: "As soluções de proteção existentes enviam registros das suas chamadas e mensagens para servidores na nuvem para análise.",
+        stat: "4,5 bilhões",
+        statLabel: "registros de dados pessoais vazados na Rússia entre 2023–2025",
+        statSource: "Fonte: InfoWatch / d-russia.ru",
+        shotLabels: ["Estatísticas", "Tela principal"]
       },
       {
         title: "Inútil sem rede",
-        desc: "Sistemas antifraude tradicionais desligam instantaneamente e param de proteger você assim que a internet móvel cai."
+        desc: "Sistemas antifraude tradicionais desligam instantaneamente e param de proteger você assim que a internet móvel cai.",
+        stat: "2,2 bilhões",
+        statLabel: "de pessoas no mundo ainda vivem sem acesso à internet",
+        statSource: "Fonte: ITU Facts and Figures, 2025",
+        shotLabels: ["Configurações", "Assistente"]
       }
     ]
   },
@@ -4580,15 +4676,27 @@ const fr: Translations = {
     items: [
       {
         title: "L'épidémie d'ingénierie sociale",
-        desc: "Les escrocs volent des milliards par appels et messageries, en utilisant des scénarios avancés de pression psychologique."
+        desc: "Les escrocs volent des milliards par appels et messageries, en utilisant des scénarios avancés de pression psychologique.",
+        stat: "295+ milliards ₽",
+        statLabel: "de pertes dues aux escrocs téléphoniques en Russie rien qu'en 2024",
+        statSource: "Sources : banknn.ru, Sber / Frank Media, 2025",
+        shotLabels: ["Écran de menace", "Historique des menaces"]
       },
       {
         title: "Une confidentialité compromise",
-        desc: "Les solutions de protection existantes envoient les journaux de vos appels et messages vers des serveurs cloud pour analyse."
+        desc: "Les solutions de protection existantes envoient les journaux de vos appels et messages vers des serveurs cloud pour analyse.",
+        stat: "4,5 milliards",
+        statLabel: "d'enregistrements de données personnelles divulgués en Russie en 2023–2025",
+        statSource: "Source : InfoWatch / d-russia.ru",
+        shotLabels: ["Statistiques", "Écran principal"]
       },
       {
         title: "Inutile sans réseau",
-        desc: "Les systèmes anti-fraude traditionnels s'arrêtent instantanément et ne vous protègent plus dès que l'internet mobile disparaît."
+        desc: "Les systèmes anti-fraude traditionnels s'arrêtent instantanément et ne vous protègent plus dès que l'internet mobile disparaît.",
+        stat: "2,2 milliards",
+        statLabel: "de personnes dans le monde vivent encore sans accès à internet",
+        statSource: "Source : ITU Facts and Figures, 2025",
+        shotLabels: ["Paramètres", "Assistant"]
       }
     ]
   },
@@ -5145,15 +5253,27 @@ const de: Translations = {
     items: [
       {
         title: "Die Epidemie des Social Engineering",
-        desc: "Betrüger stehlen Milliarden über Anrufe und Messenger, indem sie ausgeklügelte Skripte psychologischen Drucks einsetzen."
+        desc: "Betrüger stehlen Milliarden über Anrufe und Messenger, indem sie ausgeklügelte Skripte psychologischen Drucks einsetzen.",
+        stat: "295+ Mrd. ₽",
+        statLabel: "Verlust durch Telefonbetrug in Russland allein im Jahr 2024",
+        statSource: "Quellen: banknn.ru, Sber / Frank Media, 2025",
+        shotLabels: ["Bedrohungsbildschirm", "Bedrohungsverlauf"]
       },
       {
         title: "Gefährdete Privatsphäre",
-        desc: "Bestehende Schutzlösungen senden Protokolle Ihrer Anrufe und Nachrichten zur Analyse an Cloud-Server."
+        desc: "Bestehende Schutzlösungen senden Protokolle Ihrer Anrufe und Nachrichten zur Analyse an Cloud-Server.",
+        stat: "4,5 Mrd.",
+        statLabel: "geleakte Datensätze persönlicher Daten in Russland 2023–2025",
+        statSource: "Quelle: InfoWatch / d-russia.ru",
+        shotLabels: ["Statistiken", "Hauptbildschirm"]
       },
       {
         title: "Nutzlos ohne Netz",
-        desc: "Herkömmliche Anti-Fraud-Systeme schalten sich sofort ab und schützen Sie nicht mehr, sobald die mobile Internetverbindung ausfällt."
+        desc: "Herkömmliche Anti-Fraud-Systeme schalten sich sofort ab und schützen Sie nicht mehr, sobald die mobile Internetverbindung ausfällt.",
+        stat: "2,2 Mrd.",
+        statLabel: "Menschen weltweit haben noch immer keinen Internetzugang",
+        statSource: "Quelle: ITU Facts and Figures, 2025",
+        shotLabels: ["Einstellungen", "Assistent"]
       }
     ]
   },
@@ -5710,15 +5830,27 @@ const ja: Translations = {
     items: [
       {
         title: "ソーシャルエンジニアリングの蔓延",
-        desc: "詐欺師は電話やメッセージアプリを通じ、巧妙な心理的圧力の手口で数十億もの資金を盗み取っています。"
+        desc: "詐欺師は電話やメッセージアプリを通じ、巧妙な心理的圧力の手口で数十億もの資金を盗み取っています。",
+        stat: "2950億ルーブル以上",
+        statLabel: "2024年のロシアだけで電話詐欺による被害額",
+        statSource: "出典: banknn.ru, Sber / Frank Media, 2025",
+        shotLabels: ["脅威画面", "脅威履歴"]
       },
       {
         title: "損なわれるプライバシー",
-        desc: "既存の保護ソリューションは、分析のために通話やメッセージのログをクラウドサーバーへ送信しています。"
+        desc: "既存の保護ソリューションは、分析のために通話やメッセージのログをクラウドサーバーへ送信しています。",
+        stat: "45億件",
+        statLabel: "2023–2025年にロシアで漏えいした個人データ記録",
+        statSource: "出典: InfoWatch / d-russia.ru",
+        shotLabels: ["統計", "ホーム画面"]
       },
       {
         title: "ネットワークがなければ無力",
-        desc: "従来の詐欺対策システムは、モバイル通信が途切れた瞬間に機能を停止し、保護できなくなります。"
+        desc: "従来の詐欺対策システムは、モバイル通信が途切れた瞬間に機能を停止し、保護できなくなります。",
+        stat: "22億人",
+        statLabel: "世界で今もインターネットに接続できない人々",
+        statSource: "出典: ITU Facts and Figures, 2025",
+        shotLabels: ["設定", "アシスタント"]
       }
     ]
   },
