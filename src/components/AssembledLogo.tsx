@@ -110,6 +110,7 @@ export default function AssembledLogo({ progress = 0, progressRef, phaseStart = 
   // direct DOM writes from a rAF loop, so the flight never causes a React re-render
   // (and never fights a re-render mid-frame). The prop-driven mode is unchanged.
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const breatheRef = useRef<HTMLDivElement>(null);
   const haloRef = useRef<HTMLDivElement>(null);
   const linesRef = useRef<SVGGElement>(null);
   const clipCircleRef = useRef<SVGCircleElement>(null);
@@ -150,8 +151,8 @@ export default function AssembledLogo({ progress = 0, progressRef, phaseStart = 
           : "none";
         node.style.animationDelay = pulsing ? `${(idx * 0.23).toFixed(2)}s` : "0s";
       });
-      if (wrapperRef.current) {
-        wrapperRef.current.style.animation =
+      if (breatheRef.current) {
+        breatheRef.current.style.animation =
           cProgress >= 1 && !isEcoOrStatic
             ? "logo-idle-breathe 3.5s ease-in-out infinite"
             : "none";
@@ -175,13 +176,24 @@ export default function AssembledLogo({ progress = 0, progressRef, phaseStart = 
         width: "288px",
         height: "344px",
         overflow: "visible",
-        animation: circleProgress >= 1 && !isEcoOrStatic
-          ? "logo-idle-breathe 3.5s ease-in-out infinite"
-          : "none",
         transformOrigin: "center center",
       }}
       id="assembled-logo-wrapper"
     >
+      {/* Inner breathe wrapper: the idle animation lives here so the outer
+          scale-[...] sizing classes on the wrapper are never overridden by the
+          transform in the keyframes (the logo no longer "stops"/jumps in size
+          once assembly completes). */}
+      <div
+        ref={breatheRef}
+        className="w-full h-full"
+        style={{
+          animation: circleProgress >= 1 && !isEcoOrStatic
+            ? "logo-idle-breathe 3.5s ease-in-out infinite"
+            : "none",
+          transformOrigin: "center center",
+        }}
+      >
       {/* Ambient neutral halo strictly behind the logo (no decorative blue glow) */}
       {!isStatic && !ecoMode && (
         <div 
@@ -282,6 +294,7 @@ export default function AssembledLogo({ progress = 0, progressRef, phaseStart = 
           })}
         </g>
       </svg>
+      </div>
     </div>
   );
 }

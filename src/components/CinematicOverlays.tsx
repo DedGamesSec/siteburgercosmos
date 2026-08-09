@@ -64,14 +64,11 @@ export default function CinematicOverlays({ progressRef, heroRef, onEnterDome }:
         heroRef.current.style.transform = `scale(${1 + 0.14 * f})`;
       }
 
-      // OFFLINE-FIRST / ZERO TELEMETRY sweep across the center: the left word
-      // enters from off-screen left, crosses the assembled logo in the middle and
-      // exits off-screen right; the right word mirrors it. Fully DOM-driven, no
-      // re-render, no transitions fighting the per-frame transform.
-      const labelSweep = p > 0.42 ? Math.min(1, Math.max(0, (p - 0.42) / 0.3)) : 0;
-      const labelOp = labelSweep > 0
-        ? Math.min(1, labelSweep / 0.15) * Math.min(1, (1 - labelSweep) / 0.15)
-        : 0;
+      // OFFLINE-FIRST / ZERO TELEMETRY labels fade in beside the assembled logo
+      // with a small drift, then fade out — the original pre-3cc7f6aa behavior.
+      const cLabelT = p > 0.48 ? Math.min(1, (p - 0.48) / 0.15) : 0;
+      const cLabelOut = p > 0.7 ? Math.max(0, 1 - (p - 0.7) / 0.08) : 1;
+      const cLabelOp = cLabelT * cLabelOut;
       const cLogoOp = Math.max(
         0,
         Math.min(1, (p - 0.44) / 0.08) * (1 - Math.max(0, (p - 0.66) / 0.06))
@@ -80,14 +77,14 @@ export default function CinematicOverlays({ progressRef, heroRef, onEnterDome }:
       const cIntroOp = p > 0.9 ? Math.min(1, (p - 0.9) / 0.08) : 0;
 
       if (leftLabelRef.current) {
-        const x = -120 + 240 * labelSweep;
-        leftLabelRef.current.style.opacity = String(labelOp);
-        leftLabelRef.current.style.transform = `translateX(${x}vw)`;
+        const x = cLabelOp > 0 ? -40 * (1 - Math.min(1, cLabelOp)) : -40;
+        leftLabelRef.current.style.opacity = String(cLabelOp);
+        leftLabelRef.current.style.transform = `translateX(${x}px)`;
       }
       if (rightLabelRef.current) {
-        const x = 120 - 240 * labelSweep;
-        rightLabelRef.current.style.opacity = String(labelOp);
-        rightLabelRef.current.style.transform = `translateX(${x}vw)`;
+        const x = cLabelOp > 0 ? 40 * (1 - Math.min(1, cLabelOp)) : 40;
+        rightLabelRef.current.style.opacity = String(cLabelOp);
+        rightLabelRef.current.style.transform = `translateX(${x}px)`;
       }
       if (logoWrapRef.current) {
         logoWrapRef.current.style.opacity = String(cLogoOp);
