@@ -341,13 +341,16 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     if (!container) return;
     if (!isWebGLAvailable()) return;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     const width = window.innerWidth;
     const isMobile = width < 768;
     const isTablet = width >= 768 && width < 1024;
-    // Adaptive rendering: phones get a lower pixel ratio and fewer stars/segments,
-    // tablets a middle tier, desktops full quality.
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : isTablet ? 1.5 : 2);
+    const renderer = new THREE.WebGLRenderer({
+      antialias: !isMobile,
+      powerPreference: "high-performance"
+    });
+    // Adaptive rendering: phones get 1x pixel ratio and no MSAA (the biggest
+    // mobile fill-rate win), tablets a middle tier, desktops full quality.
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : isTablet ? 1.5 : 2);
     renderer.setPixelRatio(pixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x04050a, 1);
@@ -375,7 +378,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // Real sky. One dense, realistic backdrop (faint stars, Milky Way band, color
     // temperature) is always on; the bright catalog stars layer on top with real
     // parallax so the flight flies past actual stars. No constellation lines.
-    const bgCount = isMobile ? 2400 : isTablet ? 3800 : 5200;
+    const bgCount = isMobile ? 1400 : isTablet ? 3800 : 5200;
     const background = buildBackgroundSky(bgCount, 1400);
     scene.add(background);
     const starsNorth = buildStarLayer(SKY_GROUP_NORTH);
@@ -427,11 +430,12 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const loader = new THREE.TextureLoader();
     const baseUrl = import.meta.env.BASE_URL;
 
-    // The satellite maps are 8K (8192x4096). Some integrated/mobile GPUs cap
-    // maxTextureSize at 4096 and silently reject the upload, so the planet would
-    // render as a black sphere against black space (it looks "missing"). Downscale
-    // any texture that exceeds the GPU limit so the Earth always appears.
+    // The satellite maps are 8K (8192x4096). On phones we force a 2048 cap so the
+    // GPU uploads ~16x less texture data (huge mobile fill-rate/memory win); on
+    // other devices we only downscale when the GPU maxTextureSize is lower (some
+    // integrated GPUs cap at 4096 and would silently render the planet black).
     const maxTexSize = renderer.capabilities.maxTextureSize || 4096;
+    const mobileTexCap = isMobile ? 2048 : Number.MAX_SAFE_INTEGER;
     const dayReady = { value: false };
 
     const loadSized = (path: string, onReady?: () => void): THREE.Texture => {
@@ -439,10 +443,11 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
         `${baseUrl}textures/${path}`,
         () => {
             const img = tex.image as HTMLImageElement | undefined;
-          if (img && img.width > maxTexSize && maxTexSize >= 128) {
-            const scale = maxTexSize / img.width;
+          const cap = Math.min(mobileTexCap, maxTexSize);
+          if (img && img.width > cap && cap >= 128) {
+            const scale = cap / img.width;
             const canvas = document.createElement("canvas");
-            canvas.width = maxTexSize;
+            canvas.width = cap;
             canvas.height = Math.max(1, Math.round(img.height * scale));
             const ctx = canvas.getContext("2d");
             if (ctx) {
@@ -466,14 +471,18 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     dayTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     earthMat.map = dayTex;
 
-    const normalTex = loadSized("earth_normal_8k.jpg");
-    normalTex.wrapS = normalTex.wrapT = THREE.ClampToEdgeWrapping;
-    earthMat.normalMap = normalTex;
-    earthMat.normalScale.set(0.9, 0.9);
+    // Normal/specular maps are a per-pixel cost in the phong shader; phones skip
+    // them entirely (the daymap already carries the shading).
+    if (!isMobile) {
+      const normalTex = loadSized("earth_normal_8k.jpg");
+      normalTex.wrapS = normalTex.wrapT = THREE.ClampToEdgeWrapping;
+      earthMat.normalMap = normalTex;
+      earthMat.normalScale.set(0.9, 0.9);
 
-    const specTex = loadSized("earth_specular_8k.jpg");
-    earthMat.specularMap = specTex;
-    earthMat.needsUpdate = true;
+      const specTex = loadSized("earth_specular_8k.jpg");
+      earthMat.specularMap = specTex;
+      earthMat.needsUpdate = true;
+    }
 
     const cloudsTex = loadSized("earth_clouds_4k.jpg");
     cloudsTex.colorSpace = THREE.SRGBColorSpace;
@@ -710,7 +719,17 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       commitSatCount(n);
     };
 
+    // On phones the satellite swarm is decimated (~1/4 of the catalog) and the
+    // updates run at a third of the cadence — the shell reads the same, but the
+    // phone CPU/GPU do a fraction of the work.
+    const SAT_DECIMATE = isMobile ? 4 : 1;
+    const SAT_INTERVAL_MS = isMobile ? 800 : 250;
+
     const updateSatellites = () => {
+      // Satellites fade in with the Earth at p~0.82; skip all propagation until
+      // the flight approaches, so the logo/title phases don't burn CPU.
+      const p = progressRef ? progressRef.current : progressRefInternal.current;
+      if (p < 0.62) return;
       if (satWorker && satWorkerReady) {
         if (satWorkerBusy) return;
         satWorkerBusy = true;
@@ -726,7 +745,11 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const initWorker = () => {
       const sats = cachedSatellites;
       if (!sats || sats.length === 0 || !satWorker) return;
-      const tles: [string, string, string][] = sats.map((s) => [s.name, s.line1, s.line2]);
+      const tles: [string, string, string][] = [];
+      for (let i = 0; i < sats.length; i += SAT_DECIMATE) {
+        const s = sats[i];
+        tles.push([s.name, s.line1, s.line2]);
+      }
       satWorker.postMessage({
         type: "init",
         tles,
@@ -739,7 +762,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
 
     satWorker = makeSatWorker();
     updateSatellites();
-    const satTimer = window.setInterval(updateSatellites, 250);
+    const satTimer = window.setInterval(updateSatellites, SAT_INTERVAL_MS);
     const satInitTimer = window.setInterval(() => {
       if (satWorkerReady) {
         clearInterval(satInitTimer);
@@ -906,7 +929,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       const h = window.innerHeight;
       const onMobile = w < 768;
       const onTablet = w >= 768 && w < 1024;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, onMobile ? 1.25 : onTablet ? 1.5 : 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, onMobile ? 1 : onTablet ? 1.5 : 2));
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);

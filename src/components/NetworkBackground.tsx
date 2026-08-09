@@ -281,6 +281,12 @@ export default function NetworkBackground({
     let currentSatCoords: SatCoord[] = [];
 
     const render = (time: number) => {
+      // Keep the loop alive so it can resume later; skip ALL work while an opaque
+      // 3D cinematic is on top (suspended), otherwise the hidden 2D starfield
+      // keeps burning CPU on mobile.
+      if (!reducedMotionMode) {
+        animationFrameId = requestAnimationFrame(render);
+      }
       if (suspendedRef.current) return;
       const dt = Math.min(0.1, Math.max(0, (time - prevFrameTime) / 1000));
       prevFrameTime = time;
@@ -825,10 +831,6 @@ export default function NetworkBackground({
       }
 
       projectedObjectsRef.current = visibleInteractiveObjects;
-
-      if (!reducedMotionMode) {
-        animationFrameId = requestAnimationFrame(render);
-      }
     };
 
     animationFrameId = requestAnimationFrame(render);

@@ -118,6 +118,10 @@ export default function App() {
   // animation reaches the very end (progress 1.0 = Earth approach complete, cards
   // settled). On non-cinematic pages it's shown straight away.
   const [showHeader, setShowHeader] = useState(() => activePage !== "home" || !cinematicEnabled);
+  // While the 3D cinematic is playing it fully covers the viewport, so the 2D
+  // NetworkBackground starfield is suspended to avoid double-rendering on mobile.
+  const [cinematicDone, setCinematicDone] = useState(false);
+  const bgSuspended = cinematicEnabled && !cinematicDone;
   useEffect(() => {
     if (activePage !== "home") {
       setShowHeader(true);
@@ -129,10 +133,14 @@ export default function App() {
     }
     if (getCinematicProgress() >= 1) {
       setShowHeader(true);
+      setCinematicDone(true);
       return;
     }
     const unsubscribe = subscribeCinematic(() => {
-      if (getCinematicProgress() >= 1) setShowHeader(true);
+      if (getCinematicProgress() >= 1) {
+        setShowHeader(true);
+        setCinematicDone(true);
+      }
     });
     return unsubscribe;
   }, [activePage, cinematicEnabled]);
@@ -541,7 +549,7 @@ export default function App() {
       {/* Fixed Network Background (Acts as the uniform starfield throughout) */}
       <div className="fixed inset-0 w-full h-full pointer-events-none">
         <Suspense fallback={<SkyPlaceholder />}>
-          <NetworkBackground zoomFactor={zoomFactor} warpProgress={sceneProgress} isEcoMode={ecoMode} onSkyStatusChange={setSkyStatus} language={language} />
+          <NetworkBackground zoomFactor={zoomFactor} warpProgress={sceneProgress} isEcoMode={ecoMode} onSkyStatusChange={setSkyStatus} language={language} suspended={bgSuspended} />
         </Suspense>
       </div>
 
