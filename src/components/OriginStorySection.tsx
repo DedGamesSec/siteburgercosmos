@@ -298,10 +298,10 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ item, index, ecoMode }) => 
           rounded-2xl + overflow-hidden. */}
       <div className="absolute -top-px left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#3B82F6]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-      {/* Milestone dot pinned to the top-left corner of the selected card;
+      {/* Milestone dot pinned inside the top-left corner of the selected card;
           hidden on all others until hovered */}
       {!ecoMode && (
-        <div className="absolute -top-1 -left-1 z-10 w-2.5 h-2.5 rounded-full border border-[#3B82F6] bg-[#3B82F6] opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-glow-md pointer-events-none" />
+        <div className="absolute top-2 left-2 z-10 w-2.5 h-2.5 rounded-full border border-[#3B82F6] bg-[#3B82F6] opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-glow-md pointer-events-none" />
       )}
       <ScanCard className="h-full justify-between">
       <div>

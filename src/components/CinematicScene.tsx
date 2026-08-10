@@ -549,7 +549,15 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const visualSunDir = defaultSunDir.clone();
     const realMoonDir = new THREE.Vector3(0.4, -0.2, 0.9).normalize();
     let realSunOk = false;
+    let sunMoonRequested = false;
+    // Main-thread fallback for the real Sun/Moon directions. Only ever used when
+    // the satellite worker is unavailable: the astronomy solve blocks the main
+    // thread for tens of ms, so it must not run during the opening frames — it is
+    // deferred until the flight is already approaching Earth (p~0.75), and even
+    // then only once.
     const updateSunMoonDirs = () => {
+      if (sunMoonRequested) return;
+      sunMoonRequested = true;
       try {
         const t = new Date();
         const sv = Astronomy.GeoVector(Astronomy.Body.Sun, t, false);
@@ -562,24 +570,6 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
         realSunOk = false;
       }
     };
-    // The first frames must be cheap: two full GeoVector ephemeris solves block
-    // the main thread for tens of ms, so defer the boot until the browser is idle
-    // (defaults are used until then; the real directions land long before the
-    // Sun/Moon are visible at p~0.8). Fall back to a timed slot if idle never fires.
-    const scheduleSunMoonBoot = () => {
-      if (typeof requestIdleCallback === "function") {
-        requestIdleCallback(() => {
-          updateSunMoonDirs();
-        });
-      } else {
-        setTimeout(updateSunMoonDirs, 1000);
-      }
-    };
-    scheduleSunMoonBoot();
-    const sunMoonTimer = window.setInterval(() => {
-      if (!activeRef.current) return;
-      updateSunMoonDirs();
-    }, 60000);
 
     // Soft radial glow texture for the Sun and Moon halos
     const makeGlowTex = (inner: string, outer: string) => {
@@ -693,6 +683,11 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
             const count = Math.min(d.count as number, MAX_SATS);
             satPositions.set(arr.subarray(0, count * 3));
             commitSatCount(count);
+          } else if (d && d.type === "sunmoon") {
+            realSunDir.fromArray(d.sun);
+            visualSunDir.copy(realSunDir).lerp(defaultSunDir, 0.4).normalize();
+            realMoonDir.fromArray(d.moon);
+            realSunOk = true;
           }
         };
         w.onerror = () => {
@@ -760,6 +755,18 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       // Satellites fade in with the Earth at p~0.82; skip all propagation until
       // the flight approaches, so the logo/title phases don't burn CPU.
       const p = progressRef ? progressRef.current : progressRefInternal.current;
+      // Ask the worker for the real Sun/Moon directions once, near the Earth
+      // approach, so the astronomy solve stays off the main thread. Its reply
+      // lands long before Sun/Moon become visible (fade starts at p~0.86).
+      if (!sunMoonRequested && p >= 0.72) {
+        if (satWorker && satWorkerReady) {
+          sunMoonRequested = true;
+          const reqNow = new Date(realNowBase.getTime() + (performance.now() - startTime) * SAT_TIME_MULT);
+          satWorker.postMessage({ type: "sunmoon", time: reqNow.getTime() });
+        } else {
+          updateSunMoonDirs(); // worker: none / not ready — run the one-shot fallback
+        }
+      }
       if (p < 0.8) return;
       if (satWorker && satWorkerReady) {
         if (satWorkerBusy) return;
@@ -879,6 +886,9 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     let raf = 0;
     let prev = performance.now();
     let running = false;
+    // Reused per-frame Date: gmstRadians only reads getTime(), so a single
+    // preallocated instance avoids ~60 small allocations per second of flight.
+    const nowDate = new Date();
     // Tracks whether the corridor has ever become active. It starts false and
     // flips true a tick after mount (App's computeCinematic runs after render),
     // so the loop must NOT self-stop during that initial inactive window or the
@@ -904,7 +914,8 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
 
       // Earth rotates strictly in sync with real time (GMST) + a gentle extra spin
       // so the motion is clearly visible even on a short flight.
-      const gmst = gmstRadians(new Date());
+      nowDate.setTime(Date.now());
+      const gmst = gmstRadians(nowDate);
       earth.rotation.y = -gmst + 3.2 + p * 2.2;
       night.rotation.y = earth.rotation.y;
       clouds.rotation.y = earth.rotation.y + 0.003 * (time / 1000);
@@ -1013,7 +1024,6 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     return () => {
       stop();
       clearInterval(activeWatch);
-      clearInterval(sunMoonTimer);
       clearInterval(satTimer);
       clearInterval(satInitTimer);
       if (satWorker) {

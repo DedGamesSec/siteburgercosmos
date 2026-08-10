@@ -1,5 +1,6 @@
 /// <reference lib="webworker" />
 import * as satellite from "satellite.js";
+import * as Astronomy from "astronomy-engine";
 
 const ctx = self as unknown as DedicatedWorkerGlobalScope;
 
@@ -17,6 +18,11 @@ interface WorkerTickMessage {
   simTime: number;
 }
 
+interface WorkerSunMoonMessage {
+  type: "sunmoon";
+  time: number;
+}
+
 const EARTH_KM = 6371;
 
 let recs: satellite.SatRec[] = [];
@@ -25,7 +31,7 @@ let earthR = 170;
 let altMin = 200;
 let altMax = 42000;
 
-ctx.onmessage = (e: MessageEvent<WorkerInitMessage | WorkerTickMessage>) => {
+ctx.onmessage = (e: MessageEvent<WorkerInitMessage | WorkerTickMessage | WorkerSunMoonMessage>) => {
   const msg = e.data;
   if (msg.type === "init") {
     earthPos = msg.earthPos;
@@ -76,5 +82,29 @@ ctx.onmessage = (e: MessageEvent<WorkerInitMessage | WorkerTickMessage>) => {
       }
     }
     ctx.postMessage({ type: "positions", count: n, positions: out }, [out.buffer]);
+  }
+
+  if (msg.type === "sunmoon") {
+    // Real Sun/Moon geocentric directions, computed here so the main thread never
+    // blocks on the astronomy solver during the opening frames of the flight.
+    const run = async () => {
+      await new Promise((r) => setTimeout(r, 0));
+      try {
+        const t = new Date(msg.time);
+        const sv = Astronomy.GeoVector(Astronomy.Body.Sun, t, false);
+        const mv = Astronomy.GeoVector(Astronomy.Body.Moon, t, false);
+        // Same ECI/TEME -> scene frame swap the main thread uses (z<->y).
+        const toDir = (x: number, y: number, z: number) => {
+          const [dx, dy, dz] = [x, z, y];
+          const len = Math.hypot(dx, dy, dz) || 1;
+          return [dx / len, dy / len, dz / len] as [number, number, number];
+        };
+        ctx.postMessage({ type: "sunmoon", sun: toDir(sv.x, sv.y, sv.z), moon: toDir(mv.x, mv.y, mv.z) });
+      } catch {
+        // Leave the defaults in place on the main thread.
+      }
+    };
+    void run();
+    return;
   }
 };
