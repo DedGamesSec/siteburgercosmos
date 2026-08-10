@@ -883,8 +883,12 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     // Earth fade at p~0.82. This is what removes the ~4-5 texture stalls that
     // used to land before the logo.
     const TEX_DECODE_DELAY_MS = 900; // daymap, past the boot/parse/compile frames
-    const TEX_LATE_DELAY_MS = 4700; // rest of the maps, after the logo
-    const TEX_DECODE_GAP_MS = 350; // settle frames between decodes/uploads
+    // Everything else waits until the logo assembly AND its status labels are
+    // fully gone (assembly 0.44-0.60, labels fade out by ~0.71), landing in the
+    // quiet stretch before the moon/Earth fades (0.79/0.82). 5 maps x 300ms =
+    // done by ~7.6s, still ~0.6s of headroom before the moon fades in.
+    const TEX_LATE_DELAY_MS = 6400; // after the logo+labels, before the fades
+    const TEX_DECODE_GAP_MS = 300; // settle frames between decodes/uploads
     const runDecodeQueue = (list: Array<() => Promise<void>>, startDelay: number) => {
       if (list.length === 0) return;
       const step = (i: number) => {
@@ -944,14 +948,15 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     // after a worker error (which resets workerInitSent).
     const initWorker = () => {
       if (workerInitSent || !satWorker) return;
-      // Deferred until the flight is past the logo assembly (p~0.58, ~5.8s):
-      // posting ~12k TLE strings is a multi-ms structured clone and the worker's
-      // satrec build hammers a CPU core - both used to land in the 3-5s window
-      // and stall the pre-logo beats. Starting at 5.8s the worker is ready well
-      // before satellites fade in at p~0.82 (the main-thread fallback covers
-      // those few ticks).
+      // Deferred until the logo assembly + status labels are past (labels gone by
+      // p~0.71): posting ~12k TLE strings is a multi-ms structured clone and the
+      // worker's satrec build hammers a CPU core - both used to land right in
+      // the pre-logo window and during the assembly itself. Starting at p 0.65
+      // (matches the late texture queue, ~6.5s) the worker is ready long before
+      // satellites fade in at p~0.82 (the main-thread fallback covers those
+      // few ticks).
       const p = progressRef ? progressRef.current : progressRefInternal.current;
-      if (p < 0.58) return;
+      if (p < 0.65) return;
       const sats = cachedSatellites;
       if (!sats || sats.length === 0) return;
       workerInitSent = true;

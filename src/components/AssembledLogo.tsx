@@ -120,6 +120,14 @@ export default function AssembledLogo({ progress = 0, progressRef, phaseStart = 
   useEffect(() => {
     if (!progressRef) return;
     const total = Math.max(0.0001, phaseSpan);
+    // The flight drives progressRef every frame, but the assembly values only
+    // actually move inside [phaseStart, phaseStart+phaseSpan] (~4.4-6.0s). Before
+    // and after that window p clamps to a constant, so writing ~55 SVG
+    // attributes/styles per rAF for a logo that is invisible or unchanged was
+    // ~3,300 DOM mutations a second all through the intro — a measurable main
+    // thread + layout tax feeding the stalls. `lastP` makes the loop write DOM
+    // only when a value really changed.
+    let lastP = Number.NaN;
     const apply = () => {
       const globalP = progressRef.current;
       // Once the logo has fully assembled AND its parent overlay has faded it out
@@ -136,6 +144,8 @@ export default function AssembledLogo({ progress = 0, progressRef, phaseStart = 
         return;
       }
       const p = isEcoOrStatic ? 1 : Math.max(0, Math.min(1, (globalP - phaseStart) / total));
+      if (p === lastP) return;
+      lastP = p;
       const cProgress = isEcoOrStatic ? 1 : Math.min(1, p / 0.72);
       const easeOut = isEcoOrStatic ? 0 : Math.pow(1 - cProgress, 2.5);
       const lProgress = isEcoOrStatic ? 1 : Math.max(0, (p - 0.28) / 0.72);

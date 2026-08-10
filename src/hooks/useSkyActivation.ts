@@ -16,6 +16,11 @@ export function useSkyActivation(activeEcoMode: boolean = false) {
     // small bodies are only drawn in the background layers, so nothing needs
     // them during the first seconds of the page. Racing a 12k-satellite
     // download + parse against the WebGL boot is what froze the opening frames.
+    // Parse is time-budgeted (~8ms/blocks, see parseTLEs), so the parse itself
+    // no longer freezes frames; but keep the download+parse off the pre-logo
+    // beats by deferring the fetch start past the 0-4.4s window (and past the
+    // daymap upload at ~0.9s). 3.8s leaves ~4.4s of headroom for the download +
+    // budgeted parse + worker init before satellites fade in at p~0.82 (8.2s).
     const tleTimer = setTimeout(() => {
       if (cachedSatellites === null && !isFetchingTLEs) {
         isFetchingTLEs = true;
@@ -41,7 +46,7 @@ export function useSkyActivation(activeEcoMode: boolean = false) {
         };
         fetchTLEs();
       }
-    }, 2500);
+    }, 3800);
 
     const smallBodyTimer = setTimeout(() => {
       if (!isFetchingSmallBodies && cachedSmallBodies === SMALL_BODIES) {

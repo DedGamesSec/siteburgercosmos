@@ -322,40 +322,49 @@ export interface LiveSatellite {
  * Parses TLE text from CelesTrak into usable SatRec objects (the full catalog:
  * every valid TLE line-pair, so the whole active constellation is available).
  * Parsing the full ~12k-satellite catalog is expensive, so the work is chunked
- * and yields to the event loop between batches — otherwise the main thread
- * blocks for hundreds of ms right when the network response lands (which is
- * usually in the middle of the cinematic flight and reads as a freeze).
+ * by TIME BUDGET, not by fixed item counts: each synchronous block runs until
+ * ~8ms have elapsed, then yields — so a single batch
+ * ever blocks the main thread for a fraction of a frame regardless of machine
+ * speed (deep-space SGP4 setups are 2-5ms each, so a fixed 300-item batch was
+ * up to ~1.5s of frozen frames masked as "chunked").
  */
 export async function parseTLEs(text: string): Promise<LiveSatellite[]> {
   const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
   const sats: LiveSatellite[] = [];
-  // Smaller batches = shorter main-thread blocks. This parse runs on the main
-  // thread and lands in the opening seconds of the page, so each yield must be
-  // a few ms, not tens of ms (a 1200-item batch froze a frame or two).
-  const BATCH = 300;
+  // ~8ms synchronous per block, then yield to the event loop. The parse runs on
+  // the main thread (the worker re-parses the same TLEs itself), so it must
+  // never hold the frame for more than a few ms — this is what keeps the
+  // first-seconds flight smooth while 12k satrecs build in the background.
+  const BUDGET_MS = 8;
   const wait = () => new Promise<void>((r) => setTimeout(r, 0));
 
-  for (let i = 0; i < lines.length - 2; i++) {
-    if (i % BATCH === 0 && i > 0) await wait();
-    const line1 = lines[i + 1];
-    const line2 = lines[i + 2];
-    if (line1.startsWith("1 ") && line2.startsWith("2 ")) {
-      const rawName = lines[i];
-      try {
-        const satrec = satellite.twoline2satrec(line1, line2);
-        sats.push({
-          id: `sat_${sats.length}`,
-          name: rawName.replace(/\[.*\]/, "").trim(),
-          satrec,
-          line1,
-          line2,
-          trail: []
-        });
-      } catch {
-        // Skip invalid TLE
+  let i = 0;
+  while (i < lines.length - 2) {
+    const blockStart = performance.now();
+    const blockEnd = blockStart + BUDGET_MS;
+    while (i < lines.length - 2 && performance.now() < blockEnd) {
+      const line1 = lines[i + 1];
+      const line2 = lines[i + 2];
+      if (line1.startsWith("1 ") && line2.startsWith("2 ")) {
+        const rawName = lines[i];
+        try {
+          const satrec = satellite.twoline2satrec(line1, line2);
+          sats.push({
+            id: `sat_${sats.length}`,
+            name: rawName.replace(/\[.*\]/, "").trim(),
+            satrec,
+            line1,
+            line2,
+            trail: []
+          });
+        } catch {
+          // Skip invalid TLE
+        }
+        i += 2;
       }
-      i += 2;
+      i += 1;
     }
+    await wait();
   }
   return sats;
 }
