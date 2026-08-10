@@ -11,6 +11,8 @@ type Particle = {
   vy: number;
   kind: 0 | 1;
   r: number;
+  homeX: number;
+  homeY: number;
 };
 
 const ScienceValidationSection: React.FC = () => {
@@ -66,13 +68,17 @@ const ScienceValidationSection: React.FC = () => {
         const cy = h * 0.5;
         const sx = kind === 0 ? w * 0.16 : w * 0.14;
         const sy = h * 0.22;
+        const homeX = cx + gauss() * sx;
+        const homeY = cy + gauss() * sy;
         parts.push({
-          x: cx + gauss() * sx,
-          y: cy + gauss() * sy,
+          x: homeX,
+          y: homeY,
           vx: 0,
           vy: 0,
           kind,
           r: 1.5 + Math.random() * 2.2,
+          homeX,
+          homeY,
         });
       }
     };
@@ -141,13 +147,12 @@ const ScienceValidationSection: React.FC = () => {
           p.vx += (dx / d) * f;
           p.vy += (dy / d) * f;
         }
-        const cx = p.kind === 0 ? w * 0.32 : w * 0.68;
-        p.vx += (cx - p.x) * 0.0015;
-        p.vy += (h * 0.5 - p.y) * 0.0015;
+        p.vx += (p.homeX - p.x) * 0.002;
+        p.vy += (p.homeY - p.y) * 0.002;
         p.vx *= 0.92;
         p.vy *= 0.92;
-        p.x += p.vx;
-        p.y += p.vy;
+        p.x += p.vx + (Math.random() - 0.5) * 0.15;
+        p.y += p.vy + (Math.random() - 0.5) * 0.15;
         if (p.x < 4) p.x = 4;
         if (p.x > w - 4) p.x = w - 4;
         if (p.y < 4) p.y = 4;
