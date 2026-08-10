@@ -392,7 +392,11 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
 
     // Professional Earth: real satellite maps (Solar System Scope, CC BY 4.0, based on
 // NASA imagery) — day + relief normal + ocean specular + clouds + night lights.
-    const earthSeg = isMobile ? 64 : isTablet ? 96 : 128;
+    // Segment counts are trimmed (desktop 96, tablet 80, mobile 48): the planet —
+    // and the two shells over it — are tiny on screen for most of the flight, so
+    // the higher poly counts bought nothing visible while costing vertex work on
+    // the weak GPUs where the intro was stuttering.
+    const earthSeg = isMobile ? 48 : isTablet ? 80 : 96;
     const earthGeo = new THREE.SphereGeometry(EARTH_R, earthSeg, earthSeg);
     const earthMat = new THREE.MeshPhongMaterial({
       color: 0xffffff,
@@ -1018,6 +1022,16 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     let raf = 0;
     let prev = performance.now();
     let running = false;
+    // Adaptive resolution: the corridor must stay smooth on ANY machine, so the
+    // render loop watches its own average frame time and, when it drifts past
+    // ~50fps, steps the pixel ratio down (1.5 -> 1.25 -> 1.0 -> 0.75), reallocating
+    // the canvas buffers once per step. Low-end laptops / software WebGL / battery
+    // saver all get a guaranteed frame budget instead of a wall of dropped frames;
+    // the change is invisible because the whole scene is point/sticker-based.
+    let curPr = pixelRatio;
+    let resWindowStart = performance.now();
+    let resWindowFrames = 0;
+    let lastResChange = 0;
     // Reused per-frame Date: gmstRadians only reads getTime(), so a single
     // preallocated instance avoids ~60 small allocations per second of flight.
     const nowDate = new Date();
@@ -1136,6 +1150,24 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
       }
 
       renderer.render(scene, camera);
+
+      // Adaptive resolution check: average the frame time over the last ~1s;
+      // if it's past ~50fps, step the pixel ratio down (max once per ~1.6s so
+      // the buffer realloc hitch doesn't itself stutter the flight).
+      resWindowFrames++;
+      if (performance.now() - resWindowStart > 1000 && resWindowFrames >= 30) {
+        const avgMs = (performance.now() - resWindowStart) / resWindowFrames;
+        resWindowStart = performance.now();
+        resWindowFrames = 0;
+        if (avgMs > 19 && curPr > 0.75 && performance.now() - lastResChange > 1600) {
+          curPr = Math.max(0.75, curPr - 0.25);
+          lastResChange = performance.now();
+          renderer.setPixelRatio(curPr);
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+        }
+      }
     };
 
     const start = () => {
