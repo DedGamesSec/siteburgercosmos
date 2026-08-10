@@ -239,9 +239,17 @@ function buildBackgroundSky(count: number, radius: number): THREE.Points {
 // Night-lights: a shader sphere that only shows city lights on the dark side.
 function buildNightLights(segments: number): THREE.Mesh {
   const geo = new THREE.SphereGeometry(1.002, segments, segments);
+  // Neutral 1x1 placeholder so the uNight sampler is never null while the real
+  // night map is still loading (three.js errors on null sampler uniforms).
+  const neutralTexture = new THREE.DataTexture(
+    new Uint8Array([0, 0, 0, 255]),
+    1,
+    1
+  );
+  neutralTexture.needsUpdate = true;
   const mat = new THREE.ShaderMaterial({
     uniforms: {
-      uNight: { value: null },
+      uNight: { value: neutralTexture },
       uSunDir: { value: new THREE.Vector3(0.35, 0.4, 0.85).normalize() },
       uOpacity: { value: 0 }
     },
@@ -422,6 +430,8 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const maxTexSize = renderer.capabilities.maxTextureSize || 4096;
     const mobileTexCap = isMobile ? 1024 : 2048;
     const dayReady = { value: false };
+    const cloudsReady = { value: false };
+    const nightReady = { value: false };
 
     // Decode (and resize) textures off the main thread. The old path used an
     // <img> + TextureLoader: each 8K JPEG was decoded synchronously on the main
@@ -439,7 +449,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // downloads + worker decodes + GPU uploads in the first two seconds was the
     // remaining source of opening-frame jank, so the fetch begins only once the
     // camera is already closing in (see primePlanetTextures below).
-const loadSized = (path: string, onReady?: () => void, deferred?: boolean): THREE.Texture => {
+const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdopt?: (tex: THREE.Texture) => void): THREE.Texture => {
       const tex = new THREE.Texture();
       const url = `${baseUrl}textures/${path}`;
       const cap = Math.min(mobileTexCap, maxTexSize);
@@ -455,6 +465,7 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean): THRE
       const adopt = (img: ImageBitmap | HTMLImageElement) => {
         tex.image = img;
         tex.needsUpdate = true;
+        onAdopt?.(tex); // materials are wired HERE, once the image is real
         onReady?.();
         done();
       };
@@ -520,28 +531,54 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean): THRE
 
     // Normal/specular maps are a per-pixel cost in the phong shader; phones skip
     // them entirely (the daymap already carries the shading). These + clouds +
-    // night are visual polish on a screen the camera is already holding still on,
-    // so they load AFTER the flight instead of competing with its visible beats.
+    // night are wired into the materials ONLY in onAdopt, once each image is
+    // real: handing three.js an empty texture would compile the shader against
+    // garbage (a zero normal map blacks the whole planet), and throwing four
+    // uploads at the visible beats was the freeze. They load post-flight (p~1).
     if (!isMobile) {
-      const normalTex = loadSized("earth_normal_8k.jpg", undefined, true);
-      normalTex.wrapS = normalTex.wrapT = THREE.ClampToEdgeWrapping;
-      earthMat.normalMap = normalTex;
-      earthMat.normalScale.set(0.9, 0.9);
+      const normalTex = loadSized(
+        "earth_normal_8k.jpg",
+        undefined,
+        true,
+        (tex) => {
+          tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+          earthMat.normalMap = tex;
+          earthMat.normalScale.set(0.9, 0.9);
+          earthMat.needsUpdate = true;
+        }
+      );
 
-      const specTex = loadSized("earth_specular_8k.jpg", undefined, true);
-      earthMat.specularMap = specTex;
-      earthMat.needsUpdate = true;
+      const specTex = loadSized("earth_specular_8k.jpg", undefined, true, (tex) => {
+        earthMat.specularMap = tex;
+        earthMat.needsUpdate = true;
+      });
     }
 
-    const cloudsTex = loadSized("earth_clouds_4k.jpg", undefined, true);
-    cloudsTex.colorSpace = THREE.SRGBColorSpace;
-    cloudsTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
-    cloudsMat.map = cloudsTex;
-    cloudsMat.needsUpdate = true;
+    const cloudsTex = loadSized(
+      "earth_clouds_4k.jpg",
+      () => {
+        cloudsReady.value = true;
+      },
+      true,
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+        cloudsMat.map = tex;
+        cloudsMat.needsUpdate = true;
+      }
+    );
 
-    const nightTex = loadSized("earth_nightmap_8k.jpg", undefined, true);
-    nightTex.colorSpace = THREE.SRGBColorSpace;
-    (night.material as THREE.ShaderMaterial).uniforms.uNight.value = nightTex;
+    const nightTex = loadSized(
+      "earth_nightmap_8k.jpg",
+      () => {
+        nightReady.value = true;
+      },
+      true,
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        (night.material as THREE.ShaderMaterial).uniforms.uNight.value = tex;
+      }
+    );
 
     // ---- REAL SATELLITES + REAL SUN/MOON -------------------------------
     // The FULL active payload catalog from live TLE data (CelesTrak "active"
@@ -841,10 +878,10 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean): THRE
         startChain(primes);
       }
       // The visual-polish maps (clouds/night/normal/spec) don't start until the
-      // flight has settled on the static Earth screen (p~0.96), so their decodes
-      // and GPU uploads can't land on the Earth-fade / satellite-activation /
-      // sun-moon-fade beats (p 0.8-0.95) that carry the visible motion.
-      if (!polishPrimeStarted && p >= 0.96) {
+      // flight is fully done (p>=1, after the last card finishes its ~0.9-0.98
+      // fade-in), so their decodes/GPU uploads and shader re-compiles can't land
+      // on the Earth-fade / satellite-activation / sun-moon-fade / card beats.
+      if (!polishPrimeStarted && p >= 1) {
         polishPrimeStarted = true;
         startChain(deferredPrimes);
       }
@@ -1009,8 +1046,11 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean): THRE
       // plain lit sphere if the download ever fails, via the error fallback).
       const earthIn = dayReady.value ? smooth(0.82, 0.9, p) : 0;
       earthMat.opacity = earthIn;
-      cloudsMat.opacity = earthIn * 0.7;
-      (night.material as THREE.ShaderMaterial).uniforms.uOpacity.value = earthIn;
+      // clouds/night add overlays that only exist once their texture is loaded;
+      // keep them at 0 until then so the planet never renders as a washed-out
+      // white cloud shell or a black night layer.
+      cloudsMat.opacity = cloudsReady.value ? earthIn * 0.7 : 0;
+      (night.material as THREE.ShaderMaterial).uniforms.uOpacity.value = nightReady.value ? earthIn : 0;
 
       // Sun/Moon sit at their real geocentric directions and fade in with the
       // Earth so they never spoil the logo screen. The Sun is a glowing light
