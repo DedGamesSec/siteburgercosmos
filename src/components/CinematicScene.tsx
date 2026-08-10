@@ -432,10 +432,18 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // The blob is also decoded ONCE, straight to the capped size, instead of a
     // full 8K decode followed by a second resize pass (two worker decodes per
     // map = double the memory and double the decode time at scene boot).
+    //
+    // Start is also DEFERRED: the five maps (~13MB, 8K sources) aren't needed
+    // until the flight reaches Earth (Earth fades in at p~0.82, the Moon at
+    // ~0.79), i.e. roughly the last third of the auto-play. Firing all the
+    // downloads + worker decodes + GPU uploads in the first two seconds was the
+    // remaining source of opening-frame jank, so the fetch begins only once the
+    // camera is already closing in (see primePlanetTextures below).
     const loadSized = (path: string, onReady?: () => void): THREE.Texture => {
       const tex = new THREE.Texture();
       const url = `${baseUrl}textures/${path}`;
       const cap = Math.min(mobileTexCap, maxTexSize);
+      let started = false;
 
       const adopt = (img: ImageBitmap | HTMLImageElement) => {
         tex.image = img;
@@ -443,33 +451,43 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
         onReady?.();
       };
 
-      if (typeof createImageBitmap === "function" && typeof fetch === "function") {
-        fetch(url)
-          .then((r) => {
-            if (!r.ok) throw new Error(String(r.status));
-            return r.blob();
-          })
-          .then((blob) =>
-            createImageBitmap(blob, {
-              resizeWidth: Math.max(128, cap),
-              resizeQuality: "medium"
+      const prime = () => {
+        if (started) return;
+        started = true;
+        if (typeof createImageBitmap === "function" && typeof fetch === "function") {
+          fetch(url)
+            .then((r) => {
+              if (!r.ok) throw new Error(String(r.status));
+              return r.blob();
             })
-          )
-          .then(adopt)
-          .catch(() => {
-            const img = new Image();
-            img.onload = () => adopt(img);
-            img.onerror = () => onReady?.();
-            img.src = url;
-          });
-      } else {
-        const img = new Image();
-        img.onload = () => adopt(img);
-        img.onerror = () => onReady?.();
-        img.src = url;
-      }
+            .then((blob) =>
+              createImageBitmap(blob, {
+                resizeWidth: Math.max(128, cap),
+                resizeQuality: "medium"
+              })
+            )
+            .then(adopt)
+            .catch(() => {
+              const img = new Image();
+              img.onload = () => adopt(img);
+              img.onerror = () => onReady?.();
+              img.src = url;
+            });
+        } else {
+          const img = new Image();
+          img.onload = () => adopt(img);
+          img.onerror = () => onReady?.();
+          img.src = url;
+        }
+      };
+
+      // Register for a deferred kick: see the planetTexturesRequested gate in
+      // updateSatellites, which fires all primes once the flight is closing in
+      // on the Earth (p~0.5). Until then nothing is fetched or decoded.
+      primes.push(prime);
       return tex;
     };
+    const primes: Array<() => void> = [];
 
     const dayTex = loadSized("earth_daymap_8k.jpg", () => {
       dayReady.value = true;
@@ -550,6 +568,10 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const realMoonDir = new THREE.Vector3(0.4, -0.2, 0.9).normalize();
     let realSunOk = false;
     let sunMoonRequested = false;
+    // The five Earth textures are created immediately but only *fetched* once the
+    // camera is closing in on the planet (see the loadSized comment above). This
+    // flag makes sure that happens exactly once.
+    let planetTexturesRequested = false;
     // Main-thread fallback for the real Sun/Moon directions. Only ever used when
     // the satellite worker is unavailable: the astronomy solve blocks the main
     // thread for tens of ms, so it must not run during the opening frames — it is
@@ -766,6 +788,16 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
         } else {
           updateSunMoonDirs(); // worker: none / not ready — run the one-shot fallback
         }
+      }
+      if (!planetTexturesRequested && p >= 0.5) {
+        // Kick off the Earth texture downloads/decode/GPU-uploads now that the
+        // planet is on screen soon: this is a wall of ~13MB of work that would
+        // otherwise stall the first seconds of the intro for zero visible
+        // benefit (Earth fades in at p~0.82). Starting at p~0.5 keeps the whole
+        // first half of the flight network-clean and still leaves ~3s of flight
+        // time for the files to arrive before the planet needs them.
+        planetTexturesRequested = true;
+        for (let ti = 0; ti < primes.length; ti++) primes[ti]();
       }
       if (p < 0.8) return;
       if (satWorker && satWorkerReady) {
