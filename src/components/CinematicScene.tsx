@@ -449,7 +449,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // downloads + worker decodes + GPU uploads in the first two seconds was the
     // remaining source of opening-frame jank, so the fetch begins only once the
     // camera is already closing in (see primePlanetTextures below).
-const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdopt?: (tex: THREE.Texture) => void): THREE.Texture => {
+const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Texture) => void): THREE.Texture => {
       const tex = new THREE.Texture();
       const url = `${baseUrl}textures/${path}`;
       const cap = Math.min(mobileTexCap, maxTexSize);
@@ -503,18 +503,15 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdo
           }
         });
 
-      // Register for a deferred kick (see primeChain gates in updateSatellites).
-      // Critical maps (daymap, moon) run one-at-a-time from p~0.62 through the
-      // flight; the rest (clouds/night/normal/spec) only start after the flight
-      // reaches p~0.96, when the camera has settled to the static Earth screen and
-      // a late texture pop-in is invisible — that keeps the active approach phase
-      // (Earth fade + satellite activation + sun/moon fades, p 0.8-0.95) free of
-      // every texture load except the two the shot actually needs early.
-      (deferred ? deferredPrimes : primes).push(prime);
+      // Every texture registers in the one early serial chain (see startChain
+      // below). Critical maps (daymap, moon) gate the scene and are small; the
+      // polish maps (clouds/night/normal/spec) are wired in onAdopt once their
+      // image is real — handing three.js an empty texture would compile the
+      // shader against garbage (a zero normal map blacks the whole planet).
+      primes.push(prime);
       return tex;
     };
     const primes: Array<() => Promise<void>> = [];
-    const deferredPrimes: Array<() => Promise<void>> = [];
 
     const dayTex = loadSized("earth_daymap_8k.jpg", () => {
       dayReady.value = true;
@@ -532,14 +529,15 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdo
     // Normal/specular maps are a per-pixel cost in the phong shader; phones skip
     // them entirely (the daymap already carries the shading). These + clouds +
     // night are wired into the materials ONLY in onAdopt, once each image is
-    // real: handing three.js an empty texture would compile the shader against
-    // garbage (a zero normal map blacks the whole planet), and throwing four
-    // uploads at the visible beats was the freeze. They load post-flight (p~1).
+    // real — handing three.js an empty texture would compile the shader against
+    // garbage (a zero normal map blacks the whole planet). They all ride the same
+    // early serial chain as the daymap/moon, so by the time Earth fades in at
+    // p~0.82 the shading, clouds and night lights are already present — without a
+    // specular map the planet reads as a solid blue sheen (specular: 0x335577).
     if (!isMobile) {
       const normalTex = loadSized(
         "earth_normal_8k.jpg",
         undefined,
-        true,
         (tex) => {
           tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
           earthMat.normalMap = tex;
@@ -548,7 +546,7 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdo
         }
       );
 
-      const specTex = loadSized("earth_specular_8k.jpg", undefined, true, (tex) => {
+      const specTex = loadSized("earth_specular_8k.jpg", undefined, (tex) => {
         earthMat.specularMap = tex;
         earthMat.needsUpdate = true;
       });
@@ -559,7 +557,6 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdo
       () => {
         cloudsReady.value = true;
       },
-      true,
       (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
@@ -573,7 +570,6 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdo
       () => {
         nightReady.value = true;
       },
-      true,
       (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
         (night.material as THREE.ShaderMaterial).uniforms.uNight.value = tex;
@@ -823,13 +819,15 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdo
     const SAT_DECIMATE = isMobile ? 4 : 1;
     const SAT_INTERVAL_MS = isMobile ? 800 : 250;
 
-    // Texture loads run as serial chains: fetch+decode+adopt one texture, wait a
-    // couple of frames (let the render loop push its GPU upload and release the
+    // Texture loads run as one serial chain: fetch+decode+adopt one texture, wait
+    // a couple of frames (let the render loop push its GPU upload and release the
     // frame), then start the next. At most one decode is ever in flight, so the
-    // "wall" of maps becomes a gentle trickle. The flight-critical maps (daymap,
-    // moon) are started on a fixed timer below; the visual-polish maps
-    // (clouds/night/normal/spec) only start once the flight ends (p>=1 gate),
-    // on the static Earth screen where a late pop-in is invisible.
+    // "wall" of maps becomes a gentle trickle. The whole chain (daymap, moon,
+    // clouds, night, normal, spec) starts together on the fixed timer below,
+    // during the calm title/starfield phase — nothing loads during the logo,
+    // Earth-fade/satellite beats, or the end cards, and every map is present
+    // well before Earth fades in at p~0.82. Any decode failure settles the same
+    // promise, so a dead map can't stall the chain.
     const startChain = (list: Array<() => Promise<void>>) => {
       if (list.length === 0) return;
       const step = (local: number) => {
@@ -847,12 +845,11 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdo
       step(0);
     };
     // The daymap gates the Earth fade-in (p~0.82), so it can't wait until the
-    // approach — start the flight-critical chain ~0.6s after the scene boots,
-    // during the calm title/starfield phase, and let the serial pipeline fetch
-    // + decode + upload it (and the small moon map) with ~8s of headroom before
-    // the planet needs them. One texture at a time, so the opening stays smooth.
+    // approach — start the whole chain ~0.6s after the scene boots, during the
+    // calm title/starfield phase, and let the serial pipeline fetch + decode +
+    // upload each map with ~8s of headroom before the planet needs them. One
+    // texture at a time, so the opening stays smooth.
     window.setTimeout(() => startChain(primes), 600);
-    let polishPrimeStarted = false;
 
     const updateSatellites = () => {
       // Never propagate while the corridor is out of view: the worker would
@@ -874,14 +871,10 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdo
           updateSunMoonDirs(); // worker: none / not ready — run the one-shot fallback
         }
       }
-      // The visual-polish maps (clouds/night/normal/spec) don't start until the
-      // flight is fully done (p>=1, after the last card finishes its ~0.9-0.98
-      // fade-in), so their decodes/GPU uploads and shader re-compiles can't land
-      // on the Earth-fade / satellite-activation / sun-moon-fade / card beats.
-      if (!polishPrimeStarted && p >= 1) {
-        polishPrimeStarted = true;
-        startChain(deferredPrimes);
-      }
+      // The whole texture chain is started by the early timer above and runs well
+      // before the Earth-fade / satellite-activation / sun-moon-fade / card
+      // beats (p 0.8-1), so no decode, GPU upload or shader re-compile can land
+      // on the visible part of the flight.
       if (p < 0.8) return;
       if (satWorker && satWorkerReady) {
         if (satWorkerBusy) return;
