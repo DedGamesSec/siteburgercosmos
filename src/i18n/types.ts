@@ -114,6 +114,8 @@ export interface Translations {
     titleLine1: string;
     titleHighlight: string;
     subtitle: string;
+    oldLabel: string;
+    newLabel: string;
     items: ProblemItem[];
   };
   how: {

@@ -56,6 +56,8 @@ const ru: Translations = {
     titleLine1: "Почему существующие решения",
     titleHighlight: "больше не работают?",
     subtitle: "Индустрия киберпреступности эволюционирует быстрее, чем централизованные серверные базы сигнатур.",
+    oldLabel: "Старый подход",
+    newLabel: "Новый подход",
     items: [
       {
         title: "Эпидемия соц-инженерии",
@@ -634,6 +636,8 @@ const en: Translations = {
     titleLine1: "Why existing solutions",
     titleHighlight: "don't work anymore",
     subtitle: "The cybercrime industry evolves faster than centralized, server-side signature databases can keep up.",
+    oldLabel: "Old approach",
+    newLabel: "New approach",
     items: [
       {
         title: "The social-engineering epidemic",
@@ -1211,6 +1215,8 @@ const es: Translations = {
     titleLine1: "¿Por qué las soluciones existentes",
     titleHighlight: "ya no funcionan?",
     subtitle: "La industria del cibercrimen evoluciona más rápido de lo que pueden seguirle las bases de firmas centralizadas en servidores.",
+    oldLabel: "Enfoque antiguo",
+    newLabel: "Enfoque nuevo",
     items: [
       {
         title: "La epidemia de la ingeniería social",
@@ -1788,6 +1794,8 @@ const zh: Translations = {
     titleLine1: "为什么现有方案",
     titleHighlight: "已经不再奏效？",
     subtitle: "网络犯罪产业的演化速度已经超过了集中式服务器特征库的更新速度。",
+    oldLabel: "传统方案",
+    newLabel: "新方案",
     items: [
       {
         title: "社会工程学攻击泛滥",
@@ -2365,6 +2373,8 @@ const tr: Translations = {
     titleLine1: "Mevcut çözümler neden",
     titleHighlight: "artık işe yaramıyor?",
     subtitle: "Siber suç endüstrisi, merkezi ve sunucu tabanlı imza veritabanlarının yetişemeyeceği kadar hızlı evriliyor.",
+    oldLabel: "Eski yaklaşım",
+    newLabel: "Yeni yaklaşım",
     items: [
       {
         title: "Sosyal mühendislik salgını",
@@ -2942,6 +2952,8 @@ const hi: Translations = {
     titleLine1: "मौजूदा समाधान",
     titleHighlight: "अब काम क्यों नहीं करते?",
     subtitle: "साइबर-अपराध उद्योग सेंट्रलाइज़्ड सर्वर-आधारित सिग्नेचर डेटाबेस से कहीं तेज़ी से विकसित हो रहा है।",
+    oldLabel: "पुराना तरीका",
+    newLabel: "नया तरीका",
     items: [
       {
         title: "सोशल इंजीनियरिंग की महामारी",
@@ -3519,6 +3531,8 @@ const ar: Translations = {
     titleLine1: "لماذا لم تعد الحلول الحالية",
     titleHighlight: "فعّالة؟",
     subtitle: "تتطور صناعة الجرائم الإلكترونية أسرع من قواعد بيانات التوقيعات المركزية على الخوادم.",
+    oldLabel: "النهج القديم",
+    newLabel: "النهج الجديد",
     items: [
       {
         title: "وباء الهندسة الاجتماعية",
@@ -4096,6 +4110,8 @@ const pt: Translations = {
     titleLine1: "Por que as soluções existentes",
     titleHighlight: "não funcionam mais?",
     subtitle: "A indústria do cibercrime evolui mais rápido do que os bancos de dados de assinaturas centralizados em servidores conseguem acompanhar.",
+    oldLabel: "Abordagem antiga",
+    newLabel: "Nova abordagem",
     items: [
       {
         title: "A epidemia da engenharia social",
@@ -4673,6 +4689,8 @@ const fr: Translations = {
     titleLine1: "Pourquoi les solutions existantes",
     titleHighlight: "ne fonctionnent-elles plus ?",
     subtitle: "L'industrie de la cybercriminalité évolue plus vite que les bases de signatures centralisées côté serveur.",
+    oldLabel: "Ancienne approche",
+    newLabel: "Nouvelle approche",
     items: [
       {
         title: "L'épidémie d'ingénierie sociale",
@@ -5250,6 +5268,8 @@ const de: Translations = {
     titleLine1: "Warum bestehende Lösungen",
     titleHighlight: "nicht mehr funktionieren",
     subtitle: "Die Cyberkriminalität entwickelt sich schneller weiter, als es zentrale, serverseitige Signaturdatenbanken mithalten können.",
+    oldLabel: "Alter Ansatz",
+    newLabel: "Neuer Ansatz",
     items: [
       {
         title: "Die Epidemie des Social Engineering",
@@ -5827,6 +5847,8 @@ const ja: Translations = {
     titleLine1: "既存のソリューションが",
     titleHighlight: "通用しなくなった理由",
     subtitle: "サイバー犯罪業界の進化は、集中管理された署名データベースの更新速度をはるかに上回っています。",
+    oldLabel: "従来の手法",
+    newLabel: "新しい手法",
     items: [
       {
         title: "ソーシャルエンジニアリングの蔓延",
