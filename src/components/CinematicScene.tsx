@@ -414,12 +414,13 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // The satellite maps are 8K (8192x4096). Uploading a full 8K RGBA map to the
     // GPU is ~134MB of synchronous main-thread work, and all five maps land in
     // the first seconds of the flight — each upload stalled a frame. Cap desktop
-    // at 4096 (the planet fills well under 1000px on screen, so 8K was ~8x
-    // oversampled — no visible difference, ~4x smaller uploads) and phones at
-    // 2048 (~16x less than 8K). Also clamp to the GPU maxTextureSize (some
-    // integrated GPUs cap at 4096 and would silently render the planet black).
+    // at 2048 and phones at 1024 (the planet fills well under 1000px on screen,
+    // so 8K was ~8x oversampled — no visible difference, ~16x smaller uploads),
+    // and decode each map directly at that size in a worker. Also clamp to the
+    // GPU maxTextureSize (some integrated GPUs cap at 4096 and would silently
+    // render the planet black).
     const maxTexSize = renderer.capabilities.maxTextureSize || 4096;
-    const mobileTexCap = isMobile ? 2048 : 4096;
+    const mobileTexCap = isMobile ? 1024 : 2048;
     const dayReady = { value: false };
 
     // Decode (and resize) textures off the main thread. The old path used an
@@ -428,26 +429,15 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // of the intro — those stalls read as freezes at the very start of the
     // flight. createImageBitmap decodes + resizes on worker threads instead, and
     // only the final GPU upload touches the main thread (spread over frames).
+    // The blob is also decoded ONCE, straight to the capped size, instead of a
+    // full 8K decode followed by a second resize pass (two worker decodes per
+    // map = double the memory and double the decode time at scene boot).
     const loadSized = (path: string, onReady?: () => void): THREE.Texture => {
       const tex = new THREE.Texture();
       const url = `${baseUrl}textures/${path}`;
       const cap = Math.min(mobileTexCap, maxTexSize);
 
-      const apply = (img: ImageBitmap | HTMLImageElement, width: number) => {
-        if (width > cap && cap >= 128 && typeof createImageBitmap === "function") {
-          createImageBitmap(img, { resizeWidth: cap, resizeQuality: "medium" })
-            .then((scaled) => {
-              tex.image = scaled;
-              tex.needsUpdate = true;
-              onReady?.();
-            })
-            .catch(() => {
-              tex.image = img;
-              tex.needsUpdate = true;
-              onReady?.();
-            });
-          return;
-        }
+      const adopt = (img: ImageBitmap | HTMLImageElement) => {
         tex.image = img;
         tex.needsUpdate = true;
         onReady?.();
@@ -459,17 +449,22 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
             if (!r.ok) throw new Error(String(r.status));
             return r.blob();
           })
-          .then((blob) => createImageBitmap(blob))
-          .then((img) => apply(img, img.width))
+          .then((blob) =>
+            createImageBitmap(blob, {
+              resizeWidth: Math.max(128, cap),
+              resizeQuality: "medium"
+            })
+          )
+          .then(adopt)
           .catch(() => {
             const img = new Image();
-            img.onload = () => apply(img, img.naturalWidth);
+            img.onload = () => adopt(img);
             img.onerror = () => onReady?.();
             img.src = url;
           });
       } else {
         const img = new Image();
-        img.onload = () => apply(img, img.naturalWidth);
+        img.onload = () => adopt(img);
         img.onerror = () => onReady?.();
         img.src = url;
       }
@@ -581,7 +576,10 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       }
     };
     scheduleSunMoonBoot();
-    const sunMoonTimer = window.setInterval(updateSunMoonDirs, 60000);
+    const sunMoonTimer = window.setInterval(() => {
+      if (!activeRef.current) return;
+      updateSunMoonDirs();
+    }, 60000);
 
     // Soft radial glow texture for the Sun and Moon halos
     const makeGlowTex = (inner: string, outer: string) => {
@@ -755,6 +753,10 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const SAT_INTERVAL_MS = isMobile ? 800 : 250;
 
     const updateSatellites = () => {
+      // Never propagate while the corridor is out of view: the worker would
+      // otherwise keep SGP4-running the whole catalog (and structured-cloning
+      // the positions back) every 250ms long after the intro has scrolled away.
+      if (!activeRef.current) return;
       // Satellites fade in with the Earth at p~0.82; skip all propagation until
       // the flight approaches, so the logo/title phases don't burn CPU.
       const p = progressRef ? progressRef.current : progressRefInternal.current;
@@ -877,6 +879,12 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     let raf = 0;
     let prev = performance.now();
     let running = false;
+    // Tracks whether the corridor has ever become active. It starts false and
+    // flips true a tick after mount (App's computeCinematic runs after render),
+    // so the loop must NOT self-stop during that initial inactive window or the
+    // intro would blank for up to the activeWatch poll delay. Once active has
+    // been seen, an inactive scroll can halt the loop on the next frame.
+    let hasBeenActive = false;
 
     const render = (time: number) => {
       if (!running) return;
@@ -884,6 +892,15 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       const dt = Math.min(0.05, (time - prev) / 1000);
       prev = time;
       const p = progressRef ? progressRef.current : progressRefInternal.current;
+
+      // The corridor can be scrolled past mid-frame: cancel the loop on the very
+      // next frame instead of waiting for the 400ms activeWatch poll below, so
+      // no extra frames are wasted behind the opaque landing content.
+      if (hasBeenActive && !activeRef.current) {
+        running = false;
+        return;
+      }
+      if (activeRef.current) hasBeenActive = true;
 
       // Earth rotates strictly in sync with real time (GMST) + a gentle extra spin
       // so the motion is clearly visible even on a short flight.

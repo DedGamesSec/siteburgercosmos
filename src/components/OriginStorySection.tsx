@@ -288,18 +288,22 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ item, index, ecoMode }) => 
   return (
     <motion.div
       ref={ref}
+      className="relative group"
       initial={false}
       animate={{ opacity: 1, y: 0 }}
     >
-      <ScanCard className="h-full justify-between">
-      {/* Top Accent line */}
-      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#3B82F6]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      {/* Top Accent line — runs along the very top edge of the card. Positioned
+          on the wrapper (which has no overflow-hidden), so -top-px sits exactly
+          on the card's top border instead of being clipped by ScanCard's
+          rounded-2xl + overflow-hidden. */}
+      <div className="absolute -top-px left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#3B82F6]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
       {/* Milestone dot pinned to the top-left corner of the selected card;
           hidden on all others until hovered */}
       {!ecoMode && (
-        <div className="absolute top-3 left-3 w-2.5 h-2.5 rounded-full border border-[#3B82F6] bg-[#3B82F6] opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-glow-md" />
+        <div className="absolute -top-1 -left-1 z-10 w-2.5 h-2.5 rounded-full border border-[#3B82F6] bg-[#3B82F6] opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-glow-md pointer-events-none" />
       )}
+      <ScanCard className="h-full justify-between">
       <div>
         {/* Header Row */}
         <div className="flex items-center justify-between gap-4 mb-6">
