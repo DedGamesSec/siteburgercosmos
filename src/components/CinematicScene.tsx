@@ -600,7 +600,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
 
     const dayTex = loadSized("earth_daymap_8k.jpg", () => {
       dayReady.value = true;
-    });
+    }, undefined, false, overlayCap);
     dayTex.colorSpace = THREE.SRGBColorSpace;
     dayTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     earthMat.map = dayTex;
@@ -874,7 +874,10 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     // a rolling window over the catalog keeps each update's cost bounded. The
     // budget is kept small — SGP4 is run synchronously here, and a large window
     // over the ~12k catalog (incl. expensive GEO/MEO sats) stalls the flight.
-    const FALLBACK_BUDGET = 200;
+    // The worker is now seeded as soon as the TLEs land (see useSkyActivation),
+    // so on a fast connection this never runs at all during the 8-10s window;
+    // when the download is slow it still bounds each main-thread tick.
+    const FALLBACK_BUDGET = 100;
     let fallbackIndex = 0;
     const updateSatellitesFallback = () => {
       const sats = cachedSatellites;
@@ -988,18 +991,19 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     // after a worker error (which resets workerInitSent).
     const initWorker = () => {
       if (workerInitSent || !satWorker) return;
-      // Deferred until the logo assembly + status labels are past (labels gone by
-      // p~0.71): posting ~12k TLE strings is a multi-ms structured clone and the
-      // worker's satrec build hammers a CPU core - both used to land right in
-      // the pre-logo window and during the assembly itself. Starting at p 0.65
-      // (matches the late texture queue, ~6.5s) the worker is ready long before
-      // satellites fade in at p~0.82 (the main-thread fallback covers those
-      // few ticks). The payload is a single UTF-8 blob transfered zero-copy
-      // (instead of ~12k nested string arrays, whose structured clone allocates
-      // tens of thousands of objects on the main thread and gels GC exactly at
-      // the Earth approach).
+      // Deferred past the opening decode window: posting ~12k TLE strings is a
+      // multi-ms encode, and the worker's satrec build hammers a CPU core - both
+      // used to land in the pre-logo beats. The catalog arrives around ~1.5-4s
+      // (fetch starts at 1.2s, see useSkyActivation); starting at p 0.3 keeps
+      // the encode clear of the daymap upload at ~1-2s while still giving the
+      // worker several seconds to parse the satrecs off-thread, so it is ready
+      // long before satellites fade in at p~0.82 (8.2s) and the main-thread
+      // SGP4 fallback never has to run in the 8-10s window. The payload is a
+      // single UTF-8 blob transfered zero-copy (instead of ~12k nested string
+      // arrays, whose structured clone allocates tens of thousands of objects
+      // on the main thread and gels GC exactly at the Earth approach).
       const p = progressRef ? progressRef.current : progressRefInternal.current;
-      if (p < 0.65) return;
+      if (p < 0.3) return;
       const sats = cachedSatellites;
       if (!sats || sats.length === 0) return;
       workerInitSent = true;

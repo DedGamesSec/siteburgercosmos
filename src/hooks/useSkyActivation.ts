@@ -18,9 +18,14 @@ export function useSkyActivation(activeEcoMode: boolean = false) {
     // download + parse against the WebGL boot is what froze the opening frames.
     // Parse is time-budgeted (~8ms/blocks, see parseTLEs), so the parse itself
     // no longer freezes frames; but keep the download+parse off the pre-logo
-    // beats by deferring the fetch start past the 0-4.4s window (and past the
-    // daymap upload at ~0.9s). 3.8s leaves ~4.4s of headroom for the download +
-    // budgeted parse + worker init before satellites fade in at p~0.82 (8.2s).
+    // beats by deferring the fetch start past the 0-1s boot/compile window.
+    // Starting at 1.2s still leaves >6s of headroom: the worker gets its init as
+    // soon as the catalog lands (initWorker gates until p~0.25), parses the
+    // ~12k satrecs off-thread and is ready long before satellites fade in at
+    // p~0.82 (8.2s). If the fetch ran only at 3.8s (as it used to), the worker
+    // often wasn't ready by 8s and the MAIN-THREAD fallback had to run bounded
+    // but still synchronous SGP4 every 250ms through the whole 8-10s window —
+    // exactly the stalls seen before the Earth fade.
     const tleTimer = setTimeout(() => {
       if (cachedSatellites === null && !isFetchingTLEs) {
         isFetchingTLEs = true;
@@ -46,7 +51,7 @@ export function useSkyActivation(activeEcoMode: boolean = false) {
         };
         fetchTLEs();
       }
-    }, 3800);
+    }, 1200);
 
     const smallBodyTimer = setTimeout(() => {
       if (!isFetchingSmallBodies && cachedSmallBodies === SMALL_BODIES) {
