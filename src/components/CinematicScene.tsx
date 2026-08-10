@@ -399,12 +399,39 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // the weak GPUs where the intro was stuttering.
     const earthSeg = isMobile ? 48 : isTablet ? 80 : 96;
     const earthGeo = new THREE.SphereGeometry(EARTH_R, earthSeg, earthSeg);
+    // Neutral 1x1 texture shared as a stand-in for every map slot until the real
+    // images land. Wiring these in at boot means the shaders compile ONCE (during
+    // the renderer.compile() warm-up below) with their full uniform set, and the
+    // onAdopt swap only uploads the real pixels — no mid-flight recompile when
+    // the late maps show up at ~6.4-7.6s (a recompile was another main-thread
+    // stall exactly where the Earth phase begins).
+    const neutralTex = new THREE.DataTexture(
+      new Uint8Array([128, 128, 255, 255]),
+      1,
+      1
+    );
+    neutralTex.needsUpdate = true;
+    const neutralSpec = new THREE.DataTexture(
+      new Uint8Array([128, 128, 128, 255]),
+      1,
+      1
+    );
+    neutralSpec.needsUpdate = true;
+    const neutralMap = new THREE.DataTexture(
+      new Uint8Array([255, 255, 255, 255]),
+      1,
+      1
+    );
+    neutralMap.needsUpdate = true;
     const earthMat = new THREE.MeshPhongMaterial({
       color: 0xffffff,
       specular: 0x335577,
       shininess: 22,
       transparent: true,
-      opacity: 0
+      opacity: 0,
+      normalMap: isMobile ? null : neutralTex,
+      normalScale: isMobile ? new THREE.Vector2(1, 1) : new THREE.Vector2(0.9, 0.9),
+      specularMap: isMobile ? null : neutralSpec
     });
     const earth = new THREE.Mesh(earthGeo, earthMat);
     earth.position.copy(EARTH_POS);
@@ -426,7 +453,8 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       specular: 0x000000,
-      shininess: 0
+      shininess: 0,
+      map: neutralMap
     });
     const clouds = new THREE.Mesh(cloudsGeo, cloudsMat);
     clouds.position.copy(EARTH_POS);
@@ -574,13 +602,12 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     moonTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
 
     // Normal/specular maps are a per-pixel cost in the phong shader; phones skip
-    // them entirely (the daymap already carries the shading). These + clouds +
-    // night are wired into the materials ONLY in onAdopt, once each image is
-    // real — handing three.js an empty texture would compile the shader against
-    // garbage (a zero normal map blacks the whole planet). They all ride the same
-    // early serial chain as the daymap/moon, so by the time Earth fades in at
-    // p~0.82 the shading, clouds and night lights are already present — without a
-    // specular map the planet reads as a solid blue sheen (specular: 0x335577).
+    // them entirely (the daymap already carries the shading). All of these ride
+    // the same late serial chain so they're real before Earth fades in at p~0.82.
+    // The material already holds neutral 1x1 placeholders in every slot (wired at
+    // boot so the shaders compiled with the full uniform set during the
+    // renderer.compile() warm-up), so onAdopt only swaps in the decoded pixels —
+    // no material.needsUpdate, no mid-flight recompile by the freezes.
     if (!isMobile) {
       const normalTex = loadSized(
         "earth_normal_8k.jpg",
@@ -589,7 +616,6 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
           tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
           earthMat.normalMap = tex;
           earthMat.normalScale.set(0.9, 0.9);
-          earthMat.needsUpdate = true;
         },
         true
       );
@@ -599,7 +625,6 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
         undefined,
         (tex) => {
           earthMat.specularMap = tex;
-          earthMat.needsUpdate = true;
         },
         true
       );
@@ -614,7 +639,6 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
         cloudsMat.map = tex;
-        cloudsMat.needsUpdate = true;
       },
       true
     );
@@ -954,25 +978,32 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
       // the pre-logo window and during the assembly itself. Starting at p 0.65
       // (matches the late texture queue, ~6.5s) the worker is ready long before
       // satellites fade in at p~0.82 (the main-thread fallback covers those
-      // few ticks).
+      // few ticks). The payload is a single UTF-8 blob transfered zero-copy
+      // (instead of ~12k nested string arrays, whose structured clone allocates
+      // tens of thousands of objects on the main thread and gels GC exactly at
+      // the Earth approach).
       const p = progressRef ? progressRef.current : progressRefInternal.current;
       if (p < 0.65) return;
       const sats = cachedSatellites;
       if (!sats || sats.length === 0) return;
       workerInitSent = true;
-      const tles: [string, string, string][] = [];
+      const sb: string[] = [];
       for (let i = 0; i < sats.length; i += SAT_DECIMATE) {
         const s = sats[i];
-        tles.push([s.name, s.line1, s.line2]);
+        sb.push(s.line1, s.line2); // line pairs, alternating per satellite
       }
-      satWorker.postMessage({
-        type: "init",
-        tles,
-        earthPos: [EARTH_POS.x, EARTH_POS.y, EARTH_POS.z],
-        earthR: EARTH_R,
-        altMin: ALT_MIN,
-        altMax: ALT_MAX
-      });
+      const bytes = new TextEncoder().encode(sb.join("\n"));
+      satWorker.postMessage(
+        {
+          type: "init",
+          tleBytes: bytes.buffer,
+          earthPos: [EARTH_POS.x, EARTH_POS.y, EARTH_POS.z],
+          earthR: EARTH_R,
+          altMin: ALT_MIN,
+          altMax: ALT_MAX
+        },
+        [bytes.buffer]
+      );
     };
 
     satWorker = makeSatWorker();
@@ -1213,6 +1244,27 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
       running = false;
       cancelAnimationFrame(raf);
     };
+
+    // Pre-compile every shader program up front. Earth/clouds/night/satellites/
+    // sun-moon all start `visible=false` (culled until they fade in at p~0.79),
+    // so their programs would otherwise be compiled synchronously on the very
+    // frame they first appear — a multi-ms main-thread stall exactly where the
+    // user sees the Earth fade-in stutter. compile() renders the scene once into
+    // a 1px buffer, forcing each material's program to be built now (on the
+    // already load-bound boot frames) instead of mid-flight. Stars/background
+    // are already visible and compile anyway; we flip the hidden ones on around
+    // it so their programs get built too, then restore every visibility.
+    const visSnapshot: THREE.Object3D[] = [];
+    scene.traverse((obj) => {
+      if (!obj.visible) {
+        visSnapshot.push(obj);
+        obj.visible = true;
+      }
+    });
+    renderer.compile(scene, camera);
+    visSnapshot.forEach((obj) => {
+      obj.visible = false;
+    });
 
     // Start the loop unconditionally. `cinematicActive` starts false and only
     // flips true a tick later (after App's computeCinematic), so waiting for it

@@ -6,7 +6,7 @@ const ctx = self as unknown as DedicatedWorkerGlobalScope;
 
 interface WorkerInitMessage {
   type: "init";
-  tles: [string, string, string][];
+  tleBytes: ArrayBuffer;
   earthPos: [number, number, number];
   earthR: number;
   altMin: number;
@@ -39,7 +39,15 @@ ctx.onmessage = (e: MessageEvent<WorkerInitMessage | WorkerTickMessage | WorkerS
     altMin = msg.altMin;
     altMax = msg.altMax;
     recs = [];
-    for (const [, line1, line2] of msg.tles) {
+    // The main thread sends the whole catalog as one UTF-8 blob (zero-copy
+    // transferable) consisting of alternating TLE "line 1" / "line 2" strings,
+    // one pair per satellite. twoline2satrec needs both lines of a pair, so
+    // iterate two lines at a time.
+    const text = new TextDecoder().decode(msg.tleBytes);
+    const lines = text.split("\n");
+    for (let i = 0; i + 1 < lines.length; i += 2) {
+      const line1 = lines[i];
+      const line2 = lines[i + 1];
       try {
         recs.push(satellite.twoline2satrec(line1, line2));
       } catch {
