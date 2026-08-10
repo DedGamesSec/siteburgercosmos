@@ -142,6 +142,9 @@ export interface Translations {
     visualHint: string;
     legitLabel: string;
     anomalyLabel: string;
+    scoreLabel: string;
+    safeTag: string;
+    fraudTag: string;
   };
   realDev: {
     title: string;

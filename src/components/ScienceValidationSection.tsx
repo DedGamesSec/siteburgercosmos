@@ -20,6 +20,10 @@ const ScienceValidationSection: React.FC = () => {
   const { ecoMode } = useEcoMode();
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const scoreRef = useRef<HTMLSpanElement>(null);
+  const tagRef = useRef<HTMLSpanElement>(null);
+  const tRef = useRef(t);
+  tRef.current = t;
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -86,15 +90,19 @@ const ScienceValidationSection: React.FC = () => {
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
 
-      // Neural mesh among legitimate points
+      // Decision boundary curve (live position, reacts to cursor)
+      const bx = w * 0.5 + (mouse.active ? Math.max(-34, Math.min(34, (mouse.x - w * 0.5) * 0.12)) : 0);
+      const bend = mouse.active ? (mouse.y - h * 0.5) * 0.05 : 0;
+
+      // Neural mesh among legit (left-of-boundary) points
       ctx.strokeStyle = "rgba(59,130,246,0.08)";
       ctx.lineWidth = 1;
       for (let i = 0; i < parts.length; i++) {
         const a = parts[i];
-        if (a.kind !== 0) continue;
+        if (a.x >= bx) continue;
         for (let j = i + 1; j < parts.length; j++) {
           const b = parts[j];
-          if (b.kind !== 0) continue;
+          if (b.x >= bx) continue;
           const dx = a.x - b.x;
           const dy = a.y - b.y;
           if (dx * dx + dy * dy < 3600) {
@@ -106,9 +114,7 @@ const ScienceValidationSection: React.FC = () => {
         }
       }
 
-      // Decision boundary curve
-      const bx = w * 0.5 + (mouse.active ? Math.max(-34, Math.min(34, (mouse.x - w * 0.5) * 0.12)) : 0);
-      const bend = mouse.active ? (mouse.y - h * 0.5) * 0.05 : 0;
+      // Boundary line
       ctx.beginPath();
       ctx.moveTo(bx, 0);
       ctx.bezierCurveTo(bx - 20, h * 0.33, bx + 20 + bend, h * 0.66, bx, h);
@@ -118,11 +124,12 @@ const ScienceValidationSection: React.FC = () => {
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Particles
+      // Particles: color by live classification (side of the boundary)
       for (const p of parts) {
+        const fraud = p.x >= bx;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        if (p.kind === 0) {
+        if (!fraud) {
           ctx.fillStyle = "rgba(59,130,246,0.9)";
           ctx.shadowColor = "rgba(59,130,246,0.8)";
         } else {
@@ -133,6 +140,40 @@ const ScienceValidationSection: React.FC = () => {
         ctx.fill();
       }
       ctx.shadowBlur = 0;
+
+      // Cursor probe: crosshair + live classification
+      if (mouse.active) {
+        const mx = mouse.x;
+        const my = mouse.y;
+        ctx.beginPath();
+        ctx.arc(mx, my, 10, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(245,245,240,0.8)";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(mx - 16, my);
+        ctx.lineTo(mx + 16, my);
+        ctx.moveTo(mx, my - 16);
+        ctx.lineTo(mx, my + 16);
+        ctx.strokeStyle = "rgba(245,245,240,0.6)";
+        ctx.stroke();
+      }
+
+      // Live fraud score: sigmoid of signed distance from the boundary
+      if (scoreRef.current && tagRef.current) {
+        let p = 0.5;
+        if (mouse.active) {
+          const z = ((mouse.x - bx) / Math.max(w * 0.1, 1)) * 3;
+          p = 1 / (1 + Math.exp(-z));
+        }
+        const pct = Math.round(p * 100);
+        const isFraud = p >= 0.5;
+        const sci = tRef.current.science;
+        scoreRef.current.textContent = `${pct}%`;
+        scoreRef.current.style.color = isFraud ? "#EF4444" : "#3B82F6";
+        tagRef.current.textContent = isFraud ? sci.fraudTag : sci.safeTag;
+        tagRef.current.style.color = isFraud ? "#EF4444" : "#3B82F6";
+      }
     };
 
     const step = () => {
@@ -275,6 +316,24 @@ const ScienceValidationSection: React.FC = () => {
                 <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
                 <span className="font-mono text-[10px] text-[#6FB1FF] uppercase tracking-widest font-semibold">
                   {t.science.visualBadge}
+                </span>
+              </div>
+
+              {/* Formula overlay */}
+              <div className="absolute top-4 right-4 rounded-full border border-white/[0.06] bg-[#12141A]/80 backdrop-blur-sm px-3 py-1.5">
+                <span className="font-mono text-[10px] text-gray-300 whitespace-nowrap">
+                  P(fraud) = σ(w·h + b)
+                </span>
+              </div>
+
+              {/* Live score readout */}
+              <div className="absolute top-16 right-4 flex items-center gap-2 rounded-full border border-white/[0.06] bg-[#12141A]/80 backdrop-blur-sm px-3 py-1.5">
+                <span className="font-mono text-[10px] text-gray-500 uppercase tracking-wider">
+                  {t.science.scoreLabel}
+                </span>
+                <span ref={scoreRef} className="font-mono text-xs font-bold text-[#3B82F6]">50%</span>
+                <span ref={tagRef} className="font-mono text-[10px] font-bold text-[#3B82F6] uppercase">
+                  {t.science.safeTag}
                 </span>
               </div>
 

@@ -363,7 +363,10 @@ const ru: Translations = {
     visualBadge: "ЖИВАЯ МАТЕМАТИЧЕСКАЯ МОДЕЛЬ",
     visualHint: "Двигайте курсор",
     legitLabel: "Легитимный трафик",
-    anomalyLabel: "Аномалии / ИИ-атаки"
+    anomalyLabel: "Аномалии / ИИ-атаки",
+    scoreLabel: "Скор фрода",
+    safeTag: "БЕЗОПАСНО",
+    fraudTag: "ФРОД"
   },
   origin: {
     title: "История проекта",
@@ -954,7 +957,10 @@ const en: Translations = {
     visualBadge: "LIVE MATHEMATICAL MODEL",
     visualHint: "Move your cursor",
     legitLabel: "Legitimate traffic",
-    anomalyLabel: "Anomalies / AI attacks"
+    anomalyLabel: "Anomalies / AI attacks",
+    scoreLabel: "Fraud score",
+    safeTag: "SAFE",
+    fraudTag: "FRAUD"
   },
   origin: {
     title: "Project Legacy",
@@ -1545,7 +1551,10 @@ const es: Translations = {
     visualBadge: "MODELO MATEMÁTICO EN VIVO",
     visualHint: "Mueve el cursor",
     legitLabel: "Tráfico legítimo",
-    anomalyLabel: "Anomalías / ataques de IA"
+    anomalyLabel: "Anomalías / ataques de IA",
+    scoreLabel: "Puntuación de fraude",
+    safeTag: "SEGURO",
+    fraudTag: "FRAUDE"
   },
   origin: {
     title: "Historia del Proyecto",
@@ -2136,7 +2145,10 @@ const zh: Translations = {
     visualBadge: "实时数学模型",
     visualHint: "移动光标",
     legitLabel: "合法流量",
-    anomalyLabel: "异常 / AI 攻击"
+    anomalyLabel: "异常 / AI 攻击",
+    scoreLabel: "欺诈评分",
+    safeTag: "安全",
+    fraudTag: "欺诈"
   },
   origin: {
     title: "项目历程与背景",
@@ -2727,7 +2739,10 @@ const tr: Translations = {
     visualBadge: "CANLI MATEMATİKSEL MODEL",
     visualHint: "İmleci hareket ettirin",
     legitLabel: "Meşru trafik",
-    anomalyLabel: "Anomaliler / AI saldırıları"
+    anomalyLabel: "Anomaliler / AI saldırıları",
+    scoreLabel: "Dolandırıcılık puanı",
+    safeTag: "GÜVENLİ",
+    fraudTag: "DOLANDIRICILIK"
   },
   origin: {
     title: "Proje Geçmişi",
@@ -3318,7 +3333,10 @@ const hi: Translations = {
     visualBadge: "लाइव गणितीय मॉडल",
     visualHint: "कर्सर घुमाएँ",
     legitLabel: "वैध ट्रैफ़िक",
-    anomalyLabel: "असामान्यताएँ / AI हमले"
+    anomalyLabel: "असामान्यताएँ / AI हमले",
+    scoreLabel: "धोखाधड़ी स्कोर",
+    safeTag: "सुरक्षित",
+    fraudTag: "धोखाधड़ी"
   },
   origin: {
     title: "परियोजना का इतिहास",
@@ -3909,7 +3927,10 @@ const ar: Translations = {
     visualBadge: "نموذج رياضي حي",
     visualHint: "حرّك المؤشر",
     legitLabel: "حركة مرور مشروعة",
-    anomalyLabel: "شذوذ / هجمات الذكاء الاصطناعي"
+    anomalyLabel: "شذوذ / هجمات الذكاء الاصطناعي",
+    scoreLabel: "درجة الاحتيال",
+    safeTag: "آمن",
+    fraudTag: "احتيال"
   },
   origin: {
     title: "تاريخ المشروع",
@@ -4500,7 +4521,10 @@ const pt: Translations = {
     visualBadge: "MODELO MATEMÁTICO AO VIVO",
     visualHint: "Mova o cursor",
     legitLabel: "Tráfego legítimo",
-    anomalyLabel: "Anomalias / ataques de IA"
+    anomalyLabel: "Anomalias / ataques de IA",
+    scoreLabel: "Pontuação de fraude",
+    safeTag: "SEGURO",
+    fraudTag: "FRAUDE"
   },
   origin: {
     title: "História do Projeto",
@@ -5091,7 +5115,10 @@ const fr: Translations = {
     visualBadge: "MODÈLE MATHÉMATIQUE EN DIRECT",
     visualHint: "Déplacez le curseur",
     legitLabel: "Trafic légitime",
-    anomalyLabel: "Anomalies / attaques IA"
+    anomalyLabel: "Anomalies / attaques IA",
+    scoreLabel: "Score de fraude",
+    safeTag: "SÛR",
+    fraudTag: "FRAUDE"
   },
   origin: {
     title: "Histoire du Projet",
@@ -5682,7 +5709,10 @@ const de: Translations = {
     visualBadge: "LIVE-MATHEMATIKMODELL",
     visualHint: "Bewegen Sie den Cursor",
     legitLabel: "Legitimer Datenverkehr",
-    anomalyLabel: "Anomalien / KI-Angriffe"
+    anomalyLabel: "Anomalien / KI-Angriffe",
+    scoreLabel: "Betrugswert",
+    safeTag: "SICHER",
+    fraudTag: "BETRUG"
   },
   origin: {
     title: "Projektgeschichte",
@@ -6273,7 +6303,10 @@ const ja: Translations = {
     visualBadge: "ライブ数理モデル",
     visualHint: "カーソルを動かす",
     legitLabel: "正当なトラフィック",
-    anomalyLabel: "異常 / AI 攻撃"
+    anomalyLabel: "異常 / AI 攻撃",
+    scoreLabel: "詐欺スコア",
+    safeTag: "安全",
+    fraudTag: "詐欺"
   },
   origin: {
     title: "プロジェクトの歩み",
