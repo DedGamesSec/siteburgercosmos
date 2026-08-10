@@ -444,50 +444,62 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       const url = `${baseUrl}textures/${path}`;
       const cap = Math.min(mobileTexCap, maxTexSize);
       let started = false;
+      let resolver: (() => void) | null = null;
+      let settled = false;
+      const done = () => {
+        if (settled) return;
+        settled = true;
+        resolver?.();
+      };
 
       const adopt = (img: ImageBitmap | HTMLImageElement) => {
         tex.image = img;
         tex.needsUpdate = true;
         onReady?.();
+        done();
       };
 
-      const prime = () => {
-        if (started) return;
-        started = true;
-        if (typeof createImageBitmap === "function" && typeof fetch === "function") {
-          fetch(url)
-            .then((r) => {
-              if (!r.ok) throw new Error(String(r.status));
-              return r.blob();
-            })
-            .then((blob) =>
-              createImageBitmap(blob, {
-                resizeWidth: Math.max(128, cap),
-                resizeQuality: "medium"
+      const prime = (): Promise<void> =>
+        new Promise((resolve) => {
+          resolver = resolve;
+          if (started) return; // only settle once — the resolver is shared
+          started = true;
+          const fallback = () => {
+            const img = new Image();
+            img.onload = () => adopt(img);
+            img.onerror = () => {
+              onReady?.();
+              done();
+            };
+            img.src = url;
+          };
+          if (typeof createImageBitmap === "function" && typeof fetch === "function") {
+            fetch(url)
+              .then((r) => {
+                if (!r.ok) throw new Error(String(r.status));
+                return r.blob();
               })
-            )
-            .then(adopt)
-            .catch(() => {
-              const img = new Image();
-              img.onload = () => adopt(img);
-              img.onerror = () => onReady?.();
-              img.src = url;
-            });
-        } else {
-          const img = new Image();
-          img.onload = () => adopt(img);
-          img.onerror = () => onReady?.();
-          img.src = url;
-        }
-      };
+              .then((blob) =>
+                createImageBitmap(blob, {
+                  resizeWidth: Math.max(128, cap),
+                  resizeQuality: "medium"
+                })
+              )
+              .then(adopt)
+              .catch(fallback);
+          } else {
+            fallback();
+          }
+        });
 
-      // Register for a deferred kick: see the planetTexturesRequested gate in
-      // updateSatellites, which fires all primes once the flight is closing in
-      // on the Earth (p~0.5). Until then nothing is fetched or decoded.
+      // Register for a deferred kick: see the primeChain gate in
+      // updateSatellites, which runs primes strictly one-at-a-time once the
+      // flight is closing in on the Earth (p~0.62) so only a single fetch +
+      // decode + GPU upload is ever in flight. Until then nothing is fetched.
       primes.push(prime);
       return tex;
     };
-    const primes: Array<() => void> = [];
+    const primes: Array<() => Promise<void>> = [];
 
     const dayTex = loadSized("earth_daymap_8k.jpg", () => {
       dayReady.value = true;
@@ -570,9 +582,9 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     let sunMoonRequested = false;
     // The six planet textures are created immediately but only *fetched* once the
     // camera is closing in on the planet (see the loadSized comment above). Loads
-    // are staggered one-per-updateSatellites-tick so the downloads/decodes/GPU
-    // uploads spread across the approach instead of landing as a burst inside the
-    // logo-assembly beat (p 0.44-0.60) or stalling the opening frames.
+    // run one at a time via primeChain so the downloads/decodes/GPU uploads trickle
+    // across the approach instead of landing as a burst inside the logo-assembly
+    // beat (p 0.44-0.60) or stalling the opening frames.
     let primeIndex = 0;
     // Main-thread fallback for the real Sun/Moon directions. Only ever used when
     // the satellite worker is unavailable: the astronomy solve blocks the main
@@ -771,6 +783,30 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const SAT_DECIMATE = isMobile ? 4 : 1;
     const SAT_INTERVAL_MS = isMobile ? 800 : 250;
 
+    // Texture loads run as a serial chain: fetch+decode+adopt one texture, wait a
+    // couple of frames (let the render loop push its GPU upload and release the
+    // frame), then start the next. At most one 8K->capped decode is ever in flight,
+    // so the "wall" of six maps becomes a gentle trickle across the approach.
+    const primeChain = () => {
+      if (primeIndex >= primes.length) return;
+      const idx = primeIndex;
+      primeIndex++;
+      primes[idx]()
+        .then(() => {
+          // Two idle frames between textures lets three.js finish the GPU upload
+          // and the compositor release the frame before the next decode lands.
+          window.setTimeout(() => {
+            // Chain continues even if the corridor briefly left the viewport.
+            primeChain();
+          }, 40);
+        })
+        .catch(() => {
+          window.setTimeout(() => {
+            primeChain();
+          }, 40);
+        });
+    };
+
     const updateSatellites = () => {
       // Never propagate while the corridor is out of view: the worker would
       // otherwise keep SGP4-running the whole catalog (and structured-cloning
@@ -793,13 +829,16 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       }
       if (p >= 0.62 && primeIndex < primes.length) {
         // The logo has finished assembling (assembly ends ~0.60), so the terrain
-        // is clear of the churny 2D assembly frames. Fire ONE texture load per
-        // satellite tick: each fetch+decode+GPU-upload is expensive enough on its
-        // own, and firing all six in a single frame was the 5-6s hitch — the SVG
-        // logo assembly writes dozens of attributes per frame, and the whole
-        // wall of texture uploads landed right on top of it.
-        primes[primeIndex]();
-        primeIndex++;
+        // is clear of the churny 2D assembly frames. Primes run STRICTLY one at a
+        // time — each fetch+decode+GPU-upload resolves before the next starts —
+        // plus a frame-settle timeout between them, so the decoded bitmaps never
+        // pile up on the same frame. (Time-staggering only spaced the START; on a
+        // fast CDN all six files still arrived near-simultaneously and their
+        // decodes/upload landed as one burst.) Starter fires the first prime once;
+        // the chain continues from each settled texture.
+        if (primeIndex === 0) {
+          primeChain();
+        }
       }
       if (p < 0.8) return;
       if (satWorker && satWorkerReady) {
