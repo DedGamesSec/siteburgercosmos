@@ -59,9 +59,14 @@ function buildStarLayer(codes: string[]): THREE.Points {
   for (let i = 0; i < members.length; i++) {
     const star = members[i];
     const dir = raDecDir(star.ra, star.dec);
-    // Nearest stars fly past close to the camera; distant ones sit on the far shell
+    // Nearest stars fly past with real parallax; distant ones sit on the far shell.
+    // The flight path runs z 120->440, so stars closer than ~400 would sit right on
+    // the camera rail and whoosh past full-screen (gl_PointSize caps at 24px) at
+    // the title/надпись beat — reading as a burst of stars that appears then
+    // vanishes. The floor shell is kept out past the deepest camera point so every
+    // star passes at a distance where the fly-by reads as gentle parallax.
     const distLy = star.distLy || 400;
-    const radius = lerp(240, 860, clamp01(distLy / 900));
+    const radius = lerp(520, 900, clamp01(distLy / 1200));
     positions[i * 3] = dir.x * radius;
     positions[i * 3 + 1] = dir.y * radius;
     positions[i * 3 + 2] = dir.z * radius;
@@ -107,7 +112,7 @@ function buildStarLayer(codes: string[]): THREE.Points {
         vAlpha = aAlpha;
         vColor = aColor;
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = max(2.2, min(24.0, aSize * (620.0 / max(1.0, -mv.z))));
+        gl_PointSize = max(1.8, min(14.0, aSize * (560.0 / max(1.0, -mv.z))));
         gl_Position = projectionMatrix * mv;
       }
     `,
@@ -474,6 +479,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // render the planet black).
     const maxTexSize = renderer.capabilities.maxTextureSize || 4096;
     const mobileTexCap = isMobile ? 1024 : 2048;
+    const overlayCap = 1280; // tight cap for the support maps (see loadSized)
     const dayReady = { value: false };
     const cloudsReady = { value: false };
     const nightReady = { value: false };
@@ -491,12 +497,18 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // Fetch and decode are split: every map's FETCH starts at mount, in
     // parallel (async I/O, no main-thread cost), while DECODE runs one JPG at a
     // time through a serial queue whose spacing eats up the (now longer) intro.
-    // The daymap decodes first, so its continents are up ~14s before
-    // the Earth fade-in at p~0.82 on the longer auto-play.
-const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Texture) => void, late = false): THREE.Texture => {
+    // The daymap decodes first, so its continents are up before
+    // the Earth fade-in at p~0.82 on the auto-play.
+const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Texture) => void, late = false, capOverride = 0): THREE.Texture => {
       const tex = new THREE.Texture();
       const url = `${baseUrl}textures/${path}`;
-      const cap = Math.min(mobileTexCap, maxTexSize);
+      // Overlay/support maps (normal/spec/night/clouds) are capped tighter than the
+      // daymap: they are subtle per-pixel modifiers on a planet that fills under
+      // 1000px on screen, and each stays a synchronous texImage2D + full mipmap
+      // chain on the main thread the moment it lands. Shrinking them cuts that
+      // upload cost ~2.5x, which is precisely the three post-logo stalls before
+      // the Earth fade.
+      const cap = Math.min(capOverride > 0 ? capOverride : mobileTexCap, mobileTexCap, maxTexSize);
       // FETCH is kicked immediately, in parallel, for every map: it is pure
       // async I/O so it costs nothing on the main thread, and the bytes are on
       // disk long before the serial decode queue reaches this map — the daymap
@@ -617,7 +629,8 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
           earthMat.normalMap = tex;
           earthMat.normalScale.set(0.9, 0.9);
         },
-        true
+        true,
+        overlayCap
       );
 
       const specTex = loadSized(
@@ -626,7 +639,8 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
         (tex) => {
           earthMat.specularMap = tex;
         },
-        true
+        true,
+        overlayCap
       );
     }
 
@@ -640,7 +654,8 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
         tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
         cloudsMat.map = tex;
       },
-      true
+      true,
+      overlayCap
     );
 
     const nightTex = loadSized(
@@ -652,7 +667,8 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
         tex.colorSpace = THREE.SRGBColorSpace;
         (night.material as THREE.ShaderMaterial).uniforms.uNight.value = tex;
       },
-      true
+      true,
+      overlayCap
     );
 
     // ---- REAL SATELLITES + REAL SUN/MOON -------------------------------
