@@ -443,73 +443,98 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // full 8K decode followed by a second resize pass (two worker decodes per
     // map = double the memory and double the decode time at scene boot).
     //
-    // Start is DISTRIBUTED across the intro rather than one burst: each map gets
-    // a fixed start slot (daymap first with the most headroom), so the GPU
-    // uploads land apart instead of stacking into a stall, and everything is up
-    // well before the Earth fade-in at p~0.82 on the now-longer auto-play.
+    // Fetch and decode are split: every map's FETCH starts at mount, in
+    // parallel (async I/O, no main-thread cost), while DECODE runs one JPG at a
+    // time through a serial queue whose spacing eats up the (now longer) intro.
+    // The daymap decodes first, so its continents are up ~10+ seconds before
+    // the Earth fade-in at p~0.82 on the longer auto-play.
 const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Texture) => void): THREE.Texture => {
       const tex = new THREE.Texture();
       const url = `${baseUrl}textures/${path}`;
       const cap = Math.min(mobileTexCap, maxTexSize);
-      let started = false;
-      let resolver: (() => void) | null = null;
-      let settled = false;
-      const done = () => {
-        if (settled) return;
-        settled = true;
-        resolver?.();
-      };
+      // FETCH is kicked immediately, in parallel, for every map: it is pure
+      // async I/O so it costs nothing on the main thread, and the bytes are on
+      // disk long before the serial decode queue reaches this map — the daymap
+      // gets the full intro of headroom while the smaller maps download behind
+      // it. DECODE + GPU upload stay in the serial queue so only one JPG is ever
+      // being decoded at once (overlapping decodes were the CPU spike that read
+      // as a stall).
+      let blob: Blob | null = null;
+      let fetchDone = false;
+      let fetchedOk = false;
+      if (typeof fetch === "function") {
+        fetch(url)
+          .then((r) => {
+            if (!r.ok) throw new Error(String(r.status));
+            return r.blob();
+          })
+          .then((b) => {
+            blob = b;
+            fetchedOk = true;
+          })
+          .catch(() => {
+            fetchedOk = false;
+          })
+          .then(() => {
+            fetchDone = true;
+          });
+      } else {
+        fetchDone = true;
+        fetchedOk = false;
+      }
 
       const adopt = (img: ImageBitmap | HTMLImageElement) => {
         tex.image = img;
         tex.needsUpdate = true;
         onAdopt?.(tex); // materials are wired HERE, once the image is real
         onReady?.();
-        done();
       };
 
-      const prime = (): Promise<void> =>
+      // Serial decode step, driven one-at-a-time by the decode queue below.
+      const decode = (): Promise<void> =>
         new Promise((resolve) => {
-          resolver = resolve;
-          if (started) return; // only settle once — the resolver is shared
-          started = true;
-          const fallback = () => {
+          const decodeFallback = () => {
             const img = new Image();
-            img.onload = () => adopt(img);
+            img.onload = () => {
+              adopt(img);
+              resolve();
+            };
             img.onerror = () => {
-              onReady?.();
-              done();
+              onReady?.(); // a dead map still settles quietly, no chain stall
+              resolve();
             };
             img.src = url;
           };
-          if (typeof createImageBitmap === "function" && typeof fetch === "function") {
-            fetch(url)
-              .then((r) => {
-                if (!r.ok) throw new Error(String(r.status));
-                return r.blob();
+          if (fetchDone && fetchedOk && blob && typeof createImageBitmap === "function") {
+            createImageBitmap(blob, {
+              resizeWidth: Math.max(128, cap),
+              resizeQuality: "medium"
+            })
+              .then((img) => {
+                adopt(img);
+                resolve();
               })
-              .then((blob) =>
-                createImageBitmap(blob, {
-                  resizeWidth: Math.max(128, cap),
-                  resizeQuality: "medium"
-                })
-              )
-              .then(adopt)
-              .catch(fallback);
+              .catch(decodeFallback);
+          } else if (fetchDone) {
+            decodeFallback();
           } else {
-            fallback();
+            // Bytes not here yet — hold the queue until this map's fetch lands.
+            window.setTimeout(() => {
+              decode()
+                .then(resolve)
+                .catch(resolve);
+            }, 100);
           }
         });
 
-      // Every texture registers in the distributed schedule (see the staggered
-      // slots below). Critical maps (daymap, moon) gate the scene and are small;
-      // the polish maps (clouds/night/normal/spec) are wired in onAdopt once
-      // their image is real — handing three.js an empty texture would compile
-      // the shader against garbage (a zero normal map blacks the whole planet).
-      primes.push(prime);
+      // Every texture registers in the serial decode queue (see the schedule
+      // below). The polish maps (clouds/night/normal/spec) are wired in onAdopt
+      // once their image is real — handing three.js an empty texture would
+      // compile the shader against garbage (a zero normal map blacks the planet).
+      decodes.push(decode);
       return tex;
     };
-    const primes: Array<() => Promise<void>> = [];
+    const decodes: Array<() => Promise<void>> = [];
 
     const dayTex = loadSized("earth_daymap_8k.jpg", () => {
       dayReady.value = true;
@@ -817,21 +842,25 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     const SAT_DECIMATE = isMobile ? 4 : 1;
     const SAT_INTERVAL_MS = isMobile ? 800 : 250;
 
-    // Texture loads are evenly distributed across the (now longer) intro instead
-    // of firing as one burst or one tight chain: every map gets its own fixed
-    // start slot, and the daymap — the map that carries the continents — goes
-    // first with the most headroom (~10s before the Earth fade-in), so the
-    // planet is fully shaded and continent-clear from its very first frame.
-    // Fetch is async and the JPG decode runs on the browser's image-decode pool
-    // (createImageBitmap), so the only main-thread cost is the final GPU upload
-    // per map; slots 1.2s apart keep those uploads from ever stacking into a
-    // visible stall, and every map still lands well before the Earth-fade /
-    // satellite / sun-moon / card beats (p 0.8-1).
-    const TEX_START_MS = 300;
-    const TEX_STAGGER_MS = 1200;
-    primes.forEach((prime, i) => {
-      window.setTimeout(prime, TEX_START_MS + i * TEX_STAGGER_MS);
-    });
+    // Fetches all run in parallel from mount (async I/O, near-zero main-thread
+    // cost — see loadSized above). DECODE + GPU upload are strictly serialized
+    // through the queue below: the extra intro time is spent spacing the decodes
+    // out, so never more than one JPG is being decoded at once and the per-map
+    // uploads never stack into a stall. The daymap (continents) decodes first,
+    // ~12s of headroom before the Earth fade-in, so the planet is fully shaded
+    // and continent-clear from its very first frame; every map still lands well
+    // before the Earth-fade / satellite / sun-moon / card beats (p 0.8-1).
+    const TEX_DECODE_DELAY_MS = 400; // first decode shortly after boot
+    const TEX_DECODE_GAP_MS = 250; // settle frames between uploads
+    const decodeStep = (i: number) => {
+      if (i >= decodes.length) return;
+      decodes[i]()
+        .catch(() => undefined)
+        .then(() => {
+          window.setTimeout(() => decodeStep(i + 1), TEX_DECODE_GAP_MS);
+        });
+    };
+    window.setTimeout(() => decodeStep(0), TEX_DECODE_DELAY_MS);
 
     const updateSatellites = () => {
       // Never propagate while the corridor is out of view: the worker would
