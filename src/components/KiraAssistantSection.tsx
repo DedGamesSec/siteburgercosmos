@@ -1,5 +1,5 @@
 import React from "react";
-import { Bot, WifiOff, HardDrive, Cpu, Radio, FileText } from "lucide-react";
+import { Bot, WifiOff, HardDrive, Cpu, FileText, Radio, Mic } from "lucide-react";
 import { motion } from "motion/react";
 import { useTranslation } from "../i18n/LanguageContext";
 import { LanguageCode } from "../i18n/languages";
@@ -15,7 +15,7 @@ const TITLE_BY_LANG: Partial<Record<LanguageCode, string>> = {
   en: "KIRA Voice Assistant",
   es: "Asistente de Voz KIRA",
   zh: "KIRA 语音助手",
-  hi: "कीरा (KIRA) वॉयс असिस्टेंट",
+  hi: "कीरा (KIRA) वॉयस असिस्टेंट",
   ar: "المساعد الصوتي KIRA",
   pt: "Assistente de Voz KIRA",
   fr: "Assistant Vocal KIRA",
@@ -234,9 +234,9 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
       className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B]" 
       id="kira-assistant"
     >
-      {/* Background soft visual grid element */}
+      {/* Background */}
       <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#3B82F6]/20 to-transparent pointer-events-none" />
-      <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         
@@ -264,66 +264,68 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
           </p>
         </div>
 
-        {/* Feature Split Block */}
+        {/* Split block */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center max-w-5xl mx-auto">
           
-          {/* Visual Voice Wave Simulation Block */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center p-8 rounded-xl bg-[#0A0A0B] border border-white/[0.04] relative overflow-hidden min-h-[300px]">
-            <div className="absolute top-4 left-4 font-mono text-[9px] text-amber-500 tracking-wider uppercase flex items-center gap-1.5">
-              <Radio className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-              KIRA CONCEPT // DESIGN PHASE
-            </div>
-            
-            {/* Interactive wave spheres */}
-            <div className="relative w-40 h-40 flex items-center justify-center">
-              {!ecoMode && (
-                <>
-                  <motion.div
-                    className="absolute w-24 h-24 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
-                    animate={{ scale: [0.7, 1.15], opacity: [0.7, 0] }}
-                    transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 0 }}
-                  />
-                  <motion.div
-                    className="absolute w-24 h-24 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
-                    animate={{ scale: [0.7, 1.15], opacity: [0.6, 0] }}
-                    transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 0.8 }}
-                  />
-                  <motion.div
-                    className="absolute w-24 h-24 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
-                    animate={{ scale: [0.7, 1.15], opacity: [0.5, 0] }}
-                    transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 1.6 }}
-                  />
-                </>
-              )}
-              <div className={`absolute w-16 h-16 rounded-full bg-[#3B82F6]/20 border border-[#3B82F6]/30 ${ecoMode ? "" : "animate-pulse"}`} />
-              <div className="w-12 h-12 rounded-full bg-[#3B82F6] flex items-center justify-center shadow-glow-lg">
-                <Bot className="w-6 h-6 text-white" />
+          {/* Visual: voice console */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative rounded-2xl border border-white/[0.06] bg-[#0E0F12] overflow-hidden p-8 min-h-[320px] flex flex-col items-center justify-center">
+              <div className="absolute top-4 left-4 font-mono text-[9px] text-amber-500 tracking-wider uppercase flex items-center gap-1.5">
+                <Radio className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+                KIRA CONCEPT // DESIGN PHASE
               </div>
-            </div>
 
-            {/* Audio wave lines */}
-            <div className="flex items-center justify-center gap-1.5 mt-8 h-8">
-              {EQ_BASE.map((height, idx) => {
-                const props = {
-                  key: idx,
-                  className: "w-[2px] bg-[#3B82F6]/60 rounded-full",
-                };
-                if (ecoMode) {
-                  return <div {...props} style={{ height: `${height}px` }} />;
-                }
-                return (
-                  <motion.div
-                    {...props}
-                    animate={{ height: [6, height, 6] }}
-                    transition={{
-                      duration: 0.9 + (idx % 5) * 0.18,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: idx * 0.09,
-                    }}
-                  />
-                );
-              })}
+              {/* Rings */}
+              <div className="relative w-44 h-44 flex items-center justify-center">
+                {!ecoMode && (
+                  <>
+                    <motion.div
+                      className="absolute w-28 h-28 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
+                      animate={{ scale: [0.7, 1.15], opacity: [0.7, 0] }}
+                      transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 0 }}
+                    />
+                    <motion.div
+                      className="absolute w-28 h-28 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
+                      animate={{ scale: [0.7, 1.15], opacity: [0.6, 0] }}
+                      transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 0.8 }}
+                    />
+                    <motion.div
+                      className="absolute w-28 h-28 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/25"
+                      animate={{ scale: [0.7, 1.15], opacity: [0.5, 0] }}
+                      transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 1.6 }}
+                    />
+                  </>
+                )}
+                <div className={`absolute w-16 h-16 rounded-full bg-[#3B82F6]/20 border border-[#3B82F6]/30 ${ecoMode ? "" : "animate-pulse"}`} />
+                <div className="w-14 h-14 rounded-full bg-[#3B82F6] flex items-center justify-center shadow-glow-lg">
+                  <Mic className="w-6 h-6 text-white" />
+                </div>
+              </div>
+
+              {/* Equalizer */}
+              <div className="flex items-center justify-center gap-1.5 mt-8 h-8">
+                {EQ_BASE.map((height, idx) => {
+                  const props = {
+                    key: idx,
+                    className: "w-[2px] bg-[#3B82F6]/60 rounded-full",
+                  };
+                  if (ecoMode) {
+                    return <div {...props} style={{ height: `${height}px` }} />;
+                  }
+                  return (
+                    <motion.div
+                      {...props}
+                      animate={{ height: [6, height, 6] }}
+                      transition={{
+                        duration: 0.9 + (idx % 5) * 0.18,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: idx * 0.09,
+                      }}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
 
@@ -334,8 +336,9 @@ const KiraAssistantSection = React.memo(function KiraAssistantSection() {
                 key={index}
                 padding="p-4"
                 className="flex-row items-start gap-4"
+                cardClassName="hover:border-[#3B82F6]/30"
               >
-                <div className="w-10 h-10 rounded-xl bg-[#12141A]/50 border border-[#3B82F6]/15 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-[#12141A]/50 border border-[#3B82F6]/15 flex items-center justify-center shrink-0 group-hover:border-[#3B82F6]/40 transition-all duration-300">
                   {feat.icon}
                 </div>
                 <div>

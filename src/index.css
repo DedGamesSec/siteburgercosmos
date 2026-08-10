@@ -288,3 +288,19 @@
 .eco-mode .target-pulse {
   animation: none !important;
 }
+
+/* HowItWorks: PHANTOM dome radar sweep (rotates around dome center) */
+@keyframes radar-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.radar-sweep {
+  transform-box: view-box;
+  transform-origin: 200px 205px;
+  animation: radar-rotate 4s linear infinite;
+}
+
+.eco-mode .radar-sweep {
+  animation: none !important;
+}
