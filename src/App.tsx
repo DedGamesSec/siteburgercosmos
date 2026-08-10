@@ -151,10 +151,10 @@ export default function App() {
   // position can only pull the progress forward (never backward), so the flight
   // is one continuous forward sequence. Progress lives in a shared mutable ref —
   // the render loop reads it per frame, so no React re-render happens at 60fps.
-  // 14s: long enough to feel cinematic but short enough to stay snappy — the
-  // lag is fought in the renderer (fill-rate/pixel-ratio, texture decodes), not
-  // by stretching the timeline.
-  const AUTO_PLAY_MS = 14000;
+  // 10s, back to the original snappy length: the first frames are load-bound
+  // (JS parse + WebGL boot + first shader compile) regardless of pacing, so
+  // the intro shouldn't drag through that laggy opening — get to the reveal.
+  const AUTO_PLAY_MS = 10000;
   useEffect(() => {
     if (!cinematicEnabled) return;
     if (activePage !== "home") return;

@@ -867,8 +867,8 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     // shaded and continent-clear from its very first frame; every map still
     // lands well before the Earth-fade / satellite / sun-moon / card beats
     // (p 0.8-1).
-    const TEX_DECODE_DELAY_MS = 600; // wait for the opening frames to clear
-    const TEX_DECODE_GAP_MS = 400; // settle frames between decodes/uploads
+    const TEX_DECODE_DELAY_MS = 900; // past the boot/parse/compile frames
+    const TEX_DECODE_GAP_MS = 500; // settle frames between decodes/uploads
     const decodeStep = (i: number) => {
       if (i >= decodes.length) return;
       decodes[i]()
