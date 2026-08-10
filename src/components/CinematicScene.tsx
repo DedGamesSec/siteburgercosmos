@@ -107,7 +107,7 @@ function buildStarLayer(codes: string[]): THREE.Points {
         vAlpha = aAlpha;
         vColor = aColor;
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = max(2.2, min(32.0, aSize * (620.0 / max(1.0, -mv.z))));
+        gl_PointSize = max(2.2, min(24.0, aSize * (620.0 / max(1.0, -mv.z))));
         gl_Position = projectionMatrix * mv;
       }
     `,
@@ -119,9 +119,10 @@ function buildStarLayer(codes: string[]): THREE.Points {
       void main() {
         vec2 c = gl_PointCoord - vec2(0.5);
         float d = length(c);
-        float core = smoothstep(0.14, 0.0, d);
-        float halo = smoothstep(0.5, 0.12, d);
-        float a = (core + halo * 0.45) * vAlpha * uOpacity;
+        // Single smoothstep (was core + halo): one fewer texture-free blend per
+        // point - the real-star layer is on screen the whole flight, so this
+        // shaves a measurable fraction off every frame's fragment work.
+        float a = smoothstep(0.5, 0.08, d) * vAlpha * uOpacity;
         if (a < 0.008) discard;
         gl_FragColor = vec4(vColor, a);
       }
@@ -380,7 +381,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // temperature) is always on; the bright catalog stars layer on top with real
     // parallax so the flight flies past actual stars. No constellation lines.
     // Counts are trimmed a bit so the additive point overdraw stays cheap.
-    const bgCount = isMobile ? 1100 : isTablet ? 2400 : 3200;
+    const bgCount = isMobile ? 900 : isTablet ? 2000 : 2600;
     const background = buildBackgroundSky(bgCount, 1400);
     scene.add(background);
     const starsNorth = buildStarLayer(SKY_GROUP_NORTH);
@@ -464,7 +465,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // time through a serial queue whose spacing eats up the (now longer) intro.
     // The daymap decodes first, so its continents are up ~14s before
     // the Earth fade-in at p~0.82 on the longer auto-play.
-const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Texture) => void): THREE.Texture => {
+const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Texture) => void, late = false): THREE.Texture => {
       const tex = new THREE.Texture();
       const url = `${baseUrl}textures/${path}`;
       const cap = Math.min(mobileTexCap, maxTexSize);
@@ -543,14 +544,19 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
           }
         });
 
-      // Every texture registers in the serial decode queue (see the schedule
-      // below). The polish maps (clouds/night/normal/spec) are wired in onAdopt
+      // Every texture registers in one of two serial decode queues (see the
+      // schedule below). Only the daymap decodes in the opening seconds; the
+      // polish maps (clouds/night/normal/spec) + the moon are wired in onAdopt
       // once their image is real — handing three.js an empty texture would
       // compile the shader against garbage (a zero normal map blacks the planet).
-      decodes.push(decode);
+      // `late` maps start after the logo assembly so their GPU upload + mipmap
+      // generation never hit the first beats of the flight.
+      if (late) lateDecodes.push(decode);
+      else decodes.push(decode);
       return tex;
     };
     const decodes: Array<() => Promise<void>> = [];
+    const lateDecodes: Array<() => Promise<void>> = [];
 
     const dayTex = loadSized("earth_daymap_8k.jpg", () => {
       dayReady.value = true;
@@ -561,7 +567,9 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
 
     // Moon rides in the early chain too: its 2k map is small (fast decode, low
     // upload cost) and the Moon starts fading in at p~0.79, right after the logo.
-    const moonTex = loadSized("moon_2k.jpg");
+    // The moon is only visible from p~0.79, so its map rides the late (post-logo)
+    // decode queue — no reason to spend a GPU upload+mipmap in the opening beats.
+    const moonTex = loadSized("moon_2k.jpg", undefined, undefined, true);
     moonTex.colorSpace = THREE.SRGBColorSpace;
     moonTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
 
@@ -582,13 +590,19 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
           earthMat.normalMap = tex;
           earthMat.normalScale.set(0.9, 0.9);
           earthMat.needsUpdate = true;
-        }
+        },
+        true
       );
 
-      const specTex = loadSized("earth_specular_8k.jpg", undefined, (tex) => {
-        earthMat.specularMap = tex;
-        earthMat.needsUpdate = true;
-      });
+      const specTex = loadSized(
+        "earth_specular_8k.jpg",
+        undefined,
+        (tex) => {
+          earthMat.specularMap = tex;
+          earthMat.needsUpdate = true;
+        },
+        true
+      );
     }
 
     const cloudsTex = loadSized(
@@ -601,7 +615,8 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
         tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
         cloudsMat.map = tex;
         cloudsMat.needsUpdate = true;
-      }
+      },
+      true
     );
 
     const nightTex = loadSized(
@@ -612,7 +627,8 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
       (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
         (night.material as THREE.ShaderMaterial).uniforms.uNight.value = tex;
-      }
+      },
+      true
     );
 
     // ---- REAL SATELLITES + REAL SUN/MOON -------------------------------
@@ -860,24 +876,29 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
 
     // Fetches all run in parallel from mount (async I/O, near-zero main-thread
     // cost — see loadSized above). DECODE + GPU upload are strictly serialized
-    // through the queue below: the slower intro spends that time spacing the
-    // decodes out, so never more than one JPG is being decoded at once and the
-    // per-map uploads never stack into a stall. The daymap (continents) decodes
-    // first, ~14s of headroom before the Earth fade-in, so the planet is fully
-    // shaded and continent-clear from its very first frame; every map still
-    // lands well before the Earth-fade / satellite / sun-moon / card beats
-    // (p 0.8-1).
-    const TEX_DECODE_DELAY_MS = 900; // past the boot/parse/compile frames
-    const TEX_DECODE_GAP_MS = 500; // settle frames between decodes/uploads
-    const decodeStep = (i: number) => {
-      if (i >= decodes.length) return;
-      decodes[i]()
-        .catch(() => undefined)
-        .then(() => {
-          window.setTimeout(() => decodeStep(i + 1), TEX_DECODE_GAP_MS);
-        });
+    // per queue: only the daymap (the continent map that gates the Earth fade)
+    // decodes in the opening seconds — one upload+mipmap, not six — while the
+    // moon + clouds/night/normal/spec wait until the logo assembly is over and
+    // decode in the quiet 4.7-7s window, still ~1.5s of headroom before the
+    // Earth fade at p~0.82. This is what removes the ~4-5 texture stalls that
+    // used to land before the logo.
+    const TEX_DECODE_DELAY_MS = 900; // daymap, past the boot/parse/compile frames
+    const TEX_LATE_DELAY_MS = 4700; // rest of the maps, after the logo
+    const TEX_DECODE_GAP_MS = 350; // settle frames between decodes/uploads
+    const runDecodeQueue = (list: Array<() => Promise<void>>, startDelay: number) => {
+      if (list.length === 0) return;
+      const step = (i: number) => {
+        if (i >= list.length) return;
+        list[i]()
+          .catch(() => undefined)
+          .then(() => {
+            window.setTimeout(() => step(i + 1), TEX_DECODE_GAP_MS);
+          });
+      };
+      window.setTimeout(() => step(0), startDelay);
     };
-    window.setTimeout(() => decodeStep(0), TEX_DECODE_DELAY_MS);
+    runDecodeQueue(decodes, TEX_DECODE_DELAY_MS);
+    runDecodeQueue(lateDecodes, TEX_LATE_DELAY_MS);
 
     const updateSatellites = () => {
       // Never propagate while the corridor is out of view: the worker would
@@ -923,6 +944,14 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     // after a worker error (which resets workerInitSent).
     const initWorker = () => {
       if (workerInitSent || !satWorker) return;
+      // Deferred until the flight is past the logo assembly (p~0.58, ~5.8s):
+      // posting ~12k TLE strings is a multi-ms structured clone and the worker's
+      // satrec build hammers a CPU core - both used to land in the 3-5s window
+      // and stall the pre-logo beats. Starting at 5.8s the worker is ready well
+      // before satellites fade in at p~0.82 (the main-thread fallback covers
+      // those few ticks).
+      const p = progressRef ? progressRef.current : progressRefInternal.current;
+      if (p < 0.58) return;
       const sats = cachedSatellites;
       if (!sats || sats.length === 0) return;
       workerInitSent = true;
