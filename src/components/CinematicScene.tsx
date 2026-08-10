@@ -334,8 +334,14 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const width = window.innerWidth;
     const isMobile = width < 768;
     const isTablet = width >= 768 && width < 1024;
+    // No MSAA on any tier: the corridor is mostly additive-blended overlays
+    // (stars, satellites, the night-lights shell, clouds) redrawing the same
+    // pixels several times, so MSAA multiplies that overdraw for zero visible
+    // gain on a moving starfield. The 1.5x pixel-ratio buffer (below) already
+    // supersamples, so dropping MSAA removes a constant bandwidth/resolve tax
+    // on every frame of the flight.
     const renderer = new THREE.WebGLRenderer({
-      antialias: !isMobile,
+      antialias: false,
       powerPreference: "high-performance"
     });
     // Adaptive rendering: phones get 1x pixel ratio and no MSAA (the biggest
@@ -374,7 +380,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // temperature) is always on; the bright catalog stars layer on top with real
     // parallax so the flight flies past actual stars. No constellation lines.
     // Counts are trimmed a bit so the additive point overdraw stays cheap.
-    const bgCount = isMobile ? 1200 : isTablet ? 2800 : 4000;
+    const bgCount = isMobile ? 1100 : isTablet ? 2400 : 3200;
     const background = buildBackgroundSky(bgCount, 1400);
     scene.add(background);
     const starsNorth = buildStarLayer(SKY_GROUP_NORTH);
@@ -1054,6 +1060,19 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
       // plain lit sphere if the download ever fails, via the error fallback).
       const earthIn = dayReady.value ? smooth(0.82, 0.9, p) : 0;
       earthMat.opacity = earthIn;
+      // The planet is OFF-SCREEN / fully transparent for most of the flight —
+      // toggle `visible` so three.js drops these entirely from the render list
+      // (no draw call, no fragment shader over the alpha-0 sphere) until they
+      // actually fade in. This removes the biggest constant GPU cost through
+      // the title/logo phase.
+      const eVis = earthIn > 0.001;
+      earth.visible = eVis;
+      clouds.visible = eVis;
+      night.visible = eVis;
+      satellitePoints.visible = eVis;
+      sunCoreGlow.visible = eVis;
+      sunHalo.visible = eVis;
+
       // clouds/night add overlays that only exist once their texture is loaded;
       // keep them at 0 until then so the planet never renders as a washed-out
       // white cloud shell or a black night layer.
@@ -1079,8 +1098,11 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
       (sunCoreGlow.material as THREE.SpriteMaterial).opacity = earthIn * sunPulse;
       (sunHalo.material as THREE.SpriteMaterial).opacity = earthIn * 0.5;
       // The Moon fades in slightly ahead of the Earth so it is clearly visible
-      // alongside the planet while we close in.
+      // alongside the planet while we close in (also culled off-screen before).
       const moonIn = smooth(0.79, 0.86, p);
+      const moonVis = moonIn > 0.001;
+      moonMesh.visible = moonVis;
+      moonGlow.visible = moonVis;
       moonMesh.material.opacity = moonIn;
       (moonGlow.material as THREE.SpriteMaterial).opacity = moonIn * 0.8;
       satMat.opacity = earthIn * 0.8;
