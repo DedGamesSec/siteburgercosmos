@@ -568,10 +568,12 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const realMoonDir = new THREE.Vector3(0.4, -0.2, 0.9).normalize();
     let realSunOk = false;
     let sunMoonRequested = false;
-    // The five Earth textures are created immediately but only *fetched* once the
-    // camera is closing in on the planet (see the loadSized comment above). This
-    // flag makes sure that happens exactly once.
-    let planetTexturesRequested = false;
+    // The six planet textures are created immediately but only *fetched* once the
+    // camera is closing in on the planet (see the loadSized comment above). Loads
+    // are staggered one-per-updateSatellites-tick so the downloads/decodes/GPU
+    // uploads spread across the approach instead of landing as a burst inside the
+    // logo-assembly beat (p 0.44-0.60) or stalling the opening frames.
+    let primeIndex = 0;
     // Main-thread fallback for the real Sun/Moon directions. Only ever used when
     // the satellite worker is unavailable: the astronomy solve blocks the main
     // thread for tens of ms, so it must not run during the opening frames — it is
@@ -789,15 +791,15 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
           updateSunMoonDirs(); // worker: none / not ready — run the one-shot fallback
         }
       }
-      if (!planetTexturesRequested && p >= 0.5) {
-        // Kick off the Earth texture downloads/decode/GPU-uploads now that the
-        // planet is on screen soon: this is a wall of ~13MB of work that would
-        // otherwise stall the first seconds of the intro for zero visible
-        // benefit (Earth fades in at p~0.82). Starting at p~0.5 keeps the whole
-        // first half of the flight network-clean and still leaves ~3s of flight
-        // time for the files to arrive before the planet needs them.
-        planetTexturesRequested = true;
-        for (let ti = 0; ti < primes.length; ti++) primes[ti]();
+      if (p >= 0.62 && primeIndex < primes.length) {
+        // The logo has finished assembling (assembly ends ~0.60), so the terrain
+        // is clear of the churny 2D assembly frames. Fire ONE texture load per
+        // satellite tick: each fetch+decode+GPU-upload is expensive enough on its
+        // own, and firing all six in a single frame was the 5-6s hitch — the SVG
+        // logo assembly writes dozens of attributes per frame, and the whole
+        // wall of texture uploads landed right on top of it.
+        primes[primeIndex]();
+        primeIndex++;
       }
       if (p < 0.8) return;
       if (satWorker && satWorkerReady) {
