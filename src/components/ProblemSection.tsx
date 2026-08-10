@@ -83,7 +83,7 @@ const ProblemSection = React.memo(function ProblemSection() {
           <div className="relative min-h-[520px] sm:min-h-[600px]">
 
             {/* OLD LAYER (left, always visible) */}
-            <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-[#0E0F12]">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(239,68,68,0.04)_0%,transparent_60%)] pointer-events-none" />
               <div className="relative h-full flex flex-col p-6 sm:p-10">
                 {/* Old header */}
@@ -131,7 +131,7 @@ const ProblemSection = React.memo(function ProblemSection() {
 
             {/* NEW LAYER (right, clipped by the slider position) */}
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 bg-[#0E0F12]"
               style={{ clipPath: `inset(0 0 0 ${pos}%)` }}
             >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(59,130,246,0.08)_0%,transparent_60%)] pointer-events-none" />
