@@ -826,9 +826,9 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdo
     // Texture loads run as serial chains: fetch+decode+adopt one texture, wait a
     // couple of frames (let the render loop push its GPU upload and release the
     // frame), then start the next. At most one decode is ever in flight, so the
-    // "wall" of maps becomes a gentle trickle. Critical maps (daymap, moon) run
-    // during the approach (see the p~0.62 gate); the visual-polish maps
-    // (clouds/night/normal/spec) only start once the flight ends (p~0.96 gate),
+    // "wall" of maps becomes a gentle trickle. The flight-critical maps (daymap,
+    // moon) are started on a fixed timer below; the visual-polish maps
+    // (clouds/night/normal/spec) only start once the flight ends (p>=1 gate),
     // on the static Earth screen where a late pop-in is invisible.
     const startChain = (list: Array<() => Promise<void>>) => {
       if (list.length === 0) return;
@@ -846,7 +846,12 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdo
       };
       step(0);
     };
-    let flightPrimeStarted = false;
+    // The daymap gates the Earth fade-in (p~0.82), so it can't wait until the
+    // approach — start the flight-critical chain ~0.6s after the scene boots,
+    // during the calm title/starfield phase, and let the serial pipeline fetch
+    // + decode + upload it (and the small moon map) with ~8s of headroom before
+    // the planet needs them. One texture at a time, so the opening stays smooth.
+    window.setTimeout(() => startChain(primes), 600);
     let polishPrimeStarted = false;
 
     const updateSatellites = () => {
@@ -868,14 +873,6 @@ const loadSized = (path: string, onReady?: () => void, deferred?: boolean, onAdo
         } else {
           updateSunMoonDirs(); // worker: none / not ready — run the one-shot fallback
         }
-      }
-      // The logo has finished assembling (assembly ends ~0.60), so the terrain
-      // is clear of the churny 2D assembly frames. Only the two flight-critical
-      // maps (daymap + moon) run here, one at a time with a frame-settle between
-      // them. Starter fires the chain exactly once; it self-continues until done.
-      if (!flightPrimeStarted && p >= 0.62) {
-        flightPrimeStarted = true;
-        startChain(primes);
       }
       // The visual-polish maps (clouds/night/normal/spec) don't start until the
       // flight is fully done (p>=1, after the last card finishes its ~0.9-0.98
