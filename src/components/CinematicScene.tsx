@@ -443,12 +443,10 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // full 8K decode followed by a second resize pass (two worker decodes per
     // map = double the memory and double the decode time at scene boot).
     //
-    // Start is also DEFERRED: the five maps (~13MB, 8K sources) aren't needed
-    // until the flight reaches Earth (Earth fades in at p~0.82, the Moon at
-    // ~0.79), i.e. roughly the last third of the auto-play. Firing all the
-    // downloads + worker decodes + GPU uploads in the first two seconds was the
-    // remaining source of opening-frame jank, so the fetch begins only once the
-    // camera is already closing in (see primePlanetTextures below).
+    // Start is DISTRIBUTED across the intro rather than one burst: each map gets
+    // a fixed start slot (daymap first with the most headroom), so the GPU
+    // uploads land apart instead of stacking into a stall, and everything is up
+    // well before the Earth fade-in at p~0.82 on the now-longer auto-play.
 const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Texture) => void): THREE.Texture => {
       const tex = new THREE.Texture();
       const url = `${baseUrl}textures/${path}`;
@@ -503,11 +501,11 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
           }
         });
 
-      // Every texture registers in the one early serial chain (see startChain
-      // below). Critical maps (daymap, moon) gate the scene and are small; the
-      // polish maps (clouds/night/normal/spec) are wired in onAdopt once their
-      // image is real — handing three.js an empty texture would compile the
-      // shader against garbage (a zero normal map blacks the whole planet).
+      // Every texture registers in the distributed schedule (see the staggered
+      // slots below). Critical maps (daymap, moon) gate the scene and are small;
+      // the polish maps (clouds/night/normal/spec) are wired in onAdopt once
+      // their image is real — handing three.js an empty texture would compile
+      // the shader against garbage (a zero normal map blacks the whole planet).
       primes.push(prime);
       return tex;
     };
@@ -819,37 +817,21 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     const SAT_DECIMATE = isMobile ? 4 : 1;
     const SAT_INTERVAL_MS = isMobile ? 800 : 250;
 
-    // Texture loads run as one serial chain: fetch+decode+adopt one texture, wait
-    // a couple of frames (let the render loop push its GPU upload and release the
-    // frame), then start the next. At most one decode is ever in flight, so the
-    // "wall" of maps becomes a gentle trickle. The whole chain (daymap, moon,
-    // clouds, night, normal, spec) starts together on the fixed timer below,
-    // during the calm title/starfield phase — nothing loads during the logo,
-    // Earth-fade/satellite beats, or the end cards, and every map is present
-    // well before Earth fades in at p~0.82. Any decode failure settles the same
-    // promise, so a dead map can't stall the chain.
-    const startChain = (list: Array<() => Promise<void>>) => {
-      if (list.length === 0) return;
-      const step = (local: number) => {
-        if (local >= list.length) return;
-        list[local]()
-          .then(() => {
-            // Two idle frames between textures lets three.js finish the GPU
-            // upload and the compositor release the frame before the next starts.
-            window.setTimeout(() => step(local + 1), 40);
-          })
-          .catch(() => {
-            window.setTimeout(() => step(local + 1), 40);
-          });
-      };
-      step(0);
-    };
-    // The daymap gates the Earth fade-in (p~0.82), so it can't wait until the
-    // approach — start the whole chain ~0.6s after the scene boots, during the
-    // calm title/starfield phase, and let the serial pipeline fetch + decode +
-    // upload each map with ~8s of headroom before the planet needs them. One
-    // texture at a time, so the opening stays smooth.
-    window.setTimeout(() => startChain(primes), 600);
+    // Texture loads are evenly distributed across the (now longer) intro instead
+    // of firing as one burst or one tight chain: every map gets its own fixed
+    // start slot, and the daymap — the map that carries the continents — goes
+    // first with the most headroom (~10s before the Earth fade-in), so the
+    // planet is fully shaded and continent-clear from its very first frame.
+    // Fetch is async and the JPG decode runs on the browser's image-decode pool
+    // (createImageBitmap), so the only main-thread cost is the final GPU upload
+    // per map; slots 1.2s apart keep those uploads from ever stacking into a
+    // visible stall, and every map still lands well before the Earth-fade /
+    // satellite / sun-moon / card beats (p 0.8-1).
+    const TEX_START_MS = 300;
+    const TEX_STAGGER_MS = 1200;
+    primes.forEach((prime, i) => {
+      window.setTimeout(prime, TEX_START_MS + i * TEX_STAGGER_MS);
+    });
 
     const updateSatellites = () => {
       // Never propagate while the corridor is out of view: the worker would

@@ -151,7 +151,10 @@ export default function App() {
   // position can only pull the progress forward (never backward), so the flight
   // is one continuous forward sequence. Progress lives in a shared mutable ref —
   // the render loop reads it per frame, so no React re-render happens at 60fps.
-  const AUTO_PLAY_MS = 10000;
+  // 13s: long enough for the scene's texture maps to be evenly distributed over
+  // the intro (the continent map must be up well before the Earth fade-in at
+  // p~0.82), but short enough to still feel like a snappy hero moment.
+  const AUTO_PLAY_MS = 13000;
   useEffect(() => {
     if (!cinematicEnabled) return;
     if (activePage !== "home") return;
