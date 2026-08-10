@@ -339,8 +339,13 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
       powerPreference: "high-performance"
     });
     // Adaptive rendering: phones get 1x pixel ratio and no MSAA (the biggest
-    // mobile fill-rate win), tablets a middle tier, desktops full quality.
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : isTablet ? 1.5 : 2);
+    // mobile fill-rate win), tablets a middle tier. Desktops are capped at 1.5x
+    // (not 2x): the shot is mostly additive-blended overlays (stars, satellites,
+    // the night-lights shell, clouds) that redraw the same pixels several times,
+    // so every DPR point costs that many overdraws — 1.5x keeps it crisp while
+    // cutting the fragment workload ~44% vs 2x, which is what keeps the corridor
+    // at 60fps instead of spilling frames late in the approach.
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 1.5);
     renderer.setPixelRatio(pixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x04050a, 1);
@@ -368,7 +373,8 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // Real sky. One dense, realistic backdrop (faint stars, Milky Way band, color
     // temperature) is always on; the bright catalog stars layer on top with real
     // parallax so the flight flies past actual stars. No constellation lines.
-    const bgCount = isMobile ? 1400 : isTablet ? 3800 : 5200;
+    // Counts are trimmed a bit so the additive point overdraw stays cheap.
+    const bgCount = isMobile ? 1200 : isTablet ? 2800 : 4000;
     const background = buildBackgroundSky(bgCount, 1400);
     scene.add(background);
     const starsNorth = buildStarLayer(SKY_GROUP_NORTH);
@@ -626,7 +632,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     satGeo.setDrawRange(0, 0);
     const satMat = new THREE.PointsMaterial({
       color: 0xfff2cc,
-      size: 1.6,
+      size: 1.4,
       sizeAttenuation: true,
       transparent: true,
       opacity: 0,
@@ -1131,8 +1137,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
       const w = window.innerWidth;
       const h = window.innerHeight;
       const onMobile = w < 768;
-      const onTablet = w >= 768 && w < 1024;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, onMobile ? 1 : onTablet ? 1.5 : 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, onMobile ? 1 : 1.5));
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
