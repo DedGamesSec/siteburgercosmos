@@ -151,10 +151,11 @@ export default function App() {
   // position can only pull the progress forward (never backward), so the flight
   // is one continuous forward sequence. Progress lives in a shared mutable ref —
   // the render loop reads it per frame, so no React re-render happens at 60fps.
-  // 15s: long enough to serialize the texture decodes one-at-a-time (the
-  // continent map must be up well before the Earth fade-in at p~0.82), but
-  // still a snappy hero moment.
-  const AUTO_PLAY_MS = 15000;
+  // 18s: slow enough that the texture decodes and the p-gated satellite/sun
+  // work spread over a relaxed timeline instead of bunching into stalls, while
+  // still feeling like a single cinematic shot (the continent map is up ~14s
+  // before the Earth fade-in at p~0.82).
+  const AUTO_PLAY_MS = 18000;
   useEffect(() => {
     if (!cinematicEnabled) return;
     if (activePage !== "home") return;

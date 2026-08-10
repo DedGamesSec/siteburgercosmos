@@ -446,7 +446,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // Fetch and decode are split: every map's FETCH starts at mount, in
     // parallel (async I/O, no main-thread cost), while DECODE runs one JPG at a
     // time through a serial queue whose spacing eats up the (now longer) intro.
-    // The daymap decodes first, so its continents are up ~10+ seconds before
+    // The daymap decodes first, so its continents are up ~14s before
     // the Earth fade-in at p~0.82 on the longer auto-play.
 const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Texture) => void): THREE.Texture => {
       const tex = new THREE.Texture();
@@ -844,14 +844,15 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
 
     // Fetches all run in parallel from mount (async I/O, near-zero main-thread
     // cost — see loadSized above). DECODE + GPU upload are strictly serialized
-    // through the queue below: the extra intro time is spent spacing the decodes
-    // out, so never more than one JPG is being decoded at once and the per-map
-    // uploads never stack into a stall. The daymap (continents) decodes first,
-    // ~12s of headroom before the Earth fade-in, so the planet is fully shaded
-    // and continent-clear from its very first frame; every map still lands well
-    // before the Earth-fade / satellite / sun-moon / card beats (p 0.8-1).
-    const TEX_DECODE_DELAY_MS = 400; // first decode shortly after boot
-    const TEX_DECODE_GAP_MS = 250; // settle frames between uploads
+    // through the queue below: the slower intro spends that time spacing the
+    // decodes out, so never more than one JPG is being decoded at once and the
+    // per-map uploads never stack into a stall. The daymap (continents) decodes
+    // first, ~14s of headroom before the Earth fade-in, so the planet is fully
+    // shaded and continent-clear from its very first frame; every map still
+    // lands well before the Earth-fade / satellite / sun-moon / card beats
+    // (p 0.8-1).
+    const TEX_DECODE_DELAY_MS = 600; // wait for the opening frames to clear
+    const TEX_DECODE_GAP_MS = 400; // settle frames between decodes/uploads
     const decodeStep = (i: number) => {
       if (i >= decodes.length) return;
       decodes[i]()
