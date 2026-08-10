@@ -4,6 +4,7 @@ import { LanguageCode } from "../i18n/languages";
 import { motion, AnimatePresence } from "motion/react";
 import { Shield, Award, Cpu, Network, FileCode, CheckCircle2, Copy, ExternalLink, Sparkles, Send, AlertTriangle, RefreshCw, AlertCircle, Play, Info, ShieldCheck, Milestone } from "lucide-react";
 import { SiTelegram, SiVk, SiGithub } from "react-icons/si";
+import { useEcoMode } from "../context/EcoModeContext";
 import ScanCard from "./ScanCard";
 const SiTelegramIcon = SiTelegram as React.ComponentType<any>;
 const SiVkIcon = SiVk as React.ComponentType<any>;
@@ -16,6 +17,7 @@ const graphImgWebp = `${base}real_obsidian.webp`;
 
 export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRoadmap?: boolean }) {
   const { t, language } = useTranslation();
+  const { ecoMode } = useEcoMode();
   const [activeTab, setActiveTab] = useState<"awards" | "graph" | "onnx" | "roadmap">(onlyRoadmap ? "roadmap" : "awards");
 
   const dui = t.realDev.devUi;
@@ -342,18 +344,55 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-10"
+                className="space-y-12"
               >
+                {/* DEPLOYMENT PHASE RAIL */}
+                <div className="relative hidden sm:block">
+                  <div className="absolute left-[8%] right-[8%] top-[22px] h-[2px] bg-gradient-to-r from-emerald-500/60 via-[#3B82F6]/50 to-amber-500/30" />
+                  <div className="relative grid grid-cols-3 gap-4">
+                    {[
+                      { label: "TN1", ver: "v1.2.0", status: rmp.readyMvp, color: "text-emerald-400", dot: "bg-emerald-500", ring: "border-emerald-500/50", pulse: false },
+                      { label: "TN3", ver: "v2.0-alpha", status: rmp.underDevelopment, color: "text-[#6FB1FF]", dot: "bg-[#3B82F6]", ring: "border-[#3B82F6]/50", pulse: true },
+                      { label: "KIRA", ver: "v3.0-design", status: rmp.conceptualSpec, color: "text-amber-400", dot: "bg-amber-500", ring: "border-amber-500/50", pulse: false },
+                    ].map((ph) => (
+                      <div key={ph.label} className="flex flex-col items-center gap-2">
+                        <div className={`relative w-11 h-11 rounded-full border ${ph.ring} bg-[#0E0F12] flex items-center justify-center`}>
+                          {ph.pulse && <span className="absolute inset-0 rounded-full border border-[#3B82F6]/40 animate-ping" />}
+                          <span className={`w-2.5 h-2.5 rounded-full ${ph.dot}`} />
+                        </div>
+                        <span className="font-mono text-sm font-bold text-[#F5F5F0]">{ph.label}</span>
+                        <span className="font-mono text-[10px] text-gray-500">{ph.ver}</span>
+                        <span className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-widest ${ph.color}`}>{ph.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* STATUS CARDS */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   {/* TN1 Card */}
                   <ScanCard accent="16,185,129" borderColor="border-emerald-500/30" cardClassName="shadow-glow-success" className="h-full justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
-                        <span className="font-mono text-[10px] sm:text-xs text-emerald-300 uppercase tracking-widest">
+                        <span className="font-mono text-[10px] sm:text-xs text-emerald-300 uppercase tracking-widest flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                           {rmp.readyMvp}
                         </span>
                         <span className="font-mono text-sm text-gray-300">v1.2.0</span>
                       </div>
+
+                      <div className="mb-4">
+                        <div className="h-1 w-full bg-[#3C404A]/40 rounded-full overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400"
+                            initial={ecoMode ? undefined : { width: 0 }}
+                            whileInView={ecoMode ? undefined : { width: "100%" }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                          />
+                        </div>
+                      </div>
+
                       <h4 className="font-display font-medium text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">TrustNode 1 (TN1)</h4>
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.tn1Desc}
@@ -391,11 +430,25 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   <ScanCard accent="59,130,246" borderColor="border-[#3B82F6]/30" cardClassName="shadow-glow-sm" className="h-full justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
-                        <span className="font-mono text-[10px] sm:text-xs text-[#6FB1FF] uppercase tracking-widest">
+                        <span className="font-mono text-[10px] sm:text-xs text-[#6FB1FF] uppercase tracking-widest flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-ping" />
                           {rmp.underDevelopment}
                         </span>
                         <span className="font-mono text-sm text-gray-300">v2.0-alpha</span>
                       </div>
+
+                      <div className="mb-4">
+                        <div className="h-1 w-full bg-[#3C404A]/40 rounded-full overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full bg-gradient-to-r from-blue-700 to-[#3B82F6]"
+                            initial={ecoMode ? undefined : { width: 0 }}
+                            whileInView={ecoMode ? undefined : { width: "62%" }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                          />
+                        </div>
+                      </div>
+
                       <h4 className="font-display font-medium text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">TrustNode 3 (TN3) / PHANTOM 2.0</h4>
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.tn3Desc}
@@ -417,11 +470,25 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   <ScanCard accent="251,191,36" borderColor="border-amber-500/30" cardClassName="shadow-glow-warn" className="h-full justify-between">
                     <div>
                       <div className="flex justify-between items-center mb-4">
-                        <span className="font-mono text-[10px] sm:text-xs text-amber-400 uppercase tracking-widest">
+                        <span className="font-mono text-[10px] sm:text-xs text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                           {rmp.conceptualSpec}
                         </span>
                         <span className="font-mono text-sm text-gray-300">v3.0-design</span>
                       </div>
+
+                      <div className="mb-4">
+                        <div className="h-1 w-full bg-[#3C404A]/40 rounded-full overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full bg-gradient-to-r from-amber-700 to-amber-500"
+                            initial={ecoMode ? undefined : { width: 0 }}
+                            whileInView={ecoMode ? undefined : { width: "18%" }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                          />
+                        </div>
+                      </div>
+
                       <h4 className="font-display font-medium text-xl text-white mb-2 group-hover:text-[#3B82F6] transition-all duration-300">Kira Voice Assistant</h4>
                       <p className="font-sans text-sm text-gray-400 leading-relaxed mb-4">
                         {rmp.kiraDesc}
@@ -444,10 +511,58 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                   </ScanCard>
                 </div>
 
-                {/* Security Disclosure Policy */}
-                <ScanCard accent="16,185,129" borderColor="border-emerald-500/20" padding="p-6 sm:p-6">
+                {/* RELEASE MILESTONES TIMELINE */}
+                <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/50" padding="p-6 sm:p-8">
+                  <div className="flex items-center gap-2.5 mb-6 border-b border-white/[0.04] pb-4">
+                    <div className="p-2 rounded-lg bg-[#12141A] border border-[#3B82F6]/20 text-[#3B82F6]">
+                      <Milestone className="w-5 h-5" />
+                    </div>
+                    <h4 className="font-display font-medium text-lg text-white">
+                      {rmp.milestonesTitle}
+                    </h4>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-emerald-500/50 via-[#3B82F6]/40 to-amber-500/30" />
+                    <div className="space-y-7">
+                      {rmp.milestones.map((milestone, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={ecoMode ? undefined : { opacity: 0, x: 24 }}
+                          whileInView={ecoMode ? undefined : { opacity: 1, x: 0 }}
+                          viewport={{ once: true, margin: "-30px" }}
+                          transition={{ duration: 0.45, delay: idx * 0.06 }}
+                          className="relative pl-9 group"
+                        >
+                          <span className={`absolute left-0 top-1 w-[15px] h-[15px] rounded-full border-2 bg-[#0A0A0B] flex items-center justify-center ${idx === 0 ? "border-emerald-500" : idx === 5 ? "border-amber-500" : "border-[#3B82F6]"}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${idx === 0 ? "bg-emerald-500" : idx === 5 ? "bg-amber-500" : "bg-[#3B82F6]"}`} />
+                          </span>
+                          <div className="font-mono text-[10px] sm:text-xs text-[#6FB1FF] uppercase tracking-wider mb-1">
+                            {milestone.date}
+                          </div>
+                          <div className="font-sans font-semibold text-base text-[#F5F5F0] mb-1 group-hover:text-[#3B82F6] transition-colors">{milestone.title}</div>
+                          <div className="font-sans text-sm text-gray-400 leading-relaxed">{milestone.desc}</div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                  <a
+                    href="https://github.com/TrustNodeLab"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-6 inline-flex items-center gap-2 text-gray-400 hover:text-[#3B82F6] font-mono text-sm transition-colors"
+                  >
+                    <SiGithubIcon className="w-3.5 h-3.5" />
+                    {rmp.allProjectsGithub}
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </ScanCard>
+
+                {/* SECURITY DISCLOSURE POLICY */}
+                <ScanCard accent="16,185,129" borderColor="border-emerald-500/20" padding="p-6 sm:p-8">
                   <div className="flex items-start gap-3 mb-4">
-                    <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div className="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 shrink-0">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
                     <div>
                       <h4 className="font-display font-medium text-base text-white">
                         {rmp.disclosureTitle}
@@ -492,39 +607,6 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
                       {rmp.reportGithub}
                     </a>
                   </div>
-                </ScanCard>
-
-                {/* Release Milestones Timeline */}
-                <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/50" padding="p-6 sm:p-6">
-                  <div className="flex items-center gap-2.5 mb-5 border-b border-white/[0.04] pb-3">
-                    <Milestone className="w-5 h-5 text-[#3B82F6]" />
-                    <h4 className="font-display font-medium text-lg text-white">
-                      {rmp.milestonesTitle}
-                    </h4>
-                  </div>
-                  <div className="space-y-4">
-                    {rmp.milestones.map((milestone, idx) => (
-                      <div key={idx} className="flex gap-4 items-start">
-                        <div className="shrink-0 w-28 font-mono text-[11px] text-[#6FB1FF] uppercase tracking-wider pt-0.5">
-                          {milestone.date}
-                        </div>
-                        <div className="flex-1 pb-4 border-b border-white/[0.03] last:border-0 last:pb-0">
-                          <div className="font-sans font-semibold text-base text-[#F5F5F0] mb-1">{milestone.title}</div>
-                          <div className="font-sans text-sm text-gray-400 leading-relaxed">{milestone.desc}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <a
-                    href="https://github.com/TrustNodeLab"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-5 inline-flex items-center gap-2 text-gray-400 hover:text-[#3B82F6] font-mono text-sm transition-colors"
-                  >
-                    <SiGithubIcon className="w-3.5 h-3.5" />
-                    {rmp.allProjectsGithub}
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
                 </ScanCard>
 
               </motion.div>
