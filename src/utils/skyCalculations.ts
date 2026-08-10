@@ -329,7 +329,10 @@ export interface LiveSatellite {
 export async function parseTLEs(text: string): Promise<LiveSatellite[]> {
   const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
   const sats: LiveSatellite[] = [];
-  const BATCH = 1200;
+  // Smaller batches = shorter main-thread blocks. This parse runs on the main
+  // thread and lands in the opening seconds of the page, so each yield must be
+  // a few ms, not tens of ms (a 1200-item batch froze a frame or two).
+  const BATCH = 300;
   const wait = () => new Promise<void>((r) => setTimeout(r, 0));
 
   for (let i = 0; i < lines.length - 2; i++) {

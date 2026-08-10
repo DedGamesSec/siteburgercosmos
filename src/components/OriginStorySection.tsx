@@ -292,11 +292,10 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ item, index, ecoMode }) => 
       initial={false}
       animate={{ opacity: 1, y: 0 }}
     >
-      {/* Top Accent line — runs along the very top edge of the card. Positioned
-          on the wrapper (which has no overflow-hidden), so -top-px sits exactly
-          on the card's top border instead of being clipped by ScanCard's
-          rounded-2xl + overflow-hidden. */}
-      <div className="absolute -top-px left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#3B82F6]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      {/* Top Accent line — sits just below the milestone dot instead of the very
+          top edge, so it doesn't tuck under the card's rounded corner. Placed on
+          the wrapper (no overflow-hidden) to avoid ScanCard's clipping. */}
+      <div className="absolute top-[22px] left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#3B82F6]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
       {/* Milestone dot pinned inside the top-left corner of the selected card;
           hidden on all others until hovered */}
