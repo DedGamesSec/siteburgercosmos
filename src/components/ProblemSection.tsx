@@ -40,10 +40,13 @@ const ProblemSection = React.memo(function ProblemSection() {
   const oldIcons = [ShieldAlert, EyeOff, WifiOff];
   const newIcons = [Cpu, BellRing, ShieldCheck];
 
-  const newShots = [
-    ["threat-screen.jpg", "threat-history.jpg"],
-    ["statistics.jpg", "main-screen.jpg"],
-    ["settings.jpg", "assistant.jpg"],
+  const shots = [
+    { src: "threat-screen.jpg", label: oldItems[0].shotLabels[0] },
+    { src: "threat-history.jpg", label: oldItems[0].shotLabels[1] },
+    { src: "statistics.jpg", label: oldItems[1].shotLabels[0] },
+    { src: "main-screen.jpg", label: oldItems[1].shotLabels[1] },
+    { src: "settings.jpg", label: oldItems[2].shotLabels[0] },
+    { src: "assistant.jpg", label: oldItems[2].shotLabels[1] },
   ];
 
   return (
@@ -149,45 +152,53 @@ const ProblemSection = React.memo(function ProblemSection() {
                   </span>
                 </div>
 
-                {/* New items: bright, modern */}
-                <div className="flex flex-col gap-6 sm:gap-7">
-                  {newItems.map((item, i) => {
-                    const Icon = newIcons[i] || ShieldCheck;
-                    return (
-                      <div key={i} className="flex items-start gap-4">
-                        <div className="shrink-0 w-10 h-10 rounded-xl border border-[#3B82F6]/30 bg-[#3B82F6]/10 flex items-center justify-center text-[#3B82F6] shadow-glow-sm">
-                          <Icon className="w-5 h-5" />
+                {/* Content: USP items + vertical carousel side by side on desktop */}
+                <div className="flex-1 flex flex-col md:flex-row gap-8 md:gap-10 min-h-0">
+                  {/* New items: bright, modern */}
+                  <div className="flex-1 flex flex-col gap-6 sm:gap-7 min-h-0">
+                    {newItems.map((item, i) => {
+                      const Icon = newIcons[i] || ShieldCheck;
+                      return (
+                        <div key={i} className="flex items-start gap-4">
+                          <div className="shrink-0 w-10 h-10 rounded-xl border border-[#3B82F6]/30 bg-[#3B82F6]/10 flex items-center justify-center text-[#3B82F6] shadow-glow-sm">
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <div className="min-w-0">
+                            <h4 className="font-display font-medium text-base sm:text-lg text-[#F5F5F0] mb-1">
+                              {item.title}
+                            </h4>
+                            <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">
+                              {item.desc}
+                            </p>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <h4 className="font-display font-medium text-base sm:text-lg text-[#F5F5F0] mb-1">
-                            {item.title}
-                          </h4>
-                          <p className="font-sans text-xs sm:text-sm text-gray-400 leading-relaxed">
-                            {item.desc}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
 
-                {/* Real screenshots of the app */}
-                <div className="hidden md:flex items-end justify-center gap-4 mt-auto pt-8">
-                  {newShots.map((pair, i) => (
-                    <figure key={i} className="w-20">
-                      <div className="rounded-[14px] border border-white/[0.08] bg-[#12141A] p-1.5 shadow-[0_0_24px_rgba(59,130,246,0.1)]">
-                        <img
-                          src={`${base}app-shots/${pair[0]}`}
-                          alt={oldItems[i].shotLabels[0]}
-                          loading="lazy"
-                          className="w-full rounded-[10px] aspect-[9/19] object-cover object-top"
-                        />
-                      </div>
-                      <figcaption className="text-center text-[9px] text-gray-500 mt-2 font-mono truncate">
-                        {oldItems[i].shotLabels[0]}
-                      </figcaption>
-                    </figure>
-                  ))}
+                  {/* Vertical auto-scrolling carousel of real app screenshots */}
+                  <div className="relative w-full md:w-[240px] lg:w-[280px] h-72 md:h-auto shrink-0 overflow-hidden carousel-pause">
+                    <div className="absolute inset-0 flex flex-col gap-4 carousel-track-y will-change-transform">
+                      {[...shots, ...shots].map((shot, i) => (
+                        <figure key={i} className="shrink-0">
+                          <div className="rounded-[16px] border border-white/[0.08] bg-[#12141A] p-2 shadow-[0_0_24px_rgba(59,130,246,0.12)]">
+                            <img
+                              src={`${base}app-shots/${shot.src}`}
+                              alt={shot.label}
+                              loading="lazy"
+                              className="w-full rounded-[12px] aspect-[9/19] object-cover object-top"
+                            />
+                          </div>
+                          <figcaption className="text-center text-[9px] text-gray-500 mt-1.5 font-mono truncate">
+                            {shot.label}
+                          </figcaption>
+                        </figure>
+                      ))}
+                    </div>
+                    {/* Edge fade masks */}
+                    <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-[#0E0F12] to-transparent pointer-events-none" />
+                    <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[#0E0F12] to-transparent pointer-events-none" />
+                  </div>
                 </div>
               </div>
             </div>

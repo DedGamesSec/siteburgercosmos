@@ -288,3 +288,29 @@
 .eco-mode .target-pulse {
   animation: none !important;
 }
+
+/* ProblemSection: vertical screenshot carousel — moves top -> bottom, seamless.
+   Track holds the list twice; translating -50% -> 0 scrolls it downward and
+   loops seamlessly because both halves are identical. */
+@keyframes carousel-scroll-y {
+  from { transform: translateY(-50%); }
+  to   { transform: translateY(0); }
+}
+
+.carousel-track-y {
+  animation: carousel-scroll-y 22s linear infinite;
+}
+
+.carousel-pause:hover .carousel-track-y {
+  animation-play-state: paused;
+}
+
+.eco-mode .carousel-track-y {
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-track-y {
+    animation: none !important;
+  }
+}
