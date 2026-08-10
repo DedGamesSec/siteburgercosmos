@@ -64,8 +64,8 @@ const ScanCard = React.forwardRef<HTMLDivElement, ScanCardProps>(
               animate={scan === "active" ? { top: ["-12%", "102%"] } : { top: "102%" }}
               transition={
                 scan === "active"
-                  ? { duration: 4.5, ease: "linear", repeat: Infinity }
-                  : { duration: 0.2, ease: "easeIn" }
+                  ? { duration: 2, ease: "linear", repeat: Infinity }
+                  : { duration: 0.8, ease: "easeOut" }
               }
               onAnimationComplete={() => {
                 if (scan === "exiting") setScan("idle");
