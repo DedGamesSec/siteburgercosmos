@@ -214,26 +214,20 @@ export default function App() {
     };
   }, [windowHeight]);
 
-  // Scroll math for the 3D cinematic corridor: progress 0 at the very top of the page,
-  // 1 once the corridor has scrolled fully into view (Earth approach fills the screen).
-  // Scrolling can only push the flight FORWARD (like fast-forwarding a video) — it
-  // never rewinds the auto-played sequence. The render loop stays active until the
-  // opaque core-landing block covers the viewport.
+  // Scroll math for the 3D cinematic corridor. The flight is time-driven (auto-play
+  // above) and cannot be skipped: scrolling no longer fast-forwards the progress,
+  // and page scroll is locked until the cinematic finishes (see lockScroll effect).
+  // cinematicActive only tracks whether the corridor is still in view so the WebGL
+  // render loop can pause once the opaque core-landing block covers the viewport.
   useEffect(() => {
     if (!cinematicEnabled) return;
     const computeCinematic = () => {
       const el = cinematicCorridorRef.current;
       const core = coreLandingRef.current;
-      const vh = windowHeight || window.innerHeight;
       if (!el) {
         setCinematicActive(false);
         return;
       }
-      const rect = el.getBoundingClientRect();
-      const absTop = window.scrollY + rect.top;
-      const totalScroll = Math.max(vh, absTop + rect.height - vh);
-      const p = Math.min(1, Math.max(0, window.scrollY / totalScroll));
-      setCinematicProgressValue(Math.max(cinematicProgressRef.current, p));
       const coreRect = core?.getBoundingClientRect();
       setCinematicActive(!coreRect || coreRect.top > 0);
     };
@@ -252,11 +246,24 @@ export default function App() {
     window.addEventListener("scroll", onScrollRAF, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
-      window.removeEventListener("scroll", onScrollRAF);
+      window.removeEventListener("scroll", onScrollRAF, { passive: true } as EventListenerOptions);
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
   }, [cinematicEnabled, windowHeight]);
+
+  // Lock page scroll while the cinematic intro is playing so it cannot be skipped.
+  // Unlocks once the flight reaches the end (cinematicDone). We set overflow on the
+  // root element: body-only overflow would not propagate to the viewport because
+  // html already has overflow-x:hidden (which breaks the propagation rule).
+  useEffect(() => {
+    if (!cinematicEnabled || activePage !== "home" || cinematicDone) return;
+    const prevOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = prevOverflow;
+    };
+  }, [cinematicEnabled, activePage, cinematicDone]);
 
   // Dynamic Page Metadata & SEO Management
   useEffect(() => {
