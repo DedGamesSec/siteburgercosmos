@@ -439,7 +439,7 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // downloads + worker decodes + GPU uploads in the first two seconds was the
     // remaining source of opening-frame jank, so the fetch begins only once the
     // camera is already closing in (see primePlanetTextures below).
-    const loadSized = (path: string, onReady?: () => void): THREE.Texture => {
+const loadSized = (path: string, onReady?: () => void, deferred?: boolean): THREE.Texture => {
       const tex = new THREE.Texture();
       const url = `${baseUrl}textures/${path}`;
       const cap = Math.min(mobileTexCap, maxTexSize);
@@ -492,14 +492,18 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
           }
         });
 
-      // Register for a deferred kick: see the primeChain gate in
-      // updateSatellites, which runs primes strictly one-at-a-time once the
-      // flight is closing in on the Earth (p~0.62) so only a single fetch +
-      // decode + GPU upload is ever in flight. Until then nothing is fetched.
-      primes.push(prime);
+      // Register for a deferred kick (see primeChain gates in updateSatellites).
+      // Critical maps (daymap, moon) run one-at-a-time from p~0.62 through the
+      // flight; the rest (clouds/night/normal/spec) only start after the flight
+      // reaches p~0.96, when the camera has settled to the static Earth screen and
+      // a late texture pop-in is invisible — that keeps the active approach phase
+      // (Earth fade + satellite activation + sun/moon fades, p 0.8-0.95) free of
+      // every texture load except the two the shot actually needs early.
+      (deferred ? deferredPrimes : primes).push(prime);
       return tex;
     };
     const primes: Array<() => Promise<void>> = [];
+    const deferredPrimes: Array<() => Promise<void>> = [];
 
     const dayTex = loadSized("earth_daymap_8k.jpg", () => {
       dayReady.value = true;
@@ -508,26 +512,34 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     dayTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     earthMat.map = dayTex;
 
+    // Moon rides in the early chain too: its 2k map is small (fast decode, low
+    // upload cost) and the Moon starts fading in at p~0.79, right after the logo.
+    const moonTex = loadSized("moon_2k.jpg");
+    moonTex.colorSpace = THREE.SRGBColorSpace;
+    moonTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+
     // Normal/specular maps are a per-pixel cost in the phong shader; phones skip
-    // them entirely (the daymap already carries the shading).
+    // them entirely (the daymap already carries the shading). These + clouds +
+    // night are visual polish on a screen the camera is already holding still on,
+    // so they load AFTER the flight instead of competing with its visible beats.
     if (!isMobile) {
-      const normalTex = loadSized("earth_normal_8k.jpg");
+      const normalTex = loadSized("earth_normal_8k.jpg", undefined, true);
       normalTex.wrapS = normalTex.wrapT = THREE.ClampToEdgeWrapping;
       earthMat.normalMap = normalTex;
       earthMat.normalScale.set(0.9, 0.9);
 
-      const specTex = loadSized("earth_specular_8k.jpg");
+      const specTex = loadSized("earth_specular_8k.jpg", undefined, true);
       earthMat.specularMap = specTex;
       earthMat.needsUpdate = true;
     }
 
-    const cloudsTex = loadSized("earth_clouds_4k.jpg");
+    const cloudsTex = loadSized("earth_clouds_4k.jpg", undefined, true);
     cloudsTex.colorSpace = THREE.SRGBColorSpace;
     cloudsTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     cloudsMat.map = cloudsTex;
     cloudsMat.needsUpdate = true;
 
-    const nightTex = loadSized("earth_nightmap_8k.jpg");
+    const nightTex = loadSized("earth_nightmap_8k.jpg", undefined, true);
     nightTex.colorSpace = THREE.SRGBColorSpace;
     (night.material as THREE.ShaderMaterial).uniforms.uNight.value = nightTex;
 
@@ -580,12 +592,6 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const realMoonDir = new THREE.Vector3(0.4, -0.2, 0.9).normalize();
     let realSunOk = false;
     let sunMoonRequested = false;
-    // The six planet textures are created immediately but only *fetched* once the
-    // camera is closing in on the planet (see the loadSized comment above). Loads
-    // run one at a time via primeChain so the downloads/decodes/GPU uploads trickle
-    // across the approach instead of landing as a burst inside the logo-assembly
-    // beat (p 0.44-0.60) or stalling the opening frames.
-    let primeIndex = 0;
     // Main-thread fallback for the real Sun/Moon directions. Only ever used when
     // the satellite worker is unavailable: the astronomy solve blocks the main
     // thread for tens of ms, so it must not run during the opening frames — it is
@@ -661,9 +667,6 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // (0.27 Earth radii) at its real ~60 Earth-radii distance, lit by the same
     // sun light as Earth so its terminator matches the real phase. A faint halo
     // sprite makes the small distant disc readable.
-    const moonTex = loadSized("moon_2k.jpg");
-    moonTex.colorSpace = THREE.SRGBColorSpace;
-    moonTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     const moonMesh = new THREE.Mesh(
       new THREE.SphereGeometry(MOON_R, 40, 40),
       new THREE.MeshPhongMaterial({
@@ -783,29 +786,31 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     const SAT_DECIMATE = isMobile ? 4 : 1;
     const SAT_INTERVAL_MS = isMobile ? 800 : 250;
 
-    // Texture loads run as a serial chain: fetch+decode+adopt one texture, wait a
+    // Texture loads run as serial chains: fetch+decode+adopt one texture, wait a
     // couple of frames (let the render loop push its GPU upload and release the
-    // frame), then start the next. At most one 8K->capped decode is ever in flight,
-    // so the "wall" of six maps becomes a gentle trickle across the approach.
-    const primeChain = () => {
-      if (primeIndex >= primes.length) return;
-      const idx = primeIndex;
-      primeIndex++;
-      primes[idx]()
-        .then(() => {
-          // Two idle frames between textures lets three.js finish the GPU upload
-          // and the compositor release the frame before the next decode lands.
-          window.setTimeout(() => {
-            // Chain continues even if the corridor briefly left the viewport.
-            primeChain();
-          }, 40);
-        })
-        .catch(() => {
-          window.setTimeout(() => {
-            primeChain();
-          }, 40);
-        });
+    // frame), then start the next. At most one decode is ever in flight, so the
+    // "wall" of maps becomes a gentle trickle. Critical maps (daymap, moon) run
+    // during the approach (see the p~0.62 gate); the visual-polish maps
+    // (clouds/night/normal/spec) only start once the flight ends (p~0.96 gate),
+    // on the static Earth screen where a late pop-in is invisible.
+    const startChain = (list: Array<() => Promise<void>>) => {
+      if (list.length === 0) return;
+      const step = (local: number) => {
+        if (local >= list.length) return;
+        list[local]()
+          .then(() => {
+            // Two idle frames between textures lets three.js finish the GPU
+            // upload and the compositor release the frame before the next starts.
+            window.setTimeout(() => step(local + 1), 40);
+          })
+          .catch(() => {
+            window.setTimeout(() => step(local + 1), 40);
+          });
+      };
+      step(0);
     };
+    let flightPrimeStarted = false;
+    let polishPrimeStarted = false;
 
     const updateSatellites = () => {
       // Never propagate while the corridor is out of view: the worker would
@@ -827,18 +832,21 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
           updateSunMoonDirs(); // worker: none / not ready — run the one-shot fallback
         }
       }
-      if (p >= 0.62 && primeIndex < primes.length) {
-        // The logo has finished assembling (assembly ends ~0.60), so the terrain
-        // is clear of the churny 2D assembly frames. Primes run STRICTLY one at a
-        // time — each fetch+decode+GPU-upload resolves before the next starts —
-        // plus a frame-settle timeout between them, so the decoded bitmaps never
-        // pile up on the same frame. (Time-staggering only spaced the START; on a
-        // fast CDN all six files still arrived near-simultaneously and their
-        // decodes/upload landed as one burst.) Starter fires the first prime once;
-        // the chain continues from each settled texture.
-        if (primeIndex === 0) {
-          primeChain();
-        }
+      // The logo has finished assembling (assembly ends ~0.60), so the terrain
+      // is clear of the churny 2D assembly frames. Only the two flight-critical
+      // maps (daymap + moon) run here, one at a time with a frame-settle between
+      // them. Starter fires the chain exactly once; it self-continues until done.
+      if (!flightPrimeStarted && p >= 0.62) {
+        flightPrimeStarted = true;
+        startChain(primes);
+      }
+      // The visual-polish maps (clouds/night/normal/spec) don't start until the
+      // flight has settled on the static Earth screen (p~0.96), so their decodes
+      // and GPU uploads can't land on the Earth-fade / satellite-activation /
+      // sun-moon-fade beats (p 0.8-0.95) that carry the visible motion.
+      if (!polishPrimeStarted && p >= 0.96) {
+        polishPrimeStarted = true;
+        startChain(deferredPrimes);
       }
       if (p < 0.8) return;
       if (satWorker && satWorkerReady) {
