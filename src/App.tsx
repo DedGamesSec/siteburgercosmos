@@ -40,6 +40,7 @@ import ExplorePagesSection from "./components/ExplorePagesSection";
 import AppSecuritySection from "./components/AppSecuritySection";
 import KiraAssistantSection from "./components/KiraAssistantSection";
 import RealDevelopmentSection from "./components/RealDevelopmentSection";
+import ScienceValidationSection from "./components/ScienceValidationSection";
 import OriginStorySection from "./components/OriginStorySection";
 import LegalPage from "./components/LegalPage";
 import CookieConsent from "./components/CookieConsent";
@@ -862,7 +863,7 @@ export default function App() {
               <Breadcrumbs currentPage={activePage} />
               <div className="flex-1 flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm">
                 <AppSecuritySection />
-                <RealDevelopmentSection onlyRoadmap={false} />
+                <ScienceValidationSection />
               </div>
               <PageNavigationFooter currentPage={activePage} />
               <Footer />

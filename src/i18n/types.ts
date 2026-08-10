@@ -131,6 +131,18 @@ export interface Translations {
     pipelineHeader: string;
     usp: UspItem[];
   };
+  science: {
+    badge: string;
+    title: string;
+    subtitle: string;
+    body: string;
+    accentA: string;
+    accentB: string;
+    visualBadge: string;
+    visualHint: string;
+    legitLabel: string;
+    anomalyLabel: string;
+  };
   realDev: {
     title: string;
     subtitle: string;

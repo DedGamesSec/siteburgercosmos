@@ -353,6 +353,18 @@ const ru: Translations = {
       badge: "ЛОКАЛЬНЫЙ ИНФЕРЕНС"
     }
   },
+  science: {
+    badge: "НАУЧНАЯ ВАЛИДАЦИЯ // ПРИЗНАНИЕ",
+    title: "Научная валидация & Признание",
+    subtitle: "Доказанная эффективность",
+    body: "Технологическая база TrustNode опирается на строгие математические исследования и признана экспертным научным сообществом. Мы перевели защиту от фрода из плоскости гипотез в плоскость точных математических доказательств.",
+    accentA: "100% рецензируемые алгоритмы",
+    accentB: "0% слепых зон для ИИ-атак",
+    visualBadge: "ЖИВАЯ МАТЕМАТИЧЕСКАЯ МОДЕЛЬ",
+    visualHint: "Двигайте курсор",
+    legitLabel: "Легитимный трафик",
+    anomalyLabel: "Аномалии / ИИ-атаки"
+  },
   origin: {
     title: "История проекта",
     subtitle: "От дипломных исследований студента-кибербезопасника до патентов ФИПС и федерального признания",
@@ -931,6 +943,18 @@ const en: Translations = {
       desc: "A real binary weights file of the highly optimized rubert-tiny2 language model quantized to the INT8 integer format is integrated in the project root. The model is fine-tuned for ultra-fast CPU inference on mobile devices and executes 100% locally in RAM.",
       badge: "LOCAL INFERENCE"
     }
+  },
+  science: {
+    badge: "SCIENTIFIC VALIDATION // RECOGNITION",
+    title: "Scientific Validation & Recognition",
+    subtitle: "Proven effectiveness",
+    body: "TrustNode's technology foundation is built on rigorous mathematical research and is recognized by the expert scientific community. We have moved fraud protection from the realm of hypotheses into the realm of precise mathematical proofs.",
+    accentA: "100% peer-reviewed algorithms",
+    accentB: "0% blind spots for AI attacks",
+    visualBadge: "LIVE MATHEMATICAL MODEL",
+    visualHint: "Move your cursor",
+    legitLabel: "Legitimate traffic",
+    anomalyLabel: "Anomalies / AI attacks"
   },
   origin: {
     title: "Project Legacy",
@@ -1511,6 +1535,18 @@ const es: Translations = {
       badge: "INFERENCIA LOCAL"
     }
   },
+  science: {
+    badge: "VALIDACIÓN CIENTÍFICA // RECONOCIMIENTO",
+    title: "Validación científica y reconocimiento",
+    subtitle: "Eficacia demostrada",
+    body: "La base tecnológica de TrustNode se apoya en investigaciones matemáticas rigurosas y es reconocida por la comunidad científica experta. Hemos trasladado la protección contra el fraude del plano de las hipótesis al plano de las pruebas matemáticas precisas.",
+    accentA: "100% algoritmos revisados por pares",
+    accentB: "0% puntos ciegos para ataques de IA",
+    visualBadge: "MODELO MATEMÁTICO EN VIVO",
+    visualHint: "Mueve el cursor",
+    legitLabel: "Tráfico legítimo",
+    anomalyLabel: "Anomalías / ataques de IA"
+  },
   origin: {
     title: "Historia del Proyecto",
     subtitle: "Desde las investigaciones de tesis de un estudiante de ciberseguridad hasta patentes FIPS y reconocimiento federal",
@@ -2089,6 +2125,18 @@ const zh: Translations = {
       desc: "项目根目录中集成了一个高度优化的 rubert-tiny2 语言模型的真实二进制权重文件，该文件已量化为 INT8 整数格式。该模型针对移动设备上的超快速 CPU 推理进行了微调，并在内存中 100% 本地执行。",
       badge: "本地推理"
     }
+  },
+  science: {
+    badge: "科学验证 // 认可",
+    title: "科学验证与认可",
+    subtitle: "经证实的有效性",
+    body: "TrustNode 的技术基础建立在严格的数学研究之上，并得到了专家科学界的认可。我们将防欺诈保护从假设层面提升到了精确数学证明的层面。",
+    accentA: "100% 同行评审算法",
+    accentB: "对 AI 攻击 0% 盲区",
+    visualBadge: "实时数学模型",
+    visualHint: "移动光标",
+    legitLabel: "合法流量",
+    anomalyLabel: "异常 / AI 攻击"
   },
   origin: {
     title: "项目历程与背景",
@@ -2669,6 +2717,18 @@ const tr: Translations = {
       badge: "YEREL ÇIKARIM"
     }
   },
+  science: {
+    badge: "BİLİMSEL DOĞRULAMA // TANINMA",
+    title: "Bilimsel Doğrulama ve Tanınma",
+    subtitle: "Kanıtlanmış etkinlik",
+    body: "TrustNode'un teknolojik temeli titiz matematiksel araştırmalara dayanır ve uzman bilim topluluğu tarafından tanınır. Dolandırıcılık korumasını hipotez düzleminden kesin matematiksel kanıtlar düzlemine taşıdık.",
+    accentA: "%100 hakem denetimli algoritmalar",
+    accentB: "AI saldırılarına %0 kör nokta",
+    visualBadge: "CANLI MATEMATİKSEL MODEL",
+    visualHint: "İmleci hareket ettirin",
+    legitLabel: "Meşru trafik",
+    anomalyLabel: "Anomaliler / AI saldırıları"
+  },
   origin: {
     title: "Proje Geçmişi",
     subtitle: "Bir siber güvenlik öğrencisinin araştırma projesinden FIPS patentlerine ve ülke çapında tanınmaya uzanan yolculuk",
@@ -3247,6 +3307,18 @@ const hi: Translations = {
       desc: "परियोजना के रूट में अत्यधिक अनुकूलित rubert-tiny2 भाषा मॉडल का एक वास्तविक बाइनरी वेट फ़ाइल एकीकृत है जो INT8 पूर्णांक प्रारूप में क्वांटाइज़्ड है। मॉडल को मोबाइल उपकरणों पर अल्ट्रा-फास्ट सीपीयू अनुमान के लिए फाइन-ट्यून किया गया है और यह रैम में 100% स्थानीय रूप से निष्पादित होता है।",
       badge: "स्थानीय अनुमान"
     }
+  },
+  science: {
+    badge: "वैज्ञानिक मान्यता // सम्मान",
+    title: "वैज्ञानिक सत्यापन और मान्यता",
+    subtitle: "सिद्ध प्रभावशीलता",
+    body: "TrustNode की तकनीकी नींव कठोर गणितीय अनुसंधान पर आधारित है और इसे विशेषज्ञ वैज्ञानिक समुदाय द्वारा मान्यता प्राप्त है। हमने धोखाधड़ी सुरक्षा को परिकल्पनाओं के स्तर से सटीक गणितीय प्रमाणों के स्तर तक ले जाया है।",
+    accentA: "100% सहकर्मी-समीक्षित एल्गोरिदम",
+    accentB: "AI हमलों के लिए 0% अंधे धब्बे",
+    visualBadge: "लाइव गणितीय मॉडल",
+    visualHint: "कर्सर घुमाएँ",
+    legitLabel: "वैध ट्रैफ़िक",
+    anomalyLabel: "असामान्यताएँ / AI हमले"
   },
   origin: {
     title: "परियोजना का इतिहास",
@@ -3827,6 +3899,18 @@ const ar: Translations = {
       badge: "استدلال محلي"
     }
   },
+  science: {
+    badge: "التحقق العلمي // الاعتراف",
+    title: "التحقق العلمي والاعتراف",
+    subtitle: "فعالية مثبتة",
+    body: "يعتمد الأساس التقني لـ TrustNode على أبحاث رياضية صارمة ومعترف به من قبل المجتمع العلمي الخبير. لقد نقلنا الحماية من الاحتيال من مستوى الفرضيات إلى مستوى البراهين الرياضية الدقيقة.",
+    accentA: "100% خوارزميات مراجعة الأقران",
+    accentB: "0% نقاط عمياء لهجمات الذكاء الاصطناعي",
+    visualBadge: "نموذج رياضي حي",
+    visualHint: "حرّك المؤشر",
+    legitLabel: "حركة مرور مشروعة",
+    anomalyLabel: "شذوذ / هجمات الذكاء الاصطناعي"
+  },
   origin: {
     title: "تاريخ المشروع",
     subtitle: "من الأبحاث الأكاديمية لطالب في الأمن السيبراني إلى براءات الاختراع والاعتراف الاتحادي",
@@ -4405,6 +4489,18 @@ const pt: Translations = {
       desc: "Um arquivo real de pesos binários do modelo de linguagem rubert-tiny2 altamente otimizado, quantizado para o formato inteiro INT8, está integrado na raiz do projeto. O modelo é ajustado para inferência ultra-rápida em CPU de dispositivos móveis e executa 100% localmente na memória RAM.",
       badge: "INFERÊNCIA LOCAL"
     }
+  },
+  science: {
+    badge: "VALIDAÇÃO CIENTÍFICA // RECONHECIMENTO",
+    title: "Validação científica e reconhecimento",
+    subtitle: "Eficácia comprovada",
+    body: "A base tecnológica da TrustNode se apoia em pesquisas matemáticas rigorosas e é reconhecida pela comunidade científica especializada. Levamos a proteção contra fraudes do plano das hipóteses para o plano das provas matemáticas precisas.",
+    accentA: "100% algoritmos revisados por pares",
+    accentB: "0% pontos cegos para ataques de IA",
+    visualBadge: "MODELO MATEMÁTICO AO VIVO",
+    visualHint: "Mova o cursor",
+    legitLabel: "Tráfego legítimo",
+    anomalyLabel: "Anomalias / ataques de IA"
   },
   origin: {
     title: "História do Projeto",
@@ -4985,6 +5081,18 @@ const fr: Translations = {
       badge: "INFERENCE LOCALE"
     }
   },
+  science: {
+    badge: "VALIDATION SCIENTIFIQUE // RECONNAISSANCE",
+    title: "Validation scientifique et reconnaissance",
+    subtitle: "Efficacité prouvée",
+    body: "La base technologique de TrustNode repose sur des recherches mathématiques rigoureuses et est reconnue par la communauté scientifique experte. Nous avons fait passer la protection anti-fraude du plan des hypothèses à celui des preuves mathématiques précises.",
+    accentA: "100% d'algorithmes évalués par des pairs",
+    accentB: "0% d'angles morts pour les attaques IA",
+    visualBadge: "MODÈLE MATHÉMATIQUE EN DIRECT",
+    visualHint: "Déplacez le curseur",
+    legitLabel: "Trafic légitime",
+    anomalyLabel: "Anomalies / attaques IA"
+  },
   origin: {
     title: "Histoire du Projet",
     subtitle: "Des recherches universitaires d'un étudiant en cybersécurité aux brevets officiels et à la reconnaissance nationale",
@@ -5564,6 +5672,18 @@ const de: Translations = {
       badge: "LOKALE INFERENZ"
     }
   },
+  science: {
+    badge: "WISSENSCHAFTLICHE VALIDIERUNG // ANERKENNUNG",
+    title: "Wissenschaftliche Validierung und Anerkennung",
+    subtitle: "Nachgewiesene Wirksamkeit",
+    body: "Die technologische Basis von TrustNode beruht auf strenger mathematischer Forschung und wird von der fachkundigen Wissenschaftsgemeinschaft anerkannt. Wir haben den Schutz vor Betrug von der Ebene der Hypothesen auf die Ebene präziser mathematischer Beweise gehoben.",
+    accentA: "100% Peer-Review-Algorithmen",
+    accentB: "0% blinde Flecken für KI-Angriffe",
+    visualBadge: "LIVE-MATHEMATIKMODELL",
+    visualHint: "Bewegen Sie den Cursor",
+    legitLabel: "Legitimer Datenverkehr",
+    anomalyLabel: "Anomalien / KI-Angriffe"
+  },
   origin: {
     title: "Projektgeschichte",
     subtitle: "Von den Abschlussarbeiten eines Cybersicherheitsstudenten bis hin zu Patenten und nationaler Anerkennung",
@@ -6142,6 +6262,18 @@ const ja: Translations = {
       desc: "INT8 整数形式に量子化された、高度に最適化された rubert-tiny2 言語モデルの実バイナリウェイトファイルがプロジェクトルートに統合されています。このモデルはモバイルデバイスの CPU 上での超高速推論のために微調整されており、RAM 上で100%ローカルに実行されます。",
       badge: "ローカル推論"
     }
+  },
+  science: {
+    badge: "科学的検証 // 認知",
+    title: "科学的検証と認知",
+    subtitle: "証明された効果",
+    body: "TrustNode の技術基盤は厳密な数学的研究に基づいており、専門家の科学コミュニティから認知されています。私たちは詐欺防止を仮説の領域から正確な数学的証明の領域へと移しました。",
+    accentA: "100% 査読済みアルゴリズム",
+    accentB: "AI 攻撃に対する死角 0%",
+    visualBadge: "ライブ数理モデル",
+    visualHint: "カーソルを動かす",
+    legitLabel: "正当なトラフィック",
+    anomalyLabel: "異常 / AI 攻撃"
   },
   origin: {
     title: "プロジェクトの歩み",
