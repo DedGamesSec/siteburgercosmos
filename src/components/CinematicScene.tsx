@@ -478,13 +478,17 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // GPU maxTextureSize (some integrated GPUs cap at 4096 and would silently
     // render the planet black).
     const maxTexSize = renderer.capabilities.maxTextureSize || 4096;
-    const mobileTexCap = isMobile ? 1024 : 2048;
+    // Textures are pre-scaled at build time (WebP): the daymap ships at 2560
+    // and the support maps at 1536 — exactly the caps below — so the runtime
+    // decode is a straight pass-through with NO downscale work on the client.
+    // Phones still decode at 1024 (a downscale, but from a 2560/1536 WebP that
+    // is ~20x lighter than the old 8K JPGs, so it's far cheaper than before).
+    const mobileTexCap = isMobile ? 1024 : 2560;
     // Support maps (normal/spec/night/clouds) are subtle per-pixel modifiers on
-    // a planet that fills under 1000px on screen — keeping them at 1280 cuts
-    // each synchronous upload+mipmap ~2.5x with no visible loss. The DAYMAP is
-    // the one you actually see (continents/colors), so it keeps the full desktop
-    // 2048 cap below.
-    const overlayCap = 1280;
+    // a planet that fills under 1000px on screen — 1536 keeps each synchronous
+    // upload+mipmap ~1.5x smaller than the daymap with no visible loss, and the
+    // source files are now exactly 1536 so nothing gets thrown away.
+    const overlayCap = 1536;
     const dayReady = { value: false };
     const cloudsReady = { value: false };
     const nightReady = { value: false };
@@ -603,7 +607,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     const decodes: Array<() => Promise<void>> = [];
     const lateDecodes: Array<() => Promise<void>> = [];
 
-    const dayTex = loadSized("earth_daymap_8k.jpg", () => {
+    const dayTex = loadSized("earth_daymap.webp", () => {
       dayReady.value = true;
     });
     dayTex.colorSpace = THREE.SRGBColorSpace;
@@ -614,7 +618,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     // upload cost) and the Moon starts fading in at p~0.79, right after the logo.
     // The moon is only visible from p~0.79, so its map rides the late (post-logo)
     // decode queue — no reason to spend a GPU upload+mipmap in the opening beats.
-    const moonTex = loadSized("moon_2k.jpg", undefined, undefined, true);
+    const moonTex = loadSized("moon.webp", undefined, undefined, true, 2048);
     moonTex.colorSpace = THREE.SRGBColorSpace;
     moonTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
 
@@ -627,7 +631,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     // no material.needsUpdate, no mid-flight recompile by the freezes.
     if (!isMobile) {
       const normalTex = loadSized(
-        "earth_normal_8k.jpg",
+        "earth_normal.webp",
         undefined,
         (tex) => {
           tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
@@ -639,7 +643,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
       );
 
       const specTex = loadSized(
-        "earth_specular_8k.jpg",
+        "earth_specular.webp",
         undefined,
         (tex) => {
           earthMat.specularMap = tex;
@@ -650,7 +654,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     }
 
     const cloudsTex = loadSized(
-      "earth_clouds_4k.jpg",
+      "earth_clouds.webp",
       () => {
         cloudsReady.value = true;
       },
@@ -664,7 +668,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     );
 
     const nightTex = loadSized(
-      "earth_nightmap_8k.jpg",
+      "earth_nightmap.webp",
       () => {
         nightReady.value = true;
       },
