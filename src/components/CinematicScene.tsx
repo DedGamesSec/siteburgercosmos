@@ -920,11 +920,11 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
       commitSatCount(n);
     };
 
-    // On phones the satellite swarm is decimated (~1/4 of the catalog) and the
-    // updates run at a third of the cadence — the shell reads the same, but the
-    // phone CPU/GPU do a fraction of the work.
-    const SAT_DECIMATE = isMobile ? 4 : 1;
-    const SAT_INTERVAL_MS = isMobile ? 800 : 250;
+    // On phones the satellite swarm is decimated (~1/2 of the catalog) and the
+    // updates run at roughly half the cadence — the shell reads the same, but the
+    // phone CPU/GPU do a fraction of the work while the orbits still move.
+    const SAT_DECIMATE = isMobile ? 2 : 1;
+    const SAT_INTERVAL_MS = isMobile ? 450 : 250;
 
     // Fetches all run in parallel from mount (async I/O, near-zero main-thread
     // cost — see loadSized above). DECODE + GPU upload are strictly serialized

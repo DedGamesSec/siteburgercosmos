@@ -8,12 +8,13 @@ interface EcoModeContextType {
 const EcoModeContext = createContext<EcoModeContextType | undefined>(undefined);
 
 export const EcoModeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // ecoMode is a purely manual user choice (persisted). It is NOT auto-enabled
+  // from prefers-reduced-motion: on phones that flag is commonly on by default
+  // (iOS reduce-motion), and auto-triggering it there silently disabled the 3D
+  // cinematic + logo assembly the site is built around. Reduced-motion users
+  // can still opt in explicitly from the header toggle.
   const [ecoMode, setEcoMode] = useState<boolean>(() => {
-    const saved = localStorage.getItem('trustnode_eco');
-    if (saved !== null) {
-      return saved === 'true';
-    }
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    return localStorage.getItem('trustnode_eco') === 'true';
   });
 
   const toggleEcoMode = () => {
@@ -31,17 +32,6 @@ export const EcoModeProvider: React.FC<{ children: React.ReactNode }> = ({ child
       document.documentElement.classList.remove('eco-mode');
     }
   }, [ecoMode]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const handleChange = (event: MediaQueryListEvent) => {
-      if (localStorage.getItem('trustnode_eco') !== null) return;
-      setEcoMode(event.matches);
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
 
   return (
     <EcoModeContext.Provider value={{ ecoMode, toggleEcoMode }}>
