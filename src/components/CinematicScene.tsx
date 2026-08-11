@@ -479,7 +479,10 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // render the planet black).
     const maxTexSize = renderer.capabilities.maxTextureSize || 4096;
     const mobileTexCap = isMobile ? 1024 : 2048;
-    const overlayCap = 1280; // tight cap for the support maps (see loadSized)
+    // Support maps ride the same desktop cap as the daymap: at ~2K they still
+    // look crisp on PC (the planet fills <1000px on screen), while the decode is
+    // spread over the whole intro anyway.
+    const overlayCap = mobileTexCap;
     const dayReady = { value: false };
     const cloudsReady = { value: false };
     const nightReady = { value: false };
@@ -918,17 +921,16 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     const SAT_INTERVAL_MS = isMobile ? 800 : 250;
 
     // Fetches all run in parallel from mount (async I/O, near-zero main-thread
-    // cost — see loadSized above). DECODE + GPU upload are strictly serialized
-    // per queue, with the main visual work (daymap + moon) landing in the opening
-    // seconds while the four subtle support maps trickle in at an even ~1.5s
-    // cadence right up to ~7.3s — the whole intro carries a level load and no
-    // single moment ever bursts. All six are on the GPU well before the
-    // moon/Earth fades at p~0.79/0.82 on the 10s auto-play.
-    const TEX_DECODE_DELAY_MS = 400; // daymap, right after boot/parse/compile
-    // Moon follows shortly after (its 2k map is cheap), then one support map
-    // every 1.5s across the middle and back half of the flight.
-    const TEX_LATE_DELAY_MS = 1300; // first non-daymap slot
-    const TEX_DECODE_GAP_MS = 1500; // settle frames between decodes/uploads
+    // cost — see loadSized above). DECODE + GPU upload are strictly serialized,
+    // but the schedule front-loads into the first seconds: the Earth doesn't
+    // fade in until p~0.82 (8.2s), so every map can be safely on the GPU by
+    // ~4.5s — the opening beats are dark space anyway, so a steady early cadence
+    // reads as free loading time rather than visible stalls.
+    const TEX_DECODE_DELAY_MS = 200; // daymap, right after boot/parse/compile
+    // Moon starts alongside the daymap window, then one support map every ~0.9s
+    // through the first half — all six are done long before the fades.
+    const TEX_LATE_DELAY_MS = 700; // first non-daymap slot
+    const TEX_DECODE_GAP_MS = 900; // settle frames between decodes/uploads
     const runDecodeQueue = (list: Array<() => Promise<void>>, startDelay: number) => {
       if (list.length === 0) return;
       const step = (i: number) => {
