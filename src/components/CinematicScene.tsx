@@ -923,16 +923,17 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     const SAT_INTERVAL_MS = isMobile ? 800 : 250;
 
     // Fetches all run in parallel from mount (async I/O, near-zero main-thread
-    // cost — see loadSized above). DECODE + GPU upload are strictly serialized,
-    // but the schedule front-loads into the first seconds: the Earth doesn't
-    // fade in until p~0.82 (8.2s), so every map can be safely on the GPU by
-    // ~4.5s — the opening beats are dark space anyway, so a steady early cadence
-    // reads as free loading time rather than visible stalls.
+    // cost — see loadSized above). DECODE + GPU upload are strictly serialized
+    // and entirely front-loaded: the logo assembly (p~0.44-0.60 = 4.4-6s) is a
+    // busy DOM/SVG window and the Earth fades at p~0.82 (8.2s), so ALL six maps
+    // are decoded and uploaded well before the logo ever starts — the opening
+    // beats are dark space, so the early cadence reads as free loading time
+    // rather than visible stalls.
     const TEX_DECODE_DELAY_MS = 200; // daymap, right after boot/parse/compile
-    // Moon starts alongside the daymap window, then one support map every ~0.9s
-    // through the first half — all six are done long before the fades.
-    const TEX_LATE_DELAY_MS = 700; // first non-daymap slot
-    const TEX_DECODE_GAP_MS = 900; // settle frames between decodes/uploads
+    // Moon starts right after, then one support map every ~0.5s — the last
+    // upload lands ~3.5s, comfortably before the logo assembly begins at 4.4s.
+    const TEX_LATE_DELAY_MS = 600; // first non-daymap slot
+    const TEX_DECODE_GAP_MS = 500; // settle frames between decodes/uploads
     const runDecodeQueue = (list: Array<() => Promise<void>>, startDelay: number) => {
       if (list.length === 0) return;
       const step = (i: number) => {
