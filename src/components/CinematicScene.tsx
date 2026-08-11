@@ -479,10 +479,12 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
     // render the planet black).
     const maxTexSize = renderer.capabilities.maxTextureSize || 4096;
     const mobileTexCap = isMobile ? 1024 : 2048;
-    // Support maps ride the same desktop cap as the daymap: at ~2K they still
-    // look crisp on PC (the planet fills <1000px on screen), while the decode is
-    // spread over the whole intro anyway.
-    const overlayCap = mobileTexCap;
+    // Support maps (normal/spec/night/clouds) are subtle per-pixel modifiers on
+    // a planet that fills under 1000px on screen — keeping them at 1280 cuts
+    // each synchronous upload+mipmap ~2.5x with no visible loss. The DAYMAP is
+    // the one you actually see (continents/colors), so it keeps the full desktop
+    // 2048 cap below.
+    const overlayCap = 1280;
     const dayReady = { value: false };
     const cloudsReady = { value: false };
     const nightReady = { value: false };
@@ -603,7 +605,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
 
     const dayTex = loadSized("earth_daymap_8k.jpg", () => {
       dayReady.value = true;
-    }, undefined, false, overlayCap);
+    });
     dayTex.colorSpace = THREE.SRGBColorSpace;
     dayTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     earthMat.map = dayTex;
