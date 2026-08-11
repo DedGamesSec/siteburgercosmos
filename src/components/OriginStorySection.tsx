@@ -292,16 +292,16 @@ const TimelineCard: React.FC<TimelineCardProps> = ({ item, index, ecoMode }) => 
       initial={false}
       animate={{ opacity: 1, y: 0 }}
     >
-      {/* Top Accent line — runs along the very top edge of the card. Placed on
-          the wrapper (no overflow-hidden) so the card's rounded corner never
-          clips it; the dot sits below it in the corner */}
-      <div className="absolute -top-px left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#3B82F6]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      {/* Top Accent line — runs along the top of the card BELOW the dot, so the
+          dot sits on top of it near the corner. On the wrapper (no overflow-
+          hidden) so the card's rounded corner never clips it */}
+      <div className="absolute top-3 left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#3B82F6]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-      {/* Milestone dot pinned inside the top-left corner of the selected card;
-          hidden on all others until hovered. Stays INSIDE the card box (no
-          negative offsets) so it never juts past the rounded border */}
+      {/* Milestone dot pinned inside the top-left corner of the selected card,
+          slightly inset from the edge so it never juts past the rounded border;
+          hidden on all others until hovered */}
       {!ecoMode && (
-        <div className="absolute top-1 left-1 z-10 w-2.5 h-2.5 rounded-full border border-[#3B82F6] bg-[#3B82F6] opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-glow-md pointer-events-none" />
+        <div className="absolute top-2 left-2 z-10 w-2.5 h-2.5 rounded-full border border-[#3B82F6] bg-[#3B82F6] opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-glow-md pointer-events-none" />
       )}
       <ScanCard className="h-full justify-between">
       <div>

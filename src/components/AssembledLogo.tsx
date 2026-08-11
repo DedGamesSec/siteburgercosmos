@@ -121,7 +121,7 @@ export default function AssembledLogo({ progress = 0, progressRef, phaseStart = 
     if (!progressRef) return;
     const total = Math.max(0.0001, phaseSpan);
     // The flight drives progressRef every frame, but the assembly values only
-    // actually move inside [phaseStart, phaseStart+phaseSpan] (~4.4-6.0s). Before
+    // actually move inside [phaseStart, phaseStart+phaseSpan] (~4.4-5.4s). Before
     // and after that window p clamps to a constant, so writing ~55 SVG
     // attributes/styles per rAF for a logo that is invisible or unchanged was
     // ~3,300 DOM mutations a second all through the intro — a measurable main
