@@ -919,17 +919,16 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
 
     // Fetches all run in parallel from mount (async I/O, near-zero main-thread
     // cost — see loadSized above). DECODE + GPU upload are strictly serialized
-    // per queue, and the six maps are spread evenly across the whole intro
-    // instead of clustered: the daymap lands in the opening seconds (it gates
-    // the Earth fade), then one map every ~1.1s through the middle of the
-    // flight, so no single moment carries a burst of synchronous uploads+mipmaps.
-    // All six are fully on the GPU by ~7s, still comfortable before the moon/Earth
-    // fades at p~0.79/0.82 on the 10s auto-play.
-    const TEX_DECODE_DELAY_MS = 600; // daymap, right after boot/parse/compile
-    // Every other map (moon + normal/spec/clouds/night) follows one per spaced
-    // slot so the load is level across the whole intro.
-    const TEX_LATE_DELAY_MS = 1900; // first non-daymap slot
-    const TEX_DECODE_GAP_MS = 1000; // settle frames between decodes/uploads
+    // per queue, with the main visual work (daymap + moon) landing in the opening
+    // seconds while the four subtle support maps trickle in at an even ~1.5s
+    // cadence right up to ~7.3s — the whole intro carries a level load and no
+    // single moment ever bursts. All six are on the GPU well before the
+    // moon/Earth fades at p~0.79/0.82 on the 10s auto-play.
+    const TEX_DECODE_DELAY_MS = 400; // daymap, right after boot/parse/compile
+    // Moon follows shortly after (its 2k map is cheap), then one support map
+    // every 1.5s across the middle and back half of the flight.
+    const TEX_LATE_DELAY_MS = 1300; // first non-daymap slot
+    const TEX_DECODE_GAP_MS = 1500; // settle frames between decodes/uploads
     const runDecodeQueue = (list: Array<() => Promise<void>>, startDelay: number) => {
       if (list.length === 0) return;
       const step = (i: number) => {
