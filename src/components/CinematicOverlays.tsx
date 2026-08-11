@@ -21,7 +21,7 @@ function LogoAssembly({ ecoMode, progressRef }: { ecoMode: boolean; progressRef:
     <AssembledLogo
       progressRef={progressRef}
       phaseStart={0.44}
-      phaseSpan={0.10}
+      phaseSpan={0.06}
       ecoMode={ecoMode}
       className="scale-[0.55] sm:scale-[0.7] origin-center"
     />

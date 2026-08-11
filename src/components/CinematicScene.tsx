@@ -928,7 +928,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
 
     // Fetches all run in parallel from mount (async I/O, near-zero main-thread
     // cost — see loadSized above). DECODE + GPU upload are strictly serialized
-    // and entirely front-loaded: the logo assembly (p~0.44-0.54 = 4.4-5.4s) is a
+    // and entirely front-loaded: the logo assembly (p~0.44-0.50 = 4.4-5.0s) is a
     // busy DOM/SVG window and the Earth fades at p~0.82 (8.2s), so ALL six maps
     // are decoded and uploaded well before the logo ever starts — the opening
     // beats are dark space, so the early cadence reads as free loading time
