@@ -919,19 +919,17 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
 
     // Fetches all run in parallel from mount (async I/O, near-zero main-thread
     // cost — see loadSized above). DECODE + GPU upload are strictly serialized
-    // per queue: only the daymap (the continent map that gates the Earth fade)
-    // decodes in the opening seconds — one upload+mipmap, not six — while the
-    // moon + clouds/night/normal/spec wait until the logo assembly is over and
-    // decode in the quiet 4.7-7s window, still ~1.5s of headroom before the
-    // Earth fade at p~0.82. This is what removes the ~4-5 texture stalls that
-    // used to land before the logo.
-    const TEX_DECODE_DELAY_MS = 900; // daymap, past the boot/parse/compile frames
-    // Everything else waits until the logo assembly AND its status labels are
-    // fully gone (assembly 0.44-0.60, labels fade out by ~0.71), landing in the
-    // quiet stretch before the moon/Earth fades (0.79/0.82). 5 maps x 300ms =
-    // done by ~7.6s, still ~0.6s of headroom before the moon fades in.
-    const TEX_LATE_DELAY_MS = 6400; // after the logo+labels, before the fades
-    const TEX_DECODE_GAP_MS = 300; // settle frames between decodes/uploads
+    // per queue, and the six maps are spread evenly across the whole intro
+    // instead of clustered: the daymap lands in the opening seconds (it gates
+    // the Earth fade), then one map every ~1.1s through the middle of the
+    // flight, so no single moment carries a burst of synchronous uploads+mipmaps.
+    // All six are fully on the GPU by ~7s, still comfortable before the moon/Earth
+    // fades at p~0.79/0.82 on the 10s auto-play.
+    const TEX_DECODE_DELAY_MS = 600; // daymap, right after boot/parse/compile
+    // Every other map (moon + normal/spec/clouds/night) follows one per spaced
+    // slot so the load is level across the whole intro.
+    const TEX_LATE_DELAY_MS = 1900; // first non-daymap slot
+    const TEX_DECODE_GAP_MS = 1000; // settle frames between decodes/uploads
     const runDecodeQueue = (list: Array<() => Promise<void>>, startDelay: number) => {
       if (list.length === 0) return;
       const step = (i: number) => {
