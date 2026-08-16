@@ -7,7 +7,6 @@ import type { LanguageCode } from "../i18n/languages";
 import { useEcoMode } from "../context/EcoModeContext";
 import ScanCard from "./ScanCard";
 import * as Astronomy from "astronomy-engine";
-import { isWebGLAvailable } from "./cinematicShared";
 
 const HEADER_PAGES = PAGES_CONFIG.filter((p) => p.showInHeader).sort((a, b) => a.order - b.order);
 
@@ -63,19 +62,22 @@ const PlanetRings = ({ color, size }: { color: string; size: number }) => (
 );
 
 /* ---- Planet disc: real NASA-based surface texture in a shaded circle,
-   with an optional SVG ring overlay (Saturn). Kept tiny (256px maps).
-   Used for the small thumbnails in cards and as the static fallback when the
-   3D WebGL layer is unavailable (eco mode / no WebGL / reduced motion). ---- */
+   with an optional SVG ring overlay (Saturn) and an optional slow texture
+   spin. Kept tiny (256px maps). Used for the small thumbnails in cards and
+   as the planets themselves on the desktop solar system (the planet IS the
+   trigger button, so visual and hit area can never drift apart). ---- */
 const PlanetDisc = ({
   planet,
   size,
   ring = false,
   className = "",
+  spin = false,
 }: {
   planet: { color: string; textureUrl: string };
   size: number;
   ring?: boolean;
   className?: string;
+  spin?: boolean;
 }) => (
   <span
     className={`relative inline-flex items-center justify-center ${className}`}
@@ -86,7 +88,7 @@ const PlanetDisc = ({
     <span className="relative block rounded-full overflow-hidden shadow-[0_2px_14px_rgba(0,0,0,0.55)]" style={{ width: size, height: size }}>
       {/* real surface map */}
       <span
-        className="absolute inset-0"
+        className={`absolute inset-0 ${spin ? "planet-spin" : ""}`}
         style={{
           backgroundImage: `url(${import.meta.env.BASE_URL}${planet.textureUrl})`,
           backgroundSize: "cover",
@@ -498,173 +500,6 @@ export default function ExplorePagesSection() {
   const hoveredPage = visiblePages.find((p) => p.id === hoveredPageId);
   const halfW = solarW / 2;
 
-  // ---- Shared-WebGL planet layer: one cheap orthographic context renders the
-  //      7 real planets as slowly-spinning lit spheres, aligned to the exact
-  //      pixel positions the DOM hit-area buttons use. DOM stays hoverable;
-  //      the 2D disc is the static fallback (eco / reduced-motion / no WebGL).
-  const [webglEnabled] = useState(() => isWebGLAvailable());
-  const use3D = webglEnabled && !motionless && solarW > 0;
-  const solarCanvasRef = useRef<HTMLCanvasElement>(null);
-  // Refs so the rAF loop never depends on React state.
-  const dataRef = useRef(PLANET_DATA);
-  const solarWRef = useRef(solarW);
-  solarWRef.current = solarW;
-  const visiblePagesRef = useRef(visiblePages);
-  visiblePagesRef.current = visiblePages;
-  const positionsRef = useRef(positions);
-  positionsRef.current = positions;
-  const hoverRef = useRef<string | null>(null);
-  hoverRef.current = hoveredPageId;
-
-  useEffect(() => {
-    if (!use3D) return;
-    const canvas = solarCanvasRef.current;
-    if (!canvas) return;
-    let cancelled = false;
-    let raf = 0;
-    let renderer: import("three").WebGLRenderer | null = null;
-    let scene: import("three").Scene | null = null;
-    let camera: import("three").OrthographicCamera | null = null;
-    let meshes: Array<{ id: string; mesh: import("three").Mesh; ring?: import("three").Mesh; spinRate: number }> = [];
-
-    const boot = async () => {
-      const THREE = await import("three");
-      if (cancelled) return;
-      const hw = solarWRef.current / 2;
-      scene = new THREE.Scene();
-      camera = new THREE.OrthographicCamera(-hw, hw, hw, -hw, -100, 100);
-      camera.position.z = 5;
-
-      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "low-power" });
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      renderer.setPixelRatio(dpr);
-      renderer.setSize(Math.round(solarWRef.current), Math.round(solarWRef.current), false);
-
-      // Soft fill + a single key light from the top-left (real sphere shading).
-      const ambient = new THREE.AmbientLight(0xffffff, 0.55);
-      const key = new THREE.DirectionalLight(0xffffff, 0.95);
-      key.position.set(-1, 1, 1.2);
-      const rim = new THREE.DirectionalLight(0x88bbff, 0.2);
-      rim.position.set(1, -0.5, 1);
-      scene.add(ambient, key, rim);
-
-      const loader = new THREE.TextureLoader();
-      meshes = visiblePagesRef.current.map((page) => {
-        const data = dataRef.current[page.id];
-        if (!data) return null;
-        // Gentle spin: ~30s (Mercury) → ~2min for the gas giants.
-        const spinRate = (Math.PI * 2) / (30 + (data.sizePx - 30) * 3);
-        const geo = new THREE.SphereGeometry(data.sizePx / 2, 32, 24);
-        const mat = new THREE.MeshStandardMaterial({
-          color: data.color,
-          roughness: 1,
-          metalness: 0,
-          transparent: true,
-          opacity: 1,
-        });
-        loader.load(
-          `${import.meta.env.BASE_URL}${data.textureUrl}`,
-          (tex) => {
-            tex.colorSpace = THREE.SRGBColorSpace;
-            mat.map = tex;
-            mat.color.set(0xffffff);
-            mat.needsUpdate = true;
-          },
-          undefined,
-          () => {
-            /* keep tinted fallback */
-          }
-        );
-        const mesh = new THREE.Mesh(geo, mat);
-        scene!.add(mesh);
-
-        // Saturn (or any ringed body): a thin tilted ring as a child of the
-        // sphere so it spins with the planet.
-        let ring: import("three").Mesh | undefined;
-        if (data.hasRings) {
-          const ringGeo = new THREE.RingGeometry(data.sizePx * 0.72, data.sizePx * 1.08, 64);
-          const ringMat = new THREE.MeshBasicMaterial({
-            color: data.color,
-            transparent: true,
-            opacity: 0.85,
-            side: THREE.DoubleSide,
-          });
-          ring = new THREE.Mesh(ringGeo, ringMat);
-          ring.rotation.x = -1.05;
-          ring.position.z = 0;
-          mesh.add(ring);
-        }
-
-        return { id: page.id, mesh, ring, spinRate };
-      }).filter((item): item is NonNullable<typeof item> => item !== null);
-
-      let last = performance.now();
-      let lastSizeW = -1;
-      const frame = (now: number) => {
-        if (cancelled) return;
-        raf = requestAnimationFrame(frame);
-        const dt = Math.min(0.05, (now - last) / 1000);
-        last = now;
-
-        const hw2 = solarWRef.current / 2;
-        if (renderer && Math.round(solarWRef.current) !== lastSizeW) {
-          lastSizeW = Math.round(solarWRef.current);
-          renderer.setSize(lastSizeW, lastSizeW, false);
-        }
-
-        const pos = positionsRef.current;
-        const hovered = hoverRef.current;
-        for (const { id, mesh, spinRate } of meshes) {
-          const angle = ((pos[id] ?? 0) * Math.PI) / 180;
-          const R = dataRef.current[id]?.radiusPct ?? 0.5;
-          mesh.position.set(Math.cos(angle) * R * hw2, -Math.sin(angle) * R * hw2, 0);
-          const mat = mesh.material as import("three").MeshStandardMaterial;
-          if (hovered) {
-            mesh.scale.setScalar(id === hovered ? 1.15 : 1);
-            mat.opacity = id === hovered ? 1 : 0.35;
-          } else {
-            mesh.scale.setScalar(1);
-            mat.opacity = 1;
-          }
-          // Pause the hovered planet so the cursor isn't chasing it.
-          if (id !== hovered) mesh.rotation.y += dt * spinRate;
-        }
-
-        if (camera) {
-          camera.left = -hw2;
-          camera.right = hw2;
-          camera.top = hw2;
-          camera.bottom = -hw2;
-          camera.updateProjectionMatrix();
-        }
-        renderer?.render(scene!, camera!);
-      };
-      raf = requestAnimationFrame(frame);
-    };
-
-    void boot();
-    return () => {
-      cancelled = true;
-      if (raf) cancelAnimationFrame(raf);
-      meshes.forEach(({ mesh, ring }) => {
-        if (ring) {
-          ring.geometry.dispose();
-          (ring.material as import("three").Material).dispose();
-        }
-        mesh.geometry.dispose();
-        const mat = mesh.material as import("three").Material;
-        mat.dispose();
-        (mat as import("three").MeshStandardMaterial).map?.dispose();
-      });
-      renderer?.dispose();
-      renderer = null;
-      scene = null;
-      camera = null;
-      meshes = [];
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [use3D]);
-
   // Place the info card beside the hovered planet, opening "towards the
   // centre" of the container, clamped to its bounds.
   const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
@@ -851,12 +686,6 @@ export default function ExplorePagesSection() {
           }}
         >
           <div ref={solarRef} className="relative aspect-square w-full max-w-[920px] mx-auto">
-            {/* shared 3D planet canvas — sits behind the DOM hit-area buttons */}
-            <canvas
-              ref={solarCanvasRef}
-              className="absolute inset-0 w-full h-full pointer-events-none z-[3]"
-              aria-hidden="true"
-            />
             {/* starfield */}
             <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
               {stars.map((s, i) => (
@@ -947,12 +776,17 @@ export default function ExplorePagesSection() {
                           style={{
                             width: data.sizePx + 16,
                             height: data.sizePx + 16,
-                            borderColor: active ? `${color}80` : "transparent",
-                            backgroundColor: "transparent",
+                            borderColor: `${color}38`,
+                            backgroundColor: "#0A0A0B80",
                             boxShadow: active ? `0 0 24px ${color}40` : undefined,
                           }}
                         >
-                          {use3D ? null : <PlanetDisc planet={data} size={data.sizePx} ring={data.hasRings} />}
+                          <PlanetDisc
+                            planet={data}
+                            size={data.sizePx}
+                            ring={data.hasRings}
+                            spin={!motionless}
+                          />
                         </span>
                         <span
                           className="font-mono text-[9px] tracking-widest uppercase whitespace-nowrap"

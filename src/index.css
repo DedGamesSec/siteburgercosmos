@@ -458,9 +458,21 @@
   animation: star-twinkle 5s ease-in-out infinite;
 }
 
+/* Slow planet self-rotation: only the surface texture turns, the radial
+   shading stays fixed so the terminator does not wobble. */
+@keyframes planet-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.planet-spin {
+  animation: planet-spin 75s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sun-breathe,
-  .star-twinkle {
+  .star-twinkle,
+  .planet-spin {
     animation: none !important;
   }
 }
