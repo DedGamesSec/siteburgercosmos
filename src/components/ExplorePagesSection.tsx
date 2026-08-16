@@ -449,6 +449,26 @@ const PAGE_CTA: Record<string, LangDict> = {
   },
 };
 
+/* ---- Optional real planet models (GLB) ----
+   The procedural SSS-textured spheres below are the default, but if you want
+   to use downloaded planet models instead, drop the .glb files into
+   `public/models/planets/` and uncomment the matching line (key = page id).
+   The loader normalises each model automatically: its bounding box is scaled
+   to the planet's configured `sizePx` and centred on its orbit, so no
+   hand-tuned scale/position constants are needed. A vanishing Venus/Venus
+   atmosphere / Saturn rings from the procedural path are skipped for a
+   configured model on purpose — Sketchfab models usually carry their own
+   textures and rings. */
+const MODEL_GLB: Record<string, string> = {
+  // "about": "models/planets/saturn.glb",
+  // "tech": "models/planets/jupiter.glb",
+  // "roadmap": "models/planets/mars.glb",
+  // "how-it-works": "models/planets/neptune.glb",
+  // "comparison": "models/planets/venus.glb",
+  // "news": "models/planets/uranus.glb",
+  // "download": "models/planets/mercury.glb",
+};
+
 /* Deterministic pseudo-random starfield layer. */
 const STAR_COUNT = 70;
 
@@ -614,8 +634,13 @@ export default function ExplorePagesSection() {
       pageId: string;
       data: PlanetData;
       group: import("three").Group;
-      mesh: import("three").Mesh;
-      mat: import("three").MeshStandardMaterial;
+      mesh?: import("three").Mesh;
+      mat?: import("three").MeshStandardMaterial;
+      /** When a GLB model is configured: the normalised group added to the
+          orbit group. `modelHook` is the inner node hover-scaled each frame. */
+      modelBody?: import("three").Group;
+      modelHook?: import("three").Group;
+      modelDimmed?: boolean;
       label: import("three").Sprite;
       labelMat: import("three").SpriteMaterial;
       spinRate: number;
@@ -670,6 +695,61 @@ export default function ExplorePagesSection() {
 
       const loader = new THREE.TextureLoader();
 
+      // Pre-load any configured GLB planet models (in parallel). Each result
+      // normalises the model: outermost group `body` is scaled so the model's
+      // bounding box matches the planet's `sizePx` and is centred on the
+      // orbit; `hook` is the inner node hover/scale is applied to each frame
+      // without disturbing the centring offset.
+      const modelSlots = await Promise.all(
+        (Object.entries(MODEL_GLB) as Array<[string, string]>)
+          .filter(([id]) => planetsRef.current.some(({ page }) => page.id === id))
+          .map(async ([id, url]) => {
+            try {
+              const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
+              const gltf = await new Promise<{ scene: import("three").Group }>((res, rej) => {
+                new GLTFLoader().load(`${import.meta.env.BASE_URL}${url}`, (g) => res(g), undefined, (err) => rej(err));
+              });
+              const hook = new THREE.Group();
+              hook.add(gltf.scene);
+              const body = new THREE.Group();
+              body.add(hook);
+              body.updateMatrixWorld(true);
+              const box = new THREE.Box3().setFromObject(body);
+              const size = box.getSize(new THREE.Vector3());
+              const maxDim = Math.max(size.x, size.y, size.z) || 1;
+              const s = PLANET_DATA[id].sizePx / maxDim;
+              const c = box.getCenter(new THREE.Vector3());
+              body.scale.setScalar(s);
+              body.position.set(-c.x * s, -c.y * s, -c.z * s);
+              body.traverse((o) => {
+                o.frustumCulled = false;
+              });
+              disposables.push({
+                dispose: () => {
+                  body.traverse((o) => {
+                    const m = o as import("three").Mesh;
+                    if (!m.isMesh) return;
+                    m.geometry?.dispose();
+                    const mats = Array.isArray(m.material) ? m.material : [m.material];
+                    for (const mm of mats) {
+                      const withMap = mm as import("three").Material & { map?: import("three").Texture };
+                      if (withMap.map) withMap.map.dispose();
+                      mm.dispose();
+                    }
+                  });
+                },
+              });
+              return { id, body, hook } as const;
+            } catch {
+              /* GLB failed to load — the planet stays fully procedural. */
+              return null;
+            }
+          })
+      );
+      const modelByPage = new Map<string, { body: import("three").Group; hook: import("three").Group }>();
+      for (const slot of modelSlots) if (slot) modelByPage.set(slot.id, slot);
+      if (cancelled) return;
+
       // Planet name label: a white-text sprite that lives in the scene and is
       // parented to the planet's orbit position each frame (tied to the 3D
       // model — it can never drift from the sphere). Material colour tints it
@@ -710,82 +790,92 @@ export default function ExplorePagesSection() {
         group.rotation.z = (motion.tiltDeg * Math.PI) / 180;
         scene.add(group);
 
-        const r = data.sizePx / 2;
-        const geo = new THREE.SphereGeometry(r, 32, 24);
-        const mat = new THREE.MeshStandardMaterial({ color: data.color, roughness: 1, metalness: 0, transparent: true });
-        loader.load(
-          `${import.meta.env.BASE_URL}${data.textureUrlHi ?? data.textureUrl}`,
-          (tex) => {
-            tex.colorSpace = THREE.SRGBColorSpace;
-            mat.map = tex;
-            mat.color.set(0xffffff);
-            mat.needsUpdate = true;
-          },
-          undefined,
-          () => {
-            /* keep the tinted colour as fallback */
-          }
-        );
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.userData.pageId = page.id;
-        group.add(mesh);
-        disposables.push(geo, mat);
-
-        // Venus: translucent cloud shell over the surface map for depth.
-        if (data.atmosphereTextureUrl) {
-          const cloudGeo = new THREE.SphereGeometry(r * 1.012, 32, 24);
-          const cloudMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.85, depthWrite: false });
+        const model = modelByPage.get(page.id);
+        let mesh: import("three").Mesh | undefined;
+        let mat: import("three").MeshStandardMaterial | undefined;
+        if (model) {
+          // Real GLB model: add the normalised body in place of the
+          // procedural sphere (Sketchfab models ship their own textures and,
+          // for Saturn, their own rings — skip the procedural extras).
+          group.add(model.body);
+        } else {
+          // Procedural sphere with the real surface map.
+          const geo = new THREE.SphereGeometry(data.sizePx / 2, 32, 24);
+          mat = new THREE.MeshStandardMaterial({ color: data.color, roughness: 1, metalness: 0, transparent: true });
           loader.load(
-            `${import.meta.env.BASE_URL}${data.atmosphereTextureUrl}`,
+            `${import.meta.env.BASE_URL}${data.textureUrlHi ?? data.textureUrl}`,
             (tex) => {
               tex.colorSpace = THREE.SRGBColorSpace;
-              cloudMat.map = tex;
-              cloudMat.needsUpdate = true;
+              mat.map = tex;
+              mat.color.set(0xffffff);
+              mat.needsUpdate = true;
             },
             undefined,
             () => {
-              /* keep invisible fallback */
+              /* keep the tinted colour as fallback */
             }
           );
-          const clouds = new THREE.Mesh(cloudGeo, cloudMat);
-          group.add(clouds);
-          disposables.push(cloudGeo, cloudMat);
-        }
+          mesh = new THREE.Mesh(geo, mat);
+          mesh.userData.pageId = page.id;
+          group.add(mesh);
+          disposables.push(geo, mat);
 
-        if (data.hasRings) {
-          const cfg = motion.ring ?? { inner: 0.78, outer: 1.15, opacity: 0.9 };
-          const ringGeo = new THREE.RingGeometry(r * cfg.inner, r * cfg.outer, 128);
-          const ringMat = new THREE.MeshBasicMaterial({
-            color: data.color,
-            transparent: true,
-            opacity: cfg.opacity,
-            side: THREE.DoubleSide,
-            depthWrite: false,
-          });
-          if (data.ringTextureUrl) {
-            // Saturn: real ring map (Solar System Scope alpha strip). The
-            // strip's radial banding maps across the ring band; the alpha
-            // channel keeps the gaps (Cassini division) transparent.
+          // Venus: translucent cloud shell over the surface map for depth.
+          if (data.atmosphereTextureUrl) {
+            const cloudGeo = new THREE.SphereGeometry((data.sizePx / 2) * 1.012, 32, 24);
+            const cloudMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.85, depthWrite: false });
             loader.load(
-              `${import.meta.env.BASE_URL}${data.ringTextureUrl}`,
+              `${import.meta.env.BASE_URL}${data.atmosphereTextureUrl}`,
               (tex) => {
                 tex.colorSpace = THREE.SRGBColorSpace;
-                ringMat.map = tex;
-                ringMat.color.set(0xffffff);
-                ringMat.opacity = 1; // the map's own alpha drives visibility
-                ringMat.depthWrite = false;
-                ringMat.needsUpdate = true;
+                cloudMat.map = tex;
+                cloudMat.needsUpdate = true;
               },
               undefined,
               () => {
-                /* keep the tinted colour as fallback */
+                /* keep invisible fallback */
               }
             );
+            const clouds = new THREE.Mesh(cloudGeo, cloudMat);
+            group.add(clouds);
+            disposables.push(cloudGeo, cloudMat);
           }
-          const ring = new THREE.Mesh(ringGeo, ringMat);
-          ring.rotation.x = -Math.PI / 2;
-          group.add(ring);
-          disposables.push(ringGeo, ringMat);
+
+          if (data.hasRings) {
+            const cfg = motion.ring ?? { inner: 0.78, outer: 1.15, opacity: 0.9 };
+            const ringGeo = new THREE.RingGeometry((data.sizePx / 2) * cfg.inner, (data.sizePx / 2) * cfg.outer, 128);
+            const ringMat = new THREE.MeshBasicMaterial({
+              color: data.color,
+              transparent: true,
+              opacity: cfg.opacity,
+              side: THREE.DoubleSide,
+              depthWrite: false,
+            });
+            if (data.ringTextureUrl) {
+              // Saturn: real ring map (Solar System Scope alpha strip). The
+              // strip's radial banding maps across the ring band; the alpha
+              // channel keeps the gaps (Cassini division) transparent.
+              loader.load(
+                `${import.meta.env.BASE_URL}${data.ringTextureUrl}`,
+                (tex) => {
+                  tex.colorSpace = THREE.SRGBColorSpace;
+                  ringMat.map = tex;
+                  ringMat.color.set(0xffffff);
+                  ringMat.opacity = 1; // the map's own alpha drives visibility
+                  ringMat.depthWrite = false;
+                  ringMat.needsUpdate = true;
+                },
+                undefined,
+                () => {
+                  /* keep the tinted colour as fallback */
+                }
+              );
+            }
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = -Math.PI / 2;
+            group.add(ring);
+            disposables.push(ringGeo, ringMat);
+          }
         }
 
         const label = makeLabelTex(THREE, data.name[language].toUpperCase());
@@ -794,8 +884,8 @@ export default function ExplorePagesSection() {
           pageId: page.id,
           data,
           group,
-          mesh,
-          mat,
+          ...(model ? { modelBody: model.body, modelHook: model.hook } : {}),
+          ...(mesh ? { mesh, mat } : {}),
           label: label.sprite,
           labelMat: label.mat,
           spinRate: (Math.PI * 2) / motion.spinSeconds,
@@ -825,13 +915,32 @@ export default function ExplorePagesSection() {
           const angle = ((pos[rec.pageId] ?? 0) * Math.PI) / 180;
           const R = rec.data.radiusPct * hw2;
           rec.group.position.set(Math.cos(angle) * R, -Math.sin(angle) * R, 0);
-          if (hovered) {
+          if (rec.modelBody) {
+            const isHovered = rec.pageId === hovered;
+            // Dim adjacent planets: tweak material opacity once per state
+            // change (3D models have several materials, so no per-frame sweep).
+            const dim = hovered !== null && !isHovered;
+            if (rec.modelDimmed !== dim) {
+              rec.modelDimmed = dim;
+              rec.modelBody.traverse((o) => {
+                const node = o as import("three").Mesh;
+                if (!node.isMesh) return;
+                const mats = Array.isArray(node.material) ? node.material : [node.material];
+                for (const mm of mats) {
+                  mm.transparent = true;
+                  mm.opacity = dim ? 0.35 : 1;
+                  mm.needsUpdate = true;
+                }
+              });
+            }
+            rec.modelHook?.scale.setScalar(isHovered ? 1.15 : 1);
+          } else if (rec.mesh && rec.mat) {
             const isHovered = rec.pageId === hovered;
             rec.mesh.scale.setScalar(isHovered ? 1.15 : 1);
             rec.mat.opacity = isHovered ? 1 : 0.35;
           } else {
-            rec.mesh.scale.setScalar(1);
-            rec.mat.opacity = 1;
+            rec.mesh?.scale.setScalar(1);
+            if (rec.mat) rec.mat.opacity = 1;
           }
           // Pause the hovered planet so the cursor is not chasing it.
           if (inViewRef.current && rec.pageId !== hovered) rec.group.rotation.y += dt * rec.spinRate * rec.direction;
