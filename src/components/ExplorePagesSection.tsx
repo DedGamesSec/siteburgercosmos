@@ -654,6 +654,35 @@ export default function ExplorePagesSection() {
     return Math.min(preference, room);
   };
 
+  // ---- Item 16: one frozen source for the fly-out vector. The pointer can
+  //      only rest on ONE planet, so all render paths (three.js loop, DOM hit
+  //      zones, 2D fallback) drain a single lock. The first frame that touches
+  //      a hovered planet captures its escape vector and reuses it unchanged
+  //      until the pointer leaves, so a 60-second orbit refresh that lands mid-
+  //      hover can no longer bounce the planet in a fresh direction.
+  const flyLockRef = useRef<{ pageId: string; tx: number; ty: number } | null>(null);
+  const getFlyVector = (
+    pageId: string,
+    active: boolean,
+    baseX: number,
+    baseY: number,
+    dist: number,
+    fly: number
+  ): { tx: number; ty: number } => {
+    if (!active) {
+      if (flyLockRef.current?.pageId === pageId) flyLockRef.current = null;
+      return { tx: 0, ty: 0 };
+    }
+    const cur = flyLockRef.current;
+    if (!cur || cur.pageId !== pageId) {
+      const tx = fly * (baseX / dist);
+      const ty = fly * (baseY / dist);
+      flyLockRef.current = { pageId, tx, ty };
+      return { tx, ty };
+    }
+    return cur;
+  };
+
   const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
     setHoveredPageId(id);
     const cont = solarRef.current;
@@ -1090,9 +1119,9 @@ export default function ExplorePagesSection() {
           // 0.3s duration.
           const dist = Math.hypot(baseX, baseY) || 1;
           const baseFly = clampFlyOffset(baseX, baseY, dist, hw2, rec.data.sizePx, FLY_REDUCED.has(rec.pageId));
-          const flyTarget = rec.pageId === hovered ? baseFly : 0;
-          const tX = flyTarget * (baseX / dist);
-          const tY = flyTarget * (baseY / dist);
+          // Item 16: the direction is captured once on hover start and frozen —
+          // a mid-hover orbit refresh cannot redirect the fly.
+          const { tx: tX, ty: tY } = getFlyVector(rec.pageId, rec.pageId === hovered, baseX, baseY, dist, baseFly);
           // Smooth easing toward the resting offset, with an exact snap when
           // it gets close. The hardened ≈limit drops out once inside 0.5px,
           // so every hover lands on the identical distance (1st, 2nd, 3rd, …)
@@ -1474,35 +1503,45 @@ export default function ExplorePagesSection() {
                   // on the rendered sphere.
                   const y = Math.sin(rad) * R;
                   const box = Math.max(48, data.sizePx + 28);
+                  const dist = Math.hypot(x, y) || 1;
+                  const fly = clampFlyOffset(x, y, dist, halfW, data.sizePx, FLY_REDUCED.has(page.id));
+                  // Item 16: the hit zone is driven by the exact same frozen
+                  // escape vector as the 3D sphere, so it slides WITH the
+                  // visual while hovered and the cursor never falls off the
+                  // trigger (which previously read as a wobbly direction).
+                  const active = hoveredPageId === page.id;
+                  const { tx, ty } = getFlyVector(page.id, active, x, y, dist, fly);
                   return (
-                    <button
+                    <div
                       key={page.id}
-                      type="button"
-                      className="absolute z-[4] rounded-full p-0 cursor-pointer outline-none border-0"
-                      style={{
-                        left: `calc(50% + ${x}px)`,
-                        top: `calc(50% + ${y}px)`,
-                        width: box,
-                        height: box,
-                        transform: "translate(-50%, -50%)",
-                        background: "transparent",
-                      }}
-                      aria-label={t.pageNames[page.labelKey]}
-                      onMouseEnter={(e) => {
-                        handlePlanetEnter(page.id, e);
-                      }}
-                      onMouseLeave={hideCardIfLeavingPlanet}
-                      onFocus={() => {
-                        setHoveredPageId(page.id);
-                      }}
-                      onClick={() => navigateTo(page.id)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          navigateTo(page.id);
-                        }
-                      }}
-                    />
+                      className="absolute z-[4]"
+                      style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
+                    >
+                      <div className="absolute -translate-x-1/2 -translate-y-1/2">
+                        <motion.button
+                          type="button"
+                          className="rounded-full p-0 cursor-pointer outline-none border-0"
+                          style={{ width: box, height: box, background: "transparent" }}
+                          animate={{ x: active ? tx : 0, y: active ? ty : 0 }}
+                          transition={{ duration: 0.3, ease: "easeOut" }}
+                          aria-label={t.pageNames[page.labelKey]}
+                          onMouseEnter={(e) => {
+                            handlePlanetEnter(page.id, e);
+                          }}
+                          onMouseLeave={hideCardIfLeavingPlanet}
+                          onFocus={() => {
+                            setHoveredPageId(page.id);
+                          }}
+                          onClick={() => navigateTo(page.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              navigateTo(page.id);
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
                   );
                 })}
                 {/* keyboard / assistive-tech access to the same pages */}
@@ -1532,6 +1571,9 @@ export default function ExplorePagesSection() {
                   const y = Math.sin(rad) * R;
                   const dist = Math.hypot(x, y) || 1;
                   const fly = clampFlyOffset(x, y, dist, halfW, data.sizePx, FLY_REDUCED.has(page.id));
+                  // Item 16: same frozen vector as the 3D hit zones — a mid-hover
+                  // orbit refresh never redirects the 2D fly either.
+                  const { tx, ty } = getFlyVector(page.id, active, x, y, dist, fly);
                   return (
                     <div
                       key={page.id}
@@ -1545,8 +1587,8 @@ export default function ExplorePagesSection() {
                           animate={{
                             opacity: dimmed ? 0.35 : 1,
                             scale: active ? 1.12 : 1,
-                            x: active ? (x / dist) * fly : 0,
-                            y: active ? (y / dist) * fly : 0,
+                            x: active ? tx : 0,
+                            y: active ? ty : 0,
                           }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
                           onMouseEnter={(e) => {
