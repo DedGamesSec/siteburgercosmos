@@ -595,12 +595,20 @@ export default function ExplorePagesSection() {
   const halfW = solarW / 2;
 
   // Position the info card beside the hovered planet: open it outwards from
-  // the planet (towards the centre of the composition), clamped to bounds.
-  const computeCardPos = (px: number, py: number, cW: number, cH: number) => {
+  // the planet (towards the centre of the composition), clamped to bounds so
+  // it never covers its own planet or spills beyond the container.
+  const computeCardPos = (px: number, py: number, cW: number, cH: number, planetRadius = 0) => {
     const CARD_W = 340;
-    const CARD_H = 330;
-    const towardRight = px < cW / 2;
-    let left = towardRight ? px + 30 : px - 30 - CARD_W;
+    const CARD_H = 540;
+    const gap = 28 + planetRadius;
+    const fitsRight = px + gap + CARD_W <= cW - 18;
+    const fitsLeft = px - gap - CARD_W >= 18;
+    let left: number;
+    if (fitsRight && (!fitsLeft || px <= cW - px)) {
+      left = px + gap;
+    } else {
+      left = px - gap - CARD_W;
+    }
     left = Math.max(18, Math.min(left, cW - CARD_W - 18));
     let top = py - CARD_H / 2;
     top = Math.max(18, Math.min(top, cH - CARD_H - 18));
@@ -615,7 +623,8 @@ export default function ExplorePagesSection() {
     const cRect = cont.getBoundingClientRect();
     const px = rect.left - cRect.left + rect.width / 2;
     const py = rect.top - cRect.top + rect.height / 2;
-    setCardPos(computeCardPos(px, py, cRect.width, cRect.height));
+    const planet = PLANET_DATA[id];
+    setCardPos(computeCardPos(px, py, cRect.width, cRect.height, planet ? planet.sizePx / 2 : 0));
   };
 
   // ---- Item 9: real 3D planets — one shared three.js canvas. Each planet is
@@ -978,7 +987,7 @@ export default function ExplorePagesSection() {
           color: data.color,
         });
         const glow = new THREE.Sprite(glowMat);
-        const glowScale = data.sizePx * (data.hasRings ? 3.2 : 3);
+        const glowScale = data.sizePx * 1.7;
         glow.scale.set(glowScale, glowScale, 1);
         glow.renderOrder = 0;
         disposables.push(glowMat);
@@ -1375,7 +1384,7 @@ export default function ExplorePagesSection() {
               <>
                 <canvas
                   ref={solarCanvasRef}
-                  className="absolute inset-0 w-full h-full touch-none z-[40] pointer-events-none"
+                  className="absolute inset-0 w-full h-full touch-none z-[3]"
                   aria-hidden="true"
                 />
                 {/* invisible DOM hit zones — positioned with the exact same orbit
@@ -1392,12 +1401,12 @@ export default function ExplorePagesSection() {
                   // the hit zone must mirror the scene's y sign to sit exactly
                   // on the rendered sphere.
                   const y = Math.sin(rad) * R;
-                  const box = Math.max(56, data.sizePx * (data.hasRings ? 2.4 : 2));
+                  const box = Math.max(48, data.sizePx + 28);
                   return (
                     <button
                       key={page.id}
                       type="button"
-                      className="absolute z-[41] rounded-full p-0 cursor-pointer outline-none border-0"
+                      className="absolute z-[4] rounded-full p-0 cursor-pointer outline-none border-0"
                       style={{
                         left: `calc(50% + ${x}px)`,
                         top: `calc(50% + ${y}px)`,
@@ -1454,7 +1463,7 @@ export default function ExplorePagesSection() {
                   return (
                     <div
                       key={page.id}
-                      className="absolute z-[41]"
+                      className="absolute z-[30]"
                       style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
                     >
                       <div className="absolute -translate-x-1/2 -translate-y-1/2">
