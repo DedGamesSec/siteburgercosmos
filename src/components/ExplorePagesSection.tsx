@@ -630,9 +630,12 @@ export default function ExplorePagesSection() {
   };
 
   // Distance (px) every hovered planet flies away from the Sun (and therefore
-  // away from its own info card): ~30px is a calm, uniform "nudge" — the same
-  // for all planets, whatever their orbit size.
+  // away from its own info card): ~30px is a calm, uniform "nudge". Neptune
+  // ("how-it-works") and Uranus ("news") sit on the farthest orbits, where the
+  // same 30px nudge looks exaggerated, so they get only a quarter of it.
   const FLY_OFFSET = 30;
+  const FLY_REDUCED = new Set(["how-it-works", "news"]);
+  const FLY_SCALE = 0.25;
 
   const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
     setHoveredPageId(id);
@@ -1067,7 +1070,7 @@ export default function ExplorePagesSection() {
           // outward — away from the Sun and from its card — so Neptune drifts
           // right, and all planets move by exactly the same amount.
           const dist = Math.hypot(baseX, baseY) || 1;
-          const flyTarget = rec.pageId === hovered ? FLY_OFFSET : 0;
+          const flyTarget = rec.pageId === hovered ? FLY_OFFSET * (FLY_REDUCED.has(rec.pageId) ? FLY_SCALE : 1) : 0;
           rec.shiftX += (flyTarget * (baseX / dist) - rec.shiftX) * ease;
           rec.shiftY += (flyTarget * (baseY / dist) - rec.shiftY) * ease;
           rec.group.position.set(baseX + rec.shiftX, baseY + rec.shiftY, 0);
@@ -1509,8 +1512,8 @@ export default function ExplorePagesSection() {
                           animate={{
                             opacity: dimmed ? 0.35 : 1,
                             scale: active ? 1.12 : 1,
-                            x: active ? (x / dist) * FLY_OFFSET : 0,
-                            y: active ? (y / dist) * FLY_OFFSET : 0,
+                            x: active ? (x / dist) * FLY_OFFSET * (FLY_REDUCED.has(page.id) ? FLY_SCALE : 1) : 0,
+                            y: active ? (y / dist) * FLY_OFFSET * (FLY_REDUCED.has(page.id) ? FLY_SCALE : 1) : 0,
                           }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
                           onMouseEnter={(e) => {
