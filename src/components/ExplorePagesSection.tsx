@@ -636,6 +636,23 @@ export default function ExplorePagesSection() {
   const FLY_OFFSET = 30;
   const FLY_REDUCED = new Set(["how-it-works", "news"]);
   const FLY_SCALE = 0.2025;
+  // Hover "fly-out" is capped by the room actually available in the direction
+  // of flight — the planet keeps its own disc plus a small gap inside the
+  // section square. Interior orbits have plenty of room and fly the full
+  // FLY_OFFSET; planets riding the outer orbits fly no more than their free
+  // space (and the far pair keeps the reduced damping), so none of them is
+  // ever pushed into the rim or pressed against the container edge.
+  const clampFlyOffset = (baseX: number, baseY: number, dist: number, half: number, sizePx: number, reduced: boolean) => {
+    const radius = sizePx / 2 + 10;
+    const L = half - radius;
+    const ux = baseX / dist;
+    const uy = baseY / dist;
+    const limitX = Math.abs(ux) < 1e-6 ? Infinity : ((ux > 0 ? L - baseX : L + baseX) / Math.abs(ux));
+    const limitY = Math.abs(uy) < 1e-6 ? Infinity : ((uy > 0 ? L - baseY : L + baseY) / Math.abs(uy));
+    const room = Math.max(0, Math.min(limitX, limitY));
+    const preference = reduced ? FLY_OFFSET * FLY_SCALE : FLY_OFFSET;
+    return Math.min(preference, room);
+  };
 
   const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
     setHoveredPageId(id);
@@ -1072,7 +1089,8 @@ export default function ExplorePagesSection() {
           // exact same targets (FLY_OFFSET/FLY_REDUCED/FLY_SCALE) with a fixed
           // 0.3s duration.
           const dist = Math.hypot(baseX, baseY) || 1;
-          const flyTarget = rec.pageId === hovered ? FLY_OFFSET * (FLY_REDUCED.has(rec.pageId) ? FLY_SCALE : 1) : 0;
+          const baseFly = clampFlyOffset(baseX, baseY, dist, hw2, rec.data.sizePx, FLY_REDUCED.has(rec.pageId));
+          const flyTarget = rec.pageId === hovered ? baseFly : 0;
           const tX = flyTarget * (baseX / dist);
           const tY = flyTarget * (baseY / dist);
           // Smooth easing toward the resting offset, with an exact snap when
@@ -1513,6 +1531,7 @@ export default function ExplorePagesSection() {
                   const x = Math.cos(rad) * R;
                   const y = Math.sin(rad) * R;
                   const dist = Math.hypot(x, y) || 1;
+                  const fly = clampFlyOffset(x, y, dist, halfW, data.sizePx, FLY_REDUCED.has(page.id));
                   return (
                     <div
                       key={page.id}
@@ -1526,8 +1545,8 @@ export default function ExplorePagesSection() {
                           animate={{
                             opacity: dimmed ? 0.35 : 1,
                             scale: active ? 1.12 : 1,
-                            x: active ? (x / dist) * FLY_OFFSET * (FLY_REDUCED.has(page.id) ? FLY_SCALE : 1) : 0,
-                            y: active ? (y / dist) * FLY_OFFSET * (FLY_REDUCED.has(page.id) ? FLY_SCALE : 1) : 0,
+                            x: active ? (x / dist) * fly : 0,
+                            y: active ? (y / dist) * fly : 0,
                           }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
                           onMouseEnter={(e) => {
