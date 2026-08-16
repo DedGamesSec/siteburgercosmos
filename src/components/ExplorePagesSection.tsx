@@ -465,6 +465,25 @@ export default function ExplorePagesSection() {
     setCardPos(null);
   };
 
+  // Delayed hide: when the pointer leaves a planet the preview card is not
+  // torn down instantly — the user often moves the cursor toward the card
+  // to click it. Re-entering a planet or the card itself cancels the timers.
+  const hideTimerRef = useRef<number | null>(null);
+  const scheduleHideCard = () => {
+    if (hideTimerRef.current !== null) return;
+    hideTimerRef.current = window.setTimeout(() => {
+      hideTimerRef.current = null;
+      hideCard();
+    }, 500);
+  };
+  const cancelHideCard = () => {
+    if (hideTimerRef.current !== null) {
+      window.clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
+  };
+  useEffect(() => () => cancelHideCard(), []);
+
   const [reduceMotion] = useState(
     () => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
@@ -891,14 +910,7 @@ export default function ExplorePagesSection() {
     return (
       <div
         className="flex flex-col h-full cursor-pointer"
-        onClick={(e) => {
-          if (hoveredPageId !== page.id) {
-            setHoveredPageId(page.id);
-            e.preventDefault();
-            return;
-          }
-          navigateTo(page.id);
-        }}
+        onClick={() => navigateTo(page.id)}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
@@ -1118,13 +1130,16 @@ export default function ExplorePagesSection() {
                         background: "transparent",
                       }}
                       aria-label={t.pageNames[page.labelKey]}
-                      onMouseEnter={(e) => handlePlanetEnter(page.id, e)}
-                      onMouseLeave={() => hideCard()}
-                      onFocus={() => setHoveredPageId(page.id)}
-                      onClick={() => {
-                        if (hoveredPageId === page.id) navigateTo(page.id);
-                        else setHoveredPageId(page.id);
+                      onMouseEnter={(e) => {
+                        cancelHideCard();
+                        handlePlanetEnter(page.id, e);
                       }}
+                      onMouseLeave={() => scheduleHideCard()}
+                      onFocus={() => {
+                        cancelHideCard();
+                        setHoveredPageId(page.id);
+                      }}
+                      onClick={() => navigateTo(page.id)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
@@ -1171,13 +1186,16 @@ export default function ExplorePagesSection() {
                           className="flex flex-col items-center gap-1.5 cursor-pointer outline-none"
                           animate={{ opacity: dimmed ? 0.35 : 1, scale: active ? 1.12 : 1 }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
-                          onMouseEnter={(e) => handlePlanetEnter(page.id, e)}
-                          onMouseLeave={() => hideCard()}
-                          onFocus={() => setHoveredPageId(page.id)}
-                          onClick={() => {
-                            if (hoveredPageId === page.id) navigateTo(page.id);
-                            else setHoveredPageId(page.id);
+                          onMouseEnter={(e) => {
+                            cancelHideCard();
+                            handlePlanetEnter(page.id, e);
                           }}
+                          onMouseLeave={() => scheduleHideCard()}
+                          onFocus={() => {
+                            cancelHideCard();
+                            setHoveredPageId(page.id);
+                          }}
+                          onClick={() => navigateTo(page.id)}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" || e.key === " ") {
                               e.preventDefault();
@@ -1231,6 +1249,8 @@ export default function ExplorePagesSection() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8, scale: 0.97 }}
                   transition={{ duration: 0.25, ease: "easeOut" }}
+                  onPointerEnter={cancelHideCard}
+                  onPointerLeave={scheduleHideCard}
                 >
                   {renderOverlayCard(hoveredPage, hoveredPlanet)}
                 </motion.div>
