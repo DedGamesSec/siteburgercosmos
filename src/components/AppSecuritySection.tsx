@@ -276,9 +276,9 @@ const SecurityCard: React.FC<SecurityCardProps> = ({ feat, className, ecoMode })
   return (
     <div
       className={`relative p-6 sm:p-8 rounded-xl bg-[#0A0A0B]/95 border border-white/[0.04] hover:border-[#3B82F6]/40 transition-all duration-300 group flex gap-5 overflow-hidden ${className}`}
-      onMouseEnter={() => { if (!ecoMode) setScan("active"); }}
-      onMouseLeave={() => {
-        if (!ecoMode) setScan((s) => (s === "active" ? "exiting" : s));
+      onPointerEnter={(e) => { if (e.pointerType === "mouse" && !ecoMode) setScan("active"); }}
+      onPointerLeave={(e) => {
+        if (e.pointerType === "mouse" && !ecoMode) setScan((s) => (s === "active" ? "exiting" : s));
       }}
     >
       {/* Single scan stripe: slow infinite sweep on hover; on leave the SAME

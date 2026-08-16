@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+/* Sticky-hover fix for touch devices: on phones/tablets an emulated CSS :hover
+   (and the pointerenter state it feeds) sticks to the last tapped element.
+   Restrict the `hover:` and `group-hover:` variants to inputs that genuinely
+   support hovering (mouse/trackpad) so taps never lock a card open. */
+@custom-variant hover {
+  @media (hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+
+@custom-variant group-hover {
+  @media (hover: hover) {
+    &:is(:where(.group):hover *) {
+      @slot;
+    }
+  }
+}
+
 /* Tailwind scans the whole repo by default. Exclude docs/scripts so that any
    hex or class mentioned there (e.g. old accent #2E7DFF in md/ps1) can't leak
    into the generated CSS as dead utilities. */
@@ -222,8 +242,10 @@
   60%  { transform: translate(-0.5px, 0); text-shadow: 0.5px 0 #3B82F6, -0.5px 0 rgba(255,80,120,0.5); }
   100% { transform: translate(0, 0); text-shadow: 0 0 0 transparent; }
 }
-.group:hover .appsec-glitch {
-  animation: appsec-glitch 0.3s steps(2, end);
+@media (hover: hover) {
+  .group:hover .appsec-glitch {
+    animation: appsec-glitch 0.3s steps(2, end);
+  }
 }
 
 .footer-grid {

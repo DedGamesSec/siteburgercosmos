@@ -50,9 +50,9 @@ const ScanCard = React.forwardRef<HTMLDivElement, ScanCardProps>(
         id={id}
         onClick={onClick}
         className={`relative ${padding} rounded-2xl bg-[#0A0A0B]/95 border ${borderColor} hover:border-[#3B82F6]/40 transition-all duration-300 group flex flex-col overflow-hidden ${cardClassName}`}
-        onPointerEnter={() => { if (!ecoMode && !scanDisabled) setScan("active"); }}
-        onPointerLeave={() => {
-          if (!ecoMode && !scanDisabled) setScan((s) => (s === "active" ? "exiting" : s));
+        onPointerEnter={(e) => { if (e.pointerType === "mouse" && !ecoMode && !scanDisabled) setScan("active"); }}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse" && !ecoMode && !scanDisabled) setScan((s) => (s === "active" ? "exiting" : s));
         }}
       >
         {scanning && (
