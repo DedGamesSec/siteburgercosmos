@@ -5,25 +5,43 @@ interface EcoModeContextType {
   toggleEcoMode: () => void;
 }
 
-const EcoModeContext = createContext<EcoModeContextType | undefined>(undefined);
+const STORAGE_KEY = 'trustnode_eco';
+// A user who has never touched the header toggle is assumed to follow their
+// OS-level accessibility preference instead: if the system asks for reduced
+// motion (make it more usable for us too), eco mode turns on automatically.
+// As soon as the user toggles manually, that explicit choice wins and is
+// persisted; a later OS change never overrides it.
+const CHOICE_KEY = 'trustnode_eco_explicit';
+
+const queried = (): boolean => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 export const EcoModeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // ecoMode is a purely manual user choice (persisted). It is NOT auto-enabled
-  // from prefers-reduced-motion: on phones that flag is commonly on by default
-  // (iOS reduce-motion), and auto-triggering it there silently disabled the 3D
-  // cinematic + logo assembly the site is built around. Reduced-motion users
-  // can still opt in explicitly from the header toggle.
   const [ecoMode, setEcoMode] = useState<boolean>(() => {
-    return localStorage.getItem('trustnode_eco') === 'true';
+    const explicit = localStorage.getItem(CHOICE_KEY);
+    if (explicit) return localStorage.getItem(STORAGE_KEY) === 'true';
+    // No explicit choice yet — default to the OS reduced-motion preference.
+    return queried();
   });
 
   const toggleEcoMode = () => {
     setEcoMode((prev) => {
       const next = !prev;
-      localStorage.setItem('trustnode_eco', String(next));
+      localStorage.setItem(CHOICE_KEY, 'true');
+      localStorage.setItem(STORAGE_KEY, String(next));
       return next;
     });
   };
+
+  // While the user still has no explicit preference, keep following OS changes
+  // (e.g. enabling reduced motion while the page is open).
+  useEffect(() => {
+    if (localStorage.getItem(CHOICE_KEY)) return;
+    const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    if (!mq || !mq.addEventListener) return;
+    const apply = () => setEcoMode(mq.matches);
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
 
   useEffect(() => {
     if (ecoMode) {
