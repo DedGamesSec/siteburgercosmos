@@ -112,6 +112,9 @@ const PlanetDisc = ({
    Sizes are compressed from real diameters (min ~30px Mercury ... max 62px
    Jupiter). Orbit radii mirror the relative distances, compressed non-linearly
    so everything fits the block. Real positions come from astronomy-engine. */
+// Multiplier applied to every orbit so the whole system sits a touch closer
+// together and no planet reaches the very edges of the block.
+const ORBIT_SCALE = 0.92;
 type PlanetData = {
   name: LangDict;
   fact: LangDict;
@@ -878,8 +881,8 @@ export default function ExplorePagesSection() {
         c.width = c.height = s;
         const ctx = c.getContext("2d")!;
         const g = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
-        g.addColorStop(0, "rgba(255,255,255,1)");
-        g.addColorStop(0.35, "rgba(255,255,255,0.45)");
+        g.addColorStop(0, "rgba(255,255,255,0.55)");
+        g.addColorStop(0.5, "rgba(255,255,255,0.25)");
         g.addColorStop(1, "rgba(255,255,255,0)");
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, s, s);
@@ -1046,7 +1049,7 @@ export default function ExplorePagesSection() {
         const ease = 1 - Math.pow(0.005, dt); // exponential smoothing factor
         for (const rec of records) {
           const angle = ((pos[rec.pageId] ?? 0) * Math.PI) / 180;
-          const R = rec.data.radiusPct * hw2;
+          const R = rec.data.radiusPct * ORBIT_SCALE * hw2;
           rec.group.position.set(Math.cos(angle) * R, -Math.sin(angle) * R, 0);
 
           const isHovered = rec.pageId === hovered;
@@ -1055,11 +1058,11 @@ export default function ExplorePagesSection() {
           rec.wasHovered = isHovered;
           if (nowHovered) rec.flash = 1;
           // The glow glints on selection, then fades softly.
-          rec.flash = Math.max(0, rec.flash - dt * 2.4);
+          rec.flash = Math.max(0, rec.flash - dt * 1.4);
 
           if (rec.glow && rec.glowMat) {
             rec.glow.position.set(rec.group.position.x, rec.group.position.y, 0);
-            rec.glowMat.opacity = rec.flash * 0.85;
+            rec.glowMat.opacity = rec.flash * 0.55;
           }
 
           // Smoothly ease the spin toward its target: full rate normally,
@@ -1359,7 +1362,7 @@ export default function ExplorePagesSection() {
               <div
                 key={`ring-${page.id}`}
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#3B82F6]/[0.08] pointer-events-none"
-                style={{ width: `${data.radiusPct * 100}%`, height: `${data.radiusPct * 100}%` }}
+                style={{ width: `${data.radiusPct * ORBIT_SCALE * 100}%`, height: `${data.radiusPct * ORBIT_SCALE * 100}%` }}
               />
             ))}
 
@@ -1409,7 +1412,7 @@ export default function ExplorePagesSection() {
                 {planets.map(({ page, data }) => {
                   const angleDeg = positions[page.id] ?? 0;
                   const rad = (angleDeg * Math.PI) / 180;
-                  const R = data.radiusPct * halfW;
+                  const R = data.radiusPct * ORBIT_SCALE * halfW;
                   const x = Math.cos(rad) * R;
                   // CSS `top` grows downward while three.js y grows upward, so
                   // the hit zone must mirror the scene's y sign to sit exactly
@@ -1469,7 +1472,7 @@ export default function ExplorePagesSection() {
                   const color = data.color;
                   const angleDeg = positions[page.id] ?? 0;
                   const rad = (angleDeg * Math.PI) / 180;
-                  const R = data.radiusPct * halfW;
+                  const R = data.radiusPct * ORBIT_SCALE * halfW;
                   const x = Math.cos(rad) * R;
                   const y = Math.sin(rad) * R;
                   return (
