@@ -629,6 +629,13 @@ export default function ExplorePagesSection() {
     return { x: left, y: top };
   };
 
+  // Distance (px) a hovered planet flies away from its own info card.
+  // ~38px ≈ 1 cm at 96 DPI; the shift is horizontal and opposite the card.
+  const FLY_OFFSET = 38;
+  // Which side the card opened on relative to the planet: 1 = card to the
+  // right, -1 = card to the left. Used to aim the fly-away direction.
+  const cardSideRef = useRef<1 | -1 | 0>(0);
+
   const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
     setHoveredPageId(id);
     const cont = solarRef.current;
@@ -638,7 +645,9 @@ export default function ExplorePagesSection() {
     const px = rect.left - cRect.left + rect.width / 2;
     const py = rect.top - cRect.top + rect.height / 2;
     const planet = PLANET_DATA[id];
-    setCardPos(computeCardPos(px, py, cRect.width, cRect.height, planet ? planet.sizePx / 2 : 0));
+    const pos = computeCardPos(px, py, cRect.width, cRect.height, planet ? planet.sizePx / 2 : 0);
+    setCardPos(pos);
+    cardSideRef.current = pos.x > px ? 1 : -1;
   };
 
   // ---- Item 9: real 3D planets — one shared three.js canvas. Each planet is
@@ -698,10 +707,12 @@ export default function ExplorePagesSection() {
       glowMat?: import("three").SpriteMaterial;
       spinRate: number;
       direction: number;
-      /** Eased dynamic fields: current spin speed, hovered scale and the
-          fading selection flash (1 = just selected, decays to 0). */
+      /** Eased dynamic fields: current spin speed, hovered scale, the
+          fading selection flash (1 = just selected, decays to 0) and the
+          hovered "fly-away" shift (px, away from the card). */
       spinVel: number;
       scaleCur: number;
+      shiftCur: number;
       flash: number;
       wasHovered: boolean;
     }> = [];
@@ -1023,6 +1034,7 @@ export default function ExplorePagesSection() {
           direction: motion.retrograde ? -1 : 1,
           spinVel: (Math.PI * 2) / motion.spinSeconds,
           scaleCur: 1,
+          shiftCur: 0,
           flash: 0,
           wasHovered: false,
         });
@@ -1047,10 +1059,15 @@ export default function ExplorePagesSection() {
         const pos = positionsRef.current;
         const hovered = hoverRef.current;
         const ease = 1 - Math.pow(0.005, dt); // exponential smoothing factor
+        const cardShiftTarget = hovered !== null ? -cardSideRef.current * FLY_OFFSET : 0;
         for (const rec of records) {
           const angle = ((pos[rec.pageId] ?? 0) * Math.PI) / 180;
           const R = rec.data.radiusPct * ORBIT_SCALE * hw2;
-          rec.group.position.set(Math.cos(angle) * R, -Math.sin(angle) * R, 0);
+          // The hovered planet eases away from its card by FLY_OFFSET (while
+          // un-hovered, everyone keeps their exact orbit position). Released
+          // with the same easing so the speed feels identical for all.
+          rec.shiftCur += (cardShiftTarget * (rec.pageId === hovered ? 1 : 0) - rec.shiftCur) * ease;
+          rec.group.position.set(Math.cos(angle) * R + rec.shiftCur, -Math.sin(angle) * R, 0);
 
           const isHovered = rec.pageId === hovered;
           const dim = hovered !== null && !isHovered;
@@ -1485,7 +1502,11 @@ export default function ExplorePagesSection() {
                         <motion.button
                           type="button"
                           className="flex flex-col items-center gap-1.5 cursor-pointer outline-none"
-                          animate={{ opacity: dimmed ? 0.35 : 1, scale: active ? 1.12 : 1 }}
+                          animate={{
+                            opacity: dimmed ? 0.35 : 1,
+                            scale: active ? 1.12 : 1,
+                            x: active ? -cardSideRef.current * FLY_OFFSET : 0,
+                          }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
                           onMouseEnter={(e) => {
                             handlePlanetEnter(page.id, e);
