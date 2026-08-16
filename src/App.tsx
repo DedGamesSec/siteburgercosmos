@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Suspense, lazy } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense, lazy } from "react";
 const NetworkBackground = lazy(() => import("./components/NetworkBackground"));
 const CinematicScene = lazy(() => import("./components/CinematicScene"));
 import { isWebGLAvailable, type CinematicPhases } from "./components/cinematicShared";
@@ -40,7 +40,7 @@ import ExplorePagesSection from "./components/ExplorePagesSection";
 import AppSecuritySection from "./components/AppSecuritySection";
 import KiraAssistantSection from "./components/KiraAssistantSection";
 import RealDevelopmentSection from "./components/RealDevelopmentSection";
-import ScienceValidationSection from "./components/ScienceValidationSection";
+import ModelTesterSection from "./components/ModelTesterSection";
 import OriginStorySection from "./components/OriginStorySection";
 import LegalPage from "./components/LegalPage";
 import CookieConsent from "./components/CookieConsent";
@@ -59,25 +59,24 @@ import { motion, AnimatePresence } from "motion/react";
 import { useTranslation } from "./i18n/LanguageContext";
 import { useNavigation, PageId } from "./navigation/NavigationContext";
 import { useEcoMode } from "./context/EcoModeContext";
+import { useSectionSnap } from "./hooks/useSectionSnap";
 
 export default function App() {
   const { t, language } = useTranslation();
   const { activePage } = useNavigation();
   const { ecoMode, toggleEcoMode } = useEcoMode();
   const [windowHeight, setWindowHeight] = useState(0);
-  const [activeMobileCard, setActiveMobileCard] = useState(0);
-  const [userInteractedWithMobileCards, setUserInteractedWithMobileCards] = useState(false);
   const [skyStatus, setSkyStatus] = useState<string>("");
-
-  const mobileCards = t.mobileCards;
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)").matches : false
+  );
 
   useEffect(() => {
-    if (userInteractedWithMobileCards) return;
-    const interval = setInterval(() => {
-      setActiveMobileCard((prev) => (prev + 1) % 4);
-    }, 4500);
-    return () => clearInterval(interval);
-  }, [userInteractedWithMobileCards]);
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -103,7 +102,15 @@ export default function App() {
   // "TrustNode" title, while the logo assembles — all from a single progress value.
   // It builds 0->1 as the logo block approaches, holds while it's on screen, then
   // eases out behind the content that follows. Stops the instant scrolling stops.
-  const [sceneProgress, setSceneProgress] = useState(0);
+  // 2D logo-assembly progress, shared as a mutable ref so per-frame scroll updates
+  // never re-render React (mirrors the 3D cinematic's cinematicProgressRef). The
+  // hero fade, the OFFLINE-FIRST/ZERO TELEMETRY labels and the enter-dome arrow are
+  // driven imperatively from a rAF loop below that reads this ref.
+  const sceneProgressRef = useRef(0);
+  const assemblyLeftRef = useRef<HTMLDivElement>(null);
+  const assemblyRightRef = useRef<HTMLDivElement>(null);
+  const showEnterDomeRef = useRef(false);
+  const [showEnterDome, setShowEnterDome] = useState(false);
   const warpRAFRef = useRef(0);
 
   // 3D WebGL cinematic corridor. When WebGL is available (and not in eco mode) the
@@ -114,6 +121,26 @@ export default function App() {
   const [cinematicActive, setCinematicActive] = useState(false);
   const [webglReady] = useState(() => isWebGLAvailable());
   const cinematicEnabled = webglReady && !ecoMode;
+  // In eco mode there is no animation to give scroll room to, so collapse the
+  // otherwise 150dvh-deep empty flight corridor (the source of the huge blank
+  // space users saw when toggling eco mode on).
+  const flightCorridorDvh = ecoMode ? 0 : FLIGHT_CORRIDOR_DVH;
+
+  // Smooth snap scroll between the landing sections (desktop wheel only).
+  // Disabled in eco mode (no motion) and reduced-motion, and on any page other
+  // than home. Free scrolling is kept until the user reaches the core landing.
+  const snapEnabled = activePage === "home" && !cinematicEnabled && !ecoMode && !prefersReducedMotion;
+  const snapGate = useCallback(() => {
+    const el = coreLandingRef.current;
+    if (!el) return 0;
+    return el.offsetTop + window.innerHeight * 0.15;
+  }, []);
+  const snapTargets = useCallback((): HTMLElement[] => {
+    const landing = coreLandingRef.current;
+    if (!landing) return [];
+    return Array.from(landing.querySelectorAll<HTMLElement>("[data-snap-section]"));
+  }, []);
+  useSectionSnap({ enabled: snapEnabled, reducedMotion: prefersReducedMotion || ecoMode, gateOffset: snapGate, getTargets: snapTargets });
 
   // The header stays hidden while the cinematic intro plays, then fades in once the
   // animation reaches the very end (progress 1.0 = Earth approach complete, cards
@@ -174,15 +201,12 @@ export default function App() {
     };
   }, [cinematicEnabled, activePage]);
 
-  // Scroll-driven fly-past of the hero title; disabled in eco mode (no motion).
-  const flyBy = ecoMode ? 0 : cinematicEnabled ? cinematicProgressRef.current : sceneProgress;
-
   useEffect(() => {
     const computeScene = () => {
       const el = section2Ref.current;
       const vh = windowHeight || window.innerHeight;
       if (!el) {
-        setSceneProgress(0);
+        sceneProgressRef.current = 0;
         return;
       }
       const rect = el.getBoundingClientRect();
@@ -199,7 +223,7 @@ export default function App() {
         // Block scrolled past: ease the flight back to 0 behind the following content
         p = 1 - Math.min(1, Math.max(0, (-rect.top - vh) / vh));
       }
-      setSceneProgress(p);
+      sceneProgressRef.current = p;
     };
     const onScroll = () => {
       if (warpRAFRef.current) return;
@@ -217,6 +241,46 @@ export default function App() {
       if (warpRAFRef.current) cancelAnimationFrame(warpRAFRef.current);
     };
   }, [windowHeight]);
+
+  // Imperative driver for the 2D assembly block (non-cinematic path): reads the
+  // shared sceneProgressRef every frame and writes hero/label styles straight to
+  // the DOM — no React state, so the logo SVG and the labels are never re-rendered
+  // at 60fps while the user scrolls (the source of the pre-WebGL scroll stutter).
+  useEffect(() => {
+    if (cinematicEnabled) return;
+    let raf = 0;
+    let lastP = Number.NaN;
+    const loop = () => {
+      raf = requestAnimationFrame(loop);
+      const p = sceneProgressRef.current;
+      if (p === lastP) return;
+      lastP = p;
+
+      if (heroSectionRef.current && !ecoMode) {
+        const f = Math.min(1, p / 0.45);
+        heroSectionRef.current.style.opacity = String(Math.max(0, 1 - f));
+        heroSectionRef.current.style.transform = `scale(${1 + 0.14 * f})`;
+      }
+
+      const cOp = p > 0.15 ? Math.min(1, (p - 0.15) / 0.85) : 0;
+      if (assemblyLeftRef.current) {
+        assemblyLeftRef.current.style.opacity = String(cOp);
+        assemblyLeftRef.current.style.transform = `translateX(${-40 * (1 - Math.min(1, cOp))}px)`;
+      }
+      if (assemblyRightRef.current) {
+        assemblyRightRef.current.style.opacity = String(cOp);
+        assemblyRightRef.current.style.transform = `translateX(${40 * (1 - Math.min(1, cOp))}px)`;
+      }
+
+      const shouldShow = p > 0.1;
+      if (shouldShow !== showEnterDomeRef.current) {
+        showEnterDomeRef.current = shouldShow;
+        setShowEnterDome(shouldShow);
+      }
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [cinematicEnabled, ecoMode]);
 
   // Scroll math for the 3D cinematic corridor. The flight is time-driven (auto-play
   // above) and cannot be skipped: scrolling no longer fast-forwards the progress,
@@ -546,7 +610,7 @@ export default function App() {
 
   return (
     <div 
-      className="relative w-full max-w-full overflow-x-hidden bg-[#0A0A0B] selection:bg-[#3B82F6]/30 selection:text-[#F5F5F0]"
+      className="relative w-full max-w-full overflow-x-hidden bg-[#0A0A0B] selection:bg-[#3B82F6]/30 selection:text-[#F5F5F0] pl-16 sm:pl-20"
       style={{ minHeight: "100vh" }}
       id="app-container"
     >
@@ -560,16 +624,15 @@ export default function App() {
       {/* Fixed Network Background (Acts as the uniform starfield throughout) */}
       <div className="fixed inset-0 w-full h-full pointer-events-none">
         <Suspense fallback={<SkyPlaceholder />}>
-          <NetworkBackground zoomFactor={zoomFactor} warpProgress={sceneProgress} isEcoMode={ecoMode} onSkyStatusChange={setSkyStatus} language={language} suspended={bgSuspended} />
+          <NetworkBackground zoomFactor={zoomFactor} warpProgressRef={sceneProgressRef} isEcoMode={ecoMode} onSkyStatusChange={setSkyStatus} language={language} suspended={bgSuspended} />
         </Suspense>
       </div>
 
-      {/* Universal Fixed Header - Displayed on all pages across the application */}
+      {/* Universal Fixed Header (vertical sidebar on the left) - Displayed on all pages across the application */}
       <div 
-        className="transition-all duration-300 fixed top-0 left-0 right-0 z-50"
+        className="transition-opacity duration-300 fixed top-0 left-0 bottom-0 z-50 w-16 sm:w-20"
         style={{ 
           opacity: showHeader ? 1 : 0, 
-          transform: showHeader ? "translateY(0)" : "translateY(-100%)",
           pointerEvents: showHeader ? "auto" : "none" 
         }}
       >
@@ -602,12 +665,8 @@ export default function App() {
                     className="relative z-20 w-full flex items-center justify-center px-4 select-none pointer-events-none"
                     style={{
                       height: "100dvh",
-                      ...(cinematicEnabled
-                        ? {}
-                        : {
-                            opacity: Math.max(0, 1 - Math.min(1, flyBy / 0.45)),
-                            transform: `scale(${1 + 0.14 * Math.min(1, flyBy / 0.45)})`
-                          }),
+                      opacity: 1,
+                      transform: "scale(1)",
                       transformOrigin: "center center"
                     }}
                     id="main-hero-section-container"
@@ -645,7 +704,7 @@ export default function App() {
 
                       {/* Huge Hero Title */}
                       <h1 
-                        className="font-display font-medium text-5xl sm:text-7xl md:text-[120px] lg:text-[140px] xl:text-[150px] leading-[0.9] tracking-tighter mb-6"
+                        className="font-display font-medium text-4xl sm:text-7xl md:text-[120px] lg:text-[140px] xl:text-[150px] leading-[0.9] tracking-tighter mb-6"
                         id="main-title"
                       >
                         <span className="text-[#F5F5F0]">Trust</span>
@@ -675,7 +734,7 @@ export default function App() {
                     >
                       <button 
                         onClick={() => {
-                          window.scrollTo({ top: vh * (1 + (cinematicEnabled ? CINEMATIC_CORRIDOR_DVH / 100 * 0.05 : FLIGHT_CORRIDOR_DVH / 100)), behavior: "smooth" });
+                          window.scrollTo({ top: vh * (1 + flightCorridorDvh / 100), behavior: "smooth" });
                         }}
                         className="flex flex-col items-center gap-2 cursor-pointer group pointer-events-auto z-30 transition-opacity duration-300"
                         id="scroll-indicator-container"
@@ -722,16 +781,18 @@ export default function App() {
                       {/* SECTION 1.5: DEEP SPACE FLIGHT CORRIDOR (open space to fly through) */}
                       <div
                         className="relative w-full pointer-events-none"
-                        style={{ height: `${FLIGHT_CORRIDOR_DVH}dvh` }}
+                        style={{ height: `${flightCorridorDvh}dvh` }}
                         id="flight-corridor"
                       />
 
-                      {/* SECTION 2: LOGO ASSEMBLY & PANELS (100dvh) */}
+                      {/* SECTION 2: LOGO ASSEMBLY & PANELS. Full viewport when the
+                         2D flight needs scroll room; compact in eco mode (no
+                         animation, so a 100dvh screen would just be dead space). */}
                       <div 
                         ref={section2Ref}
-                        className="relative w-full flex items-center justify-center px-4 pb-28 pt-16 select-none pointer-events-none"
+                        className="relative w-full flex items-center justify-center px-4 pt-16 pb-28 select-none pointer-events-none"
                         style={{ 
-                          minHeight: "100dvh",
+                          minHeight: ecoMode ? "auto" : "100dvh",
                         }}
                         id="slide2-assembly-section-container"
                       >
@@ -743,18 +804,16 @@ export default function App() {
                           transition={{ duration: 0.8, ease: "easeOut" }}
                           className="flex flex-col items-center justify-center gap-6 sm:gap-8 lg:gap-10 w-full px-4 pointer-events-auto"
                           style={{
-                            transform: "translateY(-75px)",
+                            transform: ecoMode ? "none" : "translateY(-75px)",
                           }}
                           id="slide2-assembly-section"
                         >
                              
                           <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-16 w-full max-w-5xl mx-auto shrink-0">
                             {/* Left Status Label */}
-                            <motion.div
-                              style={{
-                                opacity: sceneProgress > 0.15 ? Math.min(1, (sceneProgress - 0.15) / 0.85) : 0,
-                                x: sceneProgress > 0.15 ? -40 * (1 - Math.min(1, (sceneProgress - 0.15) / 0.85)) : -40
-                              }}
+                            <div
+                              ref={assemblyLeftRef}
+                              style={{ opacity: 0, transform: "translateX(-40px)" }}
                               className="flex flex-col items-center lg:items-end text-center lg:text-right w-full lg:w-64"
                             >
                               <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
@@ -763,19 +822,17 @@ export default function App() {
                               <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
                                 {t.assembly?.leftSub || "// ДАННЫЕ НЕ ПОКИДАЮТ УСТРОЙСТВО"}
                               </span>
-                            </motion.div>
+                            </div>
 
                             {/* Central Logo */}
                             <div className="flex items-center justify-center shrink-0">
-                              <AssembledLogo progress={sceneProgress} ecoMode={ecoMode} />
+                              <AssembledLogo progressRef={sceneProgressRef} phaseStart={0} phaseSpan={1} ecoMode={ecoMode} />
                             </div>
 
                             {/* Right Status Label */}
-                            <motion.div
-                              style={{
-                                opacity: sceneProgress > 0.15 ? Math.min(1, (sceneProgress - 0.15) / 0.85) : 0,
-                                x: sceneProgress > 0.15 ? 40 * (1 - Math.min(1, (sceneProgress - 0.15) / 0.85)) : 40
-                              }}
+                            <div
+                              ref={assemblyRightRef}
+                              style={{ opacity: 0, transform: "translateX(40px)" }}
                               className="flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-64"
                             >
                               <span className="font-display font-medium text-xl sm:text-2xl text-[#F5F5F0] tracking-tighter">
@@ -784,17 +841,17 @@ export default function App() {
                               <span className="font-mono text-[9px] sm:text-[10px] text-[#3B82F6] tracking-wider mt-1.5 uppercase">
                                 {t.assembly?.rightSub || "// НИКАКОЙ ТЕЛЕМЕТРИИ"}
                               </span>
-                            </motion.div>
+                            </div>
                           </div>
 
                         </motion.div>
                         
                         {/* Bottom Area of Section 2 with Dynamic Dome Navigator */}
-                        {sceneProgress > 0.1 && (
+                        {showEnterDome && (
                           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center shrink-0">
                             <button
                               onClick={() => {
-                                window.scrollTo({ top: coreLandingRef.current?.offsetTop ?? vh * (2 + FLIGHT_CORRIDOR_DVH / 100), behavior: "smooth" });
+                                window.scrollTo({ top: coreLandingRef.current?.offsetTop ?? vh * (2 + flightCorridorDvh / 100), behavior: "smooth" });
                               }}
                               className="flex flex-col items-center gap-3 cursor-pointer group z-30 transition-all duration-300 pointer-events-auto"
                               id="enter-dome-arrow-btn"
@@ -824,12 +881,12 @@ export default function App() {
 
               {/* CORE LANDING CONTENT (NORMAL DOCUMENT FLOW) */}
               <div ref={coreLandingRef} className="relative z-20 w-full flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm shadow-[0_-30px_60px_rgba(10,10,11,0.95)]" id="core-landing-page">
-                {!cinematicEnabled && <IntroSection />}
-                <ProblemSection />
-                <TrustSection />
-                <LiveSimulatorSection />
-                <DamageCalculator />
-                <ExplorePagesSection />
+                <div data-snap-section>{!cinematicEnabled && <IntroSection />}</div>
+                <div data-snap-section><ProblemSection /></div>
+                <div data-snap-section><TrustSection /></div>
+                <div data-snap-section><LiveSimulatorSection /></div>
+                <div data-snap-section><DamageCalculator /></div>
+                <div data-snap-section><ExplorePagesSection /></div>
                 <Footer />
               </div>
             </motion.div>
@@ -866,7 +923,7 @@ export default function App() {
               <Breadcrumbs currentPage={activePage} />
               <div className="flex-1 flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm">
                 <AppSecuritySection />
-                <ScienceValidationSection />
+                <ModelTesterSection />
               </div>
               <PageNavigationFooter currentPage={activePage} />
               <Footer />

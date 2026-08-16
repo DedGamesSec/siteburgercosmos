@@ -1,4 +1,4 @@
-﻿import type { LanguageCode } from "./languages";
+import type { LanguageCode } from "./languages";
 import type { Translations } from "./types";
 
 const ru: Translations = {
@@ -48,9 +48,9 @@ const ru: Translations = {
     "ДЛЯ КОГО"
   ],
   replayIntro: "ПЕРЕЗАПУСТИТЬ ИНТРО (НАВЕРХ)",
-    backTop: "Наверх",
-    skipToContent: "Перейти к содержимому",
-    langChanged: "Язык изменён на {lang}",
+  backTop: "Наверх",
+  skipToContent: "Перейти к содержимому",
+  langChanged: "Язык изменён на {lang}",
   problem: {
     badge: "Актуальные вызовы",
     titleLine1: "Почему существующие решения",
@@ -65,7 +65,10 @@ const ru: Translations = {
         stat: "295+ млрд ₽",
         statLabel: "потери россиян от телефонных мошенников в 2024 году",
         statSource: "Источники: banknn.ru, Сбер / Frank Media, 2025",
-        shotLabels: ["Экран угрозы", "История угроз"]
+        shotLabels: [
+          "Экран угрозы",
+          "История угроз"
+        ]
       },
       {
         title: "Компрометация приватности",
@@ -73,7 +76,10 @@ const ru: Translations = {
         stat: "4,5 млрд",
         statLabel: "записей персональных данных утекли в сеть за 2023–2025 годы",
         statSource: "Источник: InfoWatch / d-russia.ru",
-        shotLabels: ["Статистика", "Главный экран"]
+        shotLabels: [
+          "Статистика",
+          "Главный экран"
+        ]
       },
       {
         title: "Бесполезность без сети",
@@ -81,7 +87,10 @@ const ru: Translations = {
         stat: "2,2 млрд",
         statLabel: "человек в мире до сих пор живут без интернета",
         statSource: "Источник: МСЭ / ITU «Факты и цифры», 2025",
-        shotLabels: ["Настройки", "Помощник"]
+        shotLabels: [
+          "Настройки",
+          "Помощник"
+        ]
       }
     ]
   },
@@ -92,29 +101,26 @@ const ru: Translations = {
     subtitle: "Многоуровневый купол, развёрнутый локально на вашем смартфоне. Ни байта персональных данных не покидает устройство.",
     layersHeading: "Слои защиты устройства",
     layers: [
-    {
-      name: "Акустический анализ",
-      tech: "RMS / Zero-Crossing / Energy",
-      desc: "Акустический анализ звонка в реальном времени на устройстве: анализ голоса и интонаций, темпа речи, пауз и энергетических паттернов разговора. Без передачи данных на сервер."
-    }
-    ,
-    {
-      name: "ML-Классификация (rubert-tiny2)",
-      tech: "ONNX Runtime / INT8 / ~29 MB",
-      desc: "Используется облегчённая нейросеть rubert-tiny2 (ONNX INT8, ~29 МБ) для анализа текста и метаданных на устройстве. Обновления моделей и баз данных поставляются вместе с обновлением приложения — интернет не требуется для повседневной работы, только для установки новых версий."
-    }
-    ,
-    {
-      name: "Распознавание речи и семантика (ASR) — В разработке (Roadmap)",
-      tech: "ASR — Roadmap",
-      desc: "Распознавание речи (ASR) и семантический анализ содержания разговора: детекция ключевых фраз-триггеров, признаков психологического давления и требований срочных действий. Следующий этап эволюции PHANTOM."
-    }
-    ,
-    {
-      name: "Консенсус PHANTOM",
-      tech: "Consensus Voting Engine",
-      desc: "Принимает окончательное взвешенное решение на основе выходов слоёв анализа. При подозрении на атаку блокирует интерфейс, предупреждает пользователя и отправляет моментальный пуш доверенному контакту."
-    }
+      {
+        name: "Акустический анализ",
+        tech: "RMS / Zero-Crossing / Energy",
+        desc: "Акустический анализ звонка в реальном времени на устройстве: анализ голоса и интонаций, темпа речи, пауз и энергетических паттернов разговора. Без передачи данных на сервер."
+      },
+      {
+        name: "ML-Классификация (rubert-tiny2)",
+        tech: "ONNX Runtime / INT8 / ~29 MB",
+        desc: "Используется облегчённая нейросеть rubert-tiny2 (ONNX INT8, ~29 МБ) для анализа текста и метаданных на устройстве. Обновления моделей и баз данных поставляются вместе с обновлением приложения — интернет не требуется для повседневной работы, только для установки новых версий."
+      },
+      {
+        name: "Распознавание речи и семантика (ASR) — В разработке (Roadmap)",
+        tech: "ASR — Roadmap",
+        desc: "Распознавание речи (ASR) и семантический анализ содержания разговора: детекция ключевых фраз-триггеров, признаков психологического давления и требований срочных действий. Следующий этап эволюции PHANTOM."
+      },
+      {
+        name: "Консенсус PHANTOM",
+        tech: "Consensus Voting Engine",
+        desc: "Принимает окончательное взвешенное решение на основе выходов слоёв анализа. При подозрении на атаку блокирует интерфейс, предупреждает пользователя и отправляет моментальный пуш доверенному контакту."
+      }
     ],
     usp: [
       {
@@ -199,7 +205,6 @@ const ru: Translations = {
       }
     ]
   },
-
   header: {
     rustore: "Скачать в RuStore",
     radar: "Product Radar",
@@ -215,8 +220,8 @@ const ru: Translations = {
     privacyLink: "Политика конфиденциальности (ФЗ-152)",
     termsLink: "Пользовательское соглашение",
     version: "On-Device ML Fraud Shield // v1.2.0 // соответствует ФЗ-152",
-      githubOrg: "Все проекты TrustNode на GitHub",
-},
+    githubOrg: "Все проекты TrustNode на GitHub"
+  },
   cookie: {
     badgeLabel: "[ ИНФОРМАЦИОННАЯ БЕЗОПАСНОСТЬ // ФЗ-152 ]",
     text: "Мы заботимся о вашей приватности. Сайт использует обезличенные файлы cookie и локальное хранилище для сохранения ваших настроек графики и эко-режима. Ознакомьтесь с нашей",
@@ -303,8 +308,11 @@ const ru: Translations = {
     about: "О проекте",
     download: "Скачать",
     comparison: "Сравнение",
+    "not-found": "404",
     roadmap: "Карта разработки",
-    "not-found": "404"
+    privacy: "Политика конфиденциальности",
+    terms: "Пользовательское соглашение",
+    news: "Новости"
   },
   realDev: {
     title: "Верификация проекта",
@@ -386,7 +394,7 @@ const ru: Translations = {
       {
         badge: "МОСКВА // СЕНТЯБРЬ 2026",
         title: "Выход на федеральный финал",
-        desc: "После успеха на региональном уровне проект был отобран для презентации на престижном региональном научно-исследовательском финале НИР в Москве в сентябре 2026 года, где будут продемонстрированы его возможности в сфере защиты от мошенничества."
+        desc: "По результатам триумфальной победы проект был успешно представлен на федеральном суперфинале научно-исследовательских работ в Москве в сентябре 2026 года для демонстрации эффективности мобильного купола защиты."
       },
       {
         badge: "АРХИТЕКТОР + AI-ПОДРЯДЧИКИ",
@@ -442,9 +450,11 @@ const ru: Translations = {
   explore: {
     title: "Исследуйте протокол безопасности",
     subtitle: "Узнайте больше о локальных AI-технологиях и научной базе TrustNode",
+    hint: "Наведите на планету →",
+    hintTap: "Нажмите на планету →",
     card1Title: "Технологии купола",
     card1Badge: "СИСТЕМА PHANTOM",
-    card1Desc: "Техническая детализация защитного купола PHANTOM 2.0: акустический анализ и ML-классификация rubert-tiny2 работают на устройстве, остальные слои — в разработке (Roadmap).",
+    card1Desc: "Technical breakdown of the PHANTOM 2.0 security dome: acoustic analysis and rubert-tiny2 ML classification run on-device, while the remaining layers are in development (Roadmap).",
     card1Btn: "Изучить технологии →",
     card2Title: "Доказанная база",
     card2Badge: "ВАЛИДАЦИЯ И ПАТЕНТЫ",
@@ -478,9 +488,8 @@ const ru: Translations = {
     feature2Desc: "Облегчённая нейросеть rubert-tiny2 (ONNX INT8, ~29 МБ) анализирует текст и метаданные на устройстве без подключения к интернету.",
     feature3Title: "Бесплатно и безопасно",
     feature3Desc: "Приложение доступно бесплатно в RuStore. Устанавливайте и защищайте своих близких от мошенников.",
-    note: "Приложение доступно для устройств Android. Требуется соединение с интернетом только при первом скачивании.",
+    note: "Приложение доступно для устройств Android. Требуется соединение с интернетом только при первом скачивании."
   },
-
   comparisonPage: {
     title: "Честное сравнение",
     subtitle: "Объективный сравнительный анализ возможностей TrustNode и ведущих мировых решений",
@@ -519,7 +528,6 @@ const ru: Translations = {
     disclaimer: "Мы стремимся к максимальной объективности. Если вы заметили неточность, пожалуйста, свяжитесь с нами в Telegram.",
     telegramBtn: "Написать в Telegram"
   },
-
   roadmapPage: {
     title: "Дорожная Карта",
     subtitle: "Статус разработки TrustNode, политика безопасного раскрытия и фазы развертывания интеллектуальных модулей",
@@ -550,50 +558,86 @@ const ru: Translations = {
     reportGithub: "Сообщить на GitHub",
     milestonesTitle: "Вехи разработки и релизов",
     milestones: [
-      { date: "2024–2025", title: "Научные истоки и региональный НИР", desc: "Проект зародился в ГБПОУ ЧРТ (КБ-284) и занял I место на областном научно-исследовательском конкурсе." },
-      { date: "v1.2.0", title: "TrustNode 1 (TN1) — Ready MVP", desc: "Полностью готовое Android-приложение для локальной сигнатурной защиты. Фаза калибровки порогов и дообучения весов." },
-      { date: "2025", title: "Интеграция ONNX-ядра", desc: "Внедрение модели rubert_fraud_int8.onnx для локального семантического инференса на устройстве без облака." },
-      { date: "СЕНТЯБРЬ 2026", title: "PHANTOM 2.0 — Architecture Phase", desc: "7-слойная патентная архитектура TN3 с независимым ИИ-консенсусом. Срок сдачи: сентябрь 2026." },
-      { date: "СЕНТЯБРЬ 2026", title: "Федеральный суперфинал (Москва)", desc: "Представление проекта на федеральном суперфинале научно-исследовательских работ." },
-      { date: "v3.0-design", title: "Kira Voice Assistant — Conceptual Spec", desc: "Речевой интент-анализатор для блокирования манипулятивного речевого воздействия. Фаза проектирования." }
+      {
+        date: "2024–2025",
+        title: "Научные истоки и региональный НИР",
+        desc: "Проект зародился в ГБПОУ ЧРТ (КБ-284) и занял I место на областном научно-исследовательском конкурсе."
+      },
+      {
+        date: "v1.2.0",
+        title: "TrustNode 1 (TN1) — Ready MVP",
+        desc: "Полностью готовое Android-приложение для локальной сигнатурной защиты. Фаза калибровки порогов и дообучения весов."
+      },
+      {
+        date: "2025",
+        title: "Интеграция ONNX-ядра",
+        desc: "Внедрение модели rubert_fraud_int8.onnx для локального семантического инференса на устройстве без облака."
+      },
+      {
+        date: "СЕНТЯБРЬ 2026",
+        title: "PHANTOM 2.0 — Architecture Phase",
+        desc: "7-слойная патентная архитектура TN3 с независимым ИИ-консенсусом. Срок сдачи: сентябрь 2026."
+      },
+      {
+        date: "СЕНТЯБРЬ 2026",
+        title: "Федеральный суперфинал (Москва)",
+        desc: "Представление проекта на федеральном суперфинале научно-исследовательских работ."
+      },
+      {
+        date: "v3.0-design",
+        title: "Kira Voice Assistant — Conceptual Spec",
+        desc: "Речевой интент-анализатор для блокирования манипулятивного речевого воздействия. Фаза проектирования."
+      }
     ],
     allProjectsGithub: "Все проекты TrustNode на GitHub"
   },
-
-    damageCalc: {
-      badge: "Калькулятор ущерба",
-      title: "Сколько теряют жертвы телефонных мошенников",
-      subtitle: "Оцените потенциально предотвращённый ущерб, который TrustNode может сохранить в вашем бюджете.",
-      callsLabel: "Мошеннических звонков в месяц",
-      amountLabel: "Средний ущерб от одной успешной атаки",
-      resultTitle: "Ваша защита TrustNode за год",
-      savedLabel: "потенциально предотвращённый ущерб",
-      disclaimer: "Оценка на основе публичной статистики среднего ущерба от телефонного мошенничества; не гарантирует реальную экономию."
-    },
-
-    faq: {
-      badge: "FAQ",
-      title: "Частые вопросы",
-      subtitle: "Главные ответы о конфиденциальности, установке и работе TrustNode.",
-      items: [
-        { q: "Собирает ли TrustNode мои личные данные?", a: "Нет. Весь анализ (ссылки, звонки, экран) происходит локально на устройстве. Ваши данные никуда не передаются и не хранятся на сторонних серверах." },
-        { q: "Нужен ли интернет для работы приложения?", a: "Нет, модель анализа работает офлайн. Интернет не требуется для основной защиты." },
-        { q: "Зачем приложению нужен доступ Специальных возможностей (Accessibility)?", a: "Этот доступ используется только для распознавания фейковых экранов и мошеннических форм ввода данных. Анализ выполняется локально, содержимое экрана никуда не отправляется." },
-        { q: "Приложение слушает мои звонки?", a: "TrustNode анализирует голос в реальном времени только для выявления признаков мошенничества (социальная инженерия). Аудио не записывается на диск и не передаётся третьим лицам." },
-        { q: "Приложение платное?", a: "На данный момент TrustNode бесплатен. В будущем планируется расширенная подписка с дополнительными функциями." }
-      ]
-    },
-
-    news: {
-      badge: "Новости",
-      title: "Последние анонсы команды TrustNode",
-      subtitle: "Записи канала автоматически переводятся на выбранный язык.",
-      emptyTitle: "Новостей пока нет",
-      emptyDesc: "Первые записи появятся здесь после синхронизации с каналами.",
-      readIn: "Читать в {source}",
-      showMore: "Показать полностью",
-      showLess: "Свернуть"
-    }
+  damageCalc: {
+    badge: "Калькулятор ущерба",
+    title: "Сколько теряют жертвы телефонных мошенников",
+    subtitle: "Оцените потенциально предотвращённый ущерб, который TrustNode может сохранить в вашем бюджете.",
+    callsLabel: "Мошеннических звонков в месяц",
+    amountLabel: "Средний ущерб от одной успешной атаки",
+    resultTitle: "Ваша защита TrustNode за год",
+    savedLabel: "потенциально предотвращённый ущерб",
+    disclaimer: "Оценка на основе публичной статистики среднего ущерба от телефонного мошенничества; не гарантирует реальную экономию."
+  },
+  faq: {
+    badge: "FAQ",
+    title: "Частые вопросы",
+    subtitle: "Главные ответы о конфиденциальности, установке и работе TrustNode.",
+    items: [
+      {
+        q: "Собирает ли TrustNode мои личные данные?",
+        a: "Нет. Весь анализ (ссылки, звонки, экран) происходит локально на устройстве. Ваши данные никуда не передаются и не хранятся на сторонних серверах."
+      },
+      {
+        q: "Нужен ли интернет для работы приложения?",
+        a: "Нет, модель анализа работает офлайн. Интернет не требуется для основной защиты."
+      },
+      {
+        q: "Зачем приложению нужен доступ Специальных возможностей (Accessibility)?",
+        a: "Этот доступ используется только для распознавания фейковых экранов и мошеннических форм ввода данных. Анализ выполняется локально, содержимое экрана никуда не отправляется."
+      },
+      {
+        q: "Приложение слушает мои звонки?",
+        a: "TrustNode анализирует голос в реальном времени только для выявления признаков мошенничества (социальная инженерия). Аудио не записывается на диск и не передаётся третьим лицам."
+      },
+      {
+        q: "Приложение платное?",
+        a: "На данный момент TrustNode бесплатен. В будущем планируется расширенная подписка с дополнительными функциями."
+      }
+    ]
+  },
+  news: {
+    badge: "Новости",
+    title: "Последние анонсы команды TrustNode",
+    subtitle: "Записи канала автоматически переводятся на выбранный язык.",
+    emptyTitle: "Новостей пока нет",
+    emptyDesc: "Первые записи появятся здесь после синхронизации с каналами.",
+    readIn: "Читать в {source}",
+    showMore: "Показать полностью",
+    showLess: "Свернуть"
+  }
 };
 
 const en: Translations = {
@@ -643,9 +687,9 @@ const en: Translations = {
     "FOR WHOM"
   ],
   replayIntro: "REPLAY INTRO (SCROLL UP)",
-    backTop: "Back to top",
-    skipToContent: "Skip to main content",
-    langChanged: "Language changed to {lang}",
+  backTop: "Back to top",
+  skipToContent: "Skip to main content",
+  langChanged: "Language changed to {lang}",
   problem: {
     badge: "Current challenges",
     titleLine1: "Why existing solutions",
@@ -660,7 +704,10 @@ const en: Translations = {
         stat: "295+ billion RUB",
         statLabel: "in losses from phone scammers in Russia in 2024 alone",
         statSource: "Sources: banknn.ru, Sber / Frank Media, 2025",
-        shotLabels: ["Threat screen", "Threat history"]
+        shotLabels: [
+          "Threat screen",
+          "Threat history"
+        ]
       },
       {
         title: "Privacy compromised",
@@ -668,7 +715,10 @@ const en: Translations = {
         stat: "4.5 billion",
         statLabel: "personal-data records leaked in Russia over 2023–2025",
         statSource: "Source: InfoWatch / d-russia.ru",
-        shotLabels: ["Statistics", "Main screen"]
+        shotLabels: [
+          "Statistics",
+          "Main screen"
+        ]
       },
       {
         title: "Useless without a network",
@@ -676,7 +726,10 @@ const en: Translations = {
         stat: "2.2 billion",
         statLabel: "people worldwide still live without internet access",
         statSource: "Source: ITU Facts and Figures, 2025",
-        shotLabels: ["Settings", "Assistant"]
+        shotLabels: [
+          "Settings",
+          "Assistant"
+        ]
       }
     ]
   },
@@ -687,29 +740,26 @@ const en: Translations = {
     subtitle: "A multi-layer dome deployed locally on your smartphone. Not a single byte of personal data ever leaves the device.",
     layersHeading: "Device protection layers",
     layers: [
-    {
-      name: "Acoustic Analysis",
-      tech: "RMS / Zero-Crossing / Energy",
-      desc: "Real-time on-device acoustic analysis of the call: voice and intonations, speech tempo, pauses, and energy patterns of the conversation. No data is sent to any server."
-    }
-    ,
-    {
-      name: "ML Classification (rubert-tiny2)",
-      tech: "ONNX Runtime / INT8 / ~29 MB",
-      desc: "Uses the lightweight rubert-tiny2 neural network (ONNX INT8, ~29 MB) to analyze text and metadata on-device. Model and database updates ship with app updates — no internet is required for daily use, only to install new versions."
-    }
-    ,
-    {
-      name: "Speech Recognition & Semantics (ASR) — Roadmap",
-      tech: "ASR — Roadmap",
-      desc: "Speech recognition (ASR) and semantic analysis of the conversation's content: detection of key trigger phrases, signs of psychological pressure, and demands for urgent action. The next stage of PHANTOM's evolution."
-    }
-    ,
-    {
-      name: "PHANTOM Consensus",
-      tech: "Consensus Voting Engine",
-      desc: "Makes the final weighted decision based on the outputs of the analysis layers. If an attack is suspected, it locks the interface, warns the user, and sends an instant push to a trusted contact."
-    }
+      {
+        name: "Acoustic Analysis",
+        tech: "RMS / Zero-Crossing / Energy",
+        desc: "Real-time on-device acoustic analysis of the call: voice and intonations, speech tempo, pauses, and energy patterns of the conversation. No data is sent to any server."
+      },
+      {
+        name: "ML Classification (rubert-tiny2)",
+        tech: "ONNX Runtime / INT8 / ~29 MB",
+        desc: "Uses the lightweight rubert-tiny2 neural network (ONNX INT8, ~29 MB) to analyze text and metadata on-device. Model and database updates ship with app updates — no internet is required for daily use, only to install new versions."
+      },
+      {
+        name: "Speech Recognition & Semantics (ASR) — Roadmap",
+        tech: "ASR — Roadmap",
+        desc: "Speech recognition (ASR) and semantic analysis of the conversation's content: detection of key trigger phrases, signs of psychological pressure, and demands for urgent action. The next stage of PHANTOM's evolution."
+      },
+      {
+        name: "PHANTOM Consensus",
+        tech: "Consensus Voting Engine",
+        desc: "Makes the final weighted decision based on the outputs of the analysis layers. If an attack is suspected, it locks the interface, warns the user, and sends an instant push to a trusted contact."
+      }
     ],
     usp: [
       {
@@ -794,7 +844,6 @@ const en: Translations = {
       }
     ]
   },
-
   header: {
     rustore: "Download on RuStore",
     radar: "Product Radar",
@@ -810,8 +859,8 @@ const en: Translations = {
     privacyLink: "Privacy Policy (Russian Federal Law 152-FZ)",
     termsLink: "Terms of Service",
     version: "On-Device ML Fraud Shield // v1.2.0 // 152-FZ compliant",
-      githubOrg: "All TrustNode projects on GitHub",
-},
+    githubOrg: "All TrustNode projects on GitHub"
+  },
   cookie: {
     badgeLabel: "[ INFORMATION SECURITY // RUSSIAN LAW 152-FZ ]",
     text: "We care about your privacy. This site uses anonymized cookies and local storage to remember your graphics and eco-mode settings. Read our",
@@ -898,7 +947,11 @@ const en: Translations = {
     about: "About Us",
     download: "Download",
     comparison: "Comparison",
-    "not-found": "404"
+    "not-found": "404",
+    roadmap: "Roadmap",
+    privacy: "Privacy Policy",
+    terms: "Terms of Service",
+    news: "News"
   },
   realDev: {
     title: "Project Verification",
@@ -980,7 +1033,7 @@ const en: Translations = {
       {
         badge: "FEDERAL SUPERFINAL",
         title: "National Superfinal Moscow",
-        desc: "After success at the regional level, the project was selected for presentation at the prestigious regional scientific research final (NIR) in Moscow in September 2026, where its fraud protection capabilities will be demonstrated."
+        desc: "Following the regional triumph, the project was selected for presentation at the prestigious federal scientific research superfinal in Moscow in September 2026 to demonstrate its real-time defense capabilities."
       },
       {
         badge: "AI-DRIVEN WORKFLOW",
@@ -1036,9 +1089,11 @@ const en: Translations = {
   explore: {
     title: "Explore the Security Protocol",
     subtitle: "Learn more about local AI technologies and the scientific foundation of TrustNode",
+    hint: "Hover a planet →",
+    hintTap: "Tap a planet →",
     card1Title: "Dome Technology",
     card1Badge: "PHANTOM SYSTEM",
-    card1Desc: "Technical breakdown of the PHANTOM 2.0 security dome: acoustic analysis and rubert-tiny2 ML classification run on-device, while the remaining layers are in development (Roadmap).",
+    card1Desc: "Technical breakdown of the 7-layer PHANTOM 2.0 security dome and the intelligent voice assistant KIRA running fully on-device.",
     card1Btn: "Explore Technology →",
     card2Title: "Proven Validation",
     card2Badge: "PATENT & AWARDS",
@@ -1072,9 +1127,8 @@ const en: Translations = {
     feature2Desc: "The lightweight rubert-tiny2 neural network (ONNX INT8, ~29 MB) analyzes text and metadata on-device with no internet connection required.",
     feature3Title: "Free and Secure",
     feature3Desc: "The app is available for free on RuStore. Install it and protect your loved ones from scammers.",
-    note: "Available for Android devices. Internet is only needed for the initial download.",
+    note: "Available for Android devices. Internet is only needed for the initial download."
   },
-
   comparisonPage: {
     title: "Honest Comparison",
     subtitle: "An objective comparative analysis of TrustNode vs leading global security solutions",
@@ -1113,7 +1167,6 @@ const en: Translations = {
     disclaimer: "We strive for maximum objectivity. If you spot any inaccuracy, please contact us on Telegram.",
     telegramBtn: "Contact on Telegram"
   },
-
   roadmapPage: {
     title: "Development Roadmap",
     subtitle: "Current progress of TrustNode, responsible disclosure policy, and semantic core deployment timeline",
@@ -1144,50 +1197,86 @@ const en: Translations = {
     reportGithub: "Report via GitHub",
     milestonesTitle: "Development & Release Milestones",
     milestones: [
-      { date: "2024–2025", title: "Academic origins & regional NIR victory", desc: "Project born at Chelyabinsk Radiotechnical College (KB-284) and won 1st place in the regional scientific research competition." },
-      { date: "v1.2.0", title: "TrustNode 1 (TN1) — Ready MVP", desc: "Fully operational Android package for localized signature protection. Calibration phase for threshold tuning and weight fine-tuning." },
-      { date: "2025", title: "ONNX core integration", desc: "Deployment of rubert_fraud_int8.onnx model for local on-device semantic inference without cloud dependency." },
-      { date: "SEPTEMBER 2026", title: "PHANTOM 2.0 — Architecture Phase", desc: "7-layer patent TN3 architecture with independent AI consensus routing. Deadline: September 2026." },
-      { date: "SEPTEMBER 2026", title: "Federal superfinal (Moscow)", desc: "Project presentation at the prestigious federal scientific research superfinal." },
-      { date: "v3.0-design", title: "Kira Voice Assistant — Conceptual Spec", desc: "Speech-intent analyzer to neutralize manipulative speech acts during live calls. Design phase." }
+      {
+        date: "2024–2025",
+        title: "Academic origins & regional NIR victory",
+        desc: "Project born at Chelyabinsk Radiotechnical College (KB-284) and won 1st place in the regional scientific research competition."
+      },
+      {
+        date: "v1.2.0",
+        title: "TrustNode 1 (TN1) — Ready MVP",
+        desc: "Fully operational Android package for localized signature protection. Calibration phase for threshold tuning and weight fine-tuning."
+      },
+      {
+        date: "2025",
+        title: "ONNX core integration",
+        desc: "Deployment of rubert_fraud_int8.onnx model for local on-device semantic inference without cloud dependency."
+      },
+      {
+        date: "SEPTEMBER 2026",
+        title: "PHANTOM 2.0 — Architecture Phase",
+        desc: "7-layer patent TN3 architecture with independent AI consensus routing. Deadline: September 2026."
+      },
+      {
+        date: "SEPTEMBER 2026",
+        title: "Federal superfinal (Moscow)",
+        desc: "Project presentation at the prestigious federal scientific research superfinal."
+      },
+      {
+        date: "v3.0-design",
+        title: "Kira Voice Assistant — Conceptual Spec",
+        desc: "Speech-intent analyzer to neutralize manipulative speech acts during live calls. Design phase."
+      }
     ],
     allProjectsGithub: "All TrustNode projects on GitHub"
   },
-
-    damageCalc: {
-      badge: "Damage Calculator",
-      title: "How much phone fraud victims lose",
-      subtitle: "Estimate the potentially preventable damage TrustNode can keep in your budget.",
-      callsLabel: "Fraud calls per month",
-      amountLabel: "Average loss per successful attack",
-      resultTitle: "Your TrustNode protection in a year",
-      savedLabel: "potentially prevented damage",
-      disclaimer: "An estimate based on public statistics on average phone-fraud losses; it does not guarantee actual savings."
-    },
-
-    faq: {
-      badge: "FAQ",
-      title: "Frequently Asked Questions",
-      subtitle: "Key answers about privacy, installation and how TrustNode works.",
-      items: [
-        { q: "Does TrustNode collect my personal data?", a: "No. All analysis (links, calls, screen) happens locally on your device. Your data is never sent anywhere or stored on third-party servers." },
-        { q: "Is an internet connection required to use the app?", a: "No, the analysis model works offline. No internet is needed for core protection." },
-        { q: "Why does the app need Accessibility access?", a: "This access is used only to detect fake screens and fraudulent data-entry forms. Analysis runs locally; the screen content is never sent anywhere." },
-        { q: "Does the app listen to my calls?", a: "TrustNode analyzes voice in real time only to detect signs of fraud (social engineering). Audio is never written to disk or shared with third parties." },
-        { q: "Is the app paid?", a: "TrustNode is currently free. An expanded subscription with additional features is planned for the future." }
-      ]
-    },
-
-    news: {
-      badge: "News",
-      title: "Latest TrustNode team announcements",
-      subtitle: "Channel posts are automatically translated into your selected language.",
-      emptyTitle: "No news yet",
-      emptyDesc: "The first posts will appear here after syncing with the channels.",
-      readIn: "Read in {source}",
-      showMore: "Show more",
-      showLess: "Show less"
-    }
+  damageCalc: {
+    badge: "Damage Calculator",
+    title: "How much phone fraud victims lose",
+    subtitle: "Estimate the potentially preventable damage TrustNode can keep in your budget.",
+    callsLabel: "Fraud calls per month",
+    amountLabel: "Average loss per successful attack",
+    resultTitle: "Your TrustNode protection in a year",
+    savedLabel: "potentially prevented damage",
+    disclaimer: "An estimate based on public statistics on average phone-fraud losses; it does not guarantee actual savings."
+  },
+  faq: {
+    badge: "FAQ",
+    title: "Frequently Asked Questions",
+    subtitle: "Key answers about privacy, installation and how TrustNode works.",
+    items: [
+      {
+        q: "Does TrustNode collect my personal data?",
+        a: "No. All analysis (links, calls, screen) happens locally on your device. Your data is never sent anywhere or stored on third-party servers."
+      },
+      {
+        q: "Is an internet connection required to use the app?",
+        a: "No, the analysis model works offline. No internet is needed for core protection."
+      },
+      {
+        q: "Why does the app need Accessibility access?",
+        a: "This access is used only to detect fake screens and fraudulent data-entry forms. Analysis runs locally; the screen content is never sent anywhere."
+      },
+      {
+        q: "Does the app listen to my calls?",
+        a: "TrustNode analyzes voice in real time only to detect signs of fraud (social engineering). Audio is never written to disk or shared with third parties."
+      },
+      {
+        q: "Is the app paid?",
+        a: "TrustNode is currently free. An expanded subscription with additional features is planned for the future."
+      }
+    ]
+  },
+  news: {
+    badge: "News",
+    title: "Latest TrustNode team announcements",
+    subtitle: "Channel posts are automatically translated into your selected language.",
+    emptyTitle: "No news yet",
+    emptyDesc: "The first posts will appear here after syncing with the channels.",
+    readIn: "Read in {source}",
+    showMore: "Show more",
+    showLess: "Show less"
+  }
 };
 
 const es: Translations = {
@@ -1237,9 +1326,9 @@ const es: Translations = {
     "PARA QUIÉN"
   ],
   replayIntro: "REPETIR INTRO (SUBIR)",
-    backTop: "Volver arriba",
-    skipToContent: "Saltar al contenido",
-    langChanged: "Idioma cambiado a {lang}",
+  backTop: "Volver arriba",
+  skipToContent: "Saltar al contenido",
+  langChanged: "Idioma cambiado a {lang}",
   problem: {
     badge: "Desafíos actuales",
     titleLine1: "¿Por qué las soluciones existentes",
@@ -1254,7 +1343,10 @@ const es: Translations = {
         stat: "295+ mil millones ₽",
         statLabel: "en pérdidas por estafas telefónicas en Rusia solo en 2024",
         statSource: "Fuentes: banknn.ru, Sber / Frank Media, 2025",
-        shotLabels: ["Pantalla de amenaza", "Historial de amenazas"]
+        shotLabels: [
+          "Pantalla de amenaza",
+          "Historial de amenazas"
+        ]
       },
       {
         title: "La privacidad comprometida",
@@ -1262,7 +1354,10 @@ const es: Translations = {
         stat: "4500 millones",
         statLabel: "de registros de datos personales filtrados en Rusia durante 2023–2025",
         statSource: "Fuente: InfoWatch / d-russia.ru",
-        shotLabels: ["Estadísticas", "Pantalla principal"]
+        shotLabels: [
+          "Estadísticas",
+          "Pantalla principal"
+        ]
       },
       {
         title: "Inútiles sin conexión",
@@ -1270,7 +1365,10 @@ const es: Translations = {
         stat: "2200 millones",
         statLabel: "de personas en el mundo siguen viviendo sin acceso a internet",
         statSource: "Fuente: ITU Facts and Figures, 2025",
-        shotLabels: ["Ajustes", "Asistente"]
+        shotLabels: [
+          "Ajustes",
+          "Asistente"
+        ]
       }
     ]
   },
@@ -1281,29 +1379,26 @@ const es: Translations = {
     subtitle: "Una cúpula multicapa desplegada localmente en tu smartphone. Ni un solo byte de datos personales sale del dispositivo.",
     layersHeading: "Capas de protección del dispositivo",
     layers: [
-    {
-      name: "Análisis acústico",
-      tech: "RMS / Zero-Crossing / Energy",
-      desc: "Análisis acústico de la llamada en tiempo real en el dispositivo: análisis de la voz y las entonaciones, el ritmo del habla, las pausas y los patrones energéticos de la conversación. Sin envío de datos al servidor."
-    }
-    ,
-    {
-      name: "Clasificación ML (rubert-tiny2)",
-      tech: "ONNX Runtime / INT8 / ~29 MB",
-      desc: "Se utiliza una red neuronal ligera rubert-tiny2 (ONNX INT8, ~29 MB) para analizar texto y metadatos en el dispositivo. Las actualizaciones de modelos y bases de datos llegan con la actualización de la app; no se requiere internet para el uso diario, solo para instalar nuevas versiones."
-    }
-    ,
-    {
-      name: "Reconocimiento de voz y semántica (ASR) — En desarrollo (Roadmap)",
-      tech: "ASR — Roadmap",
-      desc: "Reconocimiento de voz (ASR) y análisis semántico del contenido de la conversación: detección de frases clave, indicios de presión psicológica y exigencias de acciones urgentes. La siguiente etapa de la evolución de PHANTOM."
-    }
-    ,
-    {
-      name: "Consenso PHANTOM",
-      tech: "Consensus Voting Engine",
-      desc: "Toma la decisión final ponderada a partir de las salidas de las capas de análisis. Si se sospecha un ataque, bloquea la interfaz, avisa al usuario y envía una notificación instantánea a un contacto de confianza."
-    }
+      {
+        name: "Análisis acústico",
+        tech: "RMS / Zero-Crossing / Energy",
+        desc: "Análisis acústico de la llamada en tiempo real en el dispositivo: análisis de la voz y las entonaciones, el ritmo del habla, las pausas y los patrones energéticos de la conversación. Sin envío de datos al servidor."
+      },
+      {
+        name: "Clasificación ML (rubert-tiny2)",
+        tech: "ONNX Runtime / INT8 / ~29 MB",
+        desc: "Se utiliza una red neuronal ligera rubert-tiny2 (ONNX INT8, ~29 MB) para analizar texto y metadatos en el dispositivo. Las actualizaciones de modelos y bases de datos llegan con la actualización de la app; no se requiere internet para el uso diario, solo para instalar nuevas versiones."
+      },
+      {
+        name: "Reconocimiento de voz y semántica (ASR) — En desarrollo (Roadmap)",
+        tech: "ASR — Roadmap",
+        desc: "Reconocimiento de voz (ASR) y análisis semántico del contenido de la conversación: detección de frases clave, indicios de presión psicológica y exigencias de acciones urgentes. La siguiente etapa de la evolución de PHANTOM."
+      },
+      {
+        name: "Consenso PHANTOM",
+        tech: "Consensus Voting Engine",
+        desc: "Toma la decisión final ponderada a partir de las salidas de las capas de análisis. Si se sospecha un ataque, bloquea la interfaz, avisa al usuario y envía una notificación instantánea a un contacto de confianza."
+      }
     ],
     usp: [
       {
@@ -1388,7 +1483,6 @@ const es: Translations = {
       }
     ]
   },
-
   header: {
     rustore: "Descargar en RuStore",
     radar: "Product Radar",
@@ -1404,8 +1498,8 @@ const es: Translations = {
     privacyLink: "Política de privacidad (Ley Federal 152-FZ de Rusia)",
     termsLink: "Términos de uso",
     version: "On-Device ML Fraud Shield // v1.2.0 // conforme a la Ley 152-FZ",
-      githubOrg: "Todos los proyectos de TrustNode en GitHub",
-},
+    githubOrg: "Todos los proyectos de TrustNode en GitHub"
+  },
   cookie: {
     badgeLabel: "[ SEGURIDAD DE LA INFORMACIÓN // LEY RUSA 152-FZ ]",
     text: "Nos importa tu privacidad. Este sitio usa cookies anonimizadas y almacenamiento local para recordar tus preferencias de gráficos y el modo eco. Consulta nuestra",
@@ -1492,7 +1586,11 @@ const es: Translations = {
     about: "Nosotros",
     download: "Descargar",
     comparison: "Comparación",
-    "not-found": "404"
+    "not-found": "404",
+    roadmap: "Mapa de desarrollo",
+    privacy: "Política de privacidad",
+    terms: "Términos de uso",
+    news: "Noticias"
   },
   realDev: {
     title: "Verificación del Proyecto",
@@ -1630,9 +1728,11 @@ const es: Translations = {
   explore: {
     title: "Explore el protocolo de seguridad",
     subtitle: "Obtenga más información sobre la IA local y la base científica de TrustNode",
+    hint: "Pasa el cursor sobre un planeta →",
+    hintTap: "Toca un planeta →",
     card1Title: "Tecnología de cúpula",
     card1Badge: "SISTEMA PHANTOM",
-    card1Desc: "Desglose técnico del domo de seguridad PHANTOM 2.0: el análisis acústico y la clasificación ML rubert-tiny2 funcionan en el dispositivo, y las capas restantes están en desarrollo (Roadmap).",
+    card1Desc: "Desglose técnico del domo de seguridad de 7 capas PHANTOM 2.0 y el asistente de voz inteligente KIRA que se ejecuta completamente en el dispositivo.",
     card1Btn: "Ver Tecnología →",
     card2Title: "Eficacia Demostrada",
     card2Badge: "VALIDACIÓN Y PATENTES",
@@ -1666,9 +1766,8 @@ const es: Translations = {
     feature2Desc: "La red neuronal ligera rubert-tiny2 (ONNX INT8, ~29 MB) analiza texto y metadatos en el dispositivo sin conexión a internet.",
     feature3Title: "Gratis y seguro",
     feature3Desc: "La aplicación está disponible gratis en RuStore. Instálela y proteja a sus seres queridos.",
-    note: "Disponible para dispositivos Android. Solo se necesita internet para la descarga inicial.",
+    note: "Disponible para dispositivos Android. Solo se necesita internet para la descarga inicial."
   },
-
   comparisonPage: {
     title: "Comparación honesta",
     subtitle: "Un análisis comparativo objetivo de TrustNode frente a las principales soluciones de seguridad globales",
@@ -1707,7 +1806,6 @@ const es: Translations = {
     disclaimer: "Nos esforzamos por lograr la máxima objetividad. Si detectas alguna imprecisión, contáctanos en Telegram.",
     telegramBtn: "Contactar por Telegram"
   },
-
   roadmapPage: {
     title: "Hoja de Ruta de Desarrollo",
     subtitle: "Progreso actual de TrustNode, política de divulgación responsable y cronograma de despliegue del núcleo semántico",
@@ -1738,50 +1836,86 @@ const es: Translations = {
     reportGithub: "Reportar por GitHub",
     milestonesTitle: "Hitos de Desarrollo y Lanzamientos",
     milestones: [
-      { date: "2024–2025", title: "Orígenes académicos y victoria regional en NIR", desc: "Proyecto nacido en la Facultad de Radiotelecomunicación de Cheliábinsk (KB-284), ganador del 1.er lugar en el concurso regional de investigación científica." },
-      { date: "v1.2.0", title: "TrustNode 1 (TN1) — Ready MVP", desc: "Paquete Android totalmente operativo para protección local por firmas. Fase de calibración de umbrales y ajuste fino de pesos." },
-      { date: "2025", title: "Integración del núcleo ONNX", desc: "Despliegue del modelo rubert_fraud_int8.onnx para inferencia semántica local en el dispositivo sin dependencia de la nube." },
-      { date: "SEPTIEMBRE 2026", title: "PHANTOM 2.0 — Fase de Arquitectura", desc: "Arquitectura patentada TN3 de 7 capas con enrutamiento de consenso de IA independiente. Plazo: septiembre de 2026." },
-      { date: "SEPTIEMBRE 2026", title: "Superfinal federal (Moscú)", desc: "Presentación del proyecto en la prestigiosa superfinal federal de investigación científica." },
-      { date: "v3.0-design", title: "Kira Voice Assistant — Especificación Conceptual", desc: "Analizador de intención del habla para neutralizar actos de habla manipuladores durante llamadas en vivo. Fase de diseño." }
+      {
+        date: "2024–2025",
+        title: "Orígenes académicos y victoria regional en NIR",
+        desc: "Proyecto nacido en la Facultad de Radiotelecomunicación de Cheliábinsk (KB-284), ganador del 1.er lugar en el concurso regional de investigación científica."
+      },
+      {
+        date: "v1.2.0",
+        title: "TrustNode 1 (TN1) — Ready MVP",
+        desc: "Paquete Android totalmente operativo para protección local por firmas. Fase de calibración de umbrales y ajuste fino de pesos."
+      },
+      {
+        date: "2025",
+        title: "Integración del núcleo ONNX",
+        desc: "Despliegue del modelo rubert_fraud_int8.onnx para inferencia semántica local en el dispositivo sin dependencia de la nube."
+      },
+      {
+        date: "SEPTIEMBRE 2026",
+        title: "PHANTOM 2.0 — Fase de Arquitectura",
+        desc: "Arquitectura patentada TN3 de 7 capas con enrutamiento de consenso de IA independiente. Plazo: septiembre de 2026."
+      },
+      {
+        date: "SEPTIEMBRE 2026",
+        title: "Superfinal federal (Moscú)",
+        desc: "Presentación del proyecto en la prestigiosa superfinal federal de investigación científica."
+      },
+      {
+        date: "v3.0-design",
+        title: "Kira Voice Assistant — Especificación Conceptual",
+        desc: "Analizador de intención del habla para neutralizar actos de habla manipuladores durante llamadas en vivo. Fase de diseño."
+      }
     ],
     allProjectsGithub: "Todos los proyectos de TrustNode en GitHub"
   },
-
-    damageCalc: {
-      badge: "Calculadora de daños",
-      title: "Cuánto pierden las víctimas del fraude telefónico",
-      subtitle: "Estime el daño potencialmente prevenible que TrustNode puede ahorrar en su presupuesto.",
-      callsLabel: "Llamadas fraudulentas al mes",
-      amountLabel: "Pérdida media por ataque exitoso",
-      resultTitle: "Su protección TrustNode en un año",
-      savedLabel: "daño potencialmente prevenido",
-      disclaimer: "Estimación basada en estadísticas públicas de pérdidas medias por fraude telefónico; no garantiza un ahorro real."
-    },
-
-    faq: {
-      badge: "Preguntas frecuentes",
-      title: "Preguntas Frecuentes",
-      subtitle: "Respuestas clave sobre privacidad, instalación y funcionamiento de TrustNode.",
-      items: [
-        { q: "¿TrustNode recopila mis datos personales?", a: "No. Todo el análisis (enlaces, llamadas, pantalla) se realiza localmente en el dispositivo. Sus datos nunca se envían a ningún sitio ni se almacenan en servidores de terceros." },
-        { q: "¿Se necesita internet para usar la aplicación?", a: "No, el modelo de análisis funciona sin conexión. No se requiere internet para la protección principal." },
-        { q: "¿Por qué la app necesita acceso de Accesibilidad?", a: "Este acceso se usa únicamente para detectar pantallas falsas y formularios fraudulentos de entrada de datos. El análisis se realiza localmente; el contenido de la pantalla nunca se envía a ningún sitio." },
-        { q: "¿La aplicación escucha mis llamadas?", a: "TrustNode analiza la voz en tiempo real solo para detectar signos de fraude (ingeniería social). El audio nunca se graba en disco ni se comparte con terceros." },
-        { q: "¿La aplicación es de pago?", a: "TrustNode es gratuito actualmente. En el futuro se planea una suscripción ampliada con funciones adicionales." }
-      ]
-    },
-
-    news: {
-      badge: "Noticias",
-      title: "Últimos anuncios del equipo TrustNode",
-      subtitle: "Las publicaciones del canal se traducen automáticamente al idioma seleccionado.",
-      emptyTitle: "Aún no hay noticias",
-      emptyDesc: "Las primeras publicaciones aparecerán aquí tras la sincronización con los canales.",
-      readIn: "Leer en {source}",
-      showMore: "Mostrar más",
-      showLess: "Mostrar menos"
-    }
+  damageCalc: {
+    badge: "Calculadora de daños",
+    title: "Cuánto pierden las víctimas del fraude telefónico",
+    subtitle: "Estime el daño potencialmente prevenible que TrustNode puede ahorrar en su presupuesto.",
+    callsLabel: "Llamadas fraudulentas al mes",
+    amountLabel: "Pérdida media por ataque exitoso",
+    resultTitle: "Su protección TrustNode en un año",
+    savedLabel: "daño potencialmente prevenido",
+    disclaimer: "Estimación basada en estadísticas públicas de pérdidas medias por fraude telefónico; no garantiza un ahorro real."
+  },
+  faq: {
+    badge: "Preguntas frecuentes",
+    title: "Preguntas Frecuentes",
+    subtitle: "Respuestas clave sobre privacidad, instalación y funcionamiento de TrustNode.",
+    items: [
+      {
+        q: "¿TrustNode recopila mis datos personales?",
+        a: "No. Todo el análisis (enlaces, llamadas, pantalla) se realiza localmente en el dispositivo. Sus datos nunca se envían a ningún sitio ni se almacenan en servidores de terceros."
+      },
+      {
+        q: "¿Se necesita internet para usar la aplicación?",
+        a: "No, el modelo de análisis funciona sin conexión. No se requiere internet para la protección principal."
+      },
+      {
+        q: "¿Por qué la app necesita acceso de Accesibilidad?",
+        a: "Este acceso se usa únicamente para detectar pantallas falsas y formularios fraudulentos de entrada de datos. El análisis se realiza localmente; el contenido de la pantalla nunca se envía a ningún sitio."
+      },
+      {
+        q: "¿La aplicación escucha mis llamadas?",
+        a: "TrustNode analiza la voz en tiempo real solo para detectar signos de fraude (ingeniería social). El audio nunca se graba en disco ni se comparte con terceros."
+      },
+      {
+        q: "¿La aplicación es de pago?",
+        a: "TrustNode es gratuito actualmente. En el futuro se planea una suscripción ampliada con funciones adicionales."
+      }
+    ]
+  },
+  news: {
+    badge: "Noticias",
+    title: "Últimos anuncios del equipo TrustNode",
+    subtitle: "Las publicaciones del canal se traducen automáticamente al idioma seleccionado.",
+    emptyTitle: "Aún no hay noticias",
+    emptyDesc: "Las primeras publicaciones aparecerán aquí tras la sincronización con los canales.",
+    readIn: "Leer en {source}",
+    showMore: "Mostrar más",
+    showLess: "Mostrar menos"
+  }
 };
 
 const zh: Translations = {
@@ -1831,9 +1965,9 @@ const zh: Translations = {
     "适合谁"
   ],
   replayIntro: "重播开场动画（回到顶部）",
-    backTop: "回到顶部",
-    skipToContent: "跳转到主要内容",
-    langChanged: "语言已更改为 {lang}",
+  backTop: "回到顶部",
+  skipToContent: "跳转到主要内容",
+  langChanged: "语言已更改为 {lang}",
   problem: {
     badge: "当前面临的挑战",
     titleLine1: "为什么现有方案",
@@ -1848,7 +1982,10 @@ const zh: Translations = {
         stat: "2950亿+卢布",
         statLabel: "2024年俄罗斯民众因电话诈骗蒙受的损失",
         statSource: "来源：banknn.ru，Sber / Frank Media，2025",
-        shotLabels: ["威胁界面", "威胁记录"]
+        shotLabels: [
+          "威胁界面",
+          "威胁记录"
+        ]
       },
       {
         title: "隐私被侵犯",
@@ -1856,7 +1993,10 @@ const zh: Translations = {
         stat: "45亿条",
         statLabel: "2023–2025年俄罗斯泄露的个人数据记录",
         statSource: "来源：InfoWatch / d-russia.ru",
-        shotLabels: ["统计", "主界面"]
+        shotLabels: [
+          "统计",
+          "主界面"
+        ]
       },
       {
         title: "断网即失效",
@@ -1864,7 +2004,10 @@ const zh: Translations = {
         stat: "22亿人",
         statLabel: "全世界至今仍无法上网的人数",
         statSource: "来源：ITU《事实与数据》，2025",
-        shotLabels: ["设置", "助手"]
+        shotLabels: [
+          "设置",
+          "助手"
+        ]
       }
     ]
   },
@@ -1875,29 +2018,26 @@ const zh: Translations = {
     subtitle: "多层安全穹顶完全部署在你的手机本地。个人数据不会有一个字节离开设备。",
     layersHeading: "设备防护层级",
     layers: [
-    {
-      name: "声学分析",
-      tech: "RMS / Zero-Crossing / Energy",
-      desc: "在设备端实时进行通话声学分析：分析声音与语调、语速、停顿以及对话的能量模式。数据绝不发送至服务器。"
-    }
-    ,
-    {
-      name: "ML 分类 (rubert-tiny2)",
-      tech: "ONNX Runtime / INT8 / ~29 MB",
-      desc: "使用轻量级神经网络 rubert-tiny2（ONNX INT8，约 29 MB）在设备端分析文本和元数据。模型与数据库随应用更新一起发布——日常使用无需联网，仅在安装新版本时需要。"
-    }
-    ,
-    {
-      name: "语音识别与语义分析 (ASR) — 开发中 (Roadmap)",
-      tech: "ASR — Roadmap",
-      desc: "语音识别（ASR）与对话内容语义分析：检测关键触发短语、心理施压迹象以及要求紧急操作的指令。PHANTOM 进化的下一阶段。"
-    }
-    ,
-    {
-      name: "PHANTOM 共识",
-      tech: "Consensus Voting Engine",
-      desc: "综合各分析层的输出做出最终加权决策。一旦怀疑遭到攻击，即锁定界面、警示用户，并向可信联系人发送即时推送通知。"
-    }
+      {
+        name: "声学分析",
+        tech: "RMS / Zero-Crossing / Energy",
+        desc: "在设备端实时进行通话声学分析：分析声音与语调、语速、停顿以及对话的能量模式。数据绝不发送至服务器。"
+      },
+      {
+        name: "ML 分类 (rubert-tiny2)",
+        tech: "ONNX Runtime / INT8 / ~29 MB",
+        desc: "使用轻量级神经网络 rubert-tiny2（ONNX INT8，约 29 MB）在设备端分析文本和元数据。模型与数据库随应用更新一起发布——日常使用无需联网，仅在安装新版本时需要。"
+      },
+      {
+        name: "语音识别与语义分析 (ASR) — 开发中 (Roadmap)",
+        tech: "ASR — Roadmap",
+        desc: "语音识别（ASR）与对话内容语义分析：检测关键触发短语、心理施压迹象以及要求紧急操作的指令。PHANTOM 进化的下一阶段。"
+      },
+      {
+        name: "PHANTOM 共识",
+        tech: "Consensus Voting Engine",
+        desc: "综合各分析层的输出做出最终加权决策。一旦怀疑遭到攻击，即锁定界面、警示用户，并向可信联系人发送即时推送通知。"
+      }
     ],
     usp: [
       {
@@ -1982,7 +2122,6 @@ const zh: Translations = {
       }
     ]
   },
-
   header: {
     rustore: "在 RuStore 下载",
     radar: "Product Radar",
@@ -1998,8 +2137,8 @@ const zh: Translations = {
     privacyLink: "隐私政策（俄罗斯联邦第152-FZ号法律）",
     termsLink: "用户协议",
     version: "本机机器学习反欺诈盾牌 // v1.2.0 // 符合第152-FZ号法律",
-      githubOrg: "TrustNode 的所有项目都在 GitHub 上",
-},
+    githubOrg: "TrustNode 的所有项目都在 GitHub 上"
+  },
   cookie: {
     badgeLabel: "[ 信息安全 // 俄罗斯第152-FZ号法律 ]",
     text: "我们重视你的隐私。本网站使用匿名化的 Cookie 和本地存储，用于记住你的图形设置和节能模式偏好。请查看我们的",
@@ -2086,7 +2225,11 @@ const zh: Translations = {
     about: "关于我们",
     download: "下载",
     comparison: "对比",
-    "not-found": "404"
+    "not-found": "404",
+    roadmap: "路线图",
+    privacy: "隐私政策",
+    terms: "用户协议",
+    news: "新闻"
   },
   realDev: {
     title: "项目验证",
@@ -2224,9 +2367,11 @@ const zh: Translations = {
   explore: {
     title: "探索安全协议",
     subtitle: "深入了解 TrustNode 的本地人工智能技术与科研基础",
+    hint: "将鼠标悬停在行星上 →",
+    hintTap: "点击一颗行星 →",
     card1Title: "穹顶防护技术",
     card1Badge: "PHANTOM 防护体系",
-    card1Desc: "PHANTOM 2.0 防护穹顶的技术解析：声学分析与 rubert-tiny2 ML 分类在设备端运行，其余层处于开发阶段（Roadmap）。",
+    card1Desc: "PHANTOM 2.0 七层防护罩的技术细节以及完全在设备端运行的 KIRA 智能语音助手。",
     card1Btn: "技术细节 →",
     card2Title: "科研验证实力",
     card2Badge: "专利与学术认可",
@@ -2260,9 +2405,8 @@ const zh: Translations = {
     feature2Desc: "轻量级神经网络 rubert-tiny2（ONNX INT8，约 29 MB）在设备端离线分析文本和元数据。",
     feature3Title: "免费且安全",
     feature3Desc: "应用在 RuStore 上免费提供。立即安装，保护您的家人免受诈骗。",
-    note: "适用于安卓设备。仅首次下载时需要联网。",
+    note: "适用于安卓设备。仅首次下载时需要联网。"
   },
-
   comparisonPage: {
     title: "诚实对比",
     subtitle: "对 TrustNode 与领先全球安全解决方案的客观对比分析",
@@ -2301,7 +2445,6 @@ const zh: Translations = {
     disclaimer: "我们力求最大程度的客观性。如发现任何不准确之处，请在 Telegram 上联系我们。",
     telegramBtn: "在 Telegram 上联系"
   },
-
   roadmapPage: {
     title: "发展路线图",
     subtitle: "TrustNode 的当前进展、负责任披露政策与语义核心部署时间表",
@@ -2332,50 +2475,86 @@ const zh: Translations = {
     reportGithub: "通过 GitHub 报告",
     milestonesTitle: "开发与发布里程碑",
     milestones: [
-      { date: "2024–2025", title: "学术起源与地区科研竞赛获奖", desc: "项目诞生于车里雅宾斯克无线电技术学院 (KB-284)，并在地区科研竞赛中获得第一名。" },
-      { date: "v1.2.0", title: "TrustNode 1 (TN1) — 就绪 MVP", desc: "完全可用的 Android 本地签名防护包。阈值调整与权重微调的校准阶段。" },
-      { date: "2025", title: "ONNX 核心集成", desc: "部署 rubert_fraud_int8.onnx 模型，实现不依赖云端的设备端本地语义推理。" },
-      { date: "2026 年 9 月", title: "PHANTOM 2.0 — 架构阶段", desc: "具备独立 AI 共识路由的 7 层专利 TN3 架构。截止日期：2026 年 9 月。" },
-      { date: "2026 年 9 月", title: "联邦超级总决赛（莫斯科）", desc: "在著名的联邦科研超级总决赛上进行项目展示。" },
-      { date: "v3.0-design", title: "Kira 语音助手 — 概念规格", desc: "语音意图分析器，用于在实时通话中消除操纵性言语行为。设计阶段。" }
+      {
+        date: "2024–2025",
+        title: "学术起源与地区科研竞赛获奖",
+        desc: "项目诞生于车里雅宾斯克无线电技术学院 (KB-284)，并在地区科研竞赛中获得第一名。"
+      },
+      {
+        date: "v1.2.0",
+        title: "TrustNode 1 (TN1) — 就绪 MVP",
+        desc: "完全可用的 Android 本地签名防护包。阈值调整与权重微调的校准阶段。"
+      },
+      {
+        date: "2025",
+        title: "ONNX 核心集成",
+        desc: "部署 rubert_fraud_int8.onnx 模型，实现不依赖云端的设备端本地语义推理。"
+      },
+      {
+        date: "2026 年 9 月",
+        title: "PHANTOM 2.0 — 架构阶段",
+        desc: "具备独立 AI 共识路由的 7 层专利 TN3 架构。截止日期：2026 年 9 月。"
+      },
+      {
+        date: "2026 年 9 月",
+        title: "联邦超级总决赛（莫斯科）",
+        desc: "在著名的联邦科研超级总决赛上进行项目展示。"
+      },
+      {
+        date: "v3.0-design",
+        title: "Kira 语音助手 — 概念规格",
+        desc: "语音意图分析器，用于在实时通话中消除操纵性言语行为。设计阶段。"
+      }
     ],
     allProjectsGithub: "GitHub 上的所有 TrustNode 项目"
   },
-
-    damageCalc: {
-      badge: "损失计算器",
-      title: "电话诈骗受害者损失多少",
-      subtitle: "估算 TrustNode 可以为您节省的潜在可预防损失。",
-      callsLabel: "每月诈骗电话数",
-      amountLabel: "每次成功攻击的平均损失",
-      resultTitle: "您一年的 TrustNode 防护",
-      savedLabel: "潜在可预防的损失",
-      disclaimer: "基于电话诈骗平均损失的公开统计数据估算，不保证实际节省。"
-    },
-
-    faq: {
-      badge: "常见问题",
-      title: "常见问题",
-      subtitle: "关于隐私、安装和 TrustNode 工作的关键解答。",
-      items: [
-        { q: "TrustNode 会收集我的个人数据吗？", a: "不会。所有分析（链接、通话、屏幕）都在设备本地完成。您的数据绝不会被发送到任何地方，也不会存储在第三方服务器上。" },
-        { q: "使用应用需要联网吗？", a: "不需要，分析模型离线运行。核心防护无需互联网。" },
-        { q: "为什么应用需要无障碍（Accessibility）访问权限？", a: "该权限仅用于识别虚假屏幕和欺诈性输入表单。分析在本地完成，屏幕内容绝不会被发送到任何地方。" },
-        { q: "应用会监听我的通话吗？", a: "TrustNode 仅实时分析语音以识别欺诈迹象（社会工程学）。音频绝不会写入磁盘或分享给第三方。" },
-        { q: "应用收费吗？", a: "目前 TrustNode 完全免费。未来计划推出包含更多功能的扩展订阅。" }
-      ]
-    },
-
-    news: {
-      badge: "新闻",
-      title: "TrustNode 团队最新公告",
-      subtitle: "频道文章会自动翻译成您选择的语言。",
-      emptyTitle: "暂无新闻",
-      emptyDesc: "与频道同步后，首批文章将在此显示。",
-      readIn: "在 {source} 阅读",
-      showMore: "展开",
-      showLess: "收起"
-    }
+  damageCalc: {
+    badge: "损失计算器",
+    title: "电话诈骗受害者损失多少",
+    subtitle: "估算 TrustNode 可以为您节省的潜在可预防损失。",
+    callsLabel: "每月诈骗电话数",
+    amountLabel: "每次成功攻击的平均损失",
+    resultTitle: "您一年的 TrustNode 防护",
+    savedLabel: "潜在可预防的损失",
+    disclaimer: "基于电话诈骗平均损失的公开统计数据估算，不保证实际节省。"
+  },
+  faq: {
+    badge: "常见问题",
+    title: "常见问题",
+    subtitle: "关于隐私、安装和 TrustNode 工作的关键解答。",
+    items: [
+      {
+        q: "TrustNode 会收集我的个人数据吗？",
+        a: "不会。所有分析（链接、通话、屏幕）都在设备本地完成。您的数据绝不会被发送到任何地方，也不会存储在第三方服务器上。"
+      },
+      {
+        q: "使用应用需要联网吗？",
+        a: "不需要，分析模型离线运行。核心防护无需互联网。"
+      },
+      {
+        q: "为什么应用需要无障碍（Accessibility）访问权限？",
+        a: "该权限仅用于识别虚假屏幕和欺诈性输入表单。分析在本地完成，屏幕内容绝不会被发送到任何地方。"
+      },
+      {
+        q: "应用会监听我的通话吗？",
+        a: "TrustNode 仅实时分析语音以识别欺诈迹象（社会工程学）。音频绝不会写入磁盘或分享给第三方。"
+      },
+      {
+        q: "应用收费吗？",
+        a: "目前 TrustNode 完全免费。未来计划推出包含更多功能的扩展订阅。"
+      }
+    ]
+  },
+  news: {
+    badge: "新闻",
+    title: "TrustNode 团队最新公告",
+    subtitle: "频道文章会自动翻译成您选择的语言。",
+    emptyTitle: "暂无新闻",
+    emptyDesc: "与频道同步后，首批文章将在此显示。",
+    readIn: "在 {source} 阅读",
+    showMore: "展开",
+    showLess: "收起"
+  }
 };
 
 const tr: Translations = {
@@ -2425,9 +2604,9 @@ const tr: Translations = {
     "KİMİN İÇİN"
   ],
   replayIntro: "GİRİŞİ YENİDEN OYNAT (YUKARI KAYDIR)",
-    backTop: "Yukarı dön",
-    skipToContent: "Ana içeriğe geç",
-    langChanged: "Dil {lang} olarak değiştirildi",
+  backTop: "Yukarı dön",
+  skipToContent: "Ana içeriğe geç",
+  langChanged: "Dil {lang} olarak değiştirildi",
   problem: {
     badge: "Mevcut zorluklar",
     titleLine1: "Mevcut çözümler neden",
@@ -2442,7 +2621,10 @@ const tr: Translations = {
         stat: "295+ milyar ₽",
         statLabel: "yalnızca 2024'te Rusya'da telefon dolandırıcılarından kaynaklanan kayıp",
         statSource: "Kaynaklar: banknn.ru, Sber / Frank Media, 2025",
-        shotLabels: ["Tehdit ekranı", "Tehdit geçmişi"]
+        shotLabels: [
+          "Tehdit ekranı",
+          "Tehdit geçmişi"
+        ]
       },
       {
         title: "Gizlilikten ödün verilmesi",
@@ -2450,7 +2632,10 @@ const tr: Translations = {
         stat: "4,5 milyar",
         statLabel: "2023–2025'te Rusya'da sızdırılan kişisel veri kaydı",
         statSource: "Kaynak: InfoWatch / d-russia.ru",
-        shotLabels: ["İstatistikler", "Ana ekran"]
+        shotLabels: [
+          "İstatistikler",
+          "Ana ekran"
+        ]
       },
       {
         title: "Şebeke olmadan işe yaramaz",
@@ -2458,7 +2643,10 @@ const tr: Translations = {
         stat: "2,2 milyar",
         statLabel: "dünyada hâlâ internet erişimi olmayan insan sayısı",
         statSource: "Kaynak: ITU Facts and Figures, 2025",
-        shotLabels: ["Ayarlar", "Asistan"]
+        shotLabels: [
+          "Ayarlar",
+          "Asistan"
+        ]
       }
     ]
   },
@@ -2469,29 +2657,26 @@ const tr: Translations = {
     subtitle: "Akıllı telefonunuzda yerel olarak konuşlandırılmış çok katmanlı bir kubbe. Tek bir bayt kişisel veri bile cihazınızdan ayrılmaz.",
     layersHeading: "Cihaz koruma katmanları",
     layers: [
-    {
-      name: "Akustik Analiz",
-      tech: "RMS / Zero-Crossing / Energy",
-      desc: "Aramanın cihaz üzerinde gerçek zamanlı akustik analizi: ses ve tonlama, konuşma temposu, duraklamalar ve konuşmanın enerji kalıpları. Sunucuya hiçbir veri gönderilmez."
-    }
-    ,
-    {
-      name: "ML Sınıflandırma (rubert-tiny2)",
-      tech: "ONNX Runtime / INT8 / ~29 MB",
-      desc: "Metin ve meta verileri cihaz üzerinde analiz etmek için hafif bir rubert-tiny2 sinir ağı (ONNX INT8, ~29 MB) kullanılır. Model ve veritabanı güncellemeleri uygulama güncellemesiyle gelir; günlük kullanımda internet gerekmez, yalnızca yeni sürüm kurulumunda gerekir."
-    }
-    ,
-    {
-      name: "Konuşma Tanıma ve Semantik (ASR) — Geliştiriliyor (Roadmap)",
-      tech: "ASR — Roadmap",
-      desc: "Konuşma tanıma (ASR) ve konuşma içeriğinin semantik analizi: anahtar tetikleyici ifadelerin, psikolojik baskı belirtilerinin ve acil eylem taleplerinin tespiti. PHANTOM evriminin bir sonraki aşaması."
-    }
-    ,
-    {
-      name: "PHANTOM Konsensüsü",
-      tech: "Consensus Voting Engine",
-      desc: "Analiz katmanlarının çıktılarına göre nihai ağırlıklı kararı verir. Saldırıdan şüphelenilirse arayüzü kilitler, kullanıcıyı uyarır ve güvenilir bir kişiye anlık bildirim gönderir."
-    }
+      {
+        name: "Akustik Analiz",
+        tech: "RMS / Zero-Crossing / Energy",
+        desc: "Aramanın cihaz üzerinde gerçek zamanlı akustik analizi: ses ve tonlama, konuşma temposu, duraklamalar ve konuşmanın enerji kalıpları. Sunucuya hiçbir veri gönderilmez."
+      },
+      {
+        name: "ML Sınıflandırma (rubert-tiny2)",
+        tech: "ONNX Runtime / INT8 / ~29 MB",
+        desc: "Metin ve meta verileri cihaz üzerinde analiz etmek için hafif bir rubert-tiny2 sinir ağı (ONNX INT8, ~29 MB) kullanılır. Model ve veritabanı güncellemeleri uygulama güncellemesiyle gelir; günlük kullanımda internet gerekmez, yalnızca yeni sürüm kurulumunda gerekir."
+      },
+      {
+        name: "Konuşma Tanıma ve Semantik (ASR) — Geliştiriliyor (Roadmap)",
+        tech: "ASR — Roadmap",
+        desc: "Konuşma tanıma (ASR) ve konuşma içeriğinin semantik analizi: anahtar tetikleyici ifadelerin, psikolojik baskı belirtilerinin ve acil eylem taleplerinin tespiti. PHANTOM evriminin bir sonraki aşaması."
+      },
+      {
+        name: "PHANTOM Konsensüsü",
+        tech: "Consensus Voting Engine",
+        desc: "Analiz katmanlarının çıktılarına göre nihai ağırlıklı kararı verir. Saldırıdan şüphelenilirse arayüzü kilitler, kullanıcıyı uyarır ve güvenilir bir kişiye anlık bildirim gönderir."
+      }
     ],
     usp: [
       {
@@ -2576,7 +2761,6 @@ const tr: Translations = {
       }
     ]
   },
-
   header: {
     rustore: "RuStore'dan İndir",
     radar: "Product Radar",
@@ -2592,8 +2776,8 @@ const tr: Translations = {
     privacyLink: "Gizlilik Politikası (FZ-152 uyumlu)",
     termsLink: "Kullanıcı Sözleşmesi",
     version: "Cihaz Üstü ML Dolandırıcılık Kalkanı // v1.2.0 // FZ-152 ile uyumlu",
-      githubOrg: "TrustNode'un tüm projeleri GitHub'da",
-},
+    githubOrg: "TrustNode'un tüm projeleri GitHub'da"
+  },
   cookie: {
     badgeLabel: "[ BİLGİ GÜVENLİĞİ // FZ-152 ]",
     text: "Gizliliğinize önem veriyoruz. Bu web sitesi, grafik ve eko modu ayarlarınızı kaydetmek için anonimleştirilmiş çerezler ve yerel depolama kullanır. Daha fazla bilgi için",
@@ -2680,7 +2864,11 @@ const tr: Translations = {
     about: "Hakkımızda",
     download: "İndir",
     comparison: "Karşılaştırma",
-    "not-found": "404"
+    "not-found": "404",
+    roadmap: "Yol Haritası",
+    privacy: "Gizlilik Politikası",
+    terms: "Kullanıcı Sözleşmesi",
+    news: "Haberler"
   },
   realDev: {
     title: "Proje Doğrulama",
@@ -2818,9 +3006,11 @@ const tr: Translations = {
   explore: {
     title: "Güvenlik Protokolünü Keşfedin",
     subtitle: "TrustNode yerel yapay zeka teknolojileri ve bilimsel temelleri hakkında daha fazla bilgi edinin",
+    hint: "Bir gezegenin üzerine gelin →",
+    hintTap: "Bir gezegene dokunun →",
     card1Title: "Kubbe Teknolojisi",
     card1Badge: "PHANTOM SİSTEMİ",
-    card1Desc: "PHANTOM 2.0 güvenlik kubbesinin teknik analizi: akustik analiz ve rubert-tiny2 ML sınıflandırma cihazda çalışır, kalan katmanlar geliştirme aşamasındadır (Roadmap).",
+    card1Desc: "7 katmanlı PHANTOM 2.0 güvenlik kubbesinin teknik detayları ve tamamen cihaz üzerinde çalışan akıllı sesli asistan KIRA.",
     card1Btn: "Teknolojiyi İncele →",
     card2Title: "Kanıtlanmış Başarı",
     card2Badge: "PATENT & ÖDÜLLER",
@@ -2854,9 +3044,8 @@ const tr: Translations = {
     feature2Desc: "Hafif rubert-tiny2 sinir ağı (ONNX INT8, ~29 MB) internet bağlantısı olmadan metin ve meta verileri cihaz üzerinde analiz eder.",
     feature3Title: "Ücretsiz ve Güvenli",
     feature3Desc: "Uygulama RuStore'da ücretsiz olarak mevcuttur. Kurun ve sevdiklerinizi dolandırıcılardan koruyun.",
-    note: "Android cihazlar için kullanılabilir. İnternet yalnızca ilk indirmede gereklidir.",
+    note: "Android cihazlar için kullanılabilir. İnternet yalnızca ilk indirmede gereklidir."
   },
-
   comparisonPage: {
     title: "Dürüst Karşılaştırma",
     subtitle: "TrustNode ile önde gelen küresel güvenlik çözümlerinin objektif karşılaştırmalı analizi",
@@ -2895,7 +3084,6 @@ const tr: Translations = {
     disclaimer: "Maksimum objektiflik için çaba gösteriyoruz. Herhangi bir yanlışlık fark ederseniz, lütfen Telegram üzerinden bizimle iletişime geçin.",
     telegramBtn: "Telegram'dan iletişime geçin"
   },
-
   roadmapPage: {
     title: "Geliştirme Yol Haritası",
     subtitle: "TrustNode'un mevcut ilerlemesi, sorumlu açıklama politikası ve anlamsal çekirdek dağıtım zaman çizelgesi",
@@ -2926,50 +3114,86 @@ const tr: Translations = {
     reportGithub: "GitHub ile bildir",
     milestonesTitle: "Geliştirme ve Sürüm Kilometre Taşları",
     milestones: [
-      { date: "2024–2025", title: "Akademik kökenler ve bölgesel NIR zaferi", desc: "Proje Çelyabinsk Radyo Teknik Koleji'nde (KB-284) doğdu ve bölgesel bilimsel araştırma yarışmasında 1. oldu." },
-      { date: "v1.2.0", title: "TrustNode 1 (TN1) — Ready MVP", desc: "Yerel imza koruması için tamamen çalışır durumda Android paketi. Eşik ayarlama ve ağırlık ince ayarı için kalibrasyon aşaması." },
-      { date: "2025", title: "ONNX çekirdek entegrasyonu", desc: "Bulut bağımlılığı olmadan cihaz üzerinde yerel anlamsal çıkarım için rubert_fraud_int8.onnx modelinin dağıtımı." },
-      { date: "EYLÜL 2026", title: "PHANTOM 2.0 — Mimari Faz", desc: "Bağımsız yapay zeka konsensüs yönlendirmesine sahip 7 katmanlı patentli TN3 mimarisi. Son teslim: Eylül 2026." },
-      { date: "EYLÜL 2026", title: "Federal süper final (Moskova)", desc: "Projenin prestijli federal bilimsel araştırma süper finalinde sunumu." },
-      { date: "v3.0-design", title: "Kira Ses Asistanı — Kavramsal Spec", desc: "Canlı görüşmeler sırasında manipülatif konuşma eylemlerini etkisiz hale getiren konuşma-niyet analizörü. Tasarım fazı." }
+      {
+        date: "2024–2025",
+        title: "Akademik kökenler ve bölgesel NIR zaferi",
+        desc: "Proje Çelyabinsk Radyo Teknik Koleji'nde (KB-284) doğdu ve bölgesel bilimsel araştırma yarışmasında 1. oldu."
+      },
+      {
+        date: "v1.2.0",
+        title: "TrustNode 1 (TN1) — Ready MVP",
+        desc: "Yerel imza koruması için tamamen çalışır durumda Android paketi. Eşik ayarlama ve ağırlık ince ayarı için kalibrasyon aşaması."
+      },
+      {
+        date: "2025",
+        title: "ONNX çekirdek entegrasyonu",
+        desc: "Bulut bağımlılığı olmadan cihaz üzerinde yerel anlamsal çıkarım için rubert_fraud_int8.onnx modelinin dağıtımı."
+      },
+      {
+        date: "EYLÜL 2026",
+        title: "PHANTOM 2.0 — Mimari Faz",
+        desc: "Bağımsız yapay zeka konsensüs yönlendirmesine sahip 7 katmanlı patentli TN3 mimarisi. Son teslim: Eylül 2026."
+      },
+      {
+        date: "EYLÜL 2026",
+        title: "Federal süper final (Moskova)",
+        desc: "Projenin prestijli federal bilimsel araştırma süper finalinde sunumu."
+      },
+      {
+        date: "v3.0-design",
+        title: "Kira Ses Asistanı — Kavramsal Spec",
+        desc: "Canlı görüşmeler sırasında manipülatif konuşma eylemlerini etkisiz hale getiren konuşma-niyet analizörü. Tasarım fazı."
+      }
     ],
     allProjectsGithub: "GitHub'daki tüm TrustNode projeleri"
   },
-
-    damageCalc: {
-      badge: "Hasar Hesaplayıcı",
-      title: "Telefon dolandırıcılığı mağdurları ne kadar kaybediyor",
-      subtitle: "TrustNode'un bütçenizde tutabileceği önlenebilir hasarı tahmin edin.",
-      callsLabel: "Ayda dolandırıcılık araması",
-      amountLabel: "Başarılı bir saldırıda ortalama kayıp",
-      resultTitle: "Bir yılda TrustNode korumanız",
-      savedLabel: "önlenebilir hasar",
-      disclaimer: "Telefon dolandırıcılığı ortalama kayıplarına dair kamuya açık istatistiklere dayanan tahmindir; gerçek tasarruf garanti etmez."
-    },
-
-    faq: {
-      badge: "SSS",
-      title: "Sık Sorulan Sorular",
-      subtitle: "Gizlilik, kurulum ve TrustNode'un çalışması hakkında temel yanıtlar.",
-      items: [
-        { q: "TrustNode kişisel verilerimi topluyor mu?", a: "Hayır. Tüm analiz (bağlantılar, aramalar, ekran) cihazda yerel olarak yapılır. Verileriniz hiçbir yere gönderilmez ve üçüncü taraf sunucularda saklanmaz." },
-        { q: "Uygulamayı kullanmak için internet gerekli mi?", a: "Hayır, analiz modeli çevrimdışı çalışır. Temel koruma için internet gerekmez." },
-        { q: "Uygulama neden Erişilebilirlik (Accessibility) erişimine ihtiyaç duyuyor?", a: "Bu erişim yalnızca sahte ekranları ve dolandırıcı veri girişi formlarını tespit etmek için kullanılır. Analiz yerel olarak yapılır; ekran içeriği hiçbir yere gönderilmez." },
-        { q: "Uygulama aramalarımı dinliyor mu?", a: "TrustNode, yalnızca dolandırıcılık belirtilerini (sosyal mühendislik) tespit etmek için sesi gerçek zamanlı analiz eder. Ses hiçbir zaman diske yazılmaz veya üçüncü taraflarla paylaşılmaz." },
-        { q: "Uygulama ücretli mi?", a: "TrustNode şu anda ücretsizdir. Gelecekte ek özelliklere sahip genişletilmiş bir abonelik planlanmaktadır." }
-      ]
-    },
-
-    news: {
-      badge: "Haberler",
-      title: "TrustNode ekibinin son duyuruları",
-      subtitle: "Kanal gönderileri seçtiğiniz dile otomatik olarak çevrilir.",
-      emptyTitle: "Henüz haber yok",
-      emptyDesc: "İlk yazılar kanallarla senkronize edildikten sonra burada görünecek.",
-      readIn: "{source} üzerinden oku",
-      showMore: "Daha fazla göster",
-      showLess: "Gizle"
-    }
+  damageCalc: {
+    badge: "Hasar Hesaplayıcı",
+    title: "Telefon dolandırıcılığı mağdurları ne kadar kaybediyor",
+    subtitle: "TrustNode'un bütçenizde tutabileceği önlenebilir hasarı tahmin edin.",
+    callsLabel: "Ayda dolandırıcılık araması",
+    amountLabel: "Başarılı bir saldırıda ortalama kayıp",
+    resultTitle: "Bir yılda TrustNode korumanız",
+    savedLabel: "önlenebilir hasar",
+    disclaimer: "Telefon dolandırıcılığı ortalama kayıplarına dair kamuya açık istatistiklere dayanan tahmindir; gerçek tasarruf garanti etmez."
+  },
+  faq: {
+    badge: "SSS",
+    title: "Sık Sorulan Sorular",
+    subtitle: "Gizlilik, kurulum ve TrustNode'un çalışması hakkında temel yanıtlar.",
+    items: [
+      {
+        q: "TrustNode kişisel verilerimi topluyor mu?",
+        a: "Hayır. Tüm analiz (bağlantılar, aramalar, ekran) cihazda yerel olarak yapılır. Verileriniz hiçbir yere gönderilmez ve üçüncü taraf sunucularda saklanmaz."
+      },
+      {
+        q: "Uygulamayı kullanmak için internet gerekli mi?",
+        a: "Hayır, analiz modeli çevrimdışı çalışır. Temel koruma için internet gerekmez."
+      },
+      {
+        q: "Uygulama neden Erişilebilirlik (Accessibility) erişimine ihtiyaç duyuyor?",
+        a: "Bu erişim yalnızca sahte ekranları ve dolandırıcı veri girişi formlarını tespit etmek için kullanılır. Analiz yerel olarak yapılır; ekran içeriği hiçbir yere gönderilmez."
+      },
+      {
+        q: "Uygulama aramalarımı dinliyor mu?",
+        a: "TrustNode, yalnızca dolandırıcılık belirtilerini (sosyal mühendislik) tespit etmek için sesi gerçek zamanlı analiz eder. Ses hiçbir zaman diske yazılmaz veya üçüncü taraflarla paylaşılmaz."
+      },
+      {
+        q: "Uygulama ücretli mi?",
+        a: "TrustNode şu anda ücretsizdir. Gelecekte ek özelliklere sahip genişletilmiş bir abonelik planlanmaktadır."
+      }
+    ]
+  },
+  news: {
+    badge: "Haberler",
+    title: "TrustNode ekibinin son duyuruları",
+    subtitle: "Kanal gönderileri seçtiğiniz dile otomatik olarak çevrilir.",
+    emptyTitle: "Henüz haber yok",
+    emptyDesc: "İlk yazılar kanallarla senkronize edildikten sonra burada görünecek.",
+    readIn: "{source} üzerinden oku",
+    showMore: "Daha fazla göster",
+    showLess: "Gizle"
+  }
 };
 
 const hi: Translations = {
@@ -3019,9 +3243,9 @@ const hi: Translations = {
     "किसके लिए"
   ],
   replayIntro: "इंट्रो फिर से देखें (ऊपर जाएँ)",
-    backTop: "ऊपर जाएँ",
-    skipToContent: "मुख्य सामग्री पर जाएँ",
-    langChanged: "भाषा बदलकर {lang} की गई",
+  backTop: "ऊपर जाएँ",
+  skipToContent: "मुख्य सामग्री पर जाएँ",
+  langChanged: "भाषा बदलकर {lang} की गई",
   problem: {
     badge: "मौजूदा चुनौतियाँ",
     titleLine1: "मौजूदा समाधान",
@@ -3036,7 +3260,10 @@ const hi: Translations = {
         stat: "295+ अरब रूबल",
         statLabel: "2024 में अकेले रूस में फ़ोन जालसाज़ों से हुआ नुकसान",
         statSource: "स्रोत: banknn.ru, Sber / Frank Media, 2025",
-        shotLabels: ["खतरा स्क्रीन", "खतरा इतिहास"]
+        shotLabels: [
+          "खतरा स्क्रीन",
+          "खतरा इतिहास"
+        ]
       },
       {
         title: "गोपनीयता से समझौता",
@@ -3044,7 +3271,10 @@ const hi: Translations = {
         stat: "4.5 अरब",
         statLabel: "2023–2025 में रूस में लीक हुए व्यक्तिगत डेटा रिकॉर्ड",
         statSource: "स्रोत: InfoWatch / d-russia.ru",
-        shotLabels: ["आँकड़े", "मुख्य स्क्रीन"]
+        shotLabels: [
+          "आँकड़े",
+          "मुख्य स्क्रीन"
+        ]
       },
       {
         title: "नेटवर्क के बिना बेकार",
@@ -3052,7 +3282,10 @@ const hi: Translations = {
         stat: "2.2 अरब",
         statLabel: "दुनिया में ऐसे लोग जिनके पास अब भी इंटरनेट नहीं है",
         statSource: "स्रोत: ITU Facts and Figures, 2025",
-        shotLabels: ["सेटिंग्स", "सहायक"]
+        shotLabels: [
+          "सेटिंग्स",
+          "सहायक"
+        ]
       }
     ]
   },
@@ -3063,29 +3296,26 @@ const hi: Translations = {
     subtitle: "आपके स्मार्टफ़ोन पर लोकली तैनात एक मल्टी-लेयर डोम। निजी डेटा का एक भी बाइट डिवाइस से बाहर नहीं जाता।",
     layersHeading: "डिवाइस सुरक्षा की परतें",
     layers: [
-    {
-      name: "ध्वनिक विश्लेषण",
-      tech: "RMS / Zero-Crossing / Energy",
-      desc: "कॉल का डिवाइस पर रीयल-टाइम ध्वनिक विश्लेषण: आवाज़ और स्वर-उतार-चढ़ाव, भाषण की गति, ठहराव और बातचीत के ऊर्जा पैटर्न का विश्लेषण। सर्वर पर कोई डेटा नहीं भेजा जाता।"
-    }
-    ,
-    {
-      name: "ML वर्गीकरण (rubert-tiny2)",
-      tech: "ONNX Runtime / INT8 / ~29 MB",
-      desc: "डिवाइस पर टेक्स्ट और मेटाडेटा का विश्लेषण करने के लिए हल्के rubert-tiny2 न्यूरल नेटवर्क (ONNX INT8, ~29 MB) का उपयोग किया जाता है। मॉडल और डेटाबेस अपडेट ऐप अपडेट के साथ आते हैं; दैनिक उपयोग के लिए इंटरनेट की आवश्यकता नहीं होती, केवल नए संस्करण स्थापित करने के लिए होती है।"
-    }
-    ,
-    {
-      name: "वाक् पहचान और सिमेंटिक (ASR) — विकासाधीन (Roadmap)",
-      tech: "ASR — Roadmap",
-      desc: "वाक् पहचान (ASR) और बातचीत की सामग्री का सिमेंटिक विश्लेषण: मुख्य ट्रिगर वाक्यांशों, मनोवैज्ञानिक दबाव के संकेतों और तत्काल कार्रवाई की मांगों का पता लगाना। PHANTOM विकास का अगला चरण।"
-    }
-    ,
-    {
-      name: "PHANTOM सर्वसम्मति",
-      tech: "Consensus Voting Engine",
-      desc: "विश्लेषण परतों के आउटपुट के आधार पर अंतिम भारित निर्णय लेता है। हमले का संदेह होने पर, यह इंटरफ़ेस को लॉक करता है, उपयोगकर्ता को चेतावनी देता है, और विश्वसनीय संपर्क को तुरंत पुश भेजता है।"
-    }
+      {
+        name: "ध्वनिक विश्लेषण",
+        tech: "RMS / Zero-Crossing / Energy",
+        desc: "कॉल का डिवाइस पर रीयल-टाइम ध्वनिक विश्लेषण: आवाज़ और स्वर-उतार-चढ़ाव, भाषण की गति, ठहराव और बातचीत के ऊर्जा पैटर्न का विश्लेषण। सर्वर पर कोई डेटा नहीं भेजा जाता।"
+      },
+      {
+        name: "ML वर्गीकरण (rubert-tiny2)",
+        tech: "ONNX Runtime / INT8 / ~29 MB",
+        desc: "डिवाइस पर टेक्स्ट और मेटाडेटा का विश्लेषण करने के लिए हल्के rubert-tiny2 न्यूरल नेटवर्क (ONNX INT8, ~29 MB) का उपयोग किया जाता है। मॉडल और डेटाबेस अपडेट ऐप अपडेट के साथ आते हैं; दैनिक उपयोग के लिए इंटरनेट की आवश्यकता नहीं होती, केवल नए संस्करण स्थापित करने के लिए होती है।"
+      },
+      {
+        name: "वाक् पहचान और सिमेंटिक (ASR) — विकासाधीन (Roadmap)",
+        tech: "ASR — Roadmap",
+        desc: "वाक् पहचान (ASR) और बातचीत की सामग्री का सिमेंटिक विश्लेषण: मुख्य ट्रिगर वाक्यांशों, मनोवैज्ञानिक दबाव के संकेतों और तत्काल कार्रवाई की मांगों का पता लगाना। PHANTOM विकास का अगला चरण।"
+      },
+      {
+        name: "PHANTOM सर्वसम्मति",
+        tech: "Consensus Voting Engine",
+        desc: "विश्लेषण परतों के आउटपुट के आधार पर अंतिम भारित निर्णय लेता है। हमले का संदेह होने पर, यह इंटरफ़ेस को लॉक करता है, उपयोगकर्ता को चेतावनी देता है, और विश्वसनीय संपर्क को तुरंत पुश भेजता है।"
+      }
     ],
     usp: [
       {
@@ -3170,7 +3400,6 @@ const hi: Translations = {
       }
     ]
   },
-
   header: {
     rustore: "RuStore से डाउनलोड करें",
     radar: "Product Radar",
@@ -3186,8 +3415,8 @@ const hi: Translations = {
     privacyLink: "गोपनीयता नीति (रूसी संघीय क़ानून 152-FZ)",
     termsLink: "उपयोग की शर्तें",
     version: "ऑन-डिवाइस ML फ़्रॉड शील्ड // v1.2.0 // 152-FZ अनुरूप",
-      githubOrg: "GitHub पर TrustNode की सभी परियोजनाएँ",
-},
+    githubOrg: "GitHub पर TrustNode की सभी परियोजनाएँ"
+  },
   cookie: {
     badgeLabel: "[ सूचना सुरक्षा // रूसी क़ानून 152-FZ ]",
     text: "हमें आपकी निजता की परवाह है। यह साइट आपकी ग्राफ़िक्स और इको-मोड सेटिंग्स याद रखने के लिए बेनाम कुकीज़ और लोकल स्टोरेज का उपयोग करती है। हमारी",
@@ -3274,7 +3503,11 @@ const hi: Translations = {
     about: "हमारे बारे में",
     download: "डाउनलोड करें",
     comparison: "तुलना",
-    "not-found": "404"
+    "not-found": "404",
+    roadmap: "रोडमैप",
+    privacy: "गोपनीयता नीति",
+    terms: "उपयोग की शर्तें",
+    news: "समाचार"
   },
   realDev: {
     title: "परियोजना सत्यापन",
@@ -3412,9 +3645,11 @@ const hi: Translations = {
   explore: {
     title: "सुरक्षा प्रोटोकॉल का अन्वेषण करें",
     subtitle: "TrustNode की स्थानीय AI तकनीकों and वैज्ञानिक आधार के बारे में अधिक जानें",
+    hint: "किसी ग्रह पर होवर करें →",
+    hintTap: "किसी ग्रह पर टैप करें →",
     card1Title: "डोम तकनीक",
     card1Badge: "PHANTOM प्रणाली",
-    card1Desc: "PHANTOM 2.0 सुरक्षा डोम का तकनीकी विवरण: ध्वनिक विश्लेषण और rubert-tiny2 ML वर्गीकरण डिवाइस पर चलते हैं, शेष परतें विकास में हैं (Roadmap)।",
+    card1Desc: "7-स्तरीय PHANTOM 2.0 सुरक्षा डोम का तकनीकी विवरण और पूरी तरह से ऑन-डिवाइस चलने वाला इंटेलिजেন্ট वॉयс असिस्टेंट KIRA।",
     card1Btn: "तकनीक जानें →",
     card2Title: "प्रमाणित मान्यता",
     card2Badge: "पेटेंट और पुरस्कार",
@@ -3448,9 +3683,8 @@ const hi: Translations = {
     feature2Desc: "हल्का rubert-tiny2 न्यूरल नेटवर्क (ONNX INT8, ~29 MB) इंटरनेट कनेक्शन के बिना टेक्स्ट और मेटाडेटा का डिवाइस पर विश्लेषण करता है।",
     feature3Title: "मुफ्त और सुरक्षित",
     feature3Desc: "ऐप RuStore पर मुफ्त उपलब्ध है। इसे इंस्टॉल करें और अपने प्रियजनों को स्कैमर्स से बचाएं।",
-    note: "Android डिवाइस के लिए उपलब्ध। इंटरनेट केवल प्रारंभिक डाउनलोड के लिए आवश्यक है।",
+    note: "Android डिवाइस के लिए उपलब्ध। इंटरनेट केवल प्रारंभिक डाउनलोड के लिए आवश्यक है।"
   },
-
   comparisonPage: {
     title: "ईमानदार तुलना",
     subtitle: "TrustNode बनाम प्रमुख वैश्विक सुरक्षा समाधानों का एक वस्तुनिष्ठ तुलनात्मक विश्लेषण",
@@ -3489,7 +3723,6 @@ const hi: Translations = {
     disclaimer: "हम अधिकतम निष्पक्षता के लिए प्रयास करते हैं। यदि आपको कोई अशुद्धि दिखे, तो कृपया हमसे Telegram पर संपर्क करें।",
     telegramBtn: "Telegram पर संपर्क करें"
   },
-
   roadmapPage: {
     title: "विकास रोडमैप",
     subtitle: "TrustNode की वर्तमान प्रगति, जिम्मेदार प्रकटीकरण नीति और सिमेंटिक कोर परिनियोजन समयरेखा",
@@ -3520,50 +3753,86 @@ const hi: Translations = {
     reportGithub: "GitHub से रिपोर्ट करें",
     milestonesTitle: "विकास और रिलीज़ माइलस्टोन",
     milestones: [
-      { date: "2024–2025", title: "शैक्षणिक उत्पत्ति और क्षेत्रीय NIR जीत", desc: "चेल्याबिंस्क रेडियोटेक्निकल कॉलेज (KB-284) में जन्मी परियोजना ने क्षेत्रीय वैज्ञानिक अनुसंधान प्रतियोगिता में पहला स्थान जीता।" },
-      { date: "v1.2.0", title: "TrustNode 1 (TN1) — रेडी MVP", desc: "लोकल सिग्नेचर सुरक्षा के लिए पूर्ण रूप से चालू Android पैकेज। थ्रेशोल्ड समायोजन और वेट फाइन-ट्यूनिंग के लिए अंशांकन चरण।" },
-      { date: "2025", title: "ONNX कोर एकीकरण", desc: "क्लाउड निर्भरता के बिना डिवाइस पर स्थानीय सिमेंटिक इन्फरेंस के लिए rubert_fraud_int8.onnx मॉडल की परिनियोजन।" },
-      { date: "सितंबर 2026", title: "PHANTOM 2.0 — आर्किटेक्चर चरण", desc: "स्वतंत्र AI सर्वसम्मति रूटिंग वाली 7-परत पेटेंट TN3 वास्तुकला। समय सीमा: सितंबर 2026।" },
-      { date: "सितंबर 2026", title: "संघीय सुपरफाइनल (मास्को)", desc: "प्रतिष्ठित संघीय वैज्ञानिक अनुसंधान सुपरफाइनल में परियोजना प्रस्तुति।" },
-      { date: "v3.0-design", title: "किरा वॉइस असिस्टेंट — संकल्पनात्मक विनिर्देश", desc: "लाइव कॉल के दौरान हेरफेर करने वाले भाषण कृत्यों को बेअसर करने के लिए भाषण-आशय विश्लेषक। डिज़ाइन चरण।" }
+      {
+        date: "2024–2025",
+        title: "शैक्षणिक उत्पत्ति और क्षेत्रीय NIR जीत",
+        desc: "चेल्याबिंस्क रेडियोटेक्निकल कॉलेज (KB-284) में जन्मी परियोजना ने क्षेत्रीय वैज्ञानिक अनुसंधान प्रतियोगिता में पहला स्थान जीता।"
+      },
+      {
+        date: "v1.2.0",
+        title: "TrustNode 1 (TN1) — रेडी MVP",
+        desc: "लोकल सिग्नेचर सुरक्षा के लिए पूर्ण रूप से चालू Android पैकेज। थ्रेशोल्ड समायोजन और वेट फाइन-ट्यूनिंग के लिए अंशांकन चरण।"
+      },
+      {
+        date: "2025",
+        title: "ONNX कोर एकीकरण",
+        desc: "क्लाउड निर्भरता के बिना डिवाइस पर स्थानीय सिमेंटिक इन्फरेंस के लिए rubert_fraud_int8.onnx मॉडल की परिनियोजन।"
+      },
+      {
+        date: "सितंबर 2026",
+        title: "PHANTOM 2.0 — आर्किटेक्चर चरण",
+        desc: "स्वतंत्र AI सर्वसम्मति रूटिंग वाली 7-परत पेटेंट TN3 वास्तुकला। समय सीमा: सितंबर 2026।"
+      },
+      {
+        date: "सितंबर 2026",
+        title: "संघीय सुपरफाइनल (मास्को)",
+        desc: "प्रतिष्ठित संघीय वैज्ञानिक अनुसंधान सुपरफाइनल में परियोजना प्रस्तुति।"
+      },
+      {
+        date: "v3.0-design",
+        title: "किरा वॉइस असिस्टेंट — संकल्पनात्मक विनिर्देश",
+        desc: "लाइव कॉल के दौरान हेरफेर करने वाले भाषण कृत्यों को बेअसर करने के लिए भाषण-आशय विश्लेषक। डिज़ाइन चरण।"
+      }
     ],
     allProjectsGithub: "GitHub पर सभी TrustNode प्रोजेक्ट"
   },
-
-    damageCalc: {
-      badge: "नुकसान कैलकुलेटर",
-      title: "फोन धोखाधड़ी के शिकार कितना खोते हैं",
-      subtitle: "TrustNode आपके बजट में बचा सकने वाले संभावित रोके जाने योग्य नुकसान का अनुमान लगाएं।",
-      callsLabel: "प्रति माह धोखाधड़ी कॉल",
-      amountLabel: "एक सफल हमले से औसत नुकसान",
-      resultTitle: "एक वर्ष में आपकी TrustNode सुरक्षा",
-      savedLabel: "संभावित रोका गया नुकसान",
-      disclaimer: "फोन धोखाधड़ी औसत नुकसान की सार्वजनिक आँकड़ों पर आधारित अनुमान; वास्तविक बचत की गारंटी नहीं देता।"
-    },
-
-    faq: {
-      badge: "अक्सर पूछे जाने वाले प्रश्न",
-      title: "अक्सर पूछे जाने वाले प्रश्न",
-      subtitle: "गोपनीयता, इंस्टॉलेशन और TrustNode के काम करने के बारे में मुख्य उत्तर।",
-      items: [
-        { q: "क्या TrustNode मेरा व्यक्तिगत डेटा एकत्र करता है?", a: "नहीं। सभी विश्लेषण (लिंक, कॉल, स्क्रीन) डिवाइस पर स्थानीय रूप से होते हैं। आपका डेटा कहीं नहीं भेजा जाता और न ही तीसरे पक्ष के सर्वर पर संग्रहीत किया जाता है।" },
-        { q: "क्या ऐप उपयोग करने के लिए इंटरनेट आवश्यक है?", a: "नहीं, विश्लेषण मॉडल ऑफ़लाइन काम करता है। मुख्य सुरक्षा के लिए इंटरनेट आवश्यक नहीं है।" },
-        { q: "ऐप को Accessibility (सुलभता) एक्सेस की आवश्यकता क्यों है?", a: "इस एक्सेस का उपयोग केवल नकली स्क्रीन और धोखाधड़ी वाले डेटा-प्रविष्टि फ़ॉर्म की पहचान के लिए किया जाता है। विश्लेषण स्थानीय रूप से होता है; स्क्रीन की सामग्री कहीं नहीं भेजी जाती।" },
-        { q: "क्या ऐप मेरे कॉल सुनता है?", a: "TrustNode धोखाधड़ी (सामाजिक इंजीनियरिंग) के संकेतों का पता लगाने के लिए केवल वास्तविक समय में आवाज़ का विश्लेषण करता है। ऑडियो कभी डिस्क पर नहीं लिखा जाता और न ही तीसरे पक्ष के साथ साझा किया जाता है।" },
-        { q: "क्या ऐप सशुल्क है?", a: "TrustNode अभी मुफ़्त है। भविष्य में अतिरिक्त सुविधाओं के साथ विस्तारित सदस्यता की योजना है।" }
-      ]
-    },
-
-    news: {
-      badge: "समाचार",
-      title: "TrustNode टीम की ताज़ा घोषणाएँ",
-      subtitle: "चैनल की पोस्ट स्वचालित रूप से आपकी चुनी हुई भाषा में अनुवादित होती हैं।",
-      emptyTitle: "अभी कोई समाचार नहीं",
-      emptyDesc: "चैनलों के साथ सिंक होने के बाद पहली पोस्ट यहाँ दिखाई देंगी।",
-      readIn: "{source} में पढ़ें",
-      showMore: "और दिखाएँ",
-      showLess: "कम दिखाएँ"
-    }
+  damageCalc: {
+    badge: "नुकसान कैलकुलेटर",
+    title: "फोन धोखाधड़ी के शिकार कितना खोते हैं",
+    subtitle: "TrustNode आपके बजट में बचा सकने वाले संभावित रोके जाने योग्य नुकसान का अनुमान लगाएं।",
+    callsLabel: "प्रति माह धोखाधड़ी कॉल",
+    amountLabel: "एक सफल हमले से औसत नुकसान",
+    resultTitle: "एक वर्ष में आपकी TrustNode सुरक्षा",
+    savedLabel: "संभावित रोका गया नुकसान",
+    disclaimer: "फोन धोखाधड़ी औसत नुकसान की सार्वजनिक आँकड़ों पर आधारित अनुमान; वास्तविक बचत की गारंटी नहीं देता।"
+  },
+  faq: {
+    badge: "अक्सर पूछे जाने वाले प्रश्न",
+    title: "अक्सर पूछे जाने वाले प्रश्न",
+    subtitle: "गोपनीयता, इंस्टॉलेशन और TrustNode के काम करने के बारे में मुख्य उत्तर।",
+    items: [
+      {
+        q: "क्या TrustNode मेरा व्यक्तिगत डेटा एकत्र करता है?",
+        a: "नहीं। सभी विश्लेषण (लिंक, कॉल, स्क्रीन) डिवाइस पर स्थानीय रूप से होते हैं। आपका डेटा कहीं नहीं भेजा जाता और न ही तीसरे पक्ष के सर्वर पर संग्रहीत किया जाता है।"
+      },
+      {
+        q: "क्या ऐप उपयोग करने के लिए इंटरनेट आवश्यक है?",
+        a: "नहीं, विश्लेषण मॉडल ऑफ़लाइन काम करता है। मुख्य सुरक्षा के लिए इंटरनेट आवश्यक नहीं है।"
+      },
+      {
+        q: "ऐप को Accessibility (सुलभता) एक्सेस की आवश्यकता क्यों है?",
+        a: "इस एक्सेस का उपयोग केवल नकली स्क्रीन और धोखाधड़ी वाले डेटा-प्रविष्टि फ़ॉर्म की पहचान के लिए किया जाता है। विश्लेषण स्थानीय रूप से होता है; स्क्रीन की सामग्री कहीं नहीं भेजी जाती।"
+      },
+      {
+        q: "क्या ऐप मेरे कॉल सुनता है?",
+        a: "TrustNode धोखाधड़ी (सामाजिक इंजीनियरिंग) के संकेतों का पता लगाने के लिए केवल वास्तविक समय में आवाज़ का विश्लेषण करता है। ऑडियो कभी डिस्क पर नहीं लिखा जाता और न ही तीसरे पक्ष के साथ साझा किया जाता है।"
+      },
+      {
+        q: "क्या ऐप सशुल्क है?",
+        a: "TrustNode अभी मुफ़्त है। भविष्य में अतिरिक्त सुविधाओं के साथ विस्तारित सदस्यता की योजना है।"
+      }
+    ]
+  },
+  news: {
+    badge: "समाचार",
+    title: "TrustNode टीम की ताज़ा घोषणाएँ",
+    subtitle: "चैनल की पोस्ट स्वचालित रूप से आपकी चुनी हुई भाषा में अनुवादित होती हैं।",
+    emptyTitle: "अभी कोई समाचार नहीं",
+    emptyDesc: "चैनलों के साथ सिंक होने के बाद पहली पोस्ट यहाँ दिखाई देंगी।",
+    readIn: "{source} में पढ़ें",
+    showMore: "और दिखाएँ",
+    showLess: "कम दिखाएँ"
+  }
 };
 
 const ar: Translations = {
@@ -3613,9 +3882,9 @@ const ar: Translations = {
     "لمن"
   ],
   replayIntro: "إعادة تشغيل المقدمة (التمرير للأعلى)",
-    backTop: "العودة للأعلى",
-    skipToContent: "تخطَّ إلى المحتوى",
-    langChanged: "تم تغيير اللغة إلى {lang}",
+  backTop: "العودة للأعلى",
+  skipToContent: "تخطَّ إلى المحتوى",
+  langChanged: "تم تغيير اللغة إلى {lang}",
   problem: {
     badge: "التحديات الحالية",
     titleLine1: "لماذا لم تعد الحلول الحالية",
@@ -3630,7 +3899,10 @@ const ar: Translations = {
         stat: "295+ مليار روبل",
         statLabel: "خسائر الروس من المحتالين عبر الهاتف في 2024 وحدها",
         statSource: "المصادر: banknn.ru، Sber / Frank Media، 2025",
-        shotLabels: ["شاشة التهديد", "سجل التهديدات"]
+        shotLabels: [
+          "شاشة التهديد",
+          "سجل التهديدات"
+        ]
       },
       {
         title: "المساس بالخصوصية",
@@ -3638,7 +3910,10 @@ const ar: Translations = {
         stat: "4.5 مليار",
         statLabel: "سجل بيانات شخصي تسرّب في روسيا خلال 2023–2025",
         statSource: "المصدر: InfoWatch / d-russia.ru",
-        shotLabels: ["الإحصائيات", "الشاشة الرئيسية"]
+        shotLabels: [
+          "الإحصائيات",
+          "الشاشة الرئيسية"
+        ]
       },
       {
         title: "عديم الفائدة بدون شبكة",
@@ -3646,7 +3921,10 @@ const ar: Translations = {
         stat: "2.2 مليار",
         statLabel: "شخص حول العالم ما زالوا يعيشون دون وصول للإنترنت",
         statSource: "المصدر: ITU Facts and Figures، 2025",
-        shotLabels: ["الإعدادات", "المساعد"]
+        shotLabels: [
+          "الإعدادات",
+          "المساعد"
+        ]
       }
     ]
   },
@@ -3657,29 +3935,26 @@ const ar: Translations = {
     subtitle: "قبة متعددة الطبقات تعمل محليًا بالكامل على هاتفك الذكي. لا تغادر أي بايت واحد من بياناتك الشخصية الجهاز.",
     layersHeading: "طبقات حماية الجهاز",
     layers: [
-    {
-      name: "التحليل الصوتي",
-      tech: "RMS / Zero-Crossing / Energy",
-      desc: "تحليل صوتي للمكالمة في الوقت الفعلي على الجهاز: تحليل الصوت ونبراته وإيقاع الكلام والتوقفات وأنماط الطاقة في المحادثة. دون إرسال أي بيانات إلى الخادم."
-    }
-    ,
-    {
-      name: "تصنيف التعلم الآلي (rubert-tiny2)",
-      tech: "ONNX Runtime / INT8 / ~29 MB",
-      desc: "تُستخدم شبكة عصبية خفيفة rubert-tiny2 (ONNX INT8، ~29 م.ب) لتحليل النصوص والبيانات الوصفية على الجهاز. تُنشر تحديثات النماذج وقواعد البيانات مع تحديث التطبيق؛ ولا يلزم الإنترنت للاستخدام اليومي، بل فقط لتثبيت إصدارات جديدة."
-    }
-    ,
-    {
-      name: "التعرف على الكلام والدلالة (ASR) — قيد التطوير (Roadmap)",
-      tech: "ASR — Roadmap",
-      desc: "التعرف على الكلام (ASR) والتحليل الدلالي لمحتوى المحادثة: كشف العبارات المفتاحية المحفزة ومؤشرات الضغط النفسي ومطالب التصرف العاجل. المرحلة التالية من تطور PHANTOM."
-    }
-    ,
-    {
-      name: "إجماع PHANTOM",
-      tech: "Consensus Voting Engine",
-      desc: "يتخذ القرار النهائي المرجّح بناءً على مخرجات طبقات التحليل. عند الاشتباه في هجوم، يقفل الواجهة، وينبه المستخدم، ويرسل إشعارًا فوريًا إلى جهة اتصال موثوقة."
-    }
+      {
+        name: "التحليل الصوتي",
+        tech: "RMS / Zero-Crossing / Energy",
+        desc: "تحليل صوتي للمكالمة في الوقت الفعلي على الجهاز: تحليل الصوت ونبراته وإيقاع الكلام والتوقفات وأنماط الطاقة في المحادثة. دون إرسال أي بيانات إلى الخادم."
+      },
+      {
+        name: "تصنيف التعلم الآلي (rubert-tiny2)",
+        tech: "ONNX Runtime / INT8 / ~29 MB",
+        desc: "تُستخدم شبكة عصبية خفيفة rubert-tiny2 (ONNX INT8، ~29 م.ب) لتحليل النصوص والبيانات الوصفية على الجهاز. تُنشر تحديثات النماذج وقواعد البيانات مع تحديث التطبيق؛ ولا يلزم الإنترنت للاستخدام اليومي، بل فقط لتثبيت إصدارات جديدة."
+      },
+      {
+        name: "التعرف على الكلام والدلالة (ASR) — قيد التطوير (Roadmap)",
+        tech: "ASR — Roadmap",
+        desc: "التعرف على الكلام (ASR) والتحليل الدلالي لمحتوى المحادثة: كشف العبارات المفتاحية المحفزة ومؤشرات الضغط النفسي ومطالب التصرف العاجل. المرحلة التالية من تطور PHANTOM."
+      },
+      {
+        name: "إجماع PHANTOM",
+        tech: "Consensus Voting Engine",
+        desc: "يتخذ القرار النهائي المرجّح بناءً على مخرجات طبقات التحليل. عند الاشتباه في هجوم، يقفل الواجهة، وينبه المستخدم، ويرسل إشعارًا فوريًا إلى جهة اتصال موثوقة."
+      }
     ],
     usp: [
       {
@@ -3764,7 +4039,6 @@ const ar: Translations = {
       }
     ]
   },
-
   header: {
     rustore: "تنزيل من RuStore",
     radar: "Product Radar",
@@ -3780,8 +4054,8 @@ const ar: Translations = {
     privacyLink: "سياسة الخصوصية (القانون الفيدرالي الروسي 152-FZ)",
     termsLink: "شروط الاستخدام",
     version: "درع مكافحة الاحتيال بالتعلم الآلي على الجهاز // v1.2.0 // متوافق مع القانون 152-FZ",
-      githubOrg: "جميع مشاريع TrustNode على GitHub",
-},
+    githubOrg: "جميع مشاريع TrustNode على GitHub"
+  },
   cookie: {
     badgeLabel: "[ أمن المعلومات // القانون الروسي 152-FZ ]",
     text: "نهتم بخصوصيتك. يستخدم هذا الموقع ملفات تعريف ارتباط مجهولة وتخزينًا محليًا لحفظ إعدادات الرسومات ووضع توفير الطاقة الخاصة بك. اطّلع على",
@@ -3868,7 +4142,11 @@ const ar: Translations = {
     about: "من نحن",
     download: "تنزيل",
     comparison: "مقارنة",
-    "not-found": "404"
+    "not-found": "404",
+    roadmap: "خريطة الطريق",
+    privacy: "سياسة الخصوصية",
+    terms: "شروط الاستخدام",
+    news: "الأخبار"
   },
   realDev: {
     title: "التحقق من المشروع",
@@ -4006,9 +4284,11 @@ const ar: Translations = {
   explore: {
     title: "استكشف بروتوكول الأمان",
     subtitle: "تعرف على المزيد حول تقنيات الذكاء الاصطناعي المحلية والأساس العلمي لـ TrustNode",
+    hint: "مرّر فوق الكوكب →",
+    hintTap: "انقر على الكوكب →",
     card1Title: "تكنولوجيا القبة",
     card1Badge: "نظام PHANTOM",
-    card1Desc: "تفاصيل تقنية لقبة الحماية PHANTOM 2.0: التحليل الصوتي وتصنيف التعلم الآلي rubert-tiny2 يعملان على الجهاز، بينما الطبقات المتبقية قيد التطوير (Roadmap).",
+    card1Desc: "التفاصيل التقنية لقبة الحماية السباعية PHANTOM 2.0 والمساعد الصوتي الذكي KIRA الذي يعمل بالكامل على الجهاز.",
     card1Btn: "استكشف التكنولوجيا →",
     card2Title: "كفاءة مثبتة",
     card2Badge: "براءات الاختراع والجوائز",
@@ -4042,9 +4322,8 @@ const ar: Translations = {
     feature2Desc: "الشبكة العصبية الخفيفة rubert-tiny2 (ONNX INT8، ~29 م.ب) تحلل النصوص والبيانات الوصفية على الجهاز دون اتصال بالإنترنت.",
     feature3Title: "مجاني وآمن",
     feature3Desc: "التطبيق متاح مجاناً على RuStore. ثبّته واحمِ أحباءك من المحتالين.",
-    note: "متوفر لأجهزة أندرويد. الإنترنت مطلوب فقط للتنزيل الأولي.",
+    note: "متوفر لأجهزة أندرويد. الإنترنت مطلوب فقط للتنزيل الأولي."
   },
-
   comparisonPage: {
     title: "مقارنة صادقة",
     subtitle: "تحليل مقارن موضوعي لـ TrustNode مقابل الحلول الأمنية العالمية الرائدة",
@@ -4083,7 +4362,6 @@ const ar: Translations = {
     disclaimer: "نحن نسعى لأقصى درجات الموضوعية. إذا لاحظت أي عدم دقة، يرجى التواصل معنا عبر Telegram.",
     telegramBtn: "تواصل عبر Telegram"
   },
-
   roadmapPage: {
     title: "خارطة طريق التطوير",
     subtitle: "التقدم الحالي لـ TrustNode، سياسة الكشف المسؤول، والجدول الزمني لتطوير النواة الدلالية",
@@ -4114,50 +4392,86 @@ const ar: Translations = {
     reportGithub: "الإبلاغ عبر GitHub",
     milestonesTitle: "معالم التطوير والإصدارات",
     milestones: [
-      { date: "2024–2025", title: "الأصول الأكاديمية والفوز الإقليمي في البحث العلمي", desc: "مشروع وُلد في كلية تشيليابينسك للراديو التقنية (KB-284) وحصل على المركز الأول في المسابقة الإقليمية للبحث العلمي." },
-      { date: "v1.2.0", title: "TrustNode 1 (TN1) — Ready MVP", desc: "حزمة Android كاملة التشغيل للحماية المحلية بالتوقيعات. مرحلة معايرة ضبط العتبات وضبط الأوزان بدقة." },
-      { date: "2025", title: "دمج نواة ONNX", desc: "نشر نموذج rubert_fraud_int8.onnx للاستدلال الدلالي المحلي على الجهاز دون الاعتماد على السحابة." },
-      { date: "سبتمبر 2026", title: "PHANTOM 2.0 — مرحلة التصميم المعماري", desc: "بنية TN3 الحاصلة على براءة اختراع من 7 طبقات مع توجيه إجماع ذكاء اصطناعي مستقل. الموعد النهائي: سبتمبر 2026." },
-      { date: "سبتمبر 2026", title: "النهائي الفيدرالي الفائق (موسكو)", desc: "عرض المشروع في النهائي الفيدرالي الفائق المرموق للبحث العلمي." },
-      { date: "v3.0-design", title: "مساعد كيرا الصوتي — المواصفات المفاهيمية", desc: "محلل نية الكلام لتحييد أفعال الكلام المتلاعبة أثناء المكالمات المباشرة. مرحلة التصميم." }
+      {
+        date: "2024–2025",
+        title: "الأصول الأكاديمية والفوز الإقليمي في البحث العلمي",
+        desc: "مشروع وُلد في كلية تشيليابينسك للراديو التقنية (KB-284) وحصل على المركز الأول في المسابقة الإقليمية للبحث العلمي."
+      },
+      {
+        date: "v1.2.0",
+        title: "TrustNode 1 (TN1) — Ready MVP",
+        desc: "حزمة Android كاملة التشغيل للحماية المحلية بالتوقيعات. مرحلة معايرة ضبط العتبات وضبط الأوزان بدقة."
+      },
+      {
+        date: "2025",
+        title: "دمج نواة ONNX",
+        desc: "نشر نموذج rubert_fraud_int8.onnx للاستدلال الدلالي المحلي على الجهاز دون الاعتماد على السحابة."
+      },
+      {
+        date: "سبتمبر 2026",
+        title: "PHANTOM 2.0 — مرحلة التصميم المعماري",
+        desc: "بنية TN3 الحاصلة على براءة اختراع من 7 طبقات مع توجيه إجماع ذكاء اصطناعي مستقل. الموعد النهائي: سبتمبر 2026."
+      },
+      {
+        date: "سبتمبر 2026",
+        title: "النهائي الفيدرالي الفائق (موسكو)",
+        desc: "عرض المشروع في النهائي الفيدرالي الفائق المرموق للبحث العلمي."
+      },
+      {
+        date: "v3.0-design",
+        title: "مساعد كيرا الصوتي — المواصفات المفاهيمية",
+        desc: "محلل نية الكلام لتحييد أفعال الكلام المتلاعبة أثناء المكالمات المباشرة. مرحلة التصميم."
+      }
     ],
     allProjectsGithub: "جميع مشاريع TrustNode على GitHub"
   },
-
-    damageCalc: {
-      badge: "حاسبة الخسائر",
-      title: "كم يخسر ضحايا الاحتيال الهاتفي",
-      subtitle: "قدّر الخسارة القابلة للمنع التي يمكن لـ TrustNode توفيرها في ميزانيتك.",
-      callsLabel: "مكالمات احتيالية شهريًا",
-      amountLabel: "متوسط الخسارة لكل هجوم ناجح",
-      resultTitle: "حماية TrustNode الخاصة بك في عام",
-      savedLabel: "خسارة قابلة للمنع محتملة",
-      disclaimer: "تقدير مبني على إحصاءات عامة لمتوسط خسائر الاحتيال الهاتفي ولا يضمن توفيرًا فعليًا."
-    },
-
-    faq: {
-      badge: "الأسئلة الشائعة",
-      title: "الأسئلة الشائعة",
-      subtitle: "إجابات رئيسية حول الخصوصية والتثبيت وكيفية عمل TrustNode.",
-      items: [
-        { q: "هل يجمع TrustNode بياناتي الشخصية؟", a: "لا. يتم كل التحليل (الروابط، المكالمات، الشاشة) محليًا على الجهاز. لا تُرسل بياناتك إلى أي مكان ولا تُخزَّن على خوادم طرف ثالث." },
-        { q: "هل يلزم الاتصال بالإنترنت لاستخدام التطبيق؟", a: "لا، نموذج التحليل يعمل دون اتصال. لا يلزم الإنترنت للحماية الأساسية." },
-        { q: "لماذا يحتاج التطبيق إلى إذن الوصول إلى ميزات إمكانية الوصول (Accessibility)؟", a: "يُستخدم هذا الإذن فقط للكشف عن الشاشات المزيفة ونماذج إدخال البيانات الاحتيالية. يتم التحليل محليًا ولا يُرسل محتوى الشاشة إلى أي مكان." },
-        { q: "هل يستمع التطبيق إلى مكالماتي؟", a: "يحلل TrustNode الصوت في الوقت الفعلي فقط لكشف علامات الاحتيال (الهندسة الاجتماعية). لا يُسجَّل الصوت على القرص ولا يُشارك مع أطراف ثالثة." },
-        { q: "هل التطبيق مدفوع؟", a: "TrustNode مجاني حاليًا. تُخطط اشتراك موسع بميزات إضافية في المستقبل." }
-      ]
-    },
-
-    news: {
-      badge: "الأخبار",
-      title: "أحدث إعلانات فريق TrustNode",
-      subtitle: "تتم ترجمة منشورات القناة تلقائيًا إلى اللغة التي تختارها.",
-      emptyTitle: "لا توجد أخبار بعد",
-      emptyDesc: "ستظهر أولى المنشورات هنا بعد المزامنة مع القنوات.",
-      readIn: "اقرأ في {source}",
-      showMore: "عرض المزيد",
-      showLess: "عرض أقل"
-    }
+  damageCalc: {
+    badge: "حاسبة الخسائر",
+    title: "كم يخسر ضحايا الاحتيال الهاتفي",
+    subtitle: "قدّر الخسارة القابلة للمنع التي يمكن لـ TrustNode توفيرها في ميزانيتك.",
+    callsLabel: "مكالمات احتيالية شهريًا",
+    amountLabel: "متوسط الخسارة لكل هجوم ناجح",
+    resultTitle: "حماية TrustNode الخاصة بك في عام",
+    savedLabel: "خسارة قابلة للمنع محتملة",
+    disclaimer: "تقدير مبني على إحصاءات عامة لمتوسط خسائر الاحتيال الهاتفي ولا يضمن توفيرًا فعليًا."
+  },
+  faq: {
+    badge: "الأسئلة الشائعة",
+    title: "الأسئلة الشائعة",
+    subtitle: "إجابات رئيسية حول الخصوصية والتثبيت وكيفية عمل TrustNode.",
+    items: [
+      {
+        q: "هل يجمع TrustNode بياناتي الشخصية؟",
+        a: "لا. يتم كل التحليل (الروابط، المكالمات، الشاشة) محليًا على الجهاز. لا تُرسل بياناتك إلى أي مكان ولا تُخزَّن على خوادم طرف ثالث."
+      },
+      {
+        q: "هل يلزم الاتصال بالإنترنت لاستخدام التطبيق؟",
+        a: "لا، نموذج التحليل يعمل دون اتصال. لا يلزم الإنترنت للحماية الأساسية."
+      },
+      {
+        q: "لماذا يحتاج التطبيق إلى إذن الوصول إلى ميزات إمكانية الوصول (Accessibility)؟",
+        a: "يُستخدم هذا الإذن فقط للكشف عن الشاشات المزيفة ونماذج إدخال البيانات الاحتيالية. يتم التحليل محليًا ولا يُرسل محتوى الشاشة إلى أي مكان."
+      },
+      {
+        q: "هل يستمع التطبيق إلى مكالماتي؟",
+        a: "يحلل TrustNode الصوت في الوقت الفعلي فقط لكشف علامات الاحتيال (الهندسة الاجتماعية). لا يُسجَّل الصوت على القرص ولا يُشارك مع أطراف ثالثة."
+      },
+      {
+        q: "هل التطبيق مدفوع؟",
+        a: "TrustNode مجاني حاليًا. تُخطط اشتراك موسع بميزات إضافية في المستقبل."
+      }
+    ]
+  },
+  news: {
+    badge: "الأخبار",
+    title: "أحدث إعلانات فريق TrustNode",
+    subtitle: "تتم ترجمة منشورات القناة تلقائيًا إلى اللغة التي تختارها.",
+    emptyTitle: "لا توجد أخبار بعد",
+    emptyDesc: "ستظهر أولى المنشورات هنا بعد المزامنة مع القنوات.",
+    readIn: "اقرأ في {source}",
+    showMore: "عرض المزيد",
+    showLess: "عرض أقل"
+  }
 };
 
 const pt: Translations = {
@@ -4207,9 +4521,9 @@ const pt: Translations = {
     "PARA QUEM"
   ],
   replayIntro: "REPETIR INTRODUÇÃO (VOLTAR AO TOPO)",
-    backTop: "Voltar ao topo",
-    skipToContent: "Ir para o conteúdo",
-    langChanged: "Idioma alterado para {lang}",
+  backTop: "Voltar ao topo",
+  skipToContent: "Ir para o conteúdo",
+  langChanged: "Idioma alterado para {lang}",
   problem: {
     badge: "Desafios atuais",
     titleLine1: "Por que as soluções existentes",
@@ -4224,7 +4538,10 @@ const pt: Translations = {
         stat: "295+ bilhões ₽",
         statLabel: "em perdas com fraudes por telefone na Rússia só em 2024",
         statSource: "Fontes: banknn.ru, Sber / Frank Media, 2025",
-        shotLabels: ["Tela de ameaça", "Histórico de ameaças"]
+        shotLabels: [
+          "Tela de ameaça",
+          "Histórico de ameaças"
+        ]
       },
       {
         title: "Privacidade comprometida",
@@ -4232,7 +4549,10 @@ const pt: Translations = {
         stat: "4,5 bilhões",
         statLabel: "registros de dados pessoais vazados na Rússia entre 2023–2025",
         statSource: "Fonte: InfoWatch / d-russia.ru",
-        shotLabels: ["Estatísticas", "Tela principal"]
+        shotLabels: [
+          "Estatísticas",
+          "Tela principal"
+        ]
       },
       {
         title: "Inútil sem rede",
@@ -4240,7 +4560,10 @@ const pt: Translations = {
         stat: "2,2 bilhões",
         statLabel: "de pessoas no mundo ainda vivem sem acesso à internet",
         statSource: "Fonte: ITU Facts and Figures, 2025",
-        shotLabels: ["Configurações", "Assistente"]
+        shotLabels: [
+          "Configurações",
+          "Assistente"
+        ]
       }
     ]
   },
@@ -4251,29 +4574,26 @@ const pt: Translations = {
     subtitle: "Uma cúpula de múltiplas camadas implantada localmente no seu smartphone. Nem um único byte de dados pessoais sai do dispositivo.",
     layersHeading: "Camadas de proteção do dispositivo",
     layers: [
-    {
-      name: "Análise acústica",
-      tech: "RMS / Zero-Crossing / Energy",
-      desc: "Análise acústica da chamada em tempo real no dispositivo: análise da voz e entonações, ritmo da fala, pausas e padrões de energia da conversa. Sem envio de dados ao servidor."
-    }
-    ,
-    {
-      name: "Classificação ML (rubert-tiny2)",
-      tech: "ONNX Runtime / INT8 / ~29 MB",
-      desc: "Usa-se a rede neural leve rubert-tiny2 (ONNX INT8, ~29 MB) para analisar texto e metadados no dispositivo. As atualizações de modelos e bancos de dados chegam com a atualização do app; não é preciso internet no uso diário, apenas para instalar novas versões."
-    }
-    ,
-    {
-      name: "Reconhecimento de fala e semântica (ASR) — Em desenvolvimento (Roadmap)",
-      tech: "ASR — Roadmap",
-      desc: "Reconhecimento de fala (ASR) e análise semântica do conteúdo da conversa: detecção de frases-chave disparadoras, sinais de pressão psicológica e exigências de ações urgentes. A próxima etapa da evolução do PHANTOM."
-    }
-    ,
-    {
-      name: "Consenso PHANTOM",
-      tech: "Consensus Voting Engine",
-      desc: "Toma a decisão final ponderada com base nas saídas das camadas de análise. Ao suspeitar de um ataque, bloqueia a interface, avisa o usuário e envia um push instantâneo a um contato de confiança."
-    }
+      {
+        name: "Análise acústica",
+        tech: "RMS / Zero-Crossing / Energy",
+        desc: "Análise acústica da chamada em tempo real no dispositivo: análise da voz e entonações, ritmo da fala, pausas e padrões de energia da conversa. Sem envio de dados ao servidor."
+      },
+      {
+        name: "Classificação ML (rubert-tiny2)",
+        tech: "ONNX Runtime / INT8 / ~29 MB",
+        desc: "Usa-se a rede neural leve rubert-tiny2 (ONNX INT8, ~29 MB) para analisar texto e metadados no dispositivo. As atualizações de modelos e bancos de dados chegam com a atualização do app; não é preciso internet no uso diário, apenas para instalar novas versões."
+      },
+      {
+        name: "Reconhecimento de fala e semântica (ASR) — Em desenvolvimento (Roadmap)",
+        tech: "ASR — Roadmap",
+        desc: "Reconhecimento de fala (ASR) e análise semântica do conteúdo da conversa: detecção de frases-chave disparadoras, sinais de pressão psicológica e exigências de ações urgentes. A próxima etapa da evolução do PHANTOM."
+      },
+      {
+        name: "Consenso PHANTOM",
+        tech: "Consensus Voting Engine",
+        desc: "Toma a decisão final ponderada com base nas saídas das camadas de análise. Ao suspeitar de um ataque, bloqueia a interface, avisa o usuário e envia um push instantâneo a um contato de confiança."
+      }
     ],
     usp: [
       {
@@ -4358,7 +4678,6 @@ const pt: Translations = {
       }
     ]
   },
-
   header: {
     rustore: "Baixar na RuStore",
     radar: "Product Radar",
@@ -4374,8 +4693,8 @@ const pt: Translations = {
     privacyLink: "Política de Privacidade (Lei Federal Russa 152-FZ)",
     termsLink: "Termos de Uso",
     version: "On-Device ML Fraud Shield // v1.2.0 // em conformidade com a Lei 152-FZ",
-      githubOrg: "Todos os projetos do TrustNode no GitHub",
-},
+    githubOrg: "Todos os projetos do TrustNode no GitHub"
+  },
   cookie: {
     badgeLabel: "[ SEGURANÇA DA INFORMAÇÃO // LEI RUSSA 152-FZ ]",
     text: "Nos importamos com sua privacidade. Este site usa cookies anonimizados e armazenamento local para lembrar suas preferências de gráficos e o modo eco. Confira nossa",
@@ -4462,7 +4781,11 @@ const pt: Translations = {
     about: "Sobre Nós",
     download: "Baixar",
     comparison: "Comparação",
-    "not-found": "404"
+    "not-found": "404",
+    roadmap: "Roteiro",
+    privacy: "Política de Privacidade",
+    terms: "Termos de Uso",
+    news: "Notícias"
   },
   realDev: {
     title: "Verificação do Projeto",
@@ -4600,9 +4923,11 @@ const pt: Translations = {
   explore: {
     title: "Explore o Protocolo de Segurança",
     subtitle: "Saiba mais sobre as tecnologias de IA local e a base científica do TrustNode",
+    hint: "Passe o cursor sobre um planeta →",
+    hintTap: "Toque em um planeta →",
     card1Title: "Tecnologia do Domo",
     card1Badge: "SISTEMA PHANTOM",
-    card1Desc: "Detalhamento técnico do domo de segurança PHANTOM 2.0: a análise acústica e a classificação ML rubert-tiny2 rodam no dispositivo, e as demais camadas estão em desenvolvimento (Roadmap).",
+    card1Desc: "Detalhamento técnico do domo de segurança de 7 camadas PHANTOM 2.0 e o assistente de voz inteligente KIRA rodando localmente no dispositivo.",
     card1Btn: "Ver Tecnologia →",
     card2Title: "Validação Comprovada",
     card2Badge: "PATENTES E PRÊMIOS",
@@ -4636,9 +4961,8 @@ const pt: Translations = {
     feature2Desc: "A rede neural leve rubert-tiny2 (ONNX INT8, ~29 MB) analisa texto e metadados no dispositivo sem conexão com a internet.",
     feature3Title: "Grátis e seguro",
     feature3Desc: "O aplicativo está disponível gratuitamente na RuStore. Instale e proteja seus entes queridos.",
-    note: "Disponível para dispositivos Android. A internet é necessária apenas para o download inicial.",
+    note: "Disponível para dispositivos Android. A internet é necessária apenas para o download inicial."
   },
-
   comparisonPage: {
     title: "Comparação Honesta",
     subtitle: "Uma análise comparativa objetiva do TrustNode frente às principais soluções de segurança globais",
@@ -4677,7 +5001,6 @@ const pt: Translations = {
     disclaimer: "Buscamos a máxima objetividade. Se você notar alguma imprecisão, entre em contato conosco no Telegram.",
     telegramBtn: "Fale conosco no Telegram"
   },
-
   roadmapPage: {
     title: "Roteiro de Desenvolvimento",
     subtitle: "Progresso atual do TrustNode, política de divulgação responsável e cronograma de implantação do núcleo semântico",
@@ -4708,50 +5031,86 @@ const pt: Translations = {
     reportGithub: "Relatar via GitHub",
     milestonesTitle: "Marcos de Desenvolvimento e Lançamentos",
     milestones: [
-      { date: "2024–2025", title: "Origens acadêmicas e vitória regional na pesquisa científica", desc: "Projeto nascido no Colégio Radiotécnico de Chelyabinsk (KB-284), vencedor do 1.º lugar na competição regional de pesquisa científica." },
-      { date: "v1.2.0", title: "TrustNode 1 (TN1) — Ready MVP", desc: "Pacote Android totalmente operacional para proteção local por assinaturas. Fase de calibração de limites e ajuste fino dos pesos." },
-      { date: "2025", title: "Integração do núcleo ONNX", desc: "Implantação do modelo rubert_fraud_int8.onnx para inferência semântica local no dispositivo sem dependência de nuvem." },
-      { date: "SETEMBRO DE 2026", title: "PHANTOM 2.0 — Fase de Arquitetura", desc: "Arquitetura patenteada TN3 de 7 camadas com roteamento de consenso de IA independente. Prazo: setembro de 2026." },
-      { date: "SETEMBRO DE 2026", title: "Superfinal federal (Moscou)", desc: "Apresentação do projeto na prestigiada superfinal federal de pesquisa científica." },
-      { date: "v3.0-design", title: "Kira Voice Assistant — Especificação Conceitual", desc: "Analisador de intenção de fala para neutralizar atos manipulativos de fala durante chamadas ao vivo. Fase de design." }
+      {
+        date: "2024–2025",
+        title: "Origens acadêmicas e vitória regional na pesquisa científica",
+        desc: "Projeto nascido no Colégio Radiotécnico de Chelyabinsk (KB-284), vencedor do 1.º lugar na competição regional de pesquisa científica."
+      },
+      {
+        date: "v1.2.0",
+        title: "TrustNode 1 (TN1) — Ready MVP",
+        desc: "Pacote Android totalmente operacional para proteção local por assinaturas. Fase de calibração de limites e ajuste fino dos pesos."
+      },
+      {
+        date: "2025",
+        title: "Integração do núcleo ONNX",
+        desc: "Implantação do modelo rubert_fraud_int8.onnx para inferência semântica local no dispositivo sem dependência de nuvem."
+      },
+      {
+        date: "SETEMBRO DE 2026",
+        title: "PHANTOM 2.0 — Fase de Arquitetura",
+        desc: "Arquitetura patenteada TN3 de 7 camadas com roteamento de consenso de IA independente. Prazo: setembro de 2026."
+      },
+      {
+        date: "SETEMBRO DE 2026",
+        title: "Superfinal federal (Moscou)",
+        desc: "Apresentação do projeto na prestigiada superfinal federal de pesquisa científica."
+      },
+      {
+        date: "v3.0-design",
+        title: "Kira Voice Assistant — Especificação Conceitual",
+        desc: "Analisador de intenção de fala para neutralizar atos manipulativos de fala durante chamadas ao vivo. Fase de design."
+      }
     ],
     allProjectsGithub: "Todos os projetos TrustNode no GitHub"
   },
-
-    damageCalc: {
-      badge: "Calculadora de danos",
-      title: "Quanto perdem as vítimas de fraude por telefone",
-      subtitle: "Estime o dano potencialmente evitável que o TrustNode pode preservar no seu orçamento.",
-      callsLabel: "Chamadas fraudulentas por mês",
-      amountLabel: "Perda média por ataque bem-sucedido",
-      resultTitle: "Sua proteção TrustNode em um ano",
-      savedLabel: "dano potencialmente evitado",
-      disclaimer: "Estimativa baseada em estatísticas públicas sobre perdas médias por fraude telefônica; não garante economia real."
-    },
-
-    faq: {
-      badge: "Perguntas frequentes",
-      title: "Perguntas Frequentes",
-      subtitle: "Principais respostas sobre privacidade, instalação e funcionamento do TrustNode.",
-      items: [
-        { q: "O TrustNode coleta meus dados pessoais?", a: "Não. Toda a análise (links, chamadas, tela) acontece localmente no dispositivo. Seus dados nunca são enviados a lugar algum nem armazenados em servidores de terceiros." },
-        { q: "Preciso de internet para usar o app?", a: "Não, o modelo de análise funciona offline. Não é preciso internet para a proteção principal." },
-        { q: "Por que o app precisa de acesso de Acessibilidade (Accessibility)?", a: "Esse acesso é usado apenas para detectar telas falsas e formulários fraudulentos de entrada de dados. A análise é local; o conteúdo da tela nunca é enviado a lugar algum." },
-        { q: "O app escuta minhas chamadas?", a: "O TrustNode analisa a voz em tempo real apenas para detectar sinais de fraude (engenharia social). O áudio nunca é gravado em disco nem compartilhado com terceiros." },
-        { q: "O app é pago?", a: "O TrustNode é gratuito no momento. No futuro, está planejada uma assinatura expandida com recursos adicionais." }
-      ]
-    },
-
-    news: {
-      badge: "Notícias",
-      title: "Últimos anúncios da equipe TrustNode",
-      subtitle: "As publicações do canal são traduzidas automaticamente para o idioma selecionado.",
-      emptyTitle: "Ainda sem notícias",
-      emptyDesc: "As primeiras postagens aparecerão aqui após a sincronização com os canais.",
-      readIn: "Ler em {source}",
-      showMore: "Mostrar mais",
-      showLess: "Mostrar menos"
-    }
+  damageCalc: {
+    badge: "Calculadora de danos",
+    title: "Quanto perdem as vítimas de fraude por telefone",
+    subtitle: "Estime o dano potencialmente evitável que o TrustNode pode preservar no seu orçamento.",
+    callsLabel: "Chamadas fraudulentas por mês",
+    amountLabel: "Perda média por ataque bem-sucedido",
+    resultTitle: "Sua proteção TrustNode em um ano",
+    savedLabel: "dano potencialmente evitado",
+    disclaimer: "Estimativa baseada em estatísticas públicas sobre perdas médias por fraude telefônica; não garante economia real."
+  },
+  faq: {
+    badge: "Perguntas frequentes",
+    title: "Perguntas Frequentes",
+    subtitle: "Principais respostas sobre privacidade, instalação e funcionamento do TrustNode.",
+    items: [
+      {
+        q: "O TrustNode coleta meus dados pessoais?",
+        a: "Não. Toda a análise (links, chamadas, tela) acontece localmente no dispositivo. Seus dados nunca são enviados a lugar algum nem armazenados em servidores de terceiros."
+      },
+      {
+        q: "Preciso de internet para usar o app?",
+        a: "Não, o modelo de análise funciona offline. Não é preciso internet para a proteção principal."
+      },
+      {
+        q: "Por que o app precisa de acesso de Acessibilidade (Accessibility)?",
+        a: "Esse acesso é usado apenas para detectar telas falsas e formulários fraudulentos de entrada de dados. A análise é local; o conteúdo da tela nunca é enviado a lugar algum."
+      },
+      {
+        q: "O app escuta minhas chamadas?",
+        a: "O TrustNode analisa a voz em tempo real apenas para detectar sinais de fraude (engenharia social). O áudio nunca é gravado em disco nem compartilhado com terceiros."
+      },
+      {
+        q: "O app é pago?",
+        a: "O TrustNode é gratuito no momento. No futuro, está planejada uma assinatura expandida com recursos adicionais."
+      }
+    ]
+  },
+  news: {
+    badge: "Notícias",
+    title: "Últimos anúncios da equipe TrustNode",
+    subtitle: "As publicações do canal são traduzidas automaticamente para o idioma selecionado.",
+    emptyTitle: "Ainda sem notícias",
+    emptyDesc: "As primeiras postagens aparecerão aqui após a sincronização com os canais.",
+    readIn: "Ler em {source}",
+    showMore: "Mostrar mais",
+    showLess: "Mostrar menos"
+  }
 };
 
 const fr: Translations = {
@@ -4801,9 +5160,9 @@ const fr: Translations = {
     "POUR QUI"
   ],
   replayIntro: "REJOUER L'INTRO (REMONTER)",
-    backTop: "Remonter en haut",
-    skipToContent: "Aller au contenu",
-    langChanged: "Langue changée en {lang}",
+  backTop: "Remonter en haut",
+  skipToContent: "Aller au contenu",
+  langChanged: "Langue changée en {lang}",
   problem: {
     badge: "Défis actuels",
     titleLine1: "Pourquoi les solutions existantes",
@@ -4818,7 +5177,10 @@ const fr: Translations = {
         stat: "295+ milliards ₽",
         statLabel: "de pertes dues aux escrocs téléphoniques en Russie rien qu'en 2024",
         statSource: "Sources : banknn.ru, Sber / Frank Media, 2025",
-        shotLabels: ["Écran de menace", "Historique des menaces"]
+        shotLabels: [
+          "Écran de menace",
+          "Historique des menaces"
+        ]
       },
       {
         title: "Une confidentialité compromise",
@@ -4826,7 +5188,10 @@ const fr: Translations = {
         stat: "4,5 milliards",
         statLabel: "d'enregistrements de données personnelles divulgués en Russie en 2023–2025",
         statSource: "Source : InfoWatch / d-russia.ru",
-        shotLabels: ["Statistiques", "Écran principal"]
+        shotLabels: [
+          "Statistiques",
+          "Écran principal"
+        ]
       },
       {
         title: "Inutile sans réseau",
@@ -4834,7 +5199,10 @@ const fr: Translations = {
         stat: "2,2 milliards",
         statLabel: "de personnes dans le monde vivent encore sans accès à internet",
         statSource: "Source : ITU Facts and Figures, 2025",
-        shotLabels: ["Paramètres", "Assistant"]
+        shotLabels: [
+          "Paramètres",
+          "Assistant"
+        ]
       }
     ]
   },
@@ -4845,29 +5213,26 @@ const fr: Translations = {
     subtitle: "Un dôme multicouche déployé localement sur votre smartphone. Pas un seul octet de données personnelles ne quitte l'appareil.",
     layersHeading: "Couches de protection de l'appareil",
     layers: [
-    {
-      name: "Analyse acoustique",
-      tech: "RMS / Zero-Crossing / Energy",
-      desc: "Analyse acoustique de l'appel en temps réel sur l'appareil : voix et intonations, rythme de parole, pauses et profils énergétiques de la conversation. Aucune donnée n'est envoyée au serveur."
-    }
-    ,
-    {
-      name: "Classification ML (rubert-tiny2)",
-      tech: "ONNX Runtime / INT8 / ~29 MB",
-      desc: "Un réseau neuronal léger rubert-tiny2 (ONNX INT8, ~29 Mo) analyse texte et métadonnées sur l'appareil. Les mises à jour de modèles et de bases sont livrées avec l'application ; internet n'est pas requis au quotidien, seulement pour installer de nouvelles versions."
-    }
-    ,
-    {
-      name: "Reconnaissance vocale et sémantique (ASR) — En développement (Roadmap)",
-      tech: "ASR — Roadmap",
-      desc: "Reconnaissance vocale (ASR) et analyse sémantique du contenu de la conversation : détection de phrases-clés déclencheurs, signes de pression psychologique et exigences d'actions urgentes. Prochaine étape de l'évolution de PHANTOM."
-    }
-    ,
-    {
-      name: "Consensus PHANTOM",
-      tech: "Consensus Voting Engine",
-      desc: "Prend la décision finale pondérée à partir des sorties des couches d'analyse. En cas de suspicion d'attaque, il verrouille l'interface, alerte l'utilisateur et envoie une notification push instantanée à un contact de confiance."
-    }
+      {
+        name: "Analyse acoustique",
+        tech: "RMS / Zero-Crossing / Energy",
+        desc: "Analyse acoustique de l'appel en temps réel sur l'appareil : voix et intonations, rythme de parole, pauses et profils énergétiques de la conversation. Aucune donnée n'est envoyée au serveur."
+      },
+      {
+        name: "Classification ML (rubert-tiny2)",
+        tech: "ONNX Runtime / INT8 / ~29 MB",
+        desc: "Un réseau neuronal léger rubert-tiny2 (ONNX INT8, ~29 Mo) analyse texte et métadonnées sur l'appareil. Les mises à jour de modèles et de bases sont livrées avec l'application ; internet n'est pas requis au quotidien, seulement pour installer de nouvelles versions."
+      },
+      {
+        name: "Reconnaissance vocale et sémantique (ASR) — En développement (Roadmap)",
+        tech: "ASR — Roadmap",
+        desc: "Reconnaissance vocale (ASR) et analyse sémantique du contenu de la conversation : détection de phrases-clés déclencheurs, signes de pression psychologique et exigences d'actions urgentes. Prochaine étape de l'évolution de PHANTOM."
+      },
+      {
+        name: "Consensus PHANTOM",
+        tech: "Consensus Voting Engine",
+        desc: "Prend la décision finale pondérée à partir des sorties des couches d'analyse. En cas de suspicion d'attaque, il verrouille l'interface, alerte l'utilisateur et envoie une notification push instantanée à un contact de confiance."
+      }
     ],
     usp: [
       {
@@ -4952,7 +5317,6 @@ const fr: Translations = {
       }
     ]
   },
-
   header: {
     rustore: "Télécharger sur RuStore",
     radar: "Product Radar",
@@ -4968,8 +5332,8 @@ const fr: Translations = {
     privacyLink: "Politique de confidentialité (loi fédérale russe 152-FZ)",
     termsLink: "Conditions d'utilisation",
     version: "On-Device ML Fraud Shield // v1.2.0 // conforme à la loi 152-FZ",
-      githubOrg: "Tous les projets TrustNode sur GitHub",
-},
+    githubOrg: "Tous les projets TrustNode sur GitHub"
+  },
   cookie: {
     badgeLabel: "[ SÉCURITÉ DE L'INFORMATION // LOI RUSSE 152-FZ ]",
     text: "Nous accordons de l'importance à votre vie privée. Ce site utilise des cookies anonymisés et un stockage local pour mémoriser vos préférences graphiques et le mode éco. Consultez notre",
@@ -5056,7 +5420,11 @@ const fr: Translations = {
     about: "À Propos",
     download: "Télécharger",
     comparison: "Comparaison",
-    "not-found": "404"
+    "not-found": "404",
+    roadmap: "Feuille de route",
+    privacy: "Politique de confidentialité",
+    terms: "Conditions d'utilisation",
+    news: "Actualités"
   },
   realDev: {
     title: "Vérification du Projet",
@@ -5194,9 +5562,11 @@ const fr: Translations = {
   explore: {
     title: "Explorez le Protocole de Sécurité",
     subtitle: "En savoir plus sur les technologies d'IA locales et les fondements scientifiques de TrustNode",
+    hint: "Survolez une planète →",
+    hintTap: "Touchez une planète →",
     card1Title: "Technologie du Dôme",
     card1Badge: "SYSTÈME PHANTOM",
-    card1Desc: "Analyse technique du dôme de sécurité PHANTOM 2.0 : l'analyse acoustique et la classification ML rubert-tiny2 fonctionnent sur l'appareil, tandis que les autres couches sont en cours de développement (Roadmap).",
+    card1Desc: "Détails techniques du dôme de sécurité à 7 couches PHANTOM 2.0 et l'assistant vocal intelligent KIRA fonctionnant entièrement sur l'appareil.",
     card1Btn: "Découvrir la Tech →",
     card2Title: "Efficacité Prouvée",
     card2Badge: "BREVETS ET PRIX",
@@ -5230,9 +5600,8 @@ const fr: Translations = {
     feature2Desc: "Le réseau neuronal léger rubert-tiny2 (ONNX INT8, ~29 Mo) analyse texte et métadonnées sur l'appareil sans connexion internet.",
     feature3Title: "Gratuit et sécurisé",
     feature3Desc: "L'application est disponible gratuitement sur RuStore. Installez-la et protégez vos proches.",
-    note: "Disponible pour les appareils Android. Internet n'est nécessaire que pour le premier téléchargement.",
+    note: "Disponible pour les appareils Android. Internet n'est nécessaire que pour le premier téléchargement."
   },
-
   comparisonPage: {
     title: "Comparaison honnête",
     subtitle: "Une analyse comparative objective de TrustNode par rapport aux principales solutions de sécurité mondiales",
@@ -5271,7 +5640,6 @@ const fr: Translations = {
     disclaimer: "Nous nous efforçons d'atteindre une objectivité maximale. Si vous repérez une inexactitude, contactez-nous sur Telegram.",
     telegramBtn: "Contacter sur Telegram"
   },
-
   roadmapPage: {
     title: "Feuille de route de développement",
     subtitle: "Progrès actuels de TrustNode, politique de divulgation responsable et calendrier de déploiement du noyau sémantique",
@@ -5302,50 +5670,86 @@ const fr: Translations = {
     reportGithub: "Signaler via GitHub",
     milestonesTitle: "Jalons de développement et de versions",
     milestones: [
-      { date: "2024–2025", title: "Origines académiques et victoire régionale en recherche scientifique", desc: "Projet né au Collège de radiotélécommunication de Tcheliabinsk (KB-284), vainqueur de la 1re place au concours régional de recherche scientifique." },
-      { date: "v1.2.0", title: "TrustNode 1 (TN1) — Ready MVP", desc: "Paquet Android entièrement opérationnel pour la protection locale par signatures. Phase d'étalonnage des seuils et d'ajustement fin des poids." },
-      { date: "2025", title: "Intégration du noyau ONNX", desc: "Déploiement du modèle rubert_fraud_int8.onnx pour l'inférence sémantique locale sur l'appareil sans dépendance au cloud." },
-      { date: "SEPTEMBRE 2026", title: "PHANTOM 2.0 — Phase d'architecture", desc: "Architecture brevetée TN3 en 7 couches avec routage de consensus IA indépendant. Échéance : septembre 2026." },
-      { date: "SEPTEMBRE 2026", title: "Superfinale fédérale (Moscou)", desc: "Présentation du projet à la prestigieuse superfinale fédérale de recherche scientifique." },
-      { date: "v3.0-design", title: "Kira Voice Assistant — Spécification conceptuelle", desc: "Analyseur d'intention vocale pour neutraliser les actes de parole manipulateurs lors d'appels en direct. Phase de conception." }
+      {
+        date: "2024–2025",
+        title: "Origines académiques et victoire régionale en recherche scientifique",
+        desc: "Projet né au Collège de radiotélécommunication de Tcheliabinsk (KB-284), vainqueur de la 1re place au concours régional de recherche scientifique."
+      },
+      {
+        date: "v1.2.0",
+        title: "TrustNode 1 (TN1) — Ready MVP",
+        desc: "Paquet Android entièrement opérationnel pour la protection locale par signatures. Phase d'étalonnage des seuils et d'ajustement fin des poids."
+      },
+      {
+        date: "2025",
+        title: "Intégration du noyau ONNX",
+        desc: "Déploiement du modèle rubert_fraud_int8.onnx pour l'inférence sémantique locale sur l'appareil sans dépendance au cloud."
+      },
+      {
+        date: "SEPTEMBRE 2026",
+        title: "PHANTOM 2.0 — Phase d'architecture",
+        desc: "Architecture brevetée TN3 en 7 couches avec routage de consensus IA indépendant. Échéance : septembre 2026."
+      },
+      {
+        date: "SEPTEMBRE 2026",
+        title: "Superfinale fédérale (Moscou)",
+        desc: "Présentation du projet à la prestigieuse superfinale fédérale de recherche scientifique."
+      },
+      {
+        date: "v3.0-design",
+        title: "Kira Voice Assistant — Spécification conceptuelle",
+        desc: "Analyseur d'intention vocale pour neutraliser les actes de parole manipulateurs lors d'appels en direct. Phase de conception."
+      }
     ],
     allProjectsGithub: "Tous les projets TrustNode sur GitHub"
   },
-
-    damageCalc: {
-      badge: "Calculateur de dommages",
-      title: "Combien perdent les victimes d'arnaques téléphoniques",
-      subtitle: "Estimez les dommages potentiellement évitables que TrustNode peut préserver dans votre budget.",
-      callsLabel: "Appels frauduleux par mois",
-      amountLabel: "Perte moyenne par attaque réussie",
-      resultTitle: "Votre protection TrustNode sur un an",
-      savedLabel: "dommages potentiellement évités",
-      disclaimer: "Estimation fondée sur des statistiques publiques des pertes moyennes liées à la fraude téléphonique ; ne garantit aucune économie réelle."
-    },
-
-    faq: {
-      badge: "FAQ",
-      title: "Questions fréquentes",
-      subtitle: "Réponses clés sur la confidentialité, l'installation et le fonctionnement de TrustNode.",
-      items: [
-        { q: "TrustNode collecte-t-il mes données personnelles ?", a: "Non. Toute l'analyse (liens, appels, écran) s'effectue localement sur l'appareil. Vos données ne sont jamais envoyées nulle part ni stockées sur des serveurs tiers." },
-        { q: "Une connexion Internet est-elle requise pour utiliser l'application ?", a: "Non, le modèle d'analyse fonctionne hors ligne. Aucune connexion Internet n'est nécessaire pour la protection principale." },
-        { q: "Pourquoi l'application a-t-elle besoin de l'accès aux services d'accessibilité (Accessibility) ?", a: "Cet accès sert uniquement à détecter les faux écrans et les formulaires de saisie frauduleux. L'analyse est locale ; le contenu de l'écran n'est jamais envoyé nulle part." },
-        { q: "L'application écoute-t-elle mes appels ?", a: "TrustNode analyse la voix en temps réel uniquement pour détecter des signes de fraude (ingénierie sociale). L'audio n'est jamais enregistré sur le disque ni partagé avec des tiers." },
-        { q: "L'application est-elle payante ?", a: "TrustNode est gratuit pour le moment. Un abonnement étendu avec des fonctionnalités supplémentaires est prévu à l'avenir." }
-      ]
-    },
-
-    news: {
-      badge: "Actualités",
-      title: "Dernières annonces de l'équipe TrustNode",
-      subtitle: "Les publications du canal sont automatiquement traduites dans la langue sélectionnée.",
-      emptyTitle: "Pas encore d'actualités",
-      emptyDesc: "Les premières publications apparaîtront ici après la synchronisation avec les canaux.",
-      readIn: "Lire sur {source}",
-      showMore: "Voir plus",
-      showLess: "Voir moins"
-    }
+  damageCalc: {
+    badge: "Calculateur de dommages",
+    title: "Combien perdent les victimes d'arnaques téléphoniques",
+    subtitle: "Estimez les dommages potentiellement évitables que TrustNode peut préserver dans votre budget.",
+    callsLabel: "Appels frauduleux par mois",
+    amountLabel: "Perte moyenne par attaque réussie",
+    resultTitle: "Votre protection TrustNode sur un an",
+    savedLabel: "dommages potentiellement évités",
+    disclaimer: "Estimation fondée sur des statistiques publiques des pertes moyennes liées à la fraude téléphonique ; ne garantit aucune économie réelle."
+  },
+  faq: {
+    badge: "FAQ",
+    title: "Questions fréquentes",
+    subtitle: "Réponses clés sur la confidentialité, l'installation et le fonctionnement de TrustNode.",
+    items: [
+      {
+        q: "TrustNode collecte-t-il mes données personnelles ?",
+        a: "Non. Toute l'analyse (liens, appels, écran) s'effectue localement sur l'appareil. Vos données ne sont jamais envoyées nulle part ni stockées sur des serveurs tiers."
+      },
+      {
+        q: "Une connexion Internet est-elle requise pour utiliser l'application ?",
+        a: "Non, le modèle d'analyse fonctionne hors ligne. Aucune connexion Internet n'est nécessaire pour la protection principale."
+      },
+      {
+        q: "Pourquoi l'application a-t-elle besoin de l'accès aux services d'accessibilité (Accessibility) ?",
+        a: "Cet accès sert uniquement à détecter les faux écrans et les formulaires de saisie frauduleux. L'analyse est locale ; le contenu de l'écran n'est jamais envoyé nulle part."
+      },
+      {
+        q: "L'application écoute-t-elle mes appels ?",
+        a: "TrustNode analyse la voix en temps réel uniquement pour détecter des signes de fraude (ingénierie sociale). L'audio n'est jamais enregistré sur le disque ni partagé avec des tiers."
+      },
+      {
+        q: "L'application est-elle payante ?",
+        a: "TrustNode est gratuit pour le moment. Un abonnement étendu avec des fonctionnalités supplémentaires est prévu à l'avenir."
+      }
+    ]
+  },
+  news: {
+    badge: "Actualités",
+    title: "Dernières annonces de l'équipe TrustNode",
+    subtitle: "Les publications du canal sont automatiquement traduites dans la langue sélectionnée.",
+    emptyTitle: "Pas encore d'actualités",
+    emptyDesc: "Les premières publications apparaîtront ici après la synchronisation avec les canaux.",
+    readIn: "Lire sur {source}",
+    showMore: "Voir plus",
+    showLess: "Voir moins"
+  }
 };
 
 const de: Translations = {
@@ -5395,9 +5799,9 @@ const de: Translations = {
     "FÜR WEN"
   ],
   replayIntro: "INTRO ERNEUT ABSPIELEN (NACH OBEN)",
-    backTop: "Nach oben",
-    skipToContent: "Zum Inhalt springen",
-    langChanged: "Sprache geändert zu {lang}",
+  backTop: "Nach oben",
+  skipToContent: "Zum Inhalt springen",
+  langChanged: "Sprache geändert zu {lang}",
   problem: {
     badge: "Aktuelle Herausforderungen",
     titleLine1: "Warum bestehende Lösungen",
@@ -5412,7 +5816,10 @@ const de: Translations = {
         stat: "295+ Mrd. ₽",
         statLabel: "Verlust durch Telefonbetrug in Russland allein im Jahr 2024",
         statSource: "Quellen: banknn.ru, Sber / Frank Media, 2025",
-        shotLabels: ["Bedrohungsbildschirm", "Bedrohungsverlauf"]
+        shotLabels: [
+          "Bedrohungsbildschirm",
+          "Bedrohungsverlauf"
+        ]
       },
       {
         title: "Gefährdete Privatsphäre",
@@ -5420,7 +5827,10 @@ const de: Translations = {
         stat: "4,5 Mrd.",
         statLabel: "geleakte Datensätze persönlicher Daten in Russland 2023–2025",
         statSource: "Quelle: InfoWatch / d-russia.ru",
-        shotLabels: ["Statistiken", "Hauptbildschirm"]
+        shotLabels: [
+          "Statistiken",
+          "Hauptbildschirm"
+        ]
       },
       {
         title: "Nutzlos ohne Netz",
@@ -5428,7 +5838,10 @@ const de: Translations = {
         stat: "2,2 Mrd.",
         statLabel: "Menschen weltweit haben noch immer keinen Internetzugang",
         statSource: "Quelle: ITU Facts and Figures, 2025",
-        shotLabels: ["Einstellungen", "Assistent"]
+        shotLabels: [
+          "Einstellungen",
+          "Assistent"
+        ]
       }
     ]
   },
@@ -5439,29 +5852,26 @@ const de: Translations = {
     subtitle: "Eine mehrschichtige Kuppel, die lokal auf Ihrem Smartphone läuft. Kein einziges Byte persönlicher Daten verlässt jemals das Gerät.",
     layersHeading: "Schutzebenen des Geräts",
     layers: [
-    {
-      name: "Akustische Analyse",
-      tech: "RMS / Zero-Crossing / Energy",
-      desc: "Echtzeit-Akustikanalyse des Anrufs auf dem Gerät: Stimme und Intonation, Sprechtempo, Pausen und Energieprofile des Gesprächs. Keine Datenübertragung an Server."
-    }
-    ,
-    {
-      name: "ML-Klassifikation (rubert-tiny2)",
-      tech: "ONNX Runtime / INT8 / ~29 MB",
-      desc: "Ein leichtgewichtiges neuronales Netz rubert-tiny2 (ONNX INT8, ~29 MB) analysiert Text und Metadaten auf dem Gerät. Modell- und Datenbank-Updates kommen mit dem App-Update; Internet ist im Alltag nicht nötig, nur zum Installieren neuer Versionen."
-    }
-    ,
-    {
-      name: "Spracherkennung und Semantik (ASR) — In Entwicklung (Roadmap)",
-      tech: "ASR — Roadmap",
-      desc: "Spracherkennung (ASR) und semantische Analyse des Gesprächsinhalts: Erkennung von Schlüssel-Triggerphrasen, Anzeichen psychologischen Drucks und Forderungen nach sofortigem Handeln. Die nächste Stufe der PHANTOM-Evolution."
-    }
-    ,
-    {
-      name: "PHANTOM-Konsens",
-      tech: "Consensus Voting Engine",
-      desc: "Trifft die endgültige gewichtete Entscheidung auf Basis der Ausgaben der Analyseebenen. Bei Angriffsverdacht sperrt er die Oberfläche, warnt den Nutzer und sendet einen sofortigen Push an einen Vertrauenskontakt."
-    }
+      {
+        name: "Akustische Analyse",
+        tech: "RMS / Zero-Crossing / Energy",
+        desc: "Echtzeit-Akustikanalyse des Anrufs auf dem Gerät: Stimme und Intonation, Sprechtempo, Pausen und Energieprofile des Gesprächs. Keine Datenübertragung an Server."
+      },
+      {
+        name: "ML-Klassifikation (rubert-tiny2)",
+        tech: "ONNX Runtime / INT8 / ~29 MB",
+        desc: "Ein leichtgewichtiges neuronales Netz rubert-tiny2 (ONNX INT8, ~29 MB) analysiert Text und Metadaten auf dem Gerät. Modell- und Datenbank-Updates kommen mit dem App-Update; Internet ist im Alltag nicht nötig, nur zum Installieren neuer Versionen."
+      },
+      {
+        name: "Spracherkennung und Semantik (ASR) — In Entwicklung (Roadmap)",
+        tech: "ASR — Roadmap",
+        desc: "Spracherkennung (ASR) und semantische Analyse des Gesprächsinhalts: Erkennung von Schlüssel-Triggerphrasen, Anzeichen psychologischen Drucks und Forderungen nach sofortigem Handeln. Die nächste Stufe der PHANTOM-Evolution."
+      },
+      {
+        name: "PHANTOM-Konsens",
+        tech: "Consensus Voting Engine",
+        desc: "Trifft die endgültige gewichtete Entscheidung auf Basis der Ausgaben der Analyseebenen. Bei Angriffsverdacht sperrt er die Oberfläche, warnt den Nutzer und sendet einen sofortigen Push an einen Vertrauenskontakt."
+      }
     ],
     usp: [
       {
@@ -5546,7 +5956,6 @@ const de: Translations = {
       }
     ]
   },
-
   header: {
     rustore: "Bei RuStore herunterladen",
     radar: "Product Radar",
@@ -5562,8 +5971,8 @@ const de: Translations = {
     privacyLink: "Datenschutzerklärung (russisches Bundesgesetz 152-FZ)",
     termsLink: "Nutzungsbedingungen",
     version: "On-Device ML Fraud Shield // v1.2.0 // konform mit Gesetz 152-FZ",
-      githubOrg: "Alle TrustNode-Projekte auf GitHub",
-},
+    githubOrg: "Alle TrustNode-Projekte auf GitHub"
+  },
   cookie: {
     badgeLabel: "[ INFORMATIONSSICHERHEIT // RUSSISCHES GESETZ 152-FZ ]",
     text: "Uns ist Ihre Privatsphäre wichtig. Diese Website verwendet anonymisierte Cookies und lokalen Speicher, um Ihre Grafik- und Öko-Modus-Einstellungen zu merken. Lesen Sie unsere",
@@ -5650,7 +6059,11 @@ const de: Translations = {
     about: "Über Uns",
     download: "Herunterladen",
     comparison: "Vergleich",
-    "not-found": "404"
+    "not-found": "404",
+    roadmap: "Roadmap",
+    privacy: "Datenschutzerklärung",
+    terms: "Nutzungsbedingungen",
+    news: "Neuigkeiten"
   },
   realDev: {
     title: "Projekt-Verifizierung",
@@ -5722,7 +6135,7 @@ const de: Translations = {
       {
         badge: "KOLLEG-FORSCHUNG",
         title: "Akademische Grundlagen",
-        desc: "Entwickelt am Radiotechnischen Kolleg Tscheljabinsk in der Studiengruppe KB-284 (Fachrichtung 10.02.05 — Informationssicherheit automatisierter Systeme) unter der wissenschaftlichen Leitung von Natalia Anna Morozkova."
+        desc: "Entwickelt am Radiotechnischen Kolleg Tscheljabinsk in der Studiengruppe KB-284 (Fachrichtung 10.02.05 — Informationssicherheit automatisierter Systeme) unter der wissenschaftlichen Leitung von Natalia Anatolyevna Morozkova."
       },
       {
         badge: "REGIONALER SIEG",
@@ -5788,9 +6201,11 @@ const de: Translations = {
   explore: {
     title: "Entdecken Sie das Sicherheitsprotokoll",
     subtitle: "Erfahren Sie mehr über die lokalen KI-Technologien und die wissenschaftliche Basis von TrustNode",
+    hint: "Fahren Sie mit der Maus über einen Planeten →",
+    hintTap: "Tippen Sie auf einen Planeten →",
     card1Title: "Kuppel-Technologie",
     card1Badge: "PHANTOM-SYSTEM",
-    card1Desc: "Technische Aufschlüsselung der PHANTOM-2.0-Sicherheitskuppel: Akustikanalyse und ML-Klassifikation rubert-tiny2 laufen auf dem Gerät, die übrigen Ebenen befinden sich in Entwicklung (Roadmap).",
+    card1Desc: "Technische Details der 7-schichtigen PHANTOM 2.0 Sicherheitskuppel und der intelligente Sprachassistent KIRA, der vollständig auf dem Gerät läuft.",
     card1Btn: "Technologie erkunden →",
     card2Title: "Bewährte Validierung",
     card2Badge: "PATENTE & AUSZEICHNUNGEN",
@@ -5824,9 +6239,8 @@ const de: Translations = {
     feature2Desc: "Das leichtgewichtige neuronale Netz rubert-tiny2 (ONNX INT8, ~29 MB) analysiert Text und Metadaten ohne Internetverbindung auf dem Gerät.",
     feature3Title: "Kostenlos und sicher",
     feature3Desc: "Die App ist kostenlos bei RuStore erhältlich. Installieren Sie sie und schützen Sie Ihre Liebsten.",
-    note: "Verfügbar für Android-Geräte. Internet wird nur für den ersten Download benötigt.",
+    note: "Verfügbar für Android-Geräte. Internet wird nur für den ersten Download benötigt."
   },
-
   comparisonPage: {
     title: "Ehrlicher Vergleich",
     subtitle: "Eine objektive vergleichende Analyse von TrustNode gegenüber führenden globalen Sicherheitslösungen",
@@ -5865,7 +6279,6 @@ const de: Translations = {
     disclaimer: "Wir streben nach maximaler Objektivität. Falls Sie eine Ungenauigkeit bemerken, kontaktieren Sie uns bitte über Telegram.",
     telegramBtn: "Kontakt über Telegram"
   },
-
   roadmapPage: {
     title: "Entwicklungs-Roadmap",
     subtitle: "Aktueller Fortschritt von TrustNode, Richtlinie zur verantwortungsvollen Offenlegung und Zeitplan für die Bereitstellung des semantischen Kerns",
@@ -5896,50 +6309,86 @@ const de: Translations = {
     reportGithub: "Per GitHub melden",
     milestonesTitle: "Entwicklungs- und Release-Meilensteine",
     milestones: [
-      { date: "2024–2025", title: "Akademische Ursprünge und regionaler NIR-Sieg", desc: "Projekt am Tscheljabinsker Radiotechnischen Kolleg (KB-284) entstanden und beim regionalen wissenschaftlichen Forschungswettbewerb auf Platz 1." },
-      { date: "v1.2.0", title: "TrustNode 1 (TN1) — Ready MVP", desc: "Voll funktionsfähiges Android-Paket für lokalen Signaturschutz. Kalibrierphase für Schwellenabstimmung und Gewichts-Feintuning." },
-      { date: "2025", title: "ONNX-Kernintegration", desc: "Bereitstellung des Modells rubert_fraud_int8.onnx für lokale semantische Inferenz auf dem Gerät ohne Cloud-Abhängigkeit." },
-      { date: "SEPTEMBER 2026", title: "PHANTOM 2.0 — Architekturphase", desc: "Patentierte TN3-Architektur mit 7 Schichten und unabhängigem KI-Konsens-Routing. Frist: September 2026." },
-      { date: "SEPTEMBER 2026", title: "Bundes-Superfinale (Moskau)", desc: "Präsentation des Projekts beim renommierten föderalen Superfinale der wissenschaftlichen Forschung." },
-      { date: "v3.0-design", title: "Kira Voice Assistant — Konzeptspezifikation", desc: "Sprachintent-Analysator, um manipulative Sprechakte während Live-Anrufen zu neutralisieren. Entwurfsphase." }
+      {
+        date: "2024–2025",
+        title: "Akademische Ursprünge und regionaler NIR-Sieg",
+        desc: "Projekt am Tscheljabinsker Radiotechnischen Kolleg (KB-284) entstanden und beim regionalen wissenschaftlichen Forschungswettbewerb auf Platz 1."
+      },
+      {
+        date: "v1.2.0",
+        title: "TrustNode 1 (TN1) — Ready MVP",
+        desc: "Voll funktionsfähiges Android-Paket für lokalen Signaturschutz. Kalibrierphase für Schwellenabstimmung und Gewichts-Feintuning."
+      },
+      {
+        date: "2025",
+        title: "ONNX-Kernintegration",
+        desc: "Bereitstellung des Modells rubert_fraud_int8.onnx für lokale semantische Inferenz auf dem Gerät ohne Cloud-Abhängigkeit."
+      },
+      {
+        date: "SEPTEMBER 2026",
+        title: "PHANTOM 2.0 — Architekturphase",
+        desc: "Patentierte TN3-Architektur mit 7 Schichten und unabhängigem KI-Konsens-Routing. Frist: September 2026."
+      },
+      {
+        date: "SEPTEMBER 2026",
+        title: "Bundes-Superfinale (Moskau)",
+        desc: "Präsentation des Projekts beim renommierten föderalen Superfinale der wissenschaftlichen Forschung."
+      },
+      {
+        date: "v3.0-design",
+        title: "Kira Voice Assistant — Konzeptspezifikation",
+        desc: "Sprachintent-Analysator, um manipulative Sprechakte während Live-Anrufen zu neutralisieren. Entwurfsphase."
+      }
     ],
     allProjectsGithub: "Alle TrustNode-Projekte auf GitHub"
   },
-
-    damageCalc: {
-      badge: "Schadensrechner",
-      title: "Wie viel Telefonbetrugsopfer verlieren",
-      subtitle: "Schätzen Sie den potenziell vermeidbaren Schaden, den TrustNode in Ihrem Budget halten kann.",
-      callsLabel: "Betrugsanrufe pro Monat",
-      amountLabel: "Durchschnittlicher Verlust pro erfolgreichem Angriff",
-      resultTitle: "Ihr TrustNode-Schutz in einem Jahr",
-      savedLabel: "potenziell vermiedener Schaden",
-      disclaimer: "Schätzung auf Grundlage öffentlicher Statistiken zu Durchschnittsverlusten durch Telefonbetrug; garantiert keine tatsächlichen Ersparnisse."
-    },
-
-    faq: {
-      badge: "FAQ",
-      title: "Häufige Fragen",
-      subtitle: "Wichtige Antworten zu Privatsphäre, Installation und Funktionsweise von TrustNode.",
-      items: [
-        { q: "Sammelt TrustNode meine persönlichen Daten?", a: "Nein. Die gesamte Analyse (Links, Anrufe, Bildschirm) erfolgt lokal auf dem Gerät. Ihre Daten werden nirgendwohin übertragen und nicht auf Servern Dritter gespeichert." },
-        { q: "Ist für die Nutzung der App eine Internetverbindung erforderlich?", a: "Nein, das Analysemodell arbeitet offline. Für den grundlegenden Schutz ist kein Internet erforderlich." },
-        { q: "Warum benötigt die App Zugriff auf Bedienungshilfen (Accessibility)?", a: "Dieser Zugriff dient ausschließlich der Erkennung gefälschter Bildschirme und betrügerischer Eingabeformulare. Die Analyse erfolgt lokal; der Bildschirminhalt wird nirgendwohin gesendet." },
-        { q: "Hört die App meine Anrufe ab?", a: "TrustNode analysiert die Stimme in Echtzeit nur, um Anzeichen von Betrug (Social Engineering) zu erkennen. Audio wird nie auf der Festplatte gespeichert oder an Dritte weitergegeben." },
-        { q: "Ist die App kostenpflichtig?", a: "TrustNode ist derzeit kostenlos. In Zukunft ist ein erweitertes Abonnement mit zusätzlichen Funktionen geplant." }
-      ]
-    },
-
-    news: {
-      badge: "Neuigkeiten",
-      title: "Neueste Ankündigungen des TrustNode-Teams",
-      subtitle: "Kanalbeiträge werden automatisch in Ihre ausgewählte Sprache übersetzt.",
-      emptyTitle: "Noch keine Neuigkeiten",
-      emptyDesc: "Die ersten Beiträge erscheinen hier nach der Synchronisierung mit den Kanälen.",
-      readIn: "Auf {source} lesen",
-      showMore: "Mehr anzeigen",
-      showLess: "Weniger anzeigen"
-    }
+  damageCalc: {
+    badge: "Schadensrechner",
+    title: "Wie viel Telefonbetrugsopfer verlieren",
+    subtitle: "Schätzen Sie den potenziell vermeidbaren Schaden, den TrustNode in Ihrem Budget halten kann.",
+    callsLabel: "Betrugsanrufe pro Monat",
+    amountLabel: "Durchschnittlicher Verlust pro erfolgreichem Angriff",
+    resultTitle: "Ihr TrustNode-Schutz in einem Jahr",
+    savedLabel: "potenziell vermiedener Schaden",
+    disclaimer: "Schätzung auf Grundlage öffentlicher Statistiken zu Durchschnittsverlusten durch Telefonbetrug; garantiert keine tatsächlichen Ersparnisse."
+  },
+  faq: {
+    badge: "FAQ",
+    title: "Häufige Fragen",
+    subtitle: "Wichtige Antworten zu Privatsphäre, Installation und Funktionsweise von TrustNode.",
+    items: [
+      {
+        q: "Sammelt TrustNode meine persönlichen Daten?",
+        a: "Nein. Die gesamte Analyse (Links, Anrufe, Bildschirm) erfolgt lokal auf dem Gerät. Ihre Daten werden nirgendwohin übertragen und nicht auf Servern Dritter gespeichert."
+      },
+      {
+        q: "Ist für die Nutzung der App eine Internetverbindung erforderlich?",
+        a: "Nein, das Analysemodell arbeitet offline. Für den grundlegenden Schutz ist kein Internet erforderlich."
+      },
+      {
+        q: "Warum benötigt die App Zugriff auf Bedienungshilfen (Accessibility)?",
+        a: "Dieser Zugriff dient ausschließlich der Erkennung gefälschter Bildschirme und betrügerischer Eingabeformulare. Die Analyse erfolgt lokal; der Bildschirminhalt wird nirgendwohin gesendet."
+      },
+      {
+        q: "Hört die App meine Anrufe ab?",
+        a: "TrustNode analysiert die Stimme in Echtzeit nur, um Anzeichen von Betrug (Social Engineering) zu erkennen. Audio wird nie auf der Festplatte gespeichert oder an Dritte weitergegeben."
+      },
+      {
+        q: "Ist die App kostenpflichtig?",
+        a: "TrustNode ist derzeit kostenlos. In Zukunft ist ein erweitertes Abonnement mit zusätzlichen Funktionen geplant."
+      }
+    ]
+  },
+  news: {
+    badge: "Neuigkeiten",
+    title: "Neueste Ankündigungen des TrustNode-Teams",
+    subtitle: "Kanalbeiträge werden automatisch in Ihre ausgewählte Sprache übersetzt.",
+    emptyTitle: "Noch keine Neuigkeiten",
+    emptyDesc: "Die ersten Beiträge erscheinen hier nach der Synchronisierung mit den Kanälen.",
+    readIn: "Auf {source} lesen",
+    showMore: "Mehr anzeigen",
+    showLess: "Weniger anzeigen"
+  }
 };
 
 const ja: Translations = {
@@ -5989,9 +6438,9 @@ const ja: Translations = {
     "対象者"
   ],
   replayIntro: "イントロをもう一度見る（上へ戻る）",
-    backTop: "上へ戻る",
-    skipToContent: "メインコンテンツへ移動",
-    langChanged: "言語を{lang}に変更しました",
+  backTop: "上へ戻る",
+  skipToContent: "メインコンテンツへ移動",
+  langChanged: "言語を{lang}に変更しました",
   problem: {
     badge: "現在の課題",
     titleLine1: "既存のソリューションが",
@@ -6006,7 +6455,10 @@ const ja: Translations = {
         stat: "2950億ルーブル以上",
         statLabel: "2024年のロシアだけで電話詐欺による被害額",
         statSource: "出典: banknn.ru, Sber / Frank Media, 2025",
-        shotLabels: ["脅威画面", "脅威履歴"]
+        shotLabels: [
+          "脅威画面",
+          "脅威履歴"
+        ]
       },
       {
         title: "損なわれるプライバシー",
@@ -6014,7 +6466,10 @@ const ja: Translations = {
         stat: "45億件",
         statLabel: "2023–2025年にロシアで漏えいした個人データ記録",
         statSource: "出典: InfoWatch / d-russia.ru",
-        shotLabels: ["統計", "ホーム画面"]
+        shotLabels: [
+          "統計",
+          "ホーム画面"
+        ]
       },
       {
         title: "ネットワークがなければ無力",
@@ -6022,7 +6477,10 @@ const ja: Translations = {
         stat: "22億人",
         statLabel: "世界で今もインターネットに接続できない人々",
         statSource: "出典: ITU Facts and Figures, 2025",
-        shotLabels: ["設定", "アシスタント"]
+        shotLabels: [
+          "設定",
+          "アシスタント"
+        ]
       }
     ]
   },
@@ -6033,29 +6491,26 @@ const ja: Translations = {
     subtitle: "スマートフォン上でローカルに動作する多層構造のドームです。個人データは1バイトたりともデバイスの外に出ません。",
     layersHeading: "デバイス保護のレイヤー",
     layers: [
-    {
-      name: "音響解析",
-      tech: "RMS / Zero-Crossing / Energy",
-      desc: "端末上で通話をリアルタイムに音響解析：声とイントネーション、話す速さ、間、会話のエネルギー・パターンを分析。サーバーへのデータ送信は一切ありません。"
-    }
-    ,
-    {
-      name: "ML分類（rubert-tiny2）",
-      tech: "ONNX Runtime / INT8 / ~29 MB",
-      desc: "軽量ニューラルネットワーク rubert-tiny2（ONNX INT8、約29MB）を端末上でテキスト・メタデータ分析に使用します。モデルとデータベースの更新はアプリ更新に同梱され、日常利用にインターネットは不要です（新バージョンのインストール時のみ必要）。"
-    }
-    ,
-    {
-      name: "音声認識と意味解析（ASR）— 開発中（Roadmap）",
-      tech: "ASR — Roadmap",
-      desc: "音声認識（ASR）と会話内容の意味解析：重要なトリガーフレーズ、心理的圧迫の兆候、緊急対応の要求を検出します。PHANTOM進化の次のステージ。"
-    }
-    ,
-    {
-      name: "PHANTOM 合意形成",
-      tech: "Consensus Voting Engine",
-      desc: "分析レイヤーの出力に基づいて最終的な重み付け判断を行います。攻撃の疑いがある場合、インターフェースをロックし、ユーザーに警告し、信頼できる連絡先に即時プッシュを送信します。"
-    }
+      {
+        name: "音響解析",
+        tech: "RMS / Zero-Crossing / Energy",
+        desc: "端末上で通話をリアルタイムに音響解析：声とイントネーション、話す速さ、間、会話のエネルギー・パターンを分析。サーバーへのデータ送信は一切ありません。"
+      },
+      {
+        name: "ML分類（rubert-tiny2）",
+        tech: "ONNX Runtime / INT8 / ~29 MB",
+        desc: "軽量ニューラルネットワーク rubert-tiny2（ONNX INT8、約29MB）を端末上でテキスト・メタデータ分析に使用します。モデルとデータベースの更新はアプリ更新に同梱され、日常利用にインターネットは不要です（新バージョンのインストール時のみ必要）。"
+      },
+      {
+        name: "音声認識と意味解析（ASR）— 開発中（Roadmap）",
+        tech: "ASR — Roadmap",
+        desc: "音声認識（ASR）と会話内容の意味解析：重要なトリガーフレーズ、心理的圧迫の兆候、緊急対応の要求を検出します。PHANTOM進化の次のステージ。"
+      },
+      {
+        name: "PHANTOM 合意形成",
+        tech: "Consensus Voting Engine",
+        desc: "分析レイヤーの出力に基づいて最終的な重み付け判断を行います。攻撃の疑いがある場合、インターフェースをロックし、ユーザーに警告し、信頼できる連絡先に即時プッシュを送信します。"
+      }
     ],
     usp: [
       {
@@ -6140,7 +6595,6 @@ const ja: Translations = {
       }
     ]
   },
-
   header: {
     rustore: "RuStore からダウンロード",
     radar: "Product Radar",
@@ -6156,8 +6610,8 @@ const ja: Translations = {
     privacyLink: "プライバシーポリシー（ロシア連邦法152-FZ）",
     termsLink: "利用規約",
     version: "オンデバイスML不正検知シールド // v1.2.0 // 152-FZ準拠",
-      githubOrg: "GitHub 上のすべての TrustNode プロジェクト",
-},
+    githubOrg: "GitHub 上のすべての TrustNode プロジェクト"
+  },
   cookie: {
     badgeLabel: "[ 情報セキュリティ // ロシア法152-FZ ]",
     text: "私たちはあなたのプライバシーを大切にしています。当サイトでは、グラフィック設定やエコモードの設定を記憶するために、匿名化されたCookieとローカルストレージを使用しています。詳しくは",
@@ -6244,7 +6698,11 @@ const ja: Translations = {
     about: "私たちについて",
     download: "ダウンロード",
     comparison: "比較",
-    "not-found": "404"
+    "not-found": "404",
+    roadmap: "ロードマップ",
+    privacy: "プライバシーポリシー",
+    terms: "利用規約",
+    news: "ニュース"
   },
   realDev: {
     title: "プロジェクト検証",
@@ -6382,9 +6840,11 @@ const ja: Translations = {
   explore: {
     title: "セキュリティプロトコルを探る",
     subtitle: "TrustNodeのローカルAI技術と科学的基盤について詳細を見る",
+    hint: "惑星にホバーしてください →",
+    hintTap: "惑星をタップしてください →",
     card1Title: "ドームテクノロジー",
     card1Badge: "PHANTOMシステム",
-    card1Desc: "PHANTOM 2.0 セキュリティドームの技術解説：音響解析と rubert-tiny2 のML分類は端末上で稼働し、その他のレイヤーは開発中（Roadmap）です。",
+    card1Desc: "7層のPHANTOM 2.0セキュリティドームの技術仕様と、完全にオンデバイスで動作するKIRAインテリジェント音声アシスタントの解説。",
     card1Btn: "技術仕様を見る →",
     card2Title: "確かな実績と検証",
     card2Badge: "特許と受賞歴",
@@ -6418,9 +6878,8 @@ const ja: Translations = {
     feature2Desc: "軽量ニューラルネットワーク rubert-tiny2（ONNX INT8、約29MB）がインターネット接続なしで端末上でテキスト・メタデータを分析します。",
     feature3Title: "無料で安全",
     feature3Desc: "アプリは RuStore で無料提供されています。インストールして、大切な人を詐欺師から守りましょう。",
-    note: "Android デバイスに対応。インターネットは初回ダウンロード時のみ必要です。",
+    note: "Android デバイスに対応。インターネットは初回ダウンロード時のみ必要です。"
   },
-
   comparisonPage: {
     title: "誠実な比較",
     subtitle: "TrustNode と主要なグローバルセキュリティソリューションの客観的な比較分析",
@@ -6459,7 +6918,6 @@ const ja: Translations = {
     disclaimer: "最大限の客観性を追求しています。誤りに気づいた場合は、Telegram にてご連絡ください。",
     telegramBtn: "Telegram で連絡する"
   },
-
   roadmapPage: {
     title: "開発ロードマップ",
     subtitle: "TrustNode の現在の進捗状況、責任ある開示ポリシー、セマンティックコア展開のタイムライン",
@@ -6490,57 +6948,86 @@ const ja: Translations = {
     reportGithub: "GitHub で報告",
     milestonesTitle: "開発・リリースのマイルストーン",
     milestones: [
-      { date: "2024–2025", title: "学術的な起源と地域研究コンテストでの勝利", desc: "チェリャビンスク無線技術専門学校 (KB-284) で生まれたプロジェクトが、地域科学研究コンテストで 1 位を獲得しました。" },
-      { date: "v1.2.0", title: "TrustNode 1 (TN1) — 準備完了 MVP", desc: "ローカル署名保護のための完全稼働の Android パッケージ。閾値調整と重みのファインチューニングのためのキャリブレーションフェーズ。" },
-      { date: "2025", title: "ONNX コア統合", desc: "クラウド依存なしで端末上でローカルにセマンティック推論を行う rubert_fraud_int8.onnx モデルの展開。" },
-      { date: "2026年9月", title: "PHANTOM 2.0 — アーキテクチャフェーズ", desc: "独立した AI コンセンサスルーティングを備えた 7 層特許 TN3 アーキテクチャ。期限: 2026 年 9 月。" },
-      { date: "2026年9月", title: "連邦スーパーファイナル（モスクワ）", desc: "権威ある連邦科学研究スーパーファイナルでのプロジェクト発表。" },
-      { date: "v3.0-design", title: "Kira ボイスアシスタント — コンセプト仕様", desc: "ライブ通話中の操作的な発話を中和する音声意図分析器。デザインフェーズ。" }
+      {
+        date: "2024–2025",
+        title: "学術的な起源と地域研究コンテストでの勝利",
+        desc: "チェリャビンスク無線技術専門学校 (KB-284) で生まれたプロジェクトが、地域科学研究コンテストで 1 位を獲得しました。"
+      },
+      {
+        date: "v1.2.0",
+        title: "TrustNode 1 (TN1) — 準備完了 MVP",
+        desc: "ローカル署名保護のための完全稼働の Android パッケージ。閾値調整と重みのファインチューニングのためのキャリブレーションフェーズ。"
+      },
+      {
+        date: "2025",
+        title: "ONNX コア統合",
+        desc: "クラウド依存なしで端末上でローカルにセマンティック推論を行う rubert_fraud_int8.onnx モデルの展開。"
+      },
+      {
+        date: "2026年9月",
+        title: "PHANTOM 2.0 — アーキテクチャフェーズ",
+        desc: "独立した AI コンセンサスルーティングを備えた 7 層特許 TN3 アーキテクチャ。期限: 2026 年 9 月。"
+      },
+      {
+        date: "2026年9月",
+        title: "連邦スーパーファイナル（モスクワ）",
+        desc: "権威ある連邦科学研究スーパーファイナルでのプロジェクト発表。"
+      },
+      {
+        date: "v3.0-design",
+        title: "Kira ボイスアシスタント — コンセプト仕様",
+        desc: "ライブ通話中の操作的な発話を中和する音声意図分析器。デザインフェーズ。"
+      }
     ],
     allProjectsGithub: "GitHub のすべての TrustNode プロジェクト"
   },
-
-    damageCalc: {
-      badge: "被害額計算ツール",
-      title: "電話詐欺の被害者はどれだけ失うのか",
-      subtitle: "TrustNode が予算内で守れる、防止可能な潜在的な被害額を試算します。",
-      callsLabel: "月あたりの詐欺電話数",
-      amountLabel: "成功した攻撃1件あたりの平均損失",
-      resultTitle: "1年間の TrustNode による保護",
-      savedLabel: "防止可能な潜在被害額",
-      disclaimer: "電話詐欺の平均損失に関する公開統計に基づく試算であり、実際の節約を保証するものではありません。"
-    },
-
-    faq: {
-      badge: "よくある質問",
-      title: "よくある質問",
-      subtitle: "プライバシー、インストール、TrustNode の仕組みに関する主な回答。",
-      items: [
-        { q: "TrustNode は個人データを収集しますか？", a: "いいえ。すべての分析（リンク、通話、画面）はデバイス上でローカルに行われます。データが外部に送信されたり、第三者サーバーに保存されたりすることはありません。" },
-        { q: "アプリの利用にインターネットは必要ですか？", a: "いいえ、分析モデルはオフラインで動作します。基本的な保護にインターネットは不要です。" },
-        { q: "なぜアプリはアクセシビリティ（Accessibility）へのアクセスを必要とするのですか？", a: "このアクセスは、偽の画面や不正な入力フォームを検出するためだけに使用されます。分析はローカルで行われ、画面の内容が外部に送信されることはありません。" },
-        { q: "アプリは私の通話を録音・傍受しますか？", a: "TrustNode は、詐欺の兆候（ソーシャルエンジニアリング）を検出するためだけに音声をリアルタイムで分析します。音声はディスクに記録されず、第三者に共有されることもありません。" },
-        { q: "アプリは有料ですか？", a: "現時点では TrustNode は無料です。将来的には追加機能を備えた拡張サブスクリプションが計画されています。" }
-      ]
-    },
-
-    news: {
-      badge: "ニュース",
-      title: "TrustNode チームの最新のお知らせ",
-      subtitle: "チャンネルの投稿は選択した言語に自動的に翻訳されます。",
-      emptyTitle: "まだニュースはありません",
-      emptyDesc: "チャンネルとの同期後に、最初の投稿がここに表示されます。",
-      readIn: "{source} で読む",
-      showMore: "もっと見る",
-      showLess: "閉じる"
-    }
+  damageCalc: {
+    badge: "被害額計算ツール",
+    title: "電話詐欺の被害者はどれだけ失うのか",
+    subtitle: "TrustNode が予算内で守れる、防止可能な潜在的な被害額を試算します。",
+    callsLabel: "月あたりの詐欺電話数",
+    amountLabel: "成功した攻撃1件あたりの平均損失",
+    resultTitle: "1年間の TrustNode による保護",
+    savedLabel: "防止可能な潜在被害額",
+    disclaimer: "電話詐欺の平均損失に関する公開統計に基づく試算であり、実際の節約を保証するものではありません。"
+  },
+  faq: {
+    badge: "よくある質問",
+    title: "よくある質問",
+    subtitle: "プライバシー、インストール、TrustNode の仕組みに関する主な回答。",
+    items: [
+      {
+        q: "TrustNode は個人データを収集しますか？",
+        a: "いいえ。すべての分析（リンク、通話、画面）はデバイス上でローカルに行われます。データが外部に送信されたり、第三者サーバーに保存されたりすることはありません。"
+      },
+      {
+        q: "アプリの利用にインターネットは必要ですか？",
+        a: "いいえ、分析モデルはオフラインで動作します。基本的な保護にインターネットは不要です。"
+      },
+      {
+        q: "なぜアプリはアクセシビリティ（Accessibility）へのアクセスを必要とするのですか？",
+        a: "このアクセスは、偽の画面や不正な入力フォームを検出するためだけに使用されます。分析はローカルで行われ、画面の内容が外部に送信されることはありません。"
+      },
+      {
+        q: "アプリは私の通話を録音・傍受しますか？",
+        a: "TrustNode は、詐欺の兆候（ソーシャルエンジニアリング）を検出するためだけに音声をリアルタイムで分析します。音声はディスクに記録されず、第三者に共有されることもありません。"
+      },
+      {
+        q: "アプリは有料ですか？",
+        a: "現時点では TrustNode は無料です。将来的には追加機能を備えた拡張サブスクリプションが計画されています。"
+      }
+    ]
+  },
+  news: {
+    badge: "ニュース",
+    title: "TrustNode チームの最新のお知らせ",
+    subtitle: "チャンネルの投稿は選択した言語に自動的に翻訳されます。",
+    emptyTitle: "まだニュースはありません",
+    emptyDesc: "チャンネルとの同期後に、最初の投稿がここに表示されます。",
+    readIn: "{source} で読む",
+    showMore: "もっと見る",
+    showLess: "閉じる"
+  }
 };
 
 export const translations: Record<LanguageCode, Translations> = { ru, en, es, zh, tr, hi, ar, pt, fr, de, ja };
-
-
-
-
-
-
-

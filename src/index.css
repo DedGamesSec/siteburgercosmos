@@ -101,7 +101,7 @@
   html {
     scrollbar-gutter: stable;
     scrollbar-width: thin;
-    scrollbar-color: #3C404A #0A0A0B;
+    scrollbar-color: #3B82F6 #0A0A0B;
   }
 
   html::-webkit-scrollbar {
@@ -113,13 +113,13 @@
   }
 
   html::-webkit-scrollbar-thumb {
-    background: #3C404A;
+    background: #3B82F6;
     border-radius: 5px;
     border: 2px solid #0A0A0B;
   }
 
   html::-webkit-scrollbar-thumb:hover {
-    background: #12141A;
+    background: #6FB1FF;
   }
 
   html, body {
@@ -174,6 +174,27 @@
       font-size: 118%;
     }
   }
+}
+
+/* Internal scrollable areas (live simulator log, transcription, etc.) get the
+   same blue scrollbar as the page. */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #3B82F6 #0A0A0B;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #0A0A0B;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #3B82F6;
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #6FB1FF;
 }
 
 @layer utilities {
@@ -303,4 +324,147 @@
 
 .eco-mode .radar-sweep {
   animation: none !important;
+}
+
+/* Snap-scroll landing sections: fade up as they enter the viewport.
+   Toggled by useSectionSnap's IntersectionObserver; only active while the
+   snap scroll itself is enabled (class added/removed by the hook). */
+.snap-scroll-active [data-snap-section] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.snap-scroll-active [data-snap-section].snap-section-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.snap-scroll-active.eco-mode [data-snap-section] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Fullscreen nav menu: smooth staggered reveal — numbered items 01..07 fade in
+   one after another, then the Download CTA appears last. */
+@keyframes menu-item-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.menu-item-in {
+  animation: menu-item-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Fullscreen nav overlay: reveals from the left rail edge, like a drawer
+   being pulled out of the sidebar. */
+@keyframes menu-slide-in {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to   { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+.menu-slide-in {
+  animation: menu-slide-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Fullscreen nav overlay: slides back out to the left rail edge when closing. */
+@keyframes menu-slide-out {
+  from { opacity: 1; clip-path: inset(0 0 0 0); }
+  to   { opacity: 0; clip-path: inset(0 100% 0 0); }
+}
+
+.menu-slide-out {
+  animation: menu-slide-out 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.eco-mode .menu-item-in {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.eco-mode .menu-slide-in {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.eco-mode .menu-slide-out {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-item-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-slide-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-slide-out {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snap-scroll-active [data-snap-section] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Explore Portal (Solar System): each planet orbits with a duration scaled
+   from its real period (Mercury ~40s ... Neptune ~7min). The planet icon is
+   counter-rotated so it never tumbles. All motion is gated on eco-mode /
+   prefers-reduced-motion via inline `animationPlayState` / class removal. */
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Sun breathing glow (4-6s cycle). */
+@keyframes sun-breathe {
+  0%, 100% {
+    box-shadow: 0 0 40px rgba(251, 191, 36, 0.55), 0 0 90px rgba(245, 158, 11, 0.35), 0 0 140px rgba(245, 158, 11, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 56px rgba(251, 191, 36, 0.75), 0 0 115px rgba(245, 158, 11, 0.5), 0 0 175px rgba(245, 158, 11, 0.28);
+  }
+}
+
+.sun-breathe {
+  animation: sun-breathe 5s ease-in-out infinite;
+}
+
+/* Subtle, cheap starfield twinkle (per-star opacity + delay set inline). */
+@keyframes star-twinkle {
+  0%, 100% { opacity: var(--star-base, 0.5); }
+  50%      { opacity: 0.05; }
+}
+
+.star-twinkle {
+  animation: star-twinkle 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sun-breathe,
+  .star-twinkle {
+    animation: none !important;
+  }
 }

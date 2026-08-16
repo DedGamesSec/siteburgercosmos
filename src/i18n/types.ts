@@ -216,6 +216,8 @@ export interface Translations {
   explore: {
     title: string;
     subtitle: string;
+    hint: string;
+    hintTap: string;
     card1Title: string;
     card1Badge: string;
     card1Desc: string;

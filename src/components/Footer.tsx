@@ -1,7 +1,6 @@
 import React from "react";
 import { SiTelegram, SiVk, SiTiktok, SiGithub } from "react-icons/si";
 import { Radar } from "lucide-react";
-import MiniLogo from "./MiniLogo";
 import { useTranslation } from "../i18n/LanguageContext";
 import { useNavigation } from "../navigation/NavigationContext";
 import { useEcoMode } from "../context/EcoModeContext";
@@ -20,7 +19,7 @@ const Footer = React.memo(function Footer() {
   const currentYear = new Date().getFullYear();
   const copyright = t.footer.copyright.replace("{year}", String(currentYear));
   const sitemapHeading = {
-    ru: "РљР°СЂС‚Р° СЃР°Р№С‚Р°",
+    ru: "Основная навигация",
     en: "Sitemap",
     es: "Mapa del sitio",
     zh: "з«™з‚№ењ°е›ѕ",
@@ -72,8 +71,12 @@ const Footer = React.memo(function Footer() {
         {/* Brand Identity вЂ” centered, full-width first row */}
         <div className="footer-area-brand flex flex-col items-center gap-1 text-center">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-14 flex items-center justify-center bg-[#3C404A]/30 rounded-xl border border-[#3B82F6]/10">
-              <MiniLogo />
+            <div className="w-12 h-14 flex items-center justify-center">
+              <img
+                src="/frame1.svg"
+                alt="TrustNode"
+                className="w-full h-full object-contain"
+              />
             </div>
             <span className="font-display font-medium text-xl text-[#F5F5F0] tracking-tighter">
               Trust<span className="text-[#3B82F6]">Node</span>

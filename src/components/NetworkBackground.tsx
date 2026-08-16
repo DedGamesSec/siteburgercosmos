@@ -17,6 +17,17 @@ const PLANET_SHELL_LY = 150;   // planets / sun / moon depth
 const SMALLBODY_SHELL_LY = 40; // comets / asteroids depth
 const SAT_SHELL_LY = 5;        // satellites depth (near foreground layer)
 
+// Distance from point (px,py) to segment (x1,y1)-(x2,y2).
+function distToSegment(px: number, py: number, x1: number, y1: number, x2: number, y2: number) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const lenSq = dx * dx + dy * dy;
+  if (lenSq === 0) return Math.hypot(px - x1, py - y1);
+  let t = ((px - x1) * dx + (py - y1) * dy) / lenSq;
+  t = Math.max(0, Math.min(1, t));
+  return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+}
+
 // Deterministic "deep space" starfield: as the flight deepens, more stars appear.
 // Seeds are fixed so scroll-frozen frames are perfectly stable (no flicker).
 const WARP_FIELD_TOTAL = 320;
@@ -32,11 +43,16 @@ for (let i = 0; i < WARP_FIELD_TOTAL; i++) {
 interface NetworkBackgroundProps {
   zoomFactor?: number;
   warpProgress?: number;
+  warpProgressRef?: { current: number }; // shared mutable progress, read per-frame without React re-render
   isEcoMode?: boolean;
   ecoMode?: boolean; // alias compatibility
   onSkyStatusChange?: (status: string) => void;
   language?: string;
   suspended?: boolean; // pause rendering while an opaque 3D cinematic is on top
+  interactive?: boolean; // when false, no hover tooltips (used inside the nav overlay)
+  highlightConstellations?: boolean; // draw asterism lines prominently (nav background)
+  constellationsOnHoverOnly?: boolean; // draw asterism lines only when hovered
+  starDensity?: number; // override field density (0..1+; default follows mode)
 }
 
 interface ProjectedObject {
@@ -54,15 +70,22 @@ interface ProjectedObject {
 export default function NetworkBackground({
   zoomFactor = 1.0,
   warpProgress = 0,
+  warpProgressRef: warpProgressRefProp,
   isEcoMode,
   ecoMode,
   onSkyStatusChange,
   language = "ru",
-  suspended = false
+  suspended = false,
+  interactive = true,
+  highlightConstellations = false,
+  constellationsOnHoverOnly = false,
+  starDensity
 }: NetworkBackgroundProps) {
   const activeEcoMode = isEcoMode ?? ecoMode ?? false;
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const viewportOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const reducedMotionMode = activeEcoMode || prefersReducedMotion;
   const suspendedRef = useRef(suspended);
 
@@ -70,12 +93,15 @@ export default function NetworkBackground({
     suspendedRef.current = suspended;
   }, [suspended]);
 
-  // Scroll-driven warp progress (0..1). Stored in a ref so per-frame scroll updates
-  // don't restart the render-loop effect.
+  // Scroll-driven warp progress (0..1). When a shared mutable ref is supplied
+  // (the 2D assembly path), it is read directly each frame; otherwise the number
+  // prop is mirrored into a local ref so per-frame updates don't restart the
+  // render-loop effect.
   const warpProgressRef = useRef(warpProgress);
   useEffect(() => {
     warpProgressRef.current = warpProgress;
   }, [warpProgress]);
+  const progressSource = warpProgressRefProp ?? warpProgressRef;
 
   useSkyActivation(reducedMotionMode);
   const [hoveredItem, setHoveredItem] = useState<ProjectedObject | null>(null);
@@ -83,6 +109,8 @@ export default function NetworkBackground({
 
   const projectedObjectsRef = useRef<ProjectedObject[]>([]);
   const hoveredConstellationRef = useRef<string | null>(null);
+  const constellationSegmentsRef = useRef<{ code: string; x1: number; y1: number; x2: number; y2: number }[]>([]);
+  const containerSizeRef = useRef<{ width: number; height: number }>({ width: 0, height: 0 });
   const moonGlowMultiplierRef = useRef<number>(1.0);
   const sunAltitudeRef = useRef<number>(-20);
 
@@ -132,6 +160,8 @@ export default function NetworkBackground({
 
   // Handle global mousemove for interactive Stellarium tooltips
   useEffect(() => {
+    if (!interactive) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       // Avoid triggering tooltips if user is hovering over solid landing page or interactive buttons
       const targetElem = document.elementFromPoint(e.clientX, e.clientY);
@@ -151,10 +181,16 @@ export default function NetworkBackground({
       let found: ProjectedObject | null = null;
       let minDist = 16; // hover threshold in px
 
+      // Object coordinates are container-relative; mouse events are
+      // viewport-relative, so translate by the container's offset.
+      const off = viewportOffsetRef.current;
+      const px = e.clientX - off.x;
+      const py = e.clientY - off.y;
+
       for (let i = 0; i < objects.length; i++) {
         const obj = objects[i];
-        const dx = e.clientX - obj.x;
-        const dy = e.clientY - obj.y;
+        const dx = px - obj.x;
+        const dy = py - obj.y;
         const dist = Math.hypot(dx, dy);
         if (dist < minDist) {
           minDist = dist;
@@ -162,10 +198,30 @@ export default function NetworkBackground({
         }
       }
 
+      // If the pointer isn't over a star dot, fall back to the constellation
+      // line segments so hovering any part of an asterism highlights it.
+      let constelFromLine: string | null = null;
+      if (!found) {
+        let lineMinDist = 10;
+        const segs = constellationSegmentsRef.current;
+        for (let i = 0; i < segs.length; i++) {
+          const s = segs[i];
+          const dist = distToSegment(px, py, s.x1, s.y1, s.x2, s.y2);
+          if (dist < lineMinDist) {
+            lineMinDist = dist;
+            constelFromLine = s.code;
+          }
+        }
+      }
+
       if (found) {
         hoveredConstellationRef.current = found.constellationCode || null;
         setHoveredItem(found);
-        setTooltipPos({ x: e.clientX, y: e.clientY });
+        setTooltipPos({ x: px, y: py });
+        document.body.style.cursor = "pointer";
+      } else if (constelFromLine) {
+        hoveredConstellationRef.current = constelFromLine;
+        if (hoveredItem !== null) setHoveredItem(null);
         document.body.style.cursor = "pointer";
       } else {
         if (hoveredConstellationRef.current !== null) {
@@ -183,7 +239,7 @@ export default function NetworkBackground({
       window.removeEventListener("mousemove", handleMouseMove);
       document.body.style.cursor = "";
     };
-  }, [hoveredItem]);
+  }, [hoveredItem, interactive]);
 
   // Main canvas animation and astronomical projection loop
   useEffect(() => {
@@ -201,8 +257,17 @@ export default function NetworkBackground({
 
     const syncCanvasSize = () => {
       if (!canvas) return;
-      width = window.innerWidth;
-      height = window.innerHeight;
+      // Size against the actual container box (not the window) so projection,
+      // star pixels and mouse-collision all share the same coordinate space,
+      // even when the canvas is nested inside an offset overlay (nav panel).
+      const container = containerRef.current;
+      const rect = container
+        ? container.getBoundingClientRect()
+        : canvas.getBoundingClientRect();
+      width = Math.max(1, Math.floor(rect.width));
+      height = Math.max(1, Math.floor(rect.height));
+      viewportOffsetRef.current = { x: rect.left, y: rect.top };
+      containerSizeRef.current = { width, height };
       isMobile = width < 768;
       pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
       canvas.style.width = `${width}px`;
@@ -292,13 +357,15 @@ export default function NetworkBackground({
       prevFrameTime = time;
 
       ctx.clearRect(0, 0, width, height);
-      const starDensity = reducedMotionMode ? 0.35 : isMobile ? 0.55 : 1;
-      const starList = REAL_STARS.slice(0, Math.max(24, Math.floor(REAL_STARS.length * starDensity)));
+      const starDensityVal =
+        starDensity ??
+        (reducedMotionMode ? 0.35 : isMobile ? 0.55 : 1);
+      const starList = REAL_STARS.slice(0, Math.max(24, Math.floor(REAL_STARS.length * starDensityVal)));
 
       const moonGlow = moonGlowMultiplierRef.current;
 
       // Hyperspace warp strength (0..1), scroll-driven. Frozen the moment scrolling stops.
-      const warp = reducedMotionMode ? 0 : warpProgressRef.current;
+      const warp = reducedMotionMode ? 0 : progressSource.current;
 
       // 0. Horizon twilight glow if Sun altitude is between -6° and +6°
       const sunAlt = sunAltitudeRef.current;
@@ -600,10 +667,25 @@ export default function NetworkBackground({
 
       // DRAW CONSTELLATION ASTERISM LINES
       const activeConstel = hoveredConstellationRef.current;
+      const segments: { code: string; x1: number; y1: number; x2: number; y2: number }[] = [];
 
       for (let i = 0; i < CONSTELLATION_LINES.length; i++) {
         const constel = CONSTELLATION_LINES[i];
-        const isHighlighted = activeConstel === constel.code;
+        const isHighlighted = activeConstel === constel.code || highlightConstellations;
+
+        // Hover-only mode: connections are invisible until the pointer is over
+        // one of their stars (used inside the nav overlay).
+        if (constellationsOnHoverOnly && !isHighlighted) {
+          for (let j = 0; j < constel.lines.length; j++) {
+            const [id1, id2] = constel.lines[j];
+            const s1 = starMap.get(id1);
+            const s2 = starMap.get(id2);
+            if (s1 && s2) {
+              segments.push({ code: constel.code, x1: s1.x, y1: s1.y, x2: s2.x, y2: s2.y });
+            }
+          }
+          continue;
+        }
 
         ctx.save();
         if (isHighlighted) {
@@ -627,10 +709,12 @@ export default function NetworkBackground({
             ctx.moveTo(s1.x, s1.y);
             ctx.lineTo(s2.x, s2.y);
             ctx.stroke();
+            segments.push({ code: constel.code, x1: s1.x, y1: s1.y, x2: s2.x, y2: s2.y });
           }
         }
         ctx.restore();
       }
+      constellationSegmentsRef.current = segments;
 
       // DRAW STARS
       for (let i = 0; i < drawnStars.length; i++) {
@@ -845,6 +929,7 @@ export default function NetworkBackground({
 
   return (
     <div
+      ref={containerRef}
       className="absolute inset-0 w-full h-full bg-[#0A0A0B] pointer-events-none overflow-hidden"
       id="network-background-container"
     >
@@ -853,13 +938,14 @@ export default function NetworkBackground({
         className="w-full h-full absolute inset-0 transition-opacity duration-300 pointer-events-none"
       />
 
-      {/* Interactive Floating Tooltip */}
+      {/* Interactive Floating Tooltip — positioned relative to the container so
+          it stays aligned with stars even inside the offset nav overlay. */}
       {hoveredItem && (
         <div
-          className="fixed z-50 px-3.5 py-2 rounded-xl bg-[#12141A]/95 backdrop-blur-md border border-[#3B82F6]/50 text-[#F5F5F0] pointer-events-none transition-all duration-75 flex flex-col gap-0.5 animate-fade-in"
+          className="absolute z-50 px-3.5 py-2 rounded-xl bg-[#12141A]/95 backdrop-blur-md border border-[#3B82F6]/50 text-[#F5F5F0] pointer-events-none transition-all duration-75 flex flex-col gap-0.5 animate-fade-in"
           style={{
-            left: Math.min(window.innerWidth - 250, tooltipPos.x + 16),
-            top: Math.max(16, Math.min(window.innerHeight - 90, tooltipPos.y - 14)),
+            left: Math.max(8, Math.min((containerSizeRef.current.width || window.innerWidth) - 250, tooltipPos.x + 16)),
+            top: Math.max(8, Math.min((containerSizeRef.current.height || window.innerHeight) - 90, tooltipPos.y - 14)),
           }}
           id="celestial-tooltip"
         >

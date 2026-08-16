@@ -56,7 +56,7 @@ export default function DamageCalculator() {
           </p>
         </div>
 
-        <ScanCard accent="59,130,246" borderColor="border-white/[0.06]" cardClassName="bg-[#12141A]" padding="p-6 sm:p-10">
+        <ScanCard accent="59,130,246" borderColor="border-white/[0.06]" cardClassName="bg-[#12141A]" padding="p-6 sm:p-10" scanDisabled>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
             <div>
               <label htmlFor="calc-calls" className="block font-sans text-sm text-gray-300 mb-3">
@@ -109,7 +109,7 @@ export default function DamageCalculator() {
             </div>
           </div>
 
-          <ScanCard accent="59,130,246" borderColor="border-[#3B82F6]/20" cardClassName="bg-[#12141A]" padding="p-6 sm:p-8" className="items-center text-center">
+          <ScanCard accent="59,130,246" borderColor="border-[#3B82F6]/20" cardClassName="bg-[#12141A]" padding="p-6 sm:p-8" className="items-center text-center" scanDisabled>
             <div className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-2">
               {t.damageCalc.resultTitle}
             </div>

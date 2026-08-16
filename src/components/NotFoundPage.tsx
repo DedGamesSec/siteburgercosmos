@@ -37,7 +37,7 @@ export default function NotFoundPage() {
   const t404 = translations[language] || translations["en"];
 
   return (
-    <div className="w-full min-h-[85vh] flex flex-col items-center justify-center px-4 pt-28 pb-16 text-center select-none bg-[#0A0A0B]">
+    <div className="w-full min-h-[85vh] flex flex-col items-center justify-center px-4 pt-8 pb-16 text-center select-none bg-[#0A0A0B]">
       <div className="inline-flex items-center gap-2 text-[#3B82F6] font-mono text-xs mb-6 tracking-widest">
         <ShieldAlert className="w-4 h-4 animate-pulse" />
         <span>{t404.badge}</span>

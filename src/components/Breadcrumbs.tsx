@@ -19,7 +19,7 @@ export default function Breadcrumbs({ currentPage }: BreadcrumbsProps) {
   if (currentPage === "home" || !isConfiguredPage) return null;
 
   return (
-    <div className="w-full bg-[#0A0A0B]/80 backdrop-blur-md border-b border-[#3C404A]/30 pt-20 pb-3 px-4 z-40">
+    <div className="w-full bg-[#0A0A0B]/80 backdrop-blur-md border-b border-[#3C404A]/30 pt-5 pb-3 px-4 z-40">
       <div className="max-w-6xl mx-auto flex items-center gap-2 text-xs font-mono">
         <button
           onClick={() => navigateTo("home")}

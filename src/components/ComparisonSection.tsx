@@ -520,7 +520,7 @@ export default function ComparisonSection() {
         </div>
 
         {/* Interactive Selector badges */}
-        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/20" cardClassName="bg-[#12141A]" padding="p-6 mb-8" className="w-full">
+        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/20" cardClassName="bg-[#12141A]" padding="p-6 mb-8" className="w-full" scanDisabled>
           {/* Mode Switcher */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6 pb-5 border-b border-white/[0.04]">
             <span className="font-mono text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider font-bold">
@@ -597,7 +597,7 @@ export default function ComparisonSection() {
         </ScanCard>
 
         {/* Table Container card */}
-        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/30" cardClassName="bg-[#12141A] backdrop-blur-md overflow-hidden mb-8" padding="p-4 sm:p-6" className="w-full">
+        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/30" cardClassName="bg-[#12141A] backdrop-blur-md overflow-hidden mb-8" padding="p-4 sm:p-6" className="w-full" scanDisabled>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -675,7 +675,7 @@ export default function ComparisonSection() {
         </ScanCard>
 
         {/* Disclaimer section */}
-        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/30" cardClassName="bg-[#12141A] backdrop-blur-md" padding="p-6 sm:p-8" className="max-w-2xl mx-auto items-center text-center">
+        <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/30" cardClassName="bg-[#12141A] backdrop-blur-md" padding="p-6 sm:p-8" className="max-w-2xl mx-auto items-center text-center" scanDisabled>
           <p className="font-sans text-xs text-gray-500 leading-relaxed mb-6">
             {cp.disclaimer}
           </p>

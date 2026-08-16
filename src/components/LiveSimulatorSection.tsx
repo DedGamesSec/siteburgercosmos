@@ -1372,7 +1372,7 @@ const rafTypingRef = useRef<number | null>(null);
           <div className="lg:col-span-7 flex flex-col justify-between gap-6">
             
             {/* THREAT CLIMBER HUD */}
-            <ScanCard accent="59,130,246" padding="p-6">
+            <ScanCard accent="59,130,246" padding="p-6" scanDisabled>
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-mono text-xs font-bold text-gray-400 uppercase tracking-wider">
                   {threatMeterLabel}
@@ -1408,7 +1408,7 @@ const rafTypingRef = useRef<number | null>(null);
             </ScanCard>
 
             {/* 7 LAYER PIPELINE STATUS TRACKER */}
-            <ScanCard accent="59,130,246" cardClassName="flex-1" padding="p-6">
+            <ScanCard accent="59,130,246" cardClassName="flex-1" padding="p-6" scanDisabled>
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-mono text-xs font-bold text-gray-400 uppercase tracking-wider">
@@ -1480,7 +1480,7 @@ const rafTypingRef = useRef<number | null>(null);
             </ScanCard>
 
             {/* REAL-TIME ENCRYPTED TERMINAL CONSOLE */}
-            <ScanCard accent="59,130,246" cardClassName="h-48" className="flex-col justify-between" padding="p-5">
+            <ScanCard accent="59,130,246" cardClassName="h-48" className="flex-col justify-between" padding="p-5" scanDisabled>
               <div className="flex items-center gap-2 border-b border-white/[0.04] pb-2 mb-2">
                 <Terminal className="w-4 h-4 text-gray-500" />
                 <span className="font-mono text-[15px] text-gray-200 uppercase tracking-widest font-bold">

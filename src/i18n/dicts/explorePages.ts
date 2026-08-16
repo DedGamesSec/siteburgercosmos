@@ -4,6 +4,8 @@ export const explore = {
   ru: {
     title: "Исследуйте протокол безопасности",
     subtitle: "Узнайте больше о локальных AI-технологиях и научной базе TrustNode",
+    hint: "Наведите на планету →",
+    hintTap: "Нажмите на планету →",
     card1Title: "Технологии купола",
     card1Badge: "СИСТЕМА PHANTOM",
     card1Desc: "Technical breakdown of the PHANTOM 2.0 security dome: acoustic analysis and rubert-tiny2 ML classification run on-device, while the remaining layers are in development (Roadmap).",
@@ -24,6 +26,8 @@ export const explore = {
   es: {
     title: "Explore el protocolo de seguridad",
     subtitle: "Obtenga más información sobre la IA local y la base científica de TrustNode",
+    hint: "Pasa el cursor sobre un planeta →",
+    hintTap: "Toca un planeta →",
     card1Title: "Tecnología de cúpula",
     card1Badge: "SISTEMA PHANTOM",
     card1Desc: "Desglose técnico del domo de seguridad de 7 capas PHANTOM 2.0 y el asistente de voz inteligente KIRA que se ejecuta completamente en el dispositivo.",
@@ -44,6 +48,8 @@ export const explore = {
   zh: {
     title: "探索安全协议",
     subtitle: "深入了解 TrustNode 的本地人工智能技术与科研基础",
+    hint: "将鼠标悬停在行星上 →",
+    hintTap: "点击一颗行星 →",
     card1Title: "穹顶防护技术",
     card1Badge: "PHANTOM 防护体系",
     card1Desc: "PHANTOM 2.0 七层防护罩的技术细节以及完全在设备端运行的 KIRA 智能语音助手。",
@@ -64,6 +70,8 @@ export const explore = {
   tr: {
     title: "Güvenlik Protokolünü Keşfedin",
     subtitle: "TrustNode yerel yapay zeka teknolojileri ve bilimsel temelleri hakkında daha fazla bilgi edinin",
+    hint: "Bir gezegenin üzerine gelin →",
+    hintTap: "Bir gezegene dokunun →",
     card1Title: "Kubbe Teknolojisi",
     card1Badge: "PHANTOM SİSTEMİ",
     card1Desc: "7 katmanlı PHANTOM 2.0 güvenlik kubbesinin teknik detayları ve tamamen cihaz üzerinde çalışan akıllı sesli asistan KIRA.",
@@ -84,6 +92,8 @@ export const explore = {
   hi: {
     title: "सुरक्षा प्रोटोकॉल का अन्वेषण करें",
     subtitle: "TrustNode की स्थानीय AI तकनीकों and वैज्ञानिक आधार के बारे में अधिक जानें",
+    hint: "किसी ग्रह पर होवर करें →",
+    hintTap: "किसी ग्रह पर टैप करें →",
     card1Title: "डोम तकनीक",
     card1Badge: "PHANTOM प्रणाली",
     card1Desc: "7-स्तरीय PHANTOM 2.0 सुरक्षा डोम का तकनीकी विवरण और पूरी तरह से ऑन-डिवाइस चलने वाला इंटेलिजেন্ট वॉयс असिस्टेंट KIRA।",
@@ -104,6 +114,8 @@ export const explore = {
   ar: {
     title: "استكشف بروتوكول الأمان",
     subtitle: "تعرف على المزيد حول تقنيات الذكاء الاصطناعي المحلية والأساس العلمي لـ TrustNode",
+    hint: "مرّر فوق الكوكب →",
+    hintTap: "انقر على الكوكب →",
     card1Title: "تكنولوجيا القبة",
     card1Badge: "نظام PHANTOM",
     card1Desc: "التفاصيل التقنية لقبة الحماية السباعية PHANTOM 2.0 والمساعد الصوتي الذكي KIRA الذي يعمل بالكامل على الجهاز.",
@@ -124,6 +136,8 @@ export const explore = {
   pt: {
     title: "Explore o Protocolo de Segurança",
     subtitle: "Saiba mais sobre as tecnologias de IA local e a base científica do TrustNode",
+    hint: "Passe o cursor sobre um planeta →",
+    hintTap: "Toque em um planeta →",
     card1Title: "Tecnologia do Domo",
     card1Badge: "SISTEMA PHANTOM",
     card1Desc: "Detalhamento técnico do domo de segurança de 7 camadas PHANTOM 2.0 e o assistente de voz inteligente KIRA rodando localmente no dispositivo.",
@@ -144,6 +158,8 @@ export const explore = {
   fr: {
     title: "Explorez le Protocole de Sécurité",
     subtitle: "En savoir plus sur les technologies d'IA locales et les fondements scientifiques de TrustNode",
+    hint: "Survolez une planète →",
+    hintTap: "Touchez une planète →",
     card1Title: "Technologie du Dôme",
     card1Badge: "SYSTÈME PHANTOM",
     card1Desc: "Détails techniques du dôme de sécurité à 7 couches PHANTOM 2.0 et l'assistant vocal intelligent KIRA fonctionnant entièrement sur l'appareil.",
@@ -164,6 +180,8 @@ export const explore = {
   de: {
     title: "Entdecken Sie das Sicherheitsprotokoll",
     subtitle: "Erfahren Sie mehr über die lokalen KI-Technologien und die wissenschaftliche Basis von TrustNode",
+    hint: "Fahren Sie mit der Maus über einen Planeten →",
+    hintTap: "Tippen Sie auf einen Planeten →",
     card1Title: "Kuppel-Technologie",
     card1Badge: "PHANTOM-SYSTEM",
     card1Desc: "Technische Details der 7-schichtigen PHANTOM 2.0 Sicherheitskuppel und der intelligente Sprachassistent KIRA, der vollständig auf dem Gerät läuft.",
@@ -184,6 +202,8 @@ export const explore = {
   ja: {
     title: "セキュリティプロトコルを探る",
     subtitle: "TrustNodeのローカルAI技術と科学的基盤について詳細を見る",
+    hint: "惑星にホバーしてください →",
+    hintTap: "惑星をタップしてください →",
     card1Title: "ドームテクノロジー",
     card1Badge: "PHANTOMシステム",
     card1Desc: "7層のPHANTOM 2.0セキュリティドームの技術仕様と、完全にオンデバイスで動作するKIRAインテリジェント音声アシスタントの解説。",
@@ -204,6 +224,8 @@ export const explore = {
   en: {
     title: "Explore the Security Protocol",
     subtitle: "Learn more about local AI technologies and the scientific foundation of TrustNode",
+    hint: "Hover a planet →",
+    hintTap: "Tap a planet →",
     card1Title: "Dome Technology",
     card1Badge: "PHANTOM SYSTEM",
     card1Desc: "Technical breakdown of the 7-layer PHANTOM 2.0 security dome and the intelligent voice assistant KIRA running fully on-device.",

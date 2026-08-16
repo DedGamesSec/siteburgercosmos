@@ -29,7 +29,7 @@ export default function LegalPage({ tab }: LegalPageProps) {
 
   return (
     <div className="w-full min-h-[100vh] flex flex-col justify-between bg-[#0A0A0B]/90 backdrop-blur-sm">
-      <div className="max-w-3xl w-full mx-auto px-4 pt-28 pb-16 flex flex-col gap-6">
+      <div className="max-w-3xl w-full mx-auto px-4 pt-8 pb-16 flex flex-col gap-6">
         {/* Page title */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-[#3B82F6]/10 border border-[#3B82F6]/25 flex items-center justify-center shrink-0">

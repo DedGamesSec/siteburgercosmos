@@ -15,6 +15,7 @@ interface ScanCardProps {
   id?: string;
   onClick?: () => void;
   padding?: string;
+  scanDisabled?: boolean;
 }
 
 /**
@@ -35,12 +36,13 @@ const ScanCard = React.forwardRef<HTMLDivElement, ScanCardProps>(
       id,
       onClick,
       padding = "p-6 sm:p-8",
+      scanDisabled = false,
     },
     ref
   ) => {
     const { ecoMode } = useEcoMode();
     const [scan, setScan] = React.useState<ScanState>("idle");
-    const scanning = !ecoMode && scan !== "idle";
+    const scanning = !ecoMode && !scanDisabled && scan !== "idle";
 
     return (
       <div
@@ -48,9 +50,9 @@ const ScanCard = React.forwardRef<HTMLDivElement, ScanCardProps>(
         id={id}
         onClick={onClick}
         className={`relative ${padding} rounded-2xl bg-[#0A0A0B]/95 border ${borderColor} hover:border-[#3B82F6]/40 transition-all duration-300 group flex flex-col overflow-hidden ${cardClassName}`}
-        onMouseEnter={() => { if (!ecoMode) setScan("active"); }}
+        onMouseEnter={() => { if (!ecoMode && !scanDisabled) setScan("active"); }}
         onMouseLeave={() => {
-          if (!ecoMode) setScan((s) => (s === "active" ? "exiting" : s));
+          if (!ecoMode && !scanDisabled) setScan((s) => (s === "active" ? "exiting" : s));
         }}
       >
         {scanning && (
