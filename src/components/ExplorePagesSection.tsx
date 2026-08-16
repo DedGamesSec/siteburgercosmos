@@ -284,8 +284,8 @@ const PLANET_MOTION: Record<string, { tiltDeg: number; spinSeconds: number; retr
   comparison: { tiltDeg: 177.4, spinSeconds: 240, retrograde: true },
   roadmap: { tiltDeg: 25.2, spinSeconds: 30 },
   tech: { tiltDeg: 3.1, spinSeconds: 14 },
-  about: { tiltDeg: 26.7, spinSeconds: 16, ring: { inner: 0.78, outer: 1.15, opacity: 0.9 } },
-  news: { tiltDeg: 97.8, spinSeconds: 22, retrograde: true, ring: { inner: 0.98, outer: 1.22, opacity: 0.45 } },
+  about: { tiltDeg: 26.7, spinSeconds: 16, ring: { inner: 0.78, outer: 1.18, opacity: 0.95 } },
+  news: { tiltDeg: 97.8, spinSeconds: 22, retrograde: true, ring: { inner: 0.98, outer: 1.26, opacity: 0.6 } },
   "how-it-works": { tiltDeg: 28.3, spinSeconds: 20 },
 };
 
@@ -547,7 +547,8 @@ export default function ExplorePagesSection() {
   //      overlay that could drift from the visual. Falls back to flat 2D
   //      discs (DOM buttons) when WebGL or motion is unavailable.
   const [webglOk] = useState(() => isWebGLAvailable());
-  const use3D = webglOk && !motionless && solarW > 0;
+  const [webglFailed, setWebglFailed] = useState(false);
+  const use3D = webglOk && !webglFailed && !motionless && solarW > 0;
   const visibleIds = useMemo(() => visiblePages.map((p) => p.id).join(","), [visiblePages]);
   const solarCanvasRef = useRef<HTMLCanvasElement>(null);
   const solarWRef = useRef(solarW);
@@ -614,13 +615,17 @@ export default function ExplorePagesSection() {
       renderer.setPixelRatio(dpr);
       renderer.setSize(w, w, false);
 
-      // The Sun at the centre is the light source: every sphere gets a real
-      // day/night terminator facing the Sun (plus a soft fill from the camera).
-      const ambient = new THREE.AmbientLight(0xffffff, 0.5);
-      const sunLight = new THREE.PointLight(0xffe0b0, 2.4, 0, 0);
-      const fill = new THREE.DirectionalLight(0xffffff, 0.16);
-      fill.position.set(0, 0, 1);
-      scene.add(ambient, sunLight, fill);
+      // The Sun at the centre is the main light source (real day/night
+      // terminator). A modest top-left key light guarantees visible 3D
+      // shading even on GPUs where the point light behaves differently,
+      // plus a faint fill so no sphere ever reads as flat.
+      const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+      const sunLight = new THREE.PointLight(0xffe0b0, 3.2, 0, 0);
+      const key = new THREE.DirectionalLight(0xffffff, 0.45);
+      key.position.set(-1, 1, 1);
+      const fill = new THREE.DirectionalLight(0xffffff, 0.18);
+      fill.position.set(0, -0.5, 1);
+      scene.add(ambient, sunLight, key, fill);
 
       // The Sun sphere itself (unlit).
       const sunGeo = new THREE.SphereGeometry(38, 32, 32);
@@ -753,7 +758,12 @@ export default function ExplorePagesSection() {
     );
     io.observe(container);
 
-    void boot();
+    void boot().catch(() => {
+      // If the WebGL scene fails to initialise for any reason, drop back to
+      // the DOM disc fallback instead of leaving an empty canvas with only
+      // the HTML labels floating over it.
+      if (!cancelled) setWebglFailed(true);
+    });
     return () => {
       cancelled = true;
       if (raf) cancelAnimationFrame(raf);
@@ -1055,6 +1065,7 @@ export default function ExplorePagesSection() {
                     className="absolute inset-0 w-full h-full touch-none z-[3]"
                     aria-hidden="true"
                     onPointerMove={handleCanvasMove}
+                    onPointerDown={handleCanvasMove}
                     onPointerLeave={() => hideCard()}
                     onClick={handleCanvasClick}
                   />
@@ -1085,7 +1096,7 @@ export default function ExplorePagesSection() {
                     );
                   })}
                   {/* keyboard / assistive-tech access to the same pages */}
-                  <ul className="sr-only">
+                  <ul className="sr-only pointer-events-none">
                     {planets.map(({ page }) => (
                       <li key={page.id}>
                         <button
