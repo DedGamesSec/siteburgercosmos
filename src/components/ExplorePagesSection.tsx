@@ -1312,8 +1312,11 @@ export default function ExplorePagesSection() {
                   const rad = (angleDeg * Math.PI) / 180;
                   const R = data.radiusPct * halfW;
                   const x = Math.cos(rad) * R;
-                  const y = -Math.sin(rad) * R;
-                  const box = Math.max(44, data.sizePx * (data.hasRings ? 1.5 : 1.3));
+                  // CSS `top` grows downward while three.js y grows upward, so
+                  // the hit zone must mirror the scene's y sign to sit exactly
+                  // on the rendered sphere.
+                  const y = Math.sin(rad) * R;
+                  const box = Math.max(56, data.sizePx * (data.hasRings ? 2.4 : 2));
                   return (
                     <button
                       key={page.id}
@@ -1371,7 +1374,7 @@ export default function ExplorePagesSection() {
                   const rad = (angleDeg * Math.PI) / 180;
                   const R = data.radiusPct * halfW;
                   const x = Math.cos(rad) * R;
-                  const y = -Math.sin(rad) * R;
+                  const y = Math.sin(rad) * R;
                   return (
                     <div
                       key={page.id}
