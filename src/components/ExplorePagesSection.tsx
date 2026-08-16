@@ -506,24 +506,32 @@ export default function ExplorePagesSection() {
     setCardPos(null);
   };
 
-  // Delayed hide: when the pointer leaves a planet the preview card is not
-  // torn down instantly — the user often moves the cursor toward the card
-  // to click it. Re-entering a planet or the card itself cancels the timers.
-  const hideTimerRef = useRef<number | null>(null);
-  const scheduleHideCard = () => {
-    if (hideTimerRef.current !== null) return;
-    hideTimerRef.current = window.setTimeout(() => {
-      hideTimerRef.current = null;
-      hideCard();
-    }, 500);
-  };
-  const cancelHideCard = () => {
-    if (hideTimerRef.current !== null) {
-      window.clearTimeout(hideTimerRef.current);
-      hideTimerRef.current = null;
+  const cardRef = useRef<HTMLDivElement>(null);
+  // Hide the preview card immediately when the pointer leaves a planet — but
+  // not while it is heading toward the card itself (the card has a narrow
+  // buffer envelope around it), so the card stays open while it is being
+  // read/clicked.
+  const hideCardIfLeavingPlanet = (e: React.MouseEvent) => {
+    const el = cardRef.current;
+    if (el) {
+      const r = el.getBoundingClientRect();
+      const pad = 60;
+      if (
+        e.clientX >= r.left - pad &&
+        e.clientX <= r.right + pad &&
+        e.clientY >= r.top - pad &&
+        e.clientY <= r.bottom + pad
+      ) {
+        return;
+      }
     }
+    hideCard();
   };
-  useEffect(() => () => cancelHideCard(), []);
+  const hideCardIfLeavingCard = (e: React.PointerEvent) => {
+    const rt = e.relatedTarget;
+    if (cardRef.current && rt instanceof Node && cardRef.current.contains(rt)) return;
+    hideCard();
+  };
 
   const [reduceMotion] = useState(
     () => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -600,7 +608,10 @@ export default function ExplorePagesSection() {
   const computeCardPos = (px: number, py: number, cW: number, cH: number, planetRadius = 0) => {
     const CARD_W = 340;
     const CARD_H = 540;
-    const gap = 28 + planetRadius;
+    // Keep a generous gap between the planet and its card so the planet (even
+    // at its hover scale / glow) stays fully visible next to the card instead
+    // of slipping behind it.
+    const gap = 36 + planetRadius * 1.15;
     const fitsRight = px + gap + CARD_W <= cW - 18;
     const fitsLeft = px - gap - CARD_W >= 18;
     let left: number;
@@ -987,7 +998,7 @@ export default function ExplorePagesSection() {
           color: data.color,
         });
         const glow = new THREE.Sprite(glowMat);
-        const glowScale = data.sizePx * 1.7;
+        const glowScale = data.sizePx * 1.3;
         glow.scale.set(glowScale, glowScale, 1);
         glow.renderOrder = 0;
         disposables.push(glowMat);
@@ -1057,7 +1068,7 @@ export default function ExplorePagesSection() {
           rec.spinVel += (targetSpin - rec.spinVel) * ease;
 
           // Smoothly ease the hover scale instead of an instant snap.
-          const targetScale = isHovered ? 1.18 : 1;
+          const targetScale = isHovered ? 1.12 : 1;
           rec.scaleCur += (targetScale - rec.scaleCur) * ease;
 
           if (rec.modelBody) {
@@ -1264,7 +1275,7 @@ export default function ExplorePagesSection() {
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-72 h-72 rounded-full bg-[#3B82F6]/5 filter blur-[100px] pointer-events-none" />
       <div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full bg-[#3B82F6]/5 filter blur-[120px] pointer-events-none" />
 
-      <div className="max-w-5xl mx-auto flex flex-col items-center">
+      <div className="w-full flex flex-col items-center">
         <div className="text-center max-w-2xl mb-12 sm:mb-16">
           <div className="flex items-center justify-center gap-2 font-mono text-[9px] sm:text-[10px] font-bold tracking-[0.15em] text-[#3B82F6] mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
@@ -1286,7 +1297,7 @@ export default function ExplorePagesSection() {
             hideCard();
           }}
         >
-          <div ref={solarRef} className="relative aspect-square w-full max-w-[920px] mx-auto">
+          <div ref={solarRef} className="relative aspect-square w-full mx-auto">
             {/* starfield */}
             <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
               {stars.map((s, i) => (
@@ -1417,12 +1428,10 @@ export default function ExplorePagesSection() {
                       }}
                       aria-label={t.pageNames[page.labelKey]}
                       onMouseEnter={(e) => {
-                        cancelHideCard();
                         handlePlanetEnter(page.id, e);
                       }}
-                      onMouseLeave={() => scheduleHideCard()}
+                      onMouseLeave={hideCardIfLeavingPlanet}
                       onFocus={() => {
-                        cancelHideCard();
                         setHoveredPageId(page.id);
                       }}
                       onClick={() => navigateTo(page.id)}
@@ -1473,12 +1482,10 @@ export default function ExplorePagesSection() {
                           animate={{ opacity: dimmed ? 0.35 : 1, scale: active ? 1.12 : 1 }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
                           onMouseEnter={(e) => {
-                            cancelHideCard();
                             handlePlanetEnter(page.id, e);
                           }}
-                          onMouseLeave={() => scheduleHideCard()}
+                          onMouseLeave={hideCardIfLeavingPlanet}
                           onFocus={() => {
-                            cancelHideCard();
                             setHoveredPageId(page.id);
                           }}
                           onClick={() => navigateTo(page.id)}
@@ -1529,14 +1536,14 @@ export default function ExplorePagesSection() {
               {!ecoMode && hoveredPlanet && hoveredPage && cardPos && (
                 <motion.div
                   key={hoveredPageId}
+                  ref={cardRef}
                   className="absolute z-30 w-[340px] max-w-[calc(100%-36px)] rounded-3xl border bg-[#0A0A0B]/95 backdrop-blur-md p-5 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
                   style={{ left: cardPos.x, top: cardPos.y, borderColor: `${hoveredPlanet.color}55` }}
                   initial={{ opacity: 0, y: 8, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8, scale: 0.97 }}
                   transition={{ duration: 0.25, ease: "easeOut" }}
-                  onPointerEnter={cancelHideCard}
-                  onPointerLeave={scheduleHideCard}
+                  onPointerLeave={hideCardIfLeavingCard}
                 >
                   {renderOverlayCard(hoveredPage, hoveredPlanet)}
                 </motion.div>
