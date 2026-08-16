@@ -632,10 +632,10 @@ export default function ExplorePagesSection() {
   // Distance (px) every hovered planet flies away from the Sun (and therefore
   // away from its own info card): ~30px is a calm, uniform "nudge". Neptune
   // ("how-it-works") and Uranus ("news") sit on the farthest orbits, where the
-  // same 30px nudge looks exaggerated, so they get only a quarter of it.
+  // same 30px nudge looks exaggerated, so they get only a fifth of it.
   const FLY_OFFSET = 30;
   const FLY_REDUCED = new Set(["how-it-works", "news"]);
-  const FLY_SCALE = 0.25;
+  const FLY_SCALE = 0.2025;
 
   const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
     setHoveredPageId(id);
@@ -1071,8 +1071,16 @@ export default function ExplorePagesSection() {
           // right, and all planets move by exactly the same amount.
           const dist = Math.hypot(baseX, baseY) || 1;
           const flyTarget = rec.pageId === hovered ? FLY_OFFSET * (FLY_REDUCED.has(rec.pageId) ? FLY_SCALE : 1) : 0;
-          rec.shiftX += (flyTarget * (baseX / dist) - rec.shiftX) * ease;
-          rec.shiftY += (flyTarget * (baseY / dist) - rec.shiftY) * ease;
+          const tX = flyTarget * (baseX / dist);
+          const tY = flyTarget * (baseY / dist);
+          rec.shiftX += (tX - rec.shiftX) * ease;
+          rec.shiftY += (tY - rec.shiftY) * ease;
+          // Snap once we are essentially there, so the fly distance is exactly
+          // the same on every hover — the easing is allowed to smooth the
+          // movement, but the resting offset is deterministic (no residual
+          // growth from hover to hover).
+          if (Math.abs(rec.shiftX - tX) < 0.5) rec.shiftX = tX;
+          if (Math.abs(rec.shiftY - tY) < 0.5) rec.shiftY = tY;
           rec.group.position.set(baseX + rec.shiftX, baseY + rec.shiftY, 0);
 
           const isHovered = rec.pageId === hovered;
