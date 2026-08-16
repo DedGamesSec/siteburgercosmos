@@ -636,10 +636,6 @@ export default function ExplorePagesSection() {
   const FLY_OFFSET = 30;
   const FLY_REDUCED = new Set(["how-it-works", "news"]);
   const FLY_SCALE = 0.2025;
-  // Constant flight speed (px per second) toward the resting fly offset. The
-  // same fixed velocity for out and back means "the distance never changes":
-  // no exponential accumulator, no hover-to-hover growth.
-  const FLY_SPEED = 60;
 
   const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
     setHoveredPageId(id);
@@ -1071,29 +1067,25 @@ export default function ExplorePagesSection() {
           const baseX = Math.cos(angle) * R;
           const baseY = -Math.sin(angle) * R;
           // Every hovered planet flies the same, fixed distance (FLY_OFFSET)
-          // outward at a constant speed — away from the Sun and from its card —
-          // so Neptune drifts right, and all planets move uniformly. The 2D
-          // fallback uses the exact same targets (FLY_OFFSET/FLY_REDUCED/
-          // FLY_SCALE) with a fixed 0.3s duration.
+          // outward — away from the Sun and from its card — so Neptune drifts
+          // right, and all planets move uniformly. The 2D fallback uses the
+          // exact same targets (FLY_OFFSET/FLY_REDUCED/FLY_SCALE) with a fixed
+          // 0.3s duration.
           const dist = Math.hypot(baseX, baseY) || 1;
           const flyTarget = rec.pageId === hovered ? FLY_OFFSET * (FLY_REDUCED.has(rec.pageId) ? FLY_SCALE : 1) : 0;
           const tX = flyTarget * (baseX / dist);
           const tY = flyTarget * (baseY / dist);
-          // Fixed-speed translation toward the target: move FLY_SPEED px per
-          // second along the straight line to the resting offset, and stop
-          // exactly on it. No easing accumulation, so the fly distance is the
-          // same on every hover (1st, 2nd, 3rd, …) regardless of how long any
-          // previous hover lasted.
-          const dx = tX - rec.shiftX;
-          const dy = tY - rec.shiftY;
-          const d = Math.hypot(dx, dy);
-          const step = FLY_SPEED * dt;
-          if (d <= step || d === 0) {
+          // Smooth easing toward the resting offset, with an exact snap when
+          // it gets close. The hardened ≈limit drops out once inside 0.5px,
+          // so every hover lands on the identical distance (1st, 2nd, 3rd, …)
+          // instead of drifting with a previous hover's easing state.
+          const dX = tX - rec.shiftX;
+          const dY = tY - rec.shiftY;
+          rec.shiftX += dX * ease;
+          rec.shiftY += dY * ease;
+          if (Math.hypot(tX - rec.shiftX, tY - rec.shiftY) < 0.5) {
             rec.shiftX = tX;
             rec.shiftY = tY;
-          } else {
-            rec.shiftX += (dx / d) * step;
-            rec.shiftY += (dy / d) * step;
           }
           rec.group.position.set(baseX + rec.shiftX, baseY + rec.shiftY, 0);
 
