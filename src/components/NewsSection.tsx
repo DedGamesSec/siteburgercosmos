@@ -221,6 +221,7 @@ export default function NewsSection() {
                     onClick={() => toggleExpand(item.id)}
                     className="mt-3 font-mono text-[11px] font-bold tracking-wider text-[#3B82F6] hover:text-white transition-colors uppercase cursor-pointer"
                     aria-expanded={isExpanded}
+                    aria-controls={`news-body-${item.id}`}
                   >
                     {isExpanded ? t.news.showLess : t.news.showMore}
                   </button>

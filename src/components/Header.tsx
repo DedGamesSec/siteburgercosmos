@@ -140,6 +140,7 @@ export default function Header() {
     <button
       onClick={() => { toggleEcoMode(); showToast(ecoMode ? t.header.ecoOff : t.header.ecoOn); announce(ecoMode ? t.header.ecoOff : t.header.ecoOn); }}
       aria-label={ecoMode ? t.header.ecoOn : t.header.ecoOff}
+      aria-pressed={ecoMode}
       title={ecoMode ? t.header.ecoOn : t.header.ecoOff}
       className={`${iconButtonClass} ${
         ecoMode
@@ -155,6 +156,7 @@ export default function Header() {
     <button
       onClick={() => { toggleSeniorMode(); showToast(seniorMode ? t.header.seniorOff : t.header.seniorOn); announce(seniorMode ? t.header.seniorOff : t.header.seniorOn); }}
       aria-label={seniorMode ? t.header.seniorOn : t.header.seniorOff}
+      aria-pressed={seniorMode}
       title={seniorMode ? t.header.seniorOn : t.header.seniorOff}
       className={`${iconButtonClass} ${
         seniorMode
@@ -202,6 +204,7 @@ export default function Header() {
             className="w-9 h-9 inline-flex items-center justify-center rounded-xl bg-[#3C404A]/40 border border-[#3C404A]/50 text-gray-400 hover:text-[#3B82F6] hover:border-[#3B82F6]/40 transition-colors cursor-pointer"
             aria-label={isOpen ? "Close menu" : "Open menu"}
             aria-expanded={isOpen}
+            aria-controls="fullscreen-nav"
             id="mobile-menu-toggle"
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -309,6 +312,7 @@ export default function Header() {
                     <button
                       key={page.id}
                       onClick={() => handlePageNavigation(page.id)}
+                      aria-current={isActive ? "page" : undefined}
                       style={{ animationDelay: `${0.1 + idx * 0.09}s` }}
                       className="menu-item-in flex items-baseline gap-3 sm:gap-6 text-left group cursor-pointer max-w-full"
                     >
@@ -339,6 +343,7 @@ export default function Header() {
                     <button
                       key={page.id}
                       onClick={() => handlePageNavigation(page.id)}
+                      aria-current={isActive ? "page" : undefined}
                       style={{ animationDelay: `${0.1 + (idx + 4) * 0.09}s` }}
                       className="menu-item-in flex items-baseline gap-3 text-left group cursor-pointer max-w-full"
                     >

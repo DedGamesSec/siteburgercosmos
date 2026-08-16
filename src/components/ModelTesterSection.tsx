@@ -248,17 +248,21 @@ const ModelTesterSection: React.FC = () => {
                 </div>
 
                 {/* Input */}
+                <label htmlFor="model-tester-input" className="sr-only">
+                  {d.placeholder}
+                </label>
                 <textarea
+                  id="model-tester-input"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   placeholder={d.placeholder}
                   rows={5}
-                  className="w-full rounded-xl border border-white/[0.08] bg-[#12141A] p-3.5 font-sans text-sm text-[#F5F5F0] placeholder:text-gray-600 resize-none focus:outline-none focus:border-[#3B82F6]/50 transition-colors"
+                  className="w-full rounded-xl border border-white/[0.08] bg-[#12141A] p-3.5 font-sans text-sm text-[#F5F5F0] placeholder:text-gray-600 resize-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#3B82F6] focus-visible:outline-offset-1 focus:border-[#3B82F6]/50 transition-colors"
                 />
 
                 {/* Load progress bar */}
                 {phase === "loading" && (
-                  <div className="mt-4">
+                  <div className="mt-4" role="status" aria-live="polite">
                     <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
                       <div
                         className="h-full bg-[#3B82F6] transition-all duration-200"
@@ -298,6 +302,7 @@ const ModelTesterSection: React.FC = () => {
                 <button
                   onClick={handleCheck}
                   disabled={running || phase === "error" || !inputText.trim()}
+                  aria-busy={running}
                   className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl bg-[#3B82F6] px-4 py-3 font-mono text-sm font-semibold text-[#0A0A0B] hover:bg-[#5B9DFB] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   {running ? (
@@ -310,7 +315,7 @@ const ModelTesterSection: React.FC = () => {
 
                 {/* Results */}
                 {result && !running && (
-                  <div className="mt-6">
+                  <div className="mt-6" aria-live="polite">
                     <div className="flex items-center gap-2 mb-3">
                       <Zap className="w-3.5 h-3.5 text-[#3B82F6]" />
                       <span className="font-mono text-[10px] text-[#6FB1FF] uppercase tracking-widest font-semibold">

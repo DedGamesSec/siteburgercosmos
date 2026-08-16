@@ -55,6 +55,9 @@ export default function CookieConsent() {
 
   return (
     <div 
+      role="dialog"
+      aria-modal="false"
+      aria-label={t.cookie.badgeLabel}
       className="fixed left-4 right-4 md:left-auto md:right-4 md:max-w-md z-[40] animate-slide-up"
       style={{ bottom: "max(1rem, calc(env(safe-area-inset-bottom) + 0.5rem))" }}
       id="cookie-consent-banner"

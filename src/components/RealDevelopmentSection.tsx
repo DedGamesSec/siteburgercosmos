@@ -69,6 +69,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
           <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mb-12 max-w-2xl mx-auto p-1 rounded-xl bg-[#0A0A0B] border border-[#3C404A]/50">
             <button
               onClick={() => setActiveTab("awards")}
+              aria-pressed={activeTab === "awards"}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs font-semibold tracking-wide transition-all duration-300 ${
                 activeTab === "awards"
                   ? "bg-[#3B82F6] text-white shadow-glow-md"
@@ -81,6 +82,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
             
             <button
               onClick={() => setActiveTab("graph")}
+              aria-pressed={activeTab === "graph"}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs font-semibold tracking-wide transition-all duration-300 ${
                 activeTab === "graph"
                   ? "bg-[#3B82F6] text-white shadow-glow-md"
@@ -93,6 +95,7 @@ export default function RealDevelopmentSection({ onlyRoadmap = false }: { onlyRo
             
             <button
               onClick={() => setActiveTab("onnx")}
+              aria-pressed={activeTab === "onnx"}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs font-semibold tracking-wide transition-all duration-300 ${
                 activeTab === "onnx"
                   ? "bg-[#3B82F6] text-white shadow-glow-md"
@@ -1673,7 +1676,11 @@ ${tkt.inventory}`;
 
       {/* Text Area Input */}
       <div className="space-y-2">
+        <label htmlFor="onnx-tester-input" className="sr-only">
+          {dict.placeholder}
+        </label>
         <textarea
+          id="onnx-tester-input"
           value={inputText}
           onChange={(e) => { setInputText(e.target.value); setShowResults(false); }}
           placeholder={dict.placeholder}
@@ -1702,7 +1709,7 @@ ${tkt.inventory}`;
 
       {/* Animation console */}
       {isTesting && (
-        <div className="p-4 rounded-xl bg-black/50 border border-white/[0.03] font-mono text-[10px] text-cyan-400 flex items-center gap-2">
+        <div role="status" aria-live="polite" className="p-4 rounded-xl bg-black/50 border border-white/[0.03] font-mono text-[10px] text-cyan-400 flex items-center gap-2">
           <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#3B82F6]" />
           <span>{testStep}</span>
         </div>
@@ -1717,6 +1724,7 @@ ${tkt.inventory}`;
             exit={{ opacity: 0, scaleY: 0.96 }}
             style={{ transformOrigin: "top" }}
             className="space-y-4"
+            aria-live="polite"
           >
             {/* Decoded Output Banner */}
             <ScanCard accent="59,130,246" borderColor="border-[#3C404A]/50" padding="p-4" className="space-y-3">
@@ -1791,6 +1799,8 @@ ${tkt.inventory}`;
             <div>
               <button
                 onClick={() => setShowFeedback(!showFeedback)}
+                aria-expanded={showFeedback}
+                aria-controls="feedback-portal"
                 className="flex items-center gap-1.5 font-mono text-[10px] text-gray-400 hover:text-[#3B82F6] transition-all bg-[#3C404A] border border-[#3C404A]/50 px-3 py-1.5 rounded-xl"
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
@@ -1805,6 +1815,7 @@ ${tkt.inventory}`;
       <AnimatePresence>
         {showFeedback && (
           <motion.div
+            id="feedback-portal"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
@@ -1822,8 +1833,9 @@ ${tkt.inventory}`;
             {/* Selector error classification */}
             <div className="space-y-2.5">
               <div>
-                <label className="block font-mono text-[9px] text-gray-500 uppercase tracking-widest mb-1">{dict.errType}</label>
+                <label htmlFor="feedback-error-type" className="block font-mono text-[9px] text-gray-500 uppercase tracking-widest mb-1">{dict.errType}</label>
                 <select 
+                  id="feedback-error-type"
                   value={errorType}
                   onChange={(e) => setErrorType(e.target.value)}
                   className="w-full bg-[#3C404A] border border-[#3C404A]/80 text-xs text-gray-300 p-2.5 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/70 focus:border-[#3B82F6]/50"
@@ -1835,8 +1847,9 @@ ${tkt.inventory}`;
               </div>
 
               <div>
-                <label className="block font-mono text-[9px] text-gray-500 uppercase tracking-widest mb-1">{dict.commentLabel}</label>
+                <label htmlFor="feedback-comment" className="block font-mono text-[9px] text-gray-500 uppercase tracking-widest mb-1">{dict.commentLabel}</label>
                 <input 
+                  id="feedback-comment"
                   type="text"
                   value={feedbackComment}
                   onChange={(e) => setFeedbackComment(e.target.value)}

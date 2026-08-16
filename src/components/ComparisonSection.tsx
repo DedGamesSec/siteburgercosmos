@@ -529,6 +529,7 @@ export default function ComparisonSection() {
             <div className="flex bg-white/[0.02] border border-white/[0.06] p-1 rounded-xl">
               <button
                 onClick={() => handleModeChange("multi")}
+                aria-pressed={comparisonMode === "multi"}
                 className={`px-3 py-1.5 rounded-xl font-sans text-xs font-semibold transition-all duration-300 cursor-pointer ${
                   comparisonMode === "multi"
                     ? "bg-[#3B82F6] text-white shadow-[0_2px_8px_rgba(59,130,246,0.3)]"
@@ -539,6 +540,7 @@ export default function ComparisonSection() {
               </button>
               <button
                 onClick={() => handleModeChange("single")}
+                aria-pressed={comparisonMode === "single"}
                 className={`px-3 py-1.5 rounded-xl font-sans text-xs font-semibold transition-all duration-300 cursor-pointer ${
                   comparisonMode === "single"
                     ? "bg-[#3B82F6] text-white shadow-[0_2px_8px_rgba(59,130,246,0.3)]"
@@ -578,6 +580,7 @@ export default function ComparisonSection() {
                 <button
                   key={comp.id}
                   onClick={() => toggleCompetitor(comp.id)}
+                  aria-pressed={active}
                   className={`px-3 py-1.5 rounded-xl font-sans text-xs font-semibold border transition-all duration-300 cursor-pointer ${
                     active
                       ? "bg-[#3B82F6]/15 border-[#3B82F6] text-white shadow-glow-md"

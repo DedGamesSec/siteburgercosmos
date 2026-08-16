@@ -94,6 +94,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                 setIsAdvancedView(false);
                 setActiveLayer(0);
               }}
+              aria-pressed={!isAdvancedView}
               className={`px-4 py-2 rounded-xl font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                 !isAdvancedView
                   ? "bg-[#3B82F6] text-white shadow-glow-md"
@@ -107,6 +108,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                 setIsAdvancedView(true);
                 setActiveLayer(0);
               }}
+              aria-pressed={isAdvancedView}
               className={`px-4 py-2 rounded-xl font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
                 isAdvancedView
                   ? "bg-[#3B82F6] text-white shadow-glow-md"
@@ -147,7 +149,21 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                   const color = active ? "#3B82F6" : roadmap ? "rgba(251,146,60,0.45)" : "rgba(60,64,74,0.85)";
                   const r = radiusFor(i);
                   return (
-                    <g key={layer.num} className="cursor-pointer" onClick={() => setActiveLayer(i)}>
+                    <g
+                      key={layer.num}
+                      className="cursor-pointer"
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${layer.name} — LAYER ${layer.num}`}
+                      aria-current={active ? "true" : undefined}
+                      onClick={() => setActiveLayer(i)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setActiveLayer(i);
+                        }
+                      }}
+                    >
                       {/* hit area */}
                       <path d={arcPath(i)} fill="none" stroke="transparent" strokeWidth="18" />
                       {/* glow for active */}
@@ -236,6 +252,7 @@ const HowItWorksSection = React.memo(function HowItWorksSection() {
                     <button
                       key={layer.num}
                       onClick={() => setActiveLayer(index)}
+                      aria-pressed={active}
                       className={`w-full text-left flex items-start gap-4 rounded-xl border p-3 sm:p-4 transition-all duration-300 cursor-pointer ${
                         active
                           ? "bg-[#12141A] border-[#3B82F6]/40 shadow-glow-md"
