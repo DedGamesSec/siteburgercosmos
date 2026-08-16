@@ -6,6 +6,7 @@ interface EcoModeContextType {
 }
 
 const STORAGE_KEY = 'trustnode_eco';
+const EcoModeContext = createContext<EcoModeContextType | undefined>(undefined);
 // A user who has never touched the header toggle is assumed to follow their
 // OS-level accessibility preference instead: if the system asks for reduced
 // motion (make it more usable for us too), eco mode turns on automatically.
