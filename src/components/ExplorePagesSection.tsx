@@ -629,58 +629,168 @@ export default function ExplorePagesSection() {
     return { x: left, y: top };
   };
 
-  // Distance (px) every hovered planet flies away from the Sun (and therefore
-  // away from its own info card): ~30px is a calm, uniform "nudge". Neptune
-  // ("how-it-works") and Uranus ("news") sit on the farthest orbits, where the
-  // same 30px nudge looks exaggerated, so they get only a fifth of it.
-  const FLY_OFFSET = 30;
-  const FLY_REDUCED = new Set(["how-it-works", "news"]);
-  const FLY_SCALE = 0.2025;
-  // Hover "fly-out" is capped by the room actually available in the direction
-  // of flight — the planet keeps its own disc plus a small gap inside the
-  // section square. Interior orbits have plenty of room and fly the full
-  // FLY_OFFSET; planets riding the outer orbits fly no more than their free
-  // space (and the far pair keeps the reduced damping), so none of them is
-  // ever pushed into the rim or pressed against the container edge.
-  const clampFlyOffset = (baseX: number, baseY: number, dist: number, half: number, sizePx: number, reduced: boolean) => {
-    const radius = sizePx / 2 + 10;
-    const L = half - radius;
-    const ux = baseX / dist;
-    const uy = baseY / dist;
-    const limitX = Math.abs(ux) < 1e-6 ? Infinity : ((ux > 0 ? L - baseX : L + baseX) / Math.abs(ux));
-    const limitY = Math.abs(uy) < 1e-6 ? Infinity : ((uy > 0 ? L - baseY : L + baseY) / Math.abs(uy));
-    const room = Math.max(0, Math.min(limitX, limitY));
-    const preference = reduced ? FLY_OFFSET * FLY_SCALE : FLY_OFFSET;
-    return Math.min(preference, room);
+  // ---- Item 7 (rewrite): single, safe, deterministic fly-out. Every orbit
+  //      position is derived from one source (`positions`, the real
+  //      heliocentric longitudes), so the 3D spheres, the DOM hit zones and
+  //      the 2D fallback can never disagree about "where each planet is". The
+  //      escape vector is computed once — at the moment hover starts, in CSS
+  //      container coordinates (y grows downward) — and frozen for the whole
+  //      interaction, so a mid-hover orbit refresh cannot move it and repeat
+  //      hovers on the same planet reproduce an identical flight.
+  const flyStateRef = useRef<{ pageId: string; x: number; y: number } | null>(null);
+  const FLY_TARGET_FACTOR = 0.75; // ≈ 0.75× the planet's own diameter
+  const FLY_SAFE_MARGIN = 10;     // extra breathing room around every obstacle
+  const FLY_CARD_W = 340;
+  const FLY_CARD_H = 540;
+
+  // Keep-out radius: the planet body plus any ring pushed out to its outer
+  // edge (Saturn / Uranus) and a slim pad, so collision checks cover the
+  // rings instead of just the ball.
+  const collisionRadiusOf = (pageId: string, data: PlanetData) => {
+    const outer = PLANET_MOTION[pageId]?.ring?.outer ?? 1;
+    return (data.sizePx / 2) * outer + 2;
   };
 
-  // ---- Item 16: one frozen source for the fly-out vector. The pointer can
-  //      only rest on ONE planet, so all render paths (three.js loop, DOM hit
-  //      zones, 2D fallback) drain a single lock. The first frame that touches
-  //      a hovered planet captures its escape vector and reuses it unchanged
-  //      until the pointer leaves, so a 60-second orbit refresh that lands mid-
-  //      hover can no longer bounce the planet in a fresh direction.
-  const flyLockRef = useRef<{ pageId: string; tx: number; ty: number } | null>(null);
-  const getFlyVector = (
-    pageId: string,
-    active: boolean,
-    baseX: number,
-    baseY: number,
-    dist: number,
-    fly: number
-  ): { tx: number; ty: number } => {
+  // Largest allowed flight distance along the outward axis (ux, uy) from the
+  // resting point (px, py) that keeps the flying disc clear of every other
+  // planet, the Sun, its own info card and the rim of the square container.
+  const computeSafeFlyDistance = (
+    px: number,
+    py: number,
+    ux: number,
+    uy: number,
+    selfRadius: number,
+    others: Array<{ x: number; y: number; r: number }>,
+    sunRadius: number,
+    half: number,
+    cardRect: { x: number; y: number; halfW: number; halfH: number } | null
+  ) => {
+    let tMax = Infinity;
+    const clampT = (t: number) => {
+      if (t < tMax) tMax = Math.max(0, t);
+    };
+
+    // (1) No other planet: the moving body must stay ≥ sum of radii away.
+    //     A ray that already starts inside a neighbour's keep-out (resting
+    //     overlap) cannot be fixed by flying, so it is capped at zero; a ray
+    //     that is heading away or clears the circle entirely passes freely.
+    for (const o of others) {
+      const required = selfRadius + o.r;
+      const dx = px - o.x;
+      const dy = py - o.y;
+      const d = Math.hypot(dx, dy);
+      if (d < required) {
+        clampT(0);
+        continue;
+      }
+      const b = ux * dx + uy * dy; // projection of (P − O) onto the flight axis
+      if (b >= 0) continue;        // heading away — separation only grows
+      const det = b * b - (d * d - required * required);
+      if (det < 0) continue;       // ray clears the keep-out circle entirely
+      clampT(-b - Math.sqrt(det));
+    }
+
+    // (2) The Sun: the escape axis is radial (outward from the centre), so a
+    //     normal flight only grows the gap. The check only matters for the
+    //     (never used) inward case and for the degenerately small container.
+    {
+      const required = selfRadius + sunRadius;
+      const d = Math.hypot(px, py);
+      if (d < required) clampT(0);
+      else {
+        const b = ux * px + uy * py;
+        if (b < 0) {
+          const det = b * b - (d * d - required * required);
+          if (det >= 0) clampT(-b - Math.sqrt(det));
+        }
+      }
+    }
+
+    // (3) The planet's own info card: the moving disc must not touch its rect.
+    if (cardRect) {
+      const infl = selfRadius + FLY_SAFE_MARGIN;
+      let tNear = -Infinity;
+      let tFar = Infinity;
+      const slab = (p: number, u: number, lo: number, hi: number): boolean => {
+        if (Math.abs(u) < 1e-9) return p >= lo && p <= hi;
+        let t1 = (lo - p) / u;
+        let t2 = (hi - p) / u;
+        if (t1 > t2) {
+          const tmp = t1;
+          t1 = t2;
+          t2 = tmp;
+        }
+        tNear = Math.max(tNear, t1);
+        tFar = Math.min(tFar, t2);
+        return tFar >= tNear;
+      };
+      const ok =
+        slab(px, ux, cardRect.x - cardRect.halfW - infl, cardRect.x + cardRect.halfW + infl) &&
+        slab(py, uy, cardRect.y - cardRect.halfH - infl, cardRect.y + cardRect.halfH + infl);
+      // Only a ray that actually reaches the rect at t ≥ 0 restricts flight:
+      // moving away (or sitting clear of it) must never cap the escape.
+      if (ok && tFar >= 0) clampT(Math.max(tNear, 0));
+    }
+
+    // (4) Rim of the square container: the whole disc stays inside.
+    {
+      const L = half - selfRadius;
+      const lx = Math.abs(ux) < 1e-9 ? Infinity : (ux > 0 ? (L - px) / ux : (L + px) / -ux);
+      const ly = Math.abs(uy) < 1e-9 ? Infinity : (uy > 0 ? (L - py) / uy : (L + py) / -uy);
+      clampT(Math.min(lx, ly));
+    }
+
+    return tMax === Infinity ? Infinity : Math.max(0, tMax);
+  };
+
+  // Frozen escape offset (CSS px, y grows downward) for a hovered planet.
+  // Non-hovered planets return zero and clear any stale cache, so a new hover
+  // always computes from the current real positions.
+  const getHoverFly = (pageId: string, active: boolean): { x: number; y: number } => {
     if (!active) {
-      if (flyLockRef.current?.pageId === pageId) flyLockRef.current = null;
-      return { tx: 0, ty: 0 };
+      if (flyStateRef.current?.pageId === pageId) flyStateRef.current = null;
+      return { x: 0, y: 0 };
     }
-    const cur = flyLockRef.current;
-    if (!cur || cur.pageId !== pageId) {
-      const tx = fly * (baseX / dist);
-      const ty = fly * (baseY / dist);
-      flyLockRef.current = { pageId, tx, ty };
-      return { tx, ty };
+    if (flyStateRef.current) return flyStateRef.current;
+    const data = PLANET_DATA[pageId];
+    if (!data) return { x: 0, y: 0 };
+    const half = solarW / 2 || 1;
+    const selfRadius = collisionRadiusOf(pageId, data);
+    const ang = positionsRef.current[pageId] ?? 0;
+    const R = data.radiusPct * ORBIT_SCALE * half;
+    const px = Math.cos((ang * Math.PI) / 180) * R;
+    const py = Math.sin((ang * Math.PI) / 180) * R;
+    const dist = Math.hypot(px, py) || 1;
+    const ux = px / dist;
+    const uy = py / dist;
+    const others = planetsRef.current
+      .filter(({ page }) => page.id !== pageId)
+      .map(({ page, data: d }) => {
+        const a = positionsRef.current[page.id] ?? 0;
+        const rr = d.radiusPct * ORBIT_SCALE * half;
+        return {
+          x: Math.cos((a * Math.PI) / 180) * rr,
+          y: Math.sin((a * Math.PI) / 180) * rr,
+          r: collisionRadiusOf(page.id, d),
+        };
+      });
+    let cardRect: { x: number; y: number; halfW: number; halfH: number } | null = null;
+    const container = solarRef.current;
+    if (container && cardPos) {
+      const cW = container.clientWidth || half * 2;
+      const cH = container.clientHeight || half * 2;
+      cardRect = {
+        x: cardPos.x - cW / 2 + FLY_CARD_W / 2,
+        y: cardPos.y - cH / 2 + FLY_CARD_H / 2,
+        halfW: FLY_CARD_W / 2,
+        halfH: FLY_CARD_H / 2,
+      };
     }
-    return cur;
+    const target = data.sizePx * FLY_TARGET_FACTOR;
+    const tMax = computeSafeFlyDistance(px, py, ux, uy, selfRadius, others, 52 /* sun disc */, half, cardRect);
+    const fly = Math.max(0, Math.min(target, tMax));
+    flyStateRef.current = { pageId, x: ux * fly, y: uy * fly };
+    return flyStateRef.current;
   };
 
   const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
@@ -1112,16 +1222,11 @@ export default function ExplorePagesSection() {
           const R = rec.data.radiusPct * ORBIT_SCALE * hw2;
           const baseX = Math.cos(angle) * R;
           const baseY = -Math.sin(angle) * R;
-          // Every hovered planet flies the same, fixed distance (FLY_OFFSET)
-          // outward — away from the Sun and from its card — so Neptune drifts
-          // right, and all planets move uniformly. The 2D fallback uses the
-          // exact same targets (FLY_OFFSET/FLY_REDUCED/FLY_SCALE) with a fixed
-          // 0.3s duration.
-          const dist = Math.hypot(baseX, baseY) || 1;
-          const baseFly = clampFlyOffset(baseX, baseY, dist, hw2, rec.data.sizePx, FLY_REDUCED.has(rec.pageId));
-          // Item 16: the direction is captured once on hover start and frozen —
-          // a mid-hover orbit refresh cannot redirect the fly.
-          const { tx: tX, ty: tY } = getFlyVector(rec.pageId, rec.pageId === hovered, baseX, baseY, dist, baseFly);
+          // Item 7: one frozen escape vector drives every render path. The
+          // scene uses y-up, so the shared CSS-space y is mirrored here.
+          const { x: flyX, y: flyY } = getHoverFly(rec.pageId, rec.pageId === hovered);
+          const tX = flyX;
+          const tY = -flyY;
           // Smooth easing toward the resting offset, with an exact snap when
           // it gets close. The hardened ≈limit drops out once inside 0.5px,
           // so every hover lands on the identical distance (1st, 2nd, 3rd, …)
@@ -1503,14 +1608,11 @@ export default function ExplorePagesSection() {
                   // on the rendered sphere.
                   const y = Math.sin(rad) * R;
                   const box = Math.max(48, data.sizePx + 28);
-                  const dist = Math.hypot(x, y) || 1;
-                  const fly = clampFlyOffset(x, y, dist, halfW, data.sizePx, FLY_REDUCED.has(page.id));
-                  // Item 16: the hit zone is driven by the exact same frozen
-                  // escape vector as the 3D sphere, so it slides WITH the
-                  // visual while hovered and the cursor never falls off the
-                  // trigger (which previously read as a wobbly direction).
+                  // Item 7: the hit zone is driven by the exact same frozen
+                  // escape vector as the 3D sphere, so the trigger slides WITH
+                  // the visual while hovered and the cursor never falls off it.
                   const active = hoveredPageId === page.id;
-                  const { tx, ty } = getFlyVector(page.id, active, x, y, dist, fly);
+                  const { x: fx, y: fy } = getHoverFly(page.id, active);
                   return (
                     <div
                       key={page.id}
@@ -1522,7 +1624,7 @@ export default function ExplorePagesSection() {
                           type="button"
                           className="rounded-full p-0 cursor-pointer outline-none border-0"
                           style={{ width: box, height: box, background: "transparent" }}
-                          animate={{ x: active ? tx : 0, y: active ? ty : 0 }}
+                          animate={{ x: active ? fx : 0, y: active ? fy : 0 }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
                           aria-label={t.pageNames[page.labelKey]}
                           onMouseEnter={(e) => {
@@ -1569,11 +1671,9 @@ export default function ExplorePagesSection() {
                   const R = data.radiusPct * ORBIT_SCALE * halfW;
                   const x = Math.cos(rad) * R;
                   const y = Math.sin(rad) * R;
-                  const dist = Math.hypot(x, y) || 1;
-                  const fly = clampFlyOffset(x, y, dist, halfW, data.sizePx, FLY_REDUCED.has(page.id));
-                  // Item 16: same frozen vector as the 3D hit zones — a mid-hover
-                  // orbit refresh never redirects the 2D fly either.
-                  const { tx, ty } = getFlyVector(page.id, active, x, y, dist, fly);
+                  // Item 7: same frozen vector as the 3D hit zones — the 2D
+                  // fallback reads the identical single source.
+                  const { x: fx, y: fy } = getHoverFly(page.id, active);
                   return (
                     <div
                       key={page.id}
@@ -1587,8 +1687,8 @@ export default function ExplorePagesSection() {
                           animate={{
                             opacity: dimmed ? 0.35 : 1,
                             scale: active ? 1.12 : 1,
-                            x: active ? tx : 0,
-                            y: active ? ty : 0,
+                            x: active ? fx : 0,
+                            y: active ? fy : 0,
                           }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
                           onMouseEnter={(e) => {
