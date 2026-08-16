@@ -120,6 +120,15 @@ type PlanetData = {
   radiusPct: number;
   orbitalPeriodDays: number;
   textureUrl: string;
+  /** Higher-resolution surface map (Solar System Scope 2K) used by the 3D
+      spheres; the small `textureUrl` stays for the flat 2D discs/card thumbs
+      so the fallback never downloads 2K maps for a 40px circle. */
+  textureUrlHi?: string;
+  /** Real ring map (Solar System Scope) for Saturn; Uranus keeps the
+      procedural faint ring (SSS ships no Uranus ring texture). */
+  ringTextureUrl?: string;
+  /** Cloud layer map drawn over the surface (Venus atmosphere). */
+  atmosphereTextureUrl?: string;
   hasRings?: boolean;
 };
 
@@ -130,6 +139,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
     radiusPct: 0.9,
     orbitalPeriodDays: 60182,
     textureUrl: "textures/planets/neptune.jpg",
+    textureUrlHi: "textures/planets/2k_neptune.jpg",
     name: { ru: "Нептун", en: "Neptune", es: "Neptuno", zh: "海王星", tr: "Neptün", hi: "नेपच्यून", ar: "نبتون", pt: "Netuno", fr: "Neptune", de: "Neptun", ja: "海王星" },
     fact: {
       ru: "Нептун был открыт математически до того, как его увидели – сначала предсказан расчетами, и только потом найден с помощью телескопа. Точно так же, как ML обнаруживает аномалию до того, как ее заметит человек.",
@@ -151,6 +161,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
     radiusPct: 0.64,
     orbitalPeriodDays: 4332.6,
     textureUrl: "textures/planets/jupiter.jpg",
+    textureUrlHi: "textures/planets/2k_jupiter.jpg",
     name: { ru: "Юпитер", en: "Jupiter", es: "Júpiter", zh: "木星", tr: "Jüpiter", hi: "बृहस्पति", ar: "كوكب المشتري", pt: "Júpiter", fr: "Jupiter", de: "Jupiter", ja: "木星" },
     fact: {
       ru: "Юпитер — гравитационный щит Солнечной системы: он притягивает и нейтрализует большинство комет и астероидов, точно так же, как купол TrustNode нейтрализует угрозы.",
@@ -172,6 +183,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
     radiusPct: 0.45,
     orbitalPeriodDays: 687,
     textureUrl: "textures/planets/mars.jpg",
+    textureUrlHi: "textures/planets/2k_mars.jpg",
     name: { ru: "Марс", en: "Mars", es: "Marte", zh: "火星", tr: "Mars", hi: "मंगल ग्रह", ar: "المريخ", pt: "Marte", fr: "Mars", de: "Mars", ja: "火星" },
     fact: {
       ru: "Марс – вечная цель исследователей: от первых пролетов до высадки. Точно так же TrustNode переходит от MVP к полноценной экосистеме.",
@@ -193,6 +205,8 @@ const PLANET_DATA: Record<string, PlanetData> = {
     radiusPct: 0.74,
     orbitalPeriodDays: 10759.2,
     textureUrl: "textures/planets/saturn.jpg",
+    textureUrlHi: "textures/planets/2k_saturn.jpg",
+    ringTextureUrl: "textures/planets/2k_saturn_ring_alpha.png",
     hasRings: true,
     name: { ru: "Сатурн", en: "Saturn", es: "Saturno", zh: "土星", tr: "Satürn", hi: "शनि ग्रह", ar: "زحل", pt: "Saturno", fr: "Saturne", de: "Saturn", ja: "土星" },
     fact: {
@@ -215,6 +229,8 @@ const PLANET_DATA: Record<string, PlanetData> = {
     radiusPct: 0.34,
     orbitalPeriodDays: 224.7,
     textureUrl: "textures/planets/venus.jpg",
+    textureUrlHi: "textures/planets/2k_venus_surface.jpg",
+    atmosphereTextureUrl: "textures/planets/2k_venus_atmosphere.jpg",
     name: { ru: "Венера", en: "Venus", es: "Venus", zh: "金星", tr: "Venüs", hi: "शुक्र", ar: "الزهرة", pt: "Vênus", fr: "Vénus", de: "Venus", ja: "金星" },
     fact: {
       ru: "Венеру называют близнецом Земли по размерам, но при ближайшем рассмотрении это совершенно другой мир – так выглядит сравнение с конкурентами.",
@@ -236,6 +252,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
     radiusPct: 0.84,
     orbitalPeriodDays: 30688.5,
     textureUrl: "textures/planets/uranus.jpg",
+    textureUrlHi: "textures/planets/2k_uranus.jpg",
     name: { ru: "Уран", en: "Uranus", es: "Urano", zh: "天王星", tr: "Uranüs", hi: "यूरेनस", ar: "أورانوس", pt: "Urano", fr: "Uranus", de: "Uranus", ja: "天王星" },
     fact: {
       ru: "Уран постоянно удивляет астрономов: он вращается, лежа на боку. Будьте первым, кто узнает о новинках TrustNode.",
@@ -257,6 +274,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
     radiusPct: 0.26,
     orbitalPeriodDays: 88,
     textureUrl: "textures/planets/mercury.jpg",
+    textureUrlHi: "textures/planets/2k_mercury.jpg",
     name: { ru: "Меркурий", en: "Mercury", es: "Mercurio", zh: "水星", tr: "Merkür", hi: "बुध", ar: "عطارد", pt: "Mercúrio", fr: "Mercure", de: "Merkur", ja: "水星" },
     fact: {
       ru: "Меркурий — самая маленькая и быстрая планета: год на ней длится 88 дней. Быстрое и простое действие — например, установка TrustNode.",
@@ -677,7 +695,7 @@ export default function ExplorePagesSection() {
         const geo = new THREE.SphereGeometry(r, 32, 24);
         const mat = new THREE.MeshStandardMaterial({ color: data.color, roughness: 1, metalness: 0, transparent: true });
         loader.load(
-          `${import.meta.env.BASE_URL}${data.textureUrl}`,
+          `${import.meta.env.BASE_URL}${data.textureUrlHi ?? data.textureUrl}`,
           (tex) => {
             tex.colorSpace = THREE.SRGBColorSpace;
             mat.map = tex;
@@ -694,9 +712,30 @@ export default function ExplorePagesSection() {
         group.add(mesh);
         disposables.push(geo, mat);
 
+        // Venus: translucent cloud shell over the surface map for depth.
+        if (data.atmosphereTextureUrl) {
+          const cloudGeo = new THREE.SphereGeometry(r * 1.012, 32, 24);
+          const cloudMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.85, depthWrite: false });
+          loader.load(
+            `${import.meta.env.BASE_URL}${data.atmosphereTextureUrl}`,
+            (tex) => {
+              tex.colorSpace = THREE.SRGBColorSpace;
+              cloudMat.map = tex;
+              cloudMat.needsUpdate = true;
+            },
+            undefined,
+            () => {
+              /* keep invisible fallback */
+            }
+          );
+          const clouds = new THREE.Mesh(cloudGeo, cloudMat);
+          group.add(clouds);
+          disposables.push(cloudGeo, cloudMat);
+        }
+
         if (data.hasRings) {
           const cfg = motion.ring ?? { inner: 0.78, outer: 1.15, opacity: 0.9 };
-          const ringGeo = new THREE.RingGeometry(r * cfg.inner, r * cfg.outer, 64);
+          const ringGeo = new THREE.RingGeometry(r * cfg.inner, r * cfg.outer, 128);
           const ringMat = new THREE.MeshBasicMaterial({
             color: data.color,
             transparent: true,
@@ -704,6 +743,26 @@ export default function ExplorePagesSection() {
             side: THREE.DoubleSide,
             depthWrite: false,
           });
+          if (data.ringTextureUrl) {
+            // Saturn: real ring map (Solar System Scope alpha strip). The
+            // strip's radial banding maps across the ring band; the alpha
+            // channel keeps the gaps (Cassini division) transparent.
+            loader.load(
+              `${import.meta.env.BASE_URL}${data.ringTextureUrl}`,
+              (tex) => {
+                tex.colorSpace = THREE.SRGBColorSpace;
+                ringMat.map = tex;
+                ringMat.color.set(0xffffff);
+                ringMat.opacity = 1; // the map's own alpha drives visibility
+                ringMat.depthWrite = false;
+                ringMat.needsUpdate = true;
+              },
+              undefined,
+              () => {
+                /* keep the tinted colour as fallback */
+              }
+            );
+          }
           const ring = new THREE.Mesh(ringGeo, ringMat);
           ring.rotation.x = -Math.PI / 2;
           group.add(ring);
@@ -1190,7 +1249,7 @@ export default function ExplorePagesSection() {
               </span>
             </div>
             <span className="font-mono text-[9px] text-[#8B8F9C]/50">
-              Planet textures: NASA · Solar System Scope (CC BY 4.0)
+              Planet textures: Solar System Scope, 2K maps — CC BY 4.0 (based on NASA imagery)
             </span>
           </div>
         </div>
