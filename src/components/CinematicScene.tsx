@@ -326,6 +326,10 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
   // creating the GL context + compiling shaders never shows a blank/black view.
   const [hasFrame, setHasFrame] = useState(false);
   const frameFlagRef = useRef(false);
+  // Hoisted hook (must be called unconditionally): the poster only renders until
+  // the first WebGL frame, so using it inside the short-circuited JSX below would
+  // change the hook order on that re-render and crash the whole app.
+  const reducedMotion = useReducedMotion();
 
   useSkyActivation(false);
 
@@ -1375,7 +1379,7 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
             aria-hidden="true"
           >
             <div className="absolute inset-0 bg-[#070709]" />
-            {!useReducedMotion() && (
+            {!reducedMotion && (
               <div
                 className="absolute inset-0"
                 style={{
