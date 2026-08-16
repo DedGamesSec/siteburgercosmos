@@ -429,14 +429,10 @@
   }
 }
 
-/* Explore Portal (Solar System): each planet orbits with a duration scaled
-   from its real period (Mercury ~40s ... Neptune ~7min). The planet icon is
-   counter-rotated so it never tumbles. All motion is gated on eco-mode /
-   prefers-reduced-motion via inline `animationPlayState` / class removal. */
-@keyframes orbit-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
+/* Explore Portal (Solar System): planets sit on their real heliocentric
+   positions (astronomy-engine) — the only CSS motion left is the Sun's
+   breathing glow and a light starfield twinkle, both gated on eco-mode /
+   prefers-reduced-motion (noving removed via class toggling in the component). */
 
 /* Sun breathing glow (4-6s cycle). */
 @keyframes sun-breathe {

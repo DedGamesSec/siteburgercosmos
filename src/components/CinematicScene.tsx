@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import * as THREE from "three";
 import * as satellite from "satellite.js";
 import * as Astronomy from "astronomy-engine";
@@ -321,6 +322,10 @@ export default function CinematicScene({ progress = 0, progressRef, phases, acti
   const containerRef = useRef<HTMLDivElement>(null);
   const progressRefInternal = useRef(progress);
   const activeRef = useRef(active);
+  // Poster: replaced by the first real WebGL frame, so the ~100-300ms spent
+  // creating the GL context + compiling shaders never shows a blank/black view.
+  const [hasFrame, setHasFrame] = useState(false);
+  const frameFlagRef = useRef(false);
 
   useSkyActivation(false);
 
@@ -1242,6 +1247,12 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
 
       renderer.render(scene, camera);
 
+      // First real frame drawn: retire the static poster behind the canvas.
+      if (!frameFlagRef.current) {
+        frameFlagRef.current = true;
+        setHasFrame(true);
+      }
+
       // Adaptive resolution check: average the frame time over the last ~1s;
       // if it's past ~50fps, step the pixel ratio down (max once per ~1.6s so
       // the buffer realloc hitch doesn't itself stutter the flight).
@@ -1351,5 +1362,39 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     };
   }, [phases]);
 
-  return <div ref={containerRef} className="fixed inset-0 w-full h-full pointer-events-none z-0" />;
+  return (
+    <>
+      {/* static poster behind the canvas: dark void + faint starfield, shown
+          only until the first real WebGL frame replaces it */}
+      <AnimatePresence>
+        {!hasFrame && (
+          <motion.div
+            className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.45, ease: "easeOut" }}
+            aria-hidden="true"
+          >
+            <div className="absolute inset-0 bg-[#070709]" />
+            {!useReducedMotion() && (
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(1px 1px at 12% 22%, rgba(255,255,255,0.5), transparent), radial-gradient(1px 1px at 68% 74%, rgba(255,255,255,0.4), transparent), radial-gradient(1px 1px at 84% 18%, rgba(255,255,255,0.35), transparent), radial-gradient(1.5px 1.5px at 32% 82%, rgba(255,255,255,0.45), transparent), radial-gradient(1px 1px at 48% 40%, rgba(255,255,255,0.3), transparent)",
+                }}
+              />
+            )}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 120%, rgba(59,130,246,0.14), transparent 60%)",
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <div ref={containerRef} className="fixed inset-0 w-full h-full pointer-events-none z-0" />
+    </>
+  );
 }

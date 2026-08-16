@@ -287,7 +287,7 @@ export default function Header() {
           >
             {/* Logo above the nav heading */}
             <div className="menu-item-in w-20 h-24 sm:w-24 sm:h-28 mb-5 sm:mb-7">
-              <img src="/frame1.svg" alt="TrustNode" className="w-full h-full object-contain" />
+              <img src={`${import.meta.env.BASE_URL}frame1.svg`} alt="TrustNode" className="w-full h-full object-contain" />
             </div>
 
             {/* Live clock: МСК for Russian, GMT for the rest */}

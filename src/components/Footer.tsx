@@ -73,7 +73,7 @@ const Footer = React.memo(function Footer() {
           <div className="flex items-center gap-3">
             <div className="w-12 h-14 flex items-center justify-center">
               <img
-                src="/frame1.svg"
+                src={`${import.meta.env.BASE_URL}frame1.svg`}
                 alt="TrustNode"
                 className="w-full h-full object-contain"
               />

@@ -6,112 +6,112 @@ import { motion, AnimatePresence } from "motion/react";
 import type { LanguageCode } from "../i18n/languages";
 import { useEcoMode } from "../context/EcoModeContext";
 import ScanCard from "./ScanCard";
+import * as Astronomy from "astronomy-engine";
 
 const HEADER_PAGES = PAGES_CONFIG.filter((p) => p.showInHeader).sort((a, b) => a.order - b.order);
 
 type LangDict = Record<LanguageCode, string>;
 
-/* ---- Custom flat SVG planet glyphs (each planet gets an expressive look) ---- */
+/* ---- Real heliocentric position lookup (astronomy-engine) ----
+   Each page maps to one planet; its current position on the orbit is its real
+   heliocentric ecliptic longitude for the moment the section is shown. */
+const BODY_BY_PAGE: Record<string, Astronomy.Body> = {
+  "how-it-works": Astronomy.Body.Neptune,
+  tech: Astronomy.Body.Jupiter,
+  roadmap: Astronomy.Body.Mars,
+  about: Astronomy.Body.Saturn,
+  comparison: Astronomy.Body.Venus,
+  news: Astronomy.Body.Uranus,
+  download: Astronomy.Body.Mercury,
+};
 
-type GlyphProps = { size?: number };
+/** Current heliocentric ecliptic longitude (degrees, 0..360) of a body. */
+function helioLongitude(body: Astronomy.Body, date: Date): number {
+  try {
+    const ecl = Astronomy.Ecliptic(Astronomy.HelioVector(body, date));
+    return ((ecl.elon % 360) + 360) % 360;
+  } catch {
+    return 0;
+  }
+}
 
-const BaseOrb = ({ color, size = 40, back, children }: { color: string; size?: number; back?: React.ReactNode; children?: React.ReactNode }) => (
-  <svg viewBox="0 0 64 64" width={size} height={size} fill="none" aria-hidden="true">
-    {back}
-    <circle cx="32" cy="32" r="26" fill={color} fillOpacity="0.14" stroke={color} strokeWidth="3" />
-    {children}
-  </svg>
-);
-
-/* Mercury — grey-brown, cratered. */
-const MercuryGlyph = ({ size = 40 }: GlyphProps) => (
-  <BaseOrb color="#9CA3AF" size={size}>
-    <circle cx="25" cy="25" r="4" fill="#9CA3AF" fillOpacity="0.5" />
-    <circle cx="41" cy="37" r="3" fill="#9CA3AF" fillOpacity="0.35" />
-    <circle cx="31" cy="44" r="2.2" fill="#9CA3AF" fillOpacity="0.3" />
-  </BaseOrb>
-);
-
-/* Venus — cream, hazy cloud bands. */
-const VenusGlyph = ({ size = 40 }: GlyphProps) => (
-  <BaseOrb color="#FDE68A" size={size}>
-    <path d="M13 25 Q32 20 51 25" stroke="#D97706" strokeOpacity="0.4" strokeWidth="2.5" fill="none" />
-    <path d="M12 33 Q32 28 52 33" stroke="#D97706" strokeOpacity="0.25" strokeWidth="2.5" fill="none" />
-    <path d="M13 41 Q32 37 51 41" stroke="#D97706" strokeOpacity="0.18" strokeWidth="2.5" fill="none" />
-  </BaseOrb>
-);
-
-/* Mars — reddish disc, dark craters. */
-const MarsGlyph = ({ size = 40 }: GlyphProps) => (
-  <BaseOrb color="#EF4444" size={size}>
-    <circle cx="27" cy="27" r="6" fill="#B91C1C" fillOpacity="0.5" />
-    <circle cx="41" cy="39" r="4.5" fill="#B91C1C" fillOpacity="0.4" />
-    <circle cx="37" cy="24" r="2" fill="#B91C1C" fillOpacity="0.35" />
-    <circle cx="24" cy="41" r="1.8" fill="#B91C1C" fillOpacity="0.3" />
-  </BaseOrb>
-);
-
-/* Jupiter — amber bands + Great Red Spot. */
-const JupiterGlyph = ({ size = 40 }: GlyphProps) => (
-  <BaseOrb color="#D97706" size={size}>
-    <path d="M12 24 Q32 20 52 24" stroke="#92400E" strokeOpacity="0.5" strokeWidth="3" fill="none" />
-    <path d="M11 31 Q32 27 53 31" stroke="#92400E" strokeOpacity="0.3" strokeWidth="3" fill="none" />
-    <path d="M12 38 Q32 34 52 38" stroke="#92400E" strokeOpacity="0.5" strokeWidth="3" fill="none" />
-    <path d="M11 45 Q32 41 53 45" stroke="#92400E" strokeOpacity="0.3" strokeWidth="3" fill="none" />
-    <ellipse cx="42" cy="31" rx="5" ry="2.6" fill="#EF4444" fillOpacity="0.85" />
-  </BaseOrb>
-);
-
-/* Saturn — tilted rings passing behind and in front of the disc. */
-const SaturnGlyph = ({ size = 40 }: GlyphProps) => (
-  <BaseOrb
-    color="#EAB308"
-    size={size}
-    back={
-      <ellipse cx="32" cy="32" rx="35" ry="12" stroke="#EAB308" strokeWidth="2.5" fill="none" transform="rotate(-18 32 32)" />
-    }
+/* ---- Planet disc: real NASA-based surface texture in a shaded circle,
+   with an optional SVG ring overlay (Saturn). Kept tiny (256px maps). ---- */
+const PlanetDisc = ({
+  planet,
+  size,
+  ring = false,
+  className = "",
+}: {
+  planet: { color: string; textureUrl: string };
+  size: number;
+  ring?: boolean;
+  className?: string;
+}) => (
+  <span
+    className={`relative inline-flex items-center justify-center ${className}`}
+    style={{ width: size * 1.25, height: size * 1.25 }}
+    aria-hidden="true"
   >
-    <path d="M14 41 Q32 50 50 41" stroke="#EAB308" strokeWidth="2" fill="none" opacity="0.8" />
-    <circle cx="27" cy="26" r="2" fill="#A16207" fillOpacity="0.5" />
-  </BaseOrb>
-);
-
-/* Uranus — pale cyan, near-vertical rings. */
-const UranusGlyph = ({ size = 40 }: GlyphProps) => (
-  <BaseOrb
-    color="#22D3EE"
-    size={size}
-    back={
-      <ellipse cx="32" cy="32" rx="9" ry="30" stroke="#22D3EE" strokeWidth="2.2" fill="none" transform="rotate(15 32 32)" />
-    }
-  >
-    <ellipse cx="40" cy="39" rx="5" ry="3" fill="#0E7490" fillOpacity="0.4" />
-  </BaseOrb>
-);
-
-/* Neptune — deep blue, bright cloud + dark storm spot. */
-const NeptuneGlyph = ({ size = 40 }: GlyphProps) => (
-  <BaseOrb color="#3B82F6" size={size}>
-    <circle cx="27" cy="25" r="2.5" fill="#93C5FD" fillOpacity="0.5" />
-    <ellipse cx="40" cy="39" rx="6" ry="3.5" fill="#1E3A8A" fillOpacity="0.55" />
-  </BaseOrb>
+    {ring && (
+      <svg
+        viewBox="0 0 120 60"
+        width={size * 1.7}
+        height={size * 0.9}
+        fill="none"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg]"
+      >
+        <ellipse cx="60" cy="30" rx="56" ry="16" stroke={planet.color} strokeWidth="3" opacity="0.95" />
+        <ellipse cx="60" cy="30" rx="48" ry="11" stroke={planet.color} strokeWidth="1.5" opacity="0.5" />
+      </svg>
+    )}
+    <span className="relative block rounded-full overflow-hidden shadow-[0_2px_14px_rgba(0,0,0,0.55)]" style={{ width: size, height: size }}>
+      {/* real surface map */}
+      <span
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(${import.meta.env.BASE_URL}${planet.textureUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+      {/* fake-volume shading: lit side + terminator shadow */}
+      <span
+        className="absolute inset-0 rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle at 30% 28%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 42%, rgba(0,0,0,0) 58%, rgba(0,0,0,0.55) 100%)",
+        }}
+      />
+    </span>
+    {/* front arc of the ring, drawn above the disc */}
+    {ring && (
+      <svg
+        viewBox="0 0 120 60"
+        width={size * 1.7}
+        height={size * 0.9}
+        fill="none"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] pointer-events-none"
+      >
+        <path d="M 16 37 Q 60 58 104 37" stroke={planet.color} strokeWidth="2.5" opacity="0.75" fill="none" />
+      </svg>
+    )}
+  </span>
 );
 
 /* ---- Solar System layout config ----
    Sizes are compressed from real diameters (min ~30px Mercury ... max 62px
-   Jupiter). Orbit radii mirror the relative distances (compressed non-
-   linearly: Mercury close, Neptune far). Durations scale from real periods:
-   ~40s for Mercury up to ~400s (~7min) for Neptune. startDeg staggers the
-   starting angles so the system looks alive immediately. */
+   Jupiter). Orbit radii mirror the relative distances, compressed non-linearly
+   so everything fits the block. Real positions come from astronomy-engine. */
 type PlanetData = {
   name: LangDict;
   fact: LangDict;
   color: string;
   sizePx: number;
   radiusPct: number;
-  durationSec: number;
-  startDeg: number;
-  glyph: (props: GlyphProps) => React.ReactNode;
+  orbitalPeriodDays: number;
+  textureUrl: string;
+  hasRings?: boolean;
 };
 
 const PLANET_DATA: Record<string, PlanetData> = {
@@ -119,9 +119,8 @@ const PLANET_DATA: Record<string, PlanetData> = {
     color: "#3B82F6",
     sizePx: 48,
     radiusPct: 0.9,
-    durationSec: 400,
-    startDeg: 320,
-    glyph: NeptuneGlyph,
+    orbitalPeriodDays: 60182,
+    textureUrl: "textures/planets/neptune.jpg",
     name: { ru: "Нептун", en: "Neptune", es: "Neptuno", zh: "海王星", tr: "Neptün", hi: "नेपच्यून", ar: "نبتون", pt: "Netuno", fr: "Neptune", de: "Neptun", ja: "海王星" },
     fact: {
       ru: "Нептун был открыт математически до того, как его увидели – сначала предсказан расчетами, и только потом найден с помощью телескопа. Точно так же, как ML обнаруживает аномалию до того, как ее заметит человек.",
@@ -141,9 +140,8 @@ const PLANET_DATA: Record<string, PlanetData> = {
     color: "#D97706",
     sizePx: 62,
     radiusPct: 0.64,
-    durationSec: 140,
-    startDeg: 140,
-    glyph: JupiterGlyph,
+    orbitalPeriodDays: 4332.6,
+    textureUrl: "textures/planets/jupiter.jpg",
     name: { ru: "Юпитер", en: "Jupiter", es: "Júpiter", zh: "木星", tr: "Jüpiter", hi: "बृहस्पति", ar: "كوكب المشتري", pt: "Júpiter", fr: "Jupiter", de: "Jupiter", ja: "木星" },
     fact: {
       ru: "Юпитер — гравитационный щит Солнечной системы: он притягивает и нейтрализует большинство комет и астероидов, точно так же, как купол TrustNode нейтрализует угрозы.",
@@ -163,9 +161,8 @@ const PLANET_DATA: Record<string, PlanetData> = {
     color: "#EF4444",
     sizePx: 34,
     radiusPct: 0.45,
-    durationSec: 90,
-    startDeg: 70,
-    glyph: MarsGlyph,
+    orbitalPeriodDays: 687,
+    textureUrl: "textures/planets/mars.jpg",
     name: { ru: "Марс", en: "Mars", es: "Marte", zh: "火星", tr: "Mars", hi: "मंगल ग्रह", ar: "المريخ", pt: "Marte", fr: "Mars", de: "Mars", ja: "火星" },
     fact: {
       ru: "Марс – вечная цель исследователей: от первых пролетов до высадки. Точно так же TrustNode переходит от MVP к полноценной экосистеме.",
@@ -185,9 +182,9 @@ const PLANET_DATA: Record<string, PlanetData> = {
     color: "#EAB308",
     sizePx: 58,
     radiusPct: 0.74,
-    durationSec: 200,
-    startDeg: 200,
-    glyph: SaturnGlyph,
+    orbitalPeriodDays: 10759.2,
+    textureUrl: "textures/planets/saturn.jpg",
+    hasRings: true,
     name: { ru: "Сатурн", en: "Saturn", es: "Saturno", zh: "土星", tr: "Satürn", hi: "शनि ग्रह", ar: "زحل", pt: "Saturno", fr: "Saturne", de: "Saturn", ja: "土星" },
     fact: {
       ru: "Сатурн — самая узнаваемая планета благодаря своим кольцам. Признание приходит тогда, когда ваш проект невозможно спутать с другими — например, с патентом и медалью TrustNode.",
@@ -207,9 +204,8 @@ const PLANET_DATA: Record<string, PlanetData> = {
     color: "#FDE68A",
     sizePx: 40,
     radiusPct: 0.34,
-    durationSec: 60,
-    startDeg: 30,
-    glyph: VenusGlyph,
+    orbitalPeriodDays: 224.7,
+    textureUrl: "textures/planets/venus.jpg",
     name: { ru: "Венера", en: "Venus", es: "Venus", zh: "金星", tr: "Venüs", hi: "शुक्र", ar: "الزهرة", pt: "Vênus", fr: "Vénus", de: "Venus", ja: "金星" },
     fact: {
       ru: "Венеру называют близнецом Земли по размерам, но при ближайшем рассмотрении это совершенно другой мир – так выглядит сравнение с конкурентами.",
@@ -229,9 +225,8 @@ const PLANET_DATA: Record<string, PlanetData> = {
     color: "#22D3EE",
     sizePx: 50,
     radiusPct: 0.84,
-    durationSec: 280,
-    startDeg: 260,
-    glyph: UranusGlyph,
+    orbitalPeriodDays: 30688.5,
+    textureUrl: "textures/planets/uranus.jpg",
     name: { ru: "Уран", en: "Uranus", es: "Urano", zh: "天王星", tr: "Uranüs", hi: "यूरेनस", ar: "أورانوس", pt: "Urano", fr: "Uranus", de: "Uranus", ja: "天王星" },
     fact: {
       ru: "Уран постоянно удивляет астрономов: он вращается, лежа на боку. Будьте первым, кто узнает о новинках TrustNode.",
@@ -251,9 +246,8 @@ const PLANET_DATA: Record<string, PlanetData> = {
     color: "#9CA3AF",
     sizePx: 30,
     radiusPct: 0.26,
-    durationSec: 40,
-    startDeg: 0,
-    glyph: MercuryGlyph,
+    orbitalPeriodDays: 88,
+    textureUrl: "textures/planets/mercury.jpg",
     name: { ru: "Меркурий", en: "Mercury", es: "Mercurio", zh: "水星", tr: "Merkür", hi: "बुध", ar: "عطارد", pt: "Mercúrio", fr: "Mercure", de: "Merkur", ja: "水星" },
     fact: {
       ru: "Меркурий — самая маленькая и быстрая планета: год на ней длится 88 дней. Быстрое и простое действие — например, установка TrustNode.",
@@ -413,7 +407,7 @@ const PAGE_CTA: Record<string, LangDict> = {
   },
 };
 
-/* Deferenced starfield layer (70 static spans, optional cheap twinkle). */
+/* Deterministic pseudo-random starfield layer. */
 const STAR_COUNT = 70;
 
 export default function ExplorePagesSection() {
@@ -429,6 +423,17 @@ export default function ExplorePagesSection() {
     () => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 
+  // Current real heliocentric position of every planet, computed on mount and
+  // refreshed every minute (visible motion is imperceptibly slow — this is
+  // enough to keep the layout true to the current date). Skipped (single
+  // compute) when ecoMode / prefers-reduced-motion is active.
+  const [positions, setPositions] = useState<Record<string, number>>(() => {
+    const now = new Date();
+    const map: Record<string, number> = {};
+    for (const [id, body] of Object.entries(BODY_BY_PAGE)) map[id] = helioLongitude(body, now);
+    return map;
+  });
+
   // Measure the solar container so orbit radii are exact pixels.
   useEffect(() => {
     const el = solarRef.current;
@@ -439,6 +444,21 @@ export default function ExplorePagesSection() {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  const motionless = ecoMode || reduceMotion;
+
+  // Periodically recompute real positions (every minute) unless motion is off.
+  useEffect(() => {
+    if (motionless) return;
+    const update = () => {
+      const now = new Date();
+      const map: Record<string, number> = {};
+      for (const [id, body] of Object.entries(BODY_BY_PAGE)) map[id] = helioLongitude(body, now);
+      setPositions(map);
+    };
+    const id = window.setInterval(update, 60_000);
+    return () => window.clearInterval(id);
+  }, [motionless]);
 
   // Deterministic pseudo-random star field.
   const stars = useMemo(() => {
@@ -459,8 +479,6 @@ export default function ExplorePagesSection() {
     }
     return arr;
   }, []);
-
-  const motionless = ecoMode || reduceMotion;
 
   const visiblePages = HEADER_PAGES.filter((p) => p.id !== activePage);
   const planets = visiblePages
@@ -500,29 +518,25 @@ export default function ExplorePagesSection() {
     navigateTo(page.id);
   };
 
-  // Shared planet-fact block (used inside the desktop overlay card and the
-  // expanded mobile card).
-  const renderFact = (planet: PlanetData, compact = false) => {
-    const Glyph = planet.glyph;
-    return (
-      <div className="mt-4 pt-4 border-t border-[#3C404A]/40 flex items-start gap-3">
-        <div className="shrink-0 mt-0.5">
-          <Glyph size={compact ? 24 : 28} />
-        </div>
-        <div className="min-w-0">
-          <span className="font-mono text-[10px] font-bold tracking-[0.18em] uppercase" style={{ color: planet.color }}>
-            {planet.name[language]}
-          </span>
-          <p className="font-sans text-xs text-gray-300 leading-relaxed mt-1">{planet.fact[language]}</p>
-        </div>
+  // Shared planet-fact block (inside the desktop overlay card and the expanded
+  // mobile card).
+  const renderFact = (planet: PlanetData, compact = false) => (
+    <div className="mt-4 pt-4 border-t border-[#3C404A]/40 flex items-start gap-3">
+      <div className="shrink-0 mt-0.5">
+        <PlanetDisc planet={planet} size={compact ? 30 : 34} ring={false} />
       </div>
-    );
-  };
+      <div className="min-w-0">
+        <span className="font-mono text-[10px] font-bold tracking-[0.18em] uppercase" style={{ color: planet.color }}>
+          {planet.name[language]}
+        </span>
+        <p className="font-sans text-xs text-gray-300 leading-relaxed mt-1">{planet.fact[language]}</p>
+      </div>
+    </div>
+  );
 
   // Desktop info card: section content first (badge / title / desc / CTA),
   // then the planet fact below.
   const renderOverlayCard = (page: (typeof HEADER_PAGES)[number], planet: PlanetData) => {
-    const Glyph = planet.glyph;
     const desc = PAGE_DESCRIPTIONS[page.id]?.[language] || "";
     const cta = PAGE_CTA[page.id]?.[language] || "";
     return (
@@ -546,7 +560,7 @@ export default function ExplorePagesSection() {
         }}
       >
         <div className="flex items-center justify-between mb-4">
-          <Glyph size={44} />
+          <PlanetDisc planet={planet} size={48} ring={planet.hasRings} />
           <span
             className="font-mono text-xs tracking-widest font-bold px-3 py-1.5 rounded border"
             style={{ color: planet.color, borderColor: `${planet.color}2E`, backgroundColor: `${planet.color}0D` }}
@@ -566,7 +580,6 @@ export default function ExplorePagesSection() {
   const renderMobileCard = (page: (typeof HEADER_PAGES)[number]) => {
     const planet = PLANET_DATA[page.id];
     if (!planet) return null;
-    const Glyph = planet.glyph;
     const isActive = hoveredPageId === page.id;
     const dimmed = !ecoMode && hoveredPageId !== null && !isActive;
     const desc = PAGE_DESCRIPTIONS[page.id]?.[language] || "";
@@ -590,10 +603,10 @@ export default function ExplorePagesSection() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <div
-                className="w-11 h-11 rounded-xl bg-[#0A0A0B]/80 border flex items-center justify-center"
+                className="rounded-xl bg-[#0A0A0B]/80 border flex items-center justify-center overflow-hidden"
                 style={{ borderColor: `${planet.color}26` }}
               >
-                <Glyph size={30} />
+                <PlanetDisc planet={planet} size={36} ring={planet.hasRings} />
               </div>
               <span
                 className="font-mono text-xs tracking-widest font-bold px-3 py-1.5 rounded border"
@@ -630,24 +643,6 @@ export default function ExplorePagesSection() {
     );
   };
 
-  const orbitAnim = (data: PlanetData): React.CSSProperties =>
-    motionless
-      ? { transform: `rotate(${data.startDeg}deg)` }
-      : {
-          animation: `orbit-spin ${data.durationSec}s linear infinite`,
-          animationDelay: `${-(data.startDeg / 360) * data.durationSec}s`,
-          animationPlayState: "running",
-        };
-
-  const counterAnim = (data: PlanetData): React.CSSProperties =>
-    motionless
-      ? { transform: "rotate(0deg)" }
-      : {
-          animation: `orbit-spin ${data.durationSec}s linear infinite reverse`,
-          animationDelay: `${-(data.startDeg / 360) * data.durationSec}s`,
-          animationPlayState: "running",
-        };
-
   return (
     <section
       className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B] select-none"
@@ -670,7 +665,8 @@ export default function ExplorePagesSection() {
           </p>
         </div>
 
-        {/* ---- Desktop: Solar System — Sun at the centre, 7 planets orbiting. ---- */}
+        {/* ---- Desktop: Solar System — Sun at the centre, 7 planets on their
+             real heliocentric positions (astronomy-engine). ---- */}
         <div
           className="hidden lg:block w-full"
           onMouseLeave={() => {
@@ -725,63 +721,66 @@ export default function ExplorePagesSection() {
               />
             </div>
 
-            {/* planets */}
+            {/* planets on real positions */}
             {solarW > 0 &&
               planets.map(({ page, data }) => {
                 const active = hoveredPageId === page.id;
                 const dimmed = !ecoMode && hoveredPageId !== null && !active;
                 const color = data.color;
+                const angleDeg = positions[page.id] ?? 0;
+                const rad = (angleDeg * Math.PI) / 180;
                 const R = data.radiusPct * halfW;
-                const Glyph = data.glyph;
+                const x = Math.cos(rad) * R;
+                const y = -Math.sin(rad) * R;
                 return (
-                  <div key={page.id} className="absolute inset-0 z-10 pointer-events-none" style={orbitAnim(data)}>
-                    <div className="absolute left-1/2 top-1/2" style={{ transform: `translateX(${R}px)` }}>
-                      <div className="absolute" style={counterAnim(data)}>
-                        <div className="absolute -translate-x-1/2 -translate-y-1/2">
-                          <motion.button
-                            type="button"
-                            className="pointer-events-auto flex flex-col items-center gap-1.5 cursor-pointer outline-none"
-                            animate={{ opacity: dimmed ? 0.35 : 1, scale: active ? 1.12 : 1 }}
-                            transition={{ duration: 0.3, ease: "easeOut" }}
-                            onMouseEnter={(e) => handlePlanetEnter(page.id, e)}
-                            onFocus={() => setHoveredPageId(page.id)}
-                            onClick={() => {
-                              if (hoveredPageId === page.id) navigateTo(page.id);
-                              else setHoveredPageId(page.id);
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") {
-                                e.preventDefault();
-                                navigateTo(page.id);
-                              }
-                            }}
-                            aria-label={t.pageNames[page.labelKey]}
-                            aria-expanded={active}
-                          >
-                            <span
-                              className="rounded-full flex items-center justify-center border transition-all"
-                              style={{
-                                width: data.sizePx + 14,
-                                height: data.sizePx + 14,
-                                borderColor: `${color}40`,
-                                backgroundColor: `${color}0A`,
-                                boxShadow: active ? `0 0 24px ${color}40` : undefined,
-                              }}
-                            >
-                              <Glyph size={data.sizePx} />
-                            </span>
-                            <span
-                              className="font-mono text-[9px] tracking-widest uppercase whitespace-nowrap"
-                              style={{
-                                color: active ? color : "#8B8F9C",
-                                textShadow: active ? `0 0 12px ${color}80` : undefined,
-                              }}
-                            >
-                              {data.name[language]}
-                            </span>
-                          </motion.button>
-                        </div>
-                      </div>
+                  <div
+                    key={page.id}
+                    className="absolute z-10"
+                    style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
+                  >
+                    <div className="absolute -translate-x-1/2 -translate-y-1/2">
+                      <motion.button
+                        type="button"
+                        className="flex flex-col items-center gap-1.5 cursor-pointer outline-none"
+                        animate={{ opacity: dimmed ? 0.35 : 1, scale: active ? 1.12 : 1 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        onMouseEnter={(e) => handlePlanetEnter(page.id, e)}
+                        onFocus={() => setHoveredPageId(page.id)}
+                        onClick={() => {
+                          if (hoveredPageId === page.id) navigateTo(page.id);
+                          else setHoveredPageId(page.id);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            navigateTo(page.id);
+                          }
+                        }}
+                        aria-label={t.pageNames[page.labelKey]}
+                        aria-expanded={active}
+                      >
+                        <span
+                          className="rounded-full flex items-center justify-center border transition-all"
+                          style={{
+                            width: data.sizePx + 16,
+                            height: data.sizePx + 16,
+                            borderColor: `${color}40`,
+                            backgroundColor: `${color}0A`,
+                            boxShadow: active ? `0 0 24px ${color}40` : undefined,
+                          }}
+                        >
+                          <PlanetDisc planet={data} size={data.sizePx} ring={data.hasRings} />
+                        </span>
+                        <span
+                          className="font-mono text-[9px] tracking-widest uppercase whitespace-nowrap"
+                          style={{
+                            color: active ? color : "#8B8F9C",
+                            textShadow: active ? `0 0 12px ${color}80` : undefined,
+                          }}
+                        >
+                          {data.name[language]}
+                        </span>
+                      </motion.button>
                     </div>
                   </div>
                 );
@@ -805,13 +804,18 @@ export default function ExplorePagesSection() {
             </AnimatePresence>
           </div>
 
-          <div className="flex items-center justify-center gap-3 mt-10">
-            <span className="relative flex h-2 w-2 shrink-0">
-              <span className={`absolute inline-flex h-full w-full rounded-full bg-[#3B82F6] ${motionless ? "" : "animate-ping"} opacity-75`} />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#3B82F6]" />
-            </span>
-            <span className="font-mono text-[10px] sm:text-xs tracking-[0.18em] text-[#8B8F9C]">
-              {t.explore.hint}
+          <div className="flex flex-col items-center gap-2 mt-10">
+            <div className="flex items-center justify-center gap-3">
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className={`absolute inline-flex h-full w-full rounded-full bg-[#3B82F6] ${motionless ? "" : "animate-ping"} opacity-75`} />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#3B82F6]" />
+              </span>
+              <span className="font-mono text-[10px] sm:text-xs tracking-[0.18em] text-[#8B8F9C]">
+                {t.explore.hint}
+              </span>
+            </div>
+            <span className="font-mono text-[9px] text-[#8B8F9C]/50">
+              Planet textures: NASA · Solar System Scope (CC BY 4.0)
             </span>
           </div>
         </div>
