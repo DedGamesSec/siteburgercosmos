@@ -418,6 +418,26 @@ export default function ExplorePagesSection() {
   const [cardPos, setCardPos] = useState<{ x: number; y: number } | null>(null);
   const solarRef = useRef<HTMLDivElement>(null);
   const [solarW, setSolarW] = useState(0);
+  // Hide the info card 0.5s after the pointer leaves a planet / the solar system,
+  // so a quick pass-over doesn't flash it; re-entering cancels the timer.
+  const hideTimerRef = useRef<number | null>(null);
+  const scheduleCardHide = () => {
+    if (hideTimerRef.current !== null) window.clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = window.setTimeout(() => {
+      hideTimerRef.current = null;
+      setHoveredPageId(null);
+      setCardPos(null);
+    }, 500);
+  };
+  const cancelCardHide = () => {
+    if (hideTimerRef.current !== null) {
+      window.clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
+  };
+  useEffect(() => () => {
+    if (hideTimerRef.current !== null) window.clearTimeout(hideTimerRef.current);
+  }, []);
 
   const [reduceMotion] = useState(
     () => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -491,6 +511,7 @@ export default function ExplorePagesSection() {
   // Place the info card beside the hovered planet, opening "towards the
   // centre" of the container, clamped to its bounds.
   const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
+    cancelCardHide();
     setHoveredPageId(id);
     const cont = solarRef.current;
     if (!cont) return;
@@ -670,8 +691,7 @@ export default function ExplorePagesSection() {
         <div
           className="hidden lg:block w-full"
           onMouseLeave={() => {
-            setHoveredPageId(null);
-            setCardPos(null);
+            scheduleCardHide();
           }}
         >
           <div ref={solarRef} className="relative aspect-square w-full max-w-[920px] mx-auto">
@@ -745,6 +765,7 @@ export default function ExplorePagesSection() {
                         animate={{ opacity: dimmed ? 0.35 : 1, scale: active ? 1.12 : 1 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
                         onMouseEnter={(e) => handlePlanetEnter(page.id, e)}
+                        onMouseLeave={() => scheduleCardHide()}
                         onFocus={() => setHoveredPageId(page.id)}
                         onClick={() => {
                           if (hoveredPageId === page.id) navigateTo(page.id);
@@ -793,6 +814,7 @@ export default function ExplorePagesSection() {
                   key={hoveredPageId}
                   className="absolute z-30 w-[340px] max-w-[calc(100%-36px)] rounded-3xl border bg-[#0A0A0B]/95 backdrop-blur-md p-5 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
                   style={{ left: cardPos.x, top: cardPos.y, borderColor: `${hoveredPlanet.color}55` }}
+                  onMouseEnter={() => cancelCardHide()}
                   initial={{ opacity: 0, y: 8, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8, scale: 0.97 }}
