@@ -626,6 +626,10 @@ export default function ExplorePagesSection() {
   //      discs (DOM buttons) when WebGL or motion is unavailable.
   const [webglOk] = useState(() => isWebGLAvailable());
   const [webglFailed, setWebglFailed] = useState(false);
+  // True once boot() has loaded the shared GLB models and started rendering —
+  // until then the canvas is empty, so a lightweight skeleton hints that the
+  // orbits are being computed instead of showing a dead black square.
+  const [sceneReady, setSceneReady] = useState(false);
   const use3D = webglOk && !webglFailed && !motionless && solarW > 0;
   const visibleIds = useMemo(() => visiblePages.map((p) => p.id).join(","), [visiblePages]);
   const solarCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -641,6 +645,7 @@ export default function ExplorePagesSection() {
 
   useEffect(() => {
     if (!use3D) return;
+    setSceneReady(false);
     const canvas = solarCanvasRef.current;
     const container = solarRef.current;
     if (!canvas || !container) return;
@@ -1007,6 +1012,7 @@ export default function ExplorePagesSection() {
         if (inViewRef.current) renderer?.render(scene!, camera!);
       };
       raf = requestAnimationFrame(frame);
+      if (!cancelled) setSceneReady(true);
     };
 
     io = new IntersectionObserver(
@@ -1217,6 +1223,37 @@ export default function ExplorePagesSection() {
                 />
               ))}
             </div>
+
+            {/* Loading skeleton — shown while the shared GLB models are still
+                 being fetched & normalised (the canvas needs boot() to finish
+                 before it can draw anything). Popped as soon as the first
+                 frame is scheduled, so it never overlaps the live planets. */}
+            {use3D && !sceneReady && (
+              <div
+                className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-5 pointer-events-none"
+                aria-hidden="true"
+              >
+                <div
+                  className="w-28 h-28 rounded-full relative animate-pulse"
+                  style={{
+                    background:
+                      "radial-gradient(circle, rgba(59,130,246,0.18) 0%, rgba(59,130,246,0.06) 45%, rgba(59,130,246,0) 70%)",
+                  }}
+                >
+                  <div className="absolute inset-0 rounded-full border border-[#3B82F6]/20" />
+                  <div
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full"
+                    style={{
+                      background:
+                        "radial-gradient(circle at 50% 42%, #FFE9A8 0%, #FFC36B 40%, #F59E0B 80%, #B45309 100%)",
+                    }}
+                  />
+                </div>
+                <span className="font-mono text-[10px] sm:text-xs tracking-[0.25em] text-[#3B82F6]/70 animate-pulse">
+                  CALCULATING ORBITS…
+                </span>
+              </div>
+            )}
 
             {/* orbit rings */}
             {planets.map(({ page, data }) => (
