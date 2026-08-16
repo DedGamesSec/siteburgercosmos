@@ -560,11 +560,6 @@ export default function ExplorePagesSection() {
   const hoverRef = useRef<string | null>(null);
   hoverRef.current = hoveredPageId;
   const inViewRef = useRef(true);
-  const sceneRef = useRef<{
-    ready: boolean;
-    pick?: (nx: number, ny: number) => string | null;
-    project?: (id: string) => { x: number; y: number } | null;
-  }>({ ready: false });
 
   useEffect(() => {
     if (!use3D) return;
@@ -584,6 +579,8 @@ export default function ExplorePagesSection() {
       group: import("three").Group;
       mesh: import("three").Mesh;
       mat: import("three").MeshStandardMaterial;
+      label: import("three").Sprite;
+      labelMat: import("three").SpriteMaterial;
       spinRate: number;
       direction: number;
     }> = [];
@@ -635,6 +632,40 @@ export default function ExplorePagesSection() {
       disposables.push(sunGeo, sunMat);
 
       const loader = new THREE.TextureLoader();
+
+      // Planet name label: a white-text sprite that lives in the scene and is
+      // parented to the planet's orbit position each frame (tied to the 3D
+      // model — it can never drift from the sphere). Material colour tints it
+      // so hover/dim states are handled in the render loop.
+      const makeLabelTex = (THREE_MOD: typeof import("three"), text: string) => {
+        const font = "600 12px 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
+        const probe = document.createElement("canvas");
+        const pctx = probe.getContext("2d")!;
+        pctx.font = font;
+        const tw = Math.ceil(pctx.measureText(text).width);
+        const w = tw + 12;
+        const h = 18;
+        const c = document.createElement("canvas");
+        c.width = Math.ceil(w * dpr);
+        c.height = Math.ceil(h * dpr);
+        const ctx = c.getContext("2d")!;
+        ctx.scale(dpr, dpr);
+        ctx.font = font;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(text, w / 2, h / 2 + 1);
+        const tex = new THREE_MOD.CanvasTexture(c);
+        tex.colorSpace = THREE_MOD.SRGBColorSpace;
+        const mat = new THREE_MOD.SpriteMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false });
+        const sprite = new THREE_MOD.Sprite(mat);
+        sprite.scale.set(w, h, 1);
+        sprite.renderOrder = 10;
+        scene!.add(sprite);
+        disposables.push(tex, mat);
+        return { sprite, mat };
+      };
+
       for (const { page, data } of planetsRef.current) {
         const motion = PLANET_MOTION[page.id];
         if (!motion) continue;
@@ -644,7 +675,7 @@ export default function ExplorePagesSection() {
 
         const r = data.sizePx / 2;
         const geo = new THREE.SphereGeometry(r, 32, 24);
-        const mat = new THREE.MeshStandardMaterial({ color: data.color, roughness: 1, metalness: 0 });
+        const mat = new THREE.MeshStandardMaterial({ color: data.color, roughness: 1, metalness: 0, transparent: true });
         loader.load(
           `${import.meta.env.BASE_URL}${data.textureUrl}`,
           (tex) => {
@@ -679,38 +710,20 @@ export default function ExplorePagesSection() {
           disposables.push(ringGeo, ringMat);
         }
 
+        const label = makeLabelTex(THREE, data.name[language].toUpperCase());
+
         records.push({
           pageId: page.id,
           data,
           group,
           mesh,
           mat,
+          label: label.sprite,
+          labelMat: label.mat,
           spinRate: (Math.PI * 2) / motion.spinSeconds,
           direction: motion.retrograde ? -1 : 1,
         });
       }
-
-      const tempV = new THREE.Vector3();
-      const raycaster = new THREE.Raycaster();
-      const ndc = new THREE.Vector2();
-      const spheres: import("three").Mesh[] = records.map((r) => r.mesh);
-      sceneRef.current.ready = true;
-      sceneRef.current.pick = (nx, ny) => {
-        if (!camera) return null;
-        ndc.set(nx, ny);
-        raycaster.setFromCamera(ndc, camera);
-        const hits = raycaster.intersectObjects(spheres, false);
-        return hits.length ? (hits[0].object.userData.pageId as string) : null;
-      };
-      sceneRef.current.project = (id) => {
-        if (!camera) return null;
-        const rec = records.find((r) => r.pageId === id);
-        if (!rec) return null;
-        rec.mesh.getWorldPosition(tempV);
-        tempV.project(camera);
-        const wpx = Math.max(1, Math.round(solarWRef.current));
-        return { x: ((tempV.x + 1) / 2) * wpx, y: ((1 - tempV.y) / 2) * wpx };
-      };
 
       // Warm up shaders before the first visible frame (no first-frame stutter).
       renderer.compile(scene, camera);
@@ -744,6 +757,13 @@ export default function ExplorePagesSection() {
           }
           // Pause the hovered planet so the cursor is not chasing it.
           if (inViewRef.current && rec.pageId !== hovered) rec.group.rotation.y += dt * rec.spinRate * rec.direction;
+
+          // Keep the name label pinned directly below its sphere (it is a
+          // scene object, so it moves with the model; the tint drives the
+          // hover/dim states instead of a full DOM redraw).
+          rec.label.position.set(rec.group.position.x, rec.group.position.y - (rec.data.sizePx / 2 + 22), 0);
+          rec.labelMat.color.set(rec.pageId === hovered ? rec.data.color : "#8B8F9C");
+          rec.labelMat.opacity = hovered && rec.pageId !== hovered ? 0.35 : 1;
         }
         if (inViewRef.current) renderer?.render(scene!, camera!);
       };
@@ -774,61 +794,9 @@ export default function ExplorePagesSection() {
       scene = null;
       camera = null;
       records = [];
-      sceneRef.current = { ready: false };
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [use3D, visibleIds]);
-
-  const handleCanvasMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const api = sceneRef.current;
-    const canvas = solarCanvasRef.current;
-    if (!api.ready || !api.pick || !canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    if (!rect.width) return;
-    const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const ny = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-    const id = api.pick(nx, ny);
-    canvas.style.cursor = id ? "pointer" : "default";
-    if (id === hoverRef.current) return;
-    if (id) {
-      setHoveredPageId(id);
-      const cont = solarRef.current;
-      if (cont && api.project) {
-        const p = api.project(id);
-        if (p) {
-          const cRect = cont.getBoundingClientRect();
-          setCardPos(computeCardPos(p.x, p.y, cRect.width, cRect.height));
-        }
-      }
-    } else {
-      hideCard();
-    }
-  };
-
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const api = sceneRef.current;
-    const canvas = solarCanvasRef.current;
-    if (!api.ready || !api.pick || !canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    if (!rect.width) return;
-    const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const ny = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-    const id = api.pick(nx, ny);
-    if (!id) return;
-    if (hoverRef.current === id) {
-      navigateTo(id);
-      return;
-    }
-    setHoveredPageId(id);
-    const cont = solarRef.current;
-    if (cont && api.project) {
-      const p = api.project(id);
-      if (p) {
-        const cRect = cont.getBoundingClientRect();
-        setCardPos(computeCardPos(p.x, p.y, cRect.width, cRect.height));
-      }
-    }
-  };
+  }, [use3D, visibleIds, language]);
 
   // Mobile: first tap reveals the fact, second tap navigates.
   const handleCardClick = (page: (typeof HEADER_PAGES)[number]) => (e: React.MouseEvent) => {
@@ -1057,60 +1025,72 @@ export default function ExplorePagesSection() {
 
             {/* planets on real positions — 3D spheres (WebGL + raycast triggers)
                  or flat 2D discs (DOM buttons) in fallback */}
-            {solarW > 0 &&
-              (use3D ? (
-                <>
-                  <canvas
-                    ref={solarCanvasRef}
-                    className="absolute inset-0 w-full h-full touch-none z-[3]"
-                    aria-hidden="true"
-                    onPointerMove={handleCanvasMove}
-                    onPointerDown={handleCanvasMove}
-                    onPointerLeave={() => hideCard()}
-                    onClick={handleCanvasClick}
-                  />
-                  {/* decorative planet names — the spheres themselves are the triggers */}
-                  {planets.map(({ page, data }) => {
-                    const active = hoveredPageId === page.id;
-                    const dimmed = !ecoMode && hoveredPageId !== null && !active;
-                    const color = data.color;
-                    const angleDeg = positions[page.id] ?? 0;
-                    const rad = (angleDeg * Math.PI) / 180;
-                    const R = data.radiusPct * halfW;
-                    const x = Math.cos(rad) * R;
-                    const y = -Math.sin(rad) * R;
-                    return (
-                      <span
-                        key={page.id}
-                        className="absolute z-[4] pointer-events-none font-mono text-[9px] tracking-widest uppercase whitespace-nowrap transition-opacity duration-200"
-                        style={{
-                          left: `calc(50% + ${x}px)`,
-                          top: `calc(50% + ${y}px + ${data.sizePx / 2 + 12}px)`,
-                          color: active ? color : "#8B8F9C",
-                          opacity: dimmed ? 0.35 : 1,
-                          textShadow: active ? `0 0 12px ${color}80` : undefined,
-                        }}
+{solarW > 0 &&
+            (use3D ? (
+              <>
+                <canvas
+                  ref={solarCanvasRef}
+                  className="absolute inset-0 w-full h-full touch-none z-[3]"
+                  aria-hidden="true"
+                />
+                {/* invisible DOM hit zones — positioned with the exact same orbit
+                     math as the 3D spheres, so hover/focus/click work reliably
+                     even where GPU acceleration misbehaves. The WebGL sphere in
+                     front is always the visual, and its in-canvas sprite label
+                     is pinned to the same orbit point. */}
+                {planets.map(({ page, data }) => {
+                  const angleDeg = positions[page.id] ?? 0;
+                  const rad = (angleDeg * Math.PI) / 180;
+                  const R = data.radiusPct * halfW;
+                  const x = Math.cos(rad) * R;
+                  const y = -Math.sin(rad) * R;
+                  const box = Math.max(44, data.sizePx * (data.hasRings ? 1.5 : 1.3));
+                  return (
+                    <button
+                      key={page.id}
+                      type="button"
+                      className="absolute z-[4] rounded-full p-0 cursor-pointer outline-none border-0"
+                      style={{
+                        left: `calc(50% + ${x}px)`,
+                        top: `calc(50% + ${y}px)`,
+                        width: box,
+                        height: box,
+                        transform: "translate(-50%, -50%)",
+                        background: "transparent",
+                      }}
+                      aria-label={t.pageNames[page.labelKey]}
+                      onMouseEnter={(e) => handlePlanetEnter(page.id, e)}
+                      onMouseLeave={() => hideCard()}
+                      onFocus={() => setHoveredPageId(page.id)}
+                      onClick={() => {
+                        if (hoveredPageId === page.id) navigateTo(page.id);
+                        else setHoveredPageId(page.id);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          navigateTo(page.id);
+                        }
+                      }}
+                    />
+                  );
+                })}
+                {/* keyboard / assistive-tech access to the same pages */}
+                <ul className="sr-only pointer-events-none">
+                  {planets.map(({ page }) => (
+                    <li key={page.id}>
+                      <button
+                        type="button"
+                        onClick={() => navigateTo(page.id)}
+                        onFocus={() => setHoveredPageId(page.id)}
                       >
-                        {data.name[language]}
-                      </span>
-                    );
-                  })}
-                  {/* keyboard / assistive-tech access to the same pages */}
-                  <ul className="sr-only pointer-events-none">
-                    {planets.map(({ page }) => (
-                      <li key={page.id}>
-                        <button
-                          type="button"
-                          onClick={() => navigateTo(page.id)}
-                          onFocus={() => setHoveredPageId(page.id)}
-                        >
-                          {t.pageNames[page.labelKey]}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) : (
+                        {t.pageNames[page.labelKey]}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
                 planets.map(({ page, data }) => {
                   const active = hoveredPageId === page.id;
                   const dimmed = !ecoMode && hoveredPageId !== null && !active;
