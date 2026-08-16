@@ -26,6 +26,14 @@ function resolvePageFromPath(path: string): PageId {
   return "not-found";
 }
 
+const NavigatePreferences = () => {
+  // respect prefers-reduced-motion: the smooth-scroll animation is pointless
+  // (and janky) for users who asked for less motion.
+  const reduced =
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+  return reduced ? "auto" : "smooth";
+};
+
 export function NavigationProvider({ children }: { children: React.ReactNode }) {
   const [activePage, setActivePage] = useState<PageId>(() => {
     const saved = sessionStorage.getItem("redirect");
@@ -57,12 +65,21 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
 
     // Scroll to anchor or top of the page
     setTimeout(() => {
+      // Move focus into the page region so keyboard / screen-reader users
+      // land where the route changed (do NOT scroll here — the smooth
+      // scroll below does that, and preventScroll avoids a jump).
+      const main = document.getElementById("main-content");
+      if (main && !main.contains(document.activeElement)) {
+        main.setAttribute("tabindex", "-1");
+        main.focus({ preventScroll: true });
+      }
       if (anchorId) {
         let retries = 0;
+        const behavior = NavigatePreferences();
         const findAndScroll = () => {
           const element = document.getElementById(anchorId);
           if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "start" });
+            element.scrollIntoView({ behavior, block: "start" });
             return true;
           }
           return false;
@@ -78,7 +95,7 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
         }
         return;
       }
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: NavigatePreferences() });
     }, 100);
   };
 

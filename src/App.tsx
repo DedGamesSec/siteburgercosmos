@@ -55,7 +55,7 @@ import NewsSection from "./components/NewsSection";
 
 import DamageCalculator from "./components/DamageCalculator";
 import FaqSection from "./components/FaqSection";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, MotionConfig, AnimatePresence } from "motion/react";
 import { useTranslation } from "./i18n/LanguageContext";
 import { useNavigation, PageId } from "./navigation/NavigationContext";
 import { useEcoMode } from "./context/EcoModeContext";
@@ -646,6 +646,7 @@ export default function App() {
         tabIndex={-1}
       >
         <AnimatePresence mode="wait">
+          <MotionConfig reducedMotion={prefersReducedMotion || ecoMode ? "always" : "user"}>
           {activePage === "home" && (
             <motion.div
               key={`home-page-${language}`}
@@ -1066,6 +1067,7 @@ export default function App() {
               <Footer />
             </motion.div>
           )}
+          </MotionConfig>
         </AnimatePresence>
       </main>
 
