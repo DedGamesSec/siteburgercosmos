@@ -418,7 +418,7 @@ export default function ExplorePagesSection() {
   const [cardPos, setCardPos] = useState<{ x: number; y: number } | null>(null);
   const solarRef = useRef<HTMLDivElement>(null);
   const [solarW, setSolarW] = useState(0);
-  // Hide the info card 0.5s after the pointer leaves a planet / the solar system,
+  // Hide the info card 0.25s after the pointer leaves a planet / the solar system,
   // so a quick pass-over doesn't flash it; re-entering cancels the timer.
   const hideTimerRef = useRef<number | null>(null);
   const scheduleCardHide = () => {
@@ -427,7 +427,7 @@ export default function ExplorePagesSection() {
       hideTimerRef.current = null;
       setHoveredPageId(null);
       setCardPos(null);
-    }, 500);
+    }, 250);
   };
   const cancelCardHide = () => {
     if (hideTimerRef.current !== null) {
