@@ -1292,33 +1292,36 @@ export default function ExplorePagesSection() {
         {/* ---- Desktop: Solar System — Sun at the centre, 7 planets on their
              real heliocentric positions (astronomy-engine). ---- */}
         <div
-          className="hidden lg:block w-full"
+          className="relative hidden lg:block w-full"
           onMouseLeave={() => {
             hideCard();
           }}
         >
-          <div ref={solarRef} className="relative aspect-square w-full mx-auto">
-            {/* starfield */}
-            <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-              {stars.map((s, i) => (
-                <span
-                  key={i}
-                  className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"}`}
-                  style={
-                    {
-                      left: `${s.left}%`,
-                      top: `${s.top}%`,
-                      width: s.size,
-                      height: s.size,
-                      opacity: s.opacity,
-                      boxShadow: "0 0 4px rgba(255,255,255,0.5)",
-                      animationDelay: `${s.delay}s`,
-                      "--star-base": s.opacity,
-                    } as React.CSSProperties
-                  }
-                />
-              ))}
-            </div>
+          {/* starfield — spans the full section width, so the planets keep
+              their arrangement inside the square below while surrounding
+              space extends out to the screen edges. */}
+          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+            {stars.map((s, i) => (
+              <span
+                key={i}
+                className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"}`}
+                style={
+                  {
+                    left: `${s.left}%`,
+                    top: `${s.top}%`,
+                    width: s.size,
+                    height: s.size,
+                    opacity: s.opacity,
+                    boxShadow: "0 0 4px rgba(255,255,255,0.5)",
+                    animationDelay: `${s.delay}s`,
+                    "--star-base": s.opacity,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
+          </div>
+
+          <div ref={solarRef} className="relative aspect-square w-full max-w-[920px] mx-auto">
 
             {/* Loading skeleton — shown while the shared GLB models are still
                  being fetched & normalised (the canvas needs boot() to finish
