@@ -450,15 +450,36 @@ const PAGE_CTA: Record<string, LangDict> = {
 };
 
 /* ---- Optional real planet models (GLB) ----
-   The procedural SSS-textured spheres below are the default, but if you want
-   to use downloaded planet models instead, drop the .glb files into
-   `public/models/planets/` and uncomment the matching line (key = page id).
-   The loader normalises each model automatically: its bounding box is scaled
-   to the planet's configured `sizePx` and centred on its orbit, so no
-   hand-tuned scale/position constants are needed. A vanishing Venus/Venus
-   atmosphere / Saturn rings from the procedural path are skipped for a
-   configured model on purpose — Sketchfab models usually carry their own
-   textures and rings. */
+   The procedural SSS-textured spheres below are the default, but you can
+   render downloaded planet models instead. Two modes:
+
+   1. A single combined solar-system model (FyorDev "solar system REAL SCALE
+      2K", a 17MB GLB with a named node per body). Loaded once, and each
+      planet subtree is extracted by node-name prefix — e.g. node `Saturn_5`
+      + ring node `SaturnRing_14` both match the about page. Set
+      SOLAR_SYSTEM_GLB to its URL under public/ ("" disables it).
+   2. Individual per-planet files, one per page id, dropped into
+      `public/models/planets/` with the MODEL_GLB line uncommented.
+
+   Either way the loader normalises each model automatically: its bounding
+   box is scaled to the planet's configured `sizePx` and centred on its
+   orbit, so no hand-tuned scale/position constants are needed. The
+   procedural extras (Venus atmosphere / Saturn rings) are skipped for a
+   configured model on purpose — Sketchfab models carry their own. */
+const SOLAR_SYSTEM_GLB = "models/solar_system_real_scale_2k_textures.glb";
+
+/** Node-name prefix per page used to find that planet inside the combined
+    model (case-insensitive, trailing `_index` ignored). */
+const MODEL_NODE_PREFIX: Record<string, string> = {
+  "download": "Mercury",
+  comparison: "Venus",
+  news: "Uranus",
+  roadmap: "Mars",
+  tech: "Jupiter",
+  about: "Saturn",
+  "how-it-works": "Neptune",
+};
+
 const MODEL_GLB: Record<string, string> = {
   // "about": "models/planets/saturn.glb",
   // "tech": "models/planets/jupiter.glb",
@@ -695,60 +716,91 @@ export default function ExplorePagesSection() {
 
       const loader = new THREE.TextureLoader();
 
-      // Pre-load any configured GLB planet models (in parallel). Each result
-      // normalises the model: outermost group `body` is scaled so the model's
-      // bounding box matches the planet's `sizePx` and is centred on the
-      // orbit; `hook` is the inner node hover/scale is applied to each frame
-      // without disturbing the centring offset.
-      const modelSlots = await Promise.all(
-        (Object.entries(MODEL_GLB) as Array<[string, string]>)
-          .filter(([id]) => planetsRef.current.some(({ page }) => page.id === id))
-          .map(async ([id, url]) => {
-            try {
-              const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
-              const gltf = await new Promise<{ scene: import("three").Group }>((res, rej) => {
-                new GLTFLoader().load(`${import.meta.env.BASE_URL}${url}`, (g) => res(g), undefined, (err) => rej(err));
-              });
-              const hook = new THREE.Group();
-              hook.add(gltf.scene);
-              const body = new THREE.Group();
-              body.add(hook);
-              body.updateMatrixWorld(true);
-              const box = new THREE.Box3().setFromObject(body);
-              const size = box.getSize(new THREE.Vector3());
-              const maxDim = Math.max(size.x, size.y, size.z) || 1;
-              const s = PLANET_DATA[id].sizePx / maxDim;
-              const c = box.getCenter(new THREE.Vector3());
-              body.scale.setScalar(s);
-              body.position.set(-c.x * s, -c.y * s, -c.z * s);
-              body.traverse((o) => {
-                o.frustumCulled = false;
-              });
-              disposables.push({
-                dispose: () => {
-                  body.traverse((o) => {
-                    const m = o as import("three").Mesh;
-                    if (!m.isMesh) return;
-                    m.geometry?.dispose();
-                    const mats = Array.isArray(m.material) ? m.material : [m.material];
-                    for (const mm of mats) {
-                      const withMap = mm as import("three").Material & { map?: import("three").Texture };
-                      if (withMap.map) withMap.map.dispose();
-                      mm.dispose();
-                    }
-                  });
-                },
-              });
-              return { id, body, hook } as const;
-            } catch {
-              /* GLB failed to load — the planet stays fully procedural. */
-              return null;
-            }
-          })
-      );
+      // Pre-load any configured GLB planet models. Two modes: a single
+      // combined solar-system model (loaded once, planets extracted by node
+      // name) or one file per planet. Each result is normalised — `body` is
+      // scaled so the model's bounding box matches the planet's `sizePx` and
+      // is centred on the orbit; `hook` is the inner node hover/scale is
+      // applied to each frame without disturbing the centring offset.
       const modelByPage = new Map<string, { body: import("three").Group; hook: import("three").Group }>();
-      for (const slot of modelSlots) if (slot) modelByPage.set(slot.id, slot);
-      if (cancelled) return;
+      const normaliseModel = (root: import("three").Object3D, sizePx: number) => {
+        const hook = new THREE.Group();
+        hook.add(root);
+        const body = new THREE.Group();
+        body.add(hook);
+        body.updateMatrixWorld(true);
+        const box = new THREE.Box3().setFromObject(body);
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        const s = sizePx / maxDim;
+        const c = box.getCenter(new THREE.Vector3());
+        body.scale.setScalar(s);
+        body.position.set(-c.x * s, -c.y * s, -c.z * s);
+        body.traverse((o) => {
+          o.frustumCulled = false;
+        });
+        disposables.push({
+          dispose: () => {
+            body.traverse((o) => {
+              const m = o as import("three").Mesh;
+              if (!m.isMesh) return;
+              m.geometry?.dispose();
+              const mats = Array.isArray(m.material) ? m.material : [m.material];
+              for (const mm of mats) {
+                const withMap = mm as import("three").Material & { map?: import("three").Texture };
+                if (withMap.map) withMap.map.dispose();
+                mm.dispose();
+              }
+            });
+          },
+        });
+        return { body, hook };
+      };
+
+      if (SOLAR_SYSTEM_GLB) {
+        try {
+          const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
+          const gltf = await new Promise<{ scene: import("three").Group }>((res, rej) => {
+            new GLTFLoader().load(`${import.meta.env.BASE_URL}${SOLAR_SYSTEM_GLB}`, (g) => res(g), undefined, (err) => rej(err));
+          });
+          if (cancelled) return;
+          // Detach every node whose name starts with that planet's prefix
+          // (e.g. `Saturn_5` and `SaturnRing_14` => the Saturn subtree), so
+          // the planet's own rings/moons travel with it after auto-normalising.
+          for (const { page, data } of planetsRef.current) {
+            const prefix = MODEL_NODE_PREFIX[page.id];
+            if (!prefix) continue;
+            const matches: import("three").Object3D[] = [];
+            gltf.scene.traverse((o) => {
+              const nm = o.name.toLowerCase();
+              if (nm && nm.startsWith(prefix.toLowerCase())) matches.push(o);
+            });
+            if (matches.length === 0) continue;
+            const group = new THREE.Group();
+            for (const m of matches) group.add(m);
+            modelByPage.set(page.id, normaliseModel(group, data.sizePx));
+          }
+        } catch {
+          /* Combined model failed to load — planets stay procedural. */
+        }
+      } else {
+        await Promise.all(
+          (Object.entries(MODEL_GLB) as Array<[string, string]>)
+            .filter(([id]) => planetsRef.current.some(({ page }) => page.id === id))
+            .map(async ([id, url]) => {
+              try {
+                const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
+                const gltf = await new Promise<{ scene: import("three").Group }>((res, rej) => {
+                  new GLTFLoader().load(`${import.meta.env.BASE_URL}${url}`, (g) => res(g), undefined, (err) => rej(err));
+                });
+                modelByPage.set(id, normaliseModel(gltf.scene, PLANET_DATA[id].sizePx));
+              } catch {
+                /* GLB failed to load — the planet stays fully procedural. */
+              }
+            })
+        );
+        if (cancelled) return;
+      }
 
       // Planet name label: a white-text sprite that lives in the scene and is
       // parented to the planet's orbit position each frame (tied to the 3D
