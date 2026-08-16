@@ -135,7 +135,7 @@ type PlanetData = {
 const PLANET_DATA: Record<string, PlanetData> = {
   "how-it-works": {
     color: "#3B82F6",
-    sizePx: 48,
+    sizePx: 66,
     radiusPct: 0.9,
     orbitalPeriodDays: 60182,
     textureUrl: "textures/planets/neptune.jpg",
@@ -157,7 +157,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   tech: {
     color: "#D97706",
-    sizePx: 62,
+    sizePx: 84,
     radiusPct: 0.64,
     orbitalPeriodDays: 4332.6,
     textureUrl: "textures/planets/jupiter.jpg",
@@ -179,7 +179,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   roadmap: {
     color: "#EF4444",
-    sizePx: 34,
+    sizePx: 46,
     radiusPct: 0.45,
     orbitalPeriodDays: 687,
     textureUrl: "textures/planets/mars.jpg",
@@ -201,7 +201,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   about: {
     color: "#EAB308",
-    sizePx: 58,
+    sizePx: 78,
     radiusPct: 0.74,
     orbitalPeriodDays: 10759.2,
     textureUrl: "textures/planets/saturn.jpg",
@@ -225,7 +225,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   comparison: {
     color: "#FDE68A",
-    sizePx: 40,
+    sizePx: 54,
     radiusPct: 0.34,
     orbitalPeriodDays: 224.7,
     textureUrl: "textures/planets/venus.jpg",
@@ -248,7 +248,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   news: {
     color: "#22D3EE",
-    sizePx: 50,
+    sizePx: 68,
     radiusPct: 0.84,
     orbitalPeriodDays: 30688.5,
     textureUrl: "textures/planets/uranus.jpg",
@@ -270,7 +270,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   download: {
     color: "#9CA3AF",
-    sizePx: 30,
+    sizePx: 40,
     radiusPct: 0.26,
     orbitalPeriodDays: 88,
     textureUrl: "textures/planets/mercury.jpg",
@@ -669,8 +669,18 @@ export default function ExplorePagesSection() {
       modelDimmed?: boolean;
       label: import("three").Sprite;
       labelMat: import("three").SpriteMaterial;
+      /** Soft radial glow that flashes when the planet is selected, then
+          fades — the "soft glint" that marks the hovered planet. */
+      glow?: import("three").Sprite;
+      glowMat?: import("three").SpriteMaterial;
       spinRate: number;
       direction: number;
+      /** Eased dynamic fields: current spin speed, hovered scale and the
+          fading selection flash (1 = just selected, decays to 0). */
+      spinVel: number;
+      scaleCur: number;
+      flash: number;
+      wasHovered: boolean;
     }> = [];
 
     const applyCamera = () => {
@@ -713,7 +723,7 @@ export default function ExplorePagesSection() {
       scene.add(ambient, sunLight, key, fill);
 
       // The Sun sphere itself (unlit).
-      const sunGeo = new THREE.SphereGeometry(38, 32, 32);
+      const sunGeo = new THREE.SphereGeometry(52, 32, 32);
       const sunMat = new THREE.MeshBasicMaterial({ color: 0xffc36b });
       const sun = new THREE.Mesh(sunGeo, sunMat);
       scene.add(sun);
@@ -840,6 +850,25 @@ export default function ExplorePagesSection() {
         return { sprite, mat };
       };
 
+      // Soft selection glow: a radial-gradient sprite over the planet that
+      // flashes in when the planet is hovered/selected and decays quickly.
+      const glowTex = (() => {
+        const s = 128;
+        const c = document.createElement("canvas");
+        c.width = c.height = s;
+        const ctx = c.getContext("2d")!;
+        const g = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+        g.addColorStop(0, "rgba(255,255,255,1)");
+        g.addColorStop(0.35, "rgba(255,255,255,0.45)");
+        g.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, s, s);
+        const tex = new THREE.CanvasTexture(c);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        return tex;
+      })();
+      disposables.push(glowTex);
+
       for (const { page, data } of planetsRef.current) {
         const motion = PLANET_MOTION[page.id];
         if (!motion) continue;
@@ -937,6 +966,26 @@ export default function ExplorePagesSection() {
 
         const label = makeLabelTex(THREE, data.name[language].toUpperCase());
 
+        // Selection glow sprite, parented at the planet's orbit position. Its
+        // opacity is driven by the `flash` value each frame — a brief soft
+        // glint when the planet is picked, then it fades away.
+        const glowMat = new THREE.SpriteMaterial({
+          map: glowTex,
+          transparent: true,
+          depthTest: true,
+          depthWrite: false,
+          opacity: 0,
+          color: data.color,
+        });
+        const glow = new THREE.Sprite(glowMat);
+        const glowScale = data.sizePx * (data.hasRings ? 3.2 : 3);
+        glow.scale.set(glowScale, glowScale, 1);
+        glow.renderOrder = 0;
+        disposables.push(glowMat);
+        // The glow is the very first thing drawn for this planet, so it sits
+        // behind the sphere/rings and reads as a soft halo instead of a burn.
+        scene!.add(glow);
+
         records.push({
           pageId: page.id,
           data,
@@ -945,8 +994,14 @@ export default function ExplorePagesSection() {
           ...(mesh ? { mesh, mat } : {}),
           label: label.sprite,
           labelMat: label.mat,
+          glow,
+          glowMat,
           spinRate: (Math.PI * 2) / motion.spinSeconds,
           direction: motion.retrograde ? -1 : 1,
+          spinVel: (Math.PI * 2) / motion.spinSeconds,
+          scaleCur: 1,
+          flash: 0,
+          wasHovered: false,
         });
       }
 
@@ -968,15 +1023,37 @@ export default function ExplorePagesSection() {
         const hw2 = wCur / 2;
         const pos = positionsRef.current;
         const hovered = hoverRef.current;
+        const ease = 1 - Math.pow(0.005, dt); // exponential smoothing factor
         for (const rec of records) {
           const angle = ((pos[rec.pageId] ?? 0) * Math.PI) / 180;
           const R = rec.data.radiusPct * hw2;
           rec.group.position.set(Math.cos(angle) * R, -Math.sin(angle) * R, 0);
+
+          const isHovered = rec.pageId === hovered;
+          const dim = hovered !== null && !isHovered;
+          const nowHovered = isHovered && !rec.wasHovered;
+          rec.wasHovered = isHovered;
+          if (nowHovered) rec.flash = 1;
+          // The glow glints on selection, then fades softly.
+          rec.flash = Math.max(0, rec.flash - dt * 2.4);
+
+          if (rec.glow && rec.glowMat) {
+            rec.glow.position.set(rec.group.position.x, rec.group.position.y, 0);
+            rec.glowMat.opacity = rec.flash * 0.85;
+          }
+
+          // Smoothly ease the spin toward its target: full rate normally,
+          // decelerated to 0 while hovered so the cursor doesn't chase.
+          const targetSpin = isHovered ? 0 : rec.spinRate * rec.direction;
+          rec.spinVel += (targetSpin - rec.spinVel) * ease;
+
+          // Smoothly ease the hover scale instead of an instant snap.
+          const targetScale = isHovered ? 1.18 : 1;
+          rec.scaleCur += (targetScale - rec.scaleCur) * ease;
+
           if (rec.modelBody) {
-            const isHovered = rec.pageId === hovered;
             // Dim adjacent planets: tweak material opacity once per state
             // change (3D models have several materials, so no per-frame sweep).
-            const dim = hovered !== null && !isHovered;
             if (rec.modelDimmed !== dim) {
               rec.modelDimmed = dim;
               rec.modelBody.traverse((o) => {
@@ -990,17 +1067,16 @@ export default function ExplorePagesSection() {
                 }
               });
             }
-            rec.modelHook?.scale.setScalar(isHovered ? 1.15 : 1);
+            rec.modelHook?.scale.setScalar(rec.scaleCur);
           } else if (rec.mesh && rec.mat) {
-            const isHovered = rec.pageId === hovered;
-            rec.mesh.scale.setScalar(isHovered ? 1.15 : 1);
-            rec.mat.opacity = isHovered ? 1 : 0.35;
+            rec.mesh.scale.setScalar(rec.scaleCur);
+            rec.mat.opacity = isHovered ? 1 : dim ? 0.35 : 1;
           } else {
             rec.mesh?.scale.setScalar(1);
             if (rec.mat) rec.mat.opacity = 1;
           }
-          // Pause the hovered planet so the cursor is not chasing it.
-          if (inViewRef.current && rec.pageId !== hovered) rec.group.rotation.y += dt * rec.spinRate * rec.direction;
+          // Smoothly easing spin replaces the hard pause of the hovered planet.
+          if (inViewRef.current) rec.group.rotation.y += dt * rec.spinVel;
 
           // Keep the name label pinned directly below its sphere (it is a
           // scene object, so it moves with the model; the tint drives the
@@ -1299,7 +1375,7 @@ export default function ExplorePagesSection() {
               <>
                 <canvas
                   ref={solarCanvasRef}
-                  className="absolute inset-0 w-full h-full touch-none z-[3]"
+                  className="absolute inset-0 w-full h-full touch-none z-[40] pointer-events-none"
                   aria-hidden="true"
                 />
                 {/* invisible DOM hit zones — positioned with the exact same orbit
@@ -1321,7 +1397,7 @@ export default function ExplorePagesSection() {
                     <button
                       key={page.id}
                       type="button"
-                      className="absolute z-[4] rounded-full p-0 cursor-pointer outline-none border-0"
+                      className="absolute z-[41] rounded-full p-0 cursor-pointer outline-none border-0"
                       style={{
                         left: `calc(50% + ${x}px)`,
                         top: `calc(50% + ${y}px)`,
@@ -1378,7 +1454,7 @@ export default function ExplorePagesSection() {
                   return (
                     <div
                       key={page.id}
-                      className="absolute z-10"
+                      className="absolute z-[41]"
                       style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
                     >
                       <div className="absolute -translate-x-1/2 -translate-y-1/2">
