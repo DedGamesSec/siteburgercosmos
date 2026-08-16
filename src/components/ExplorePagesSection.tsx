@@ -7,6 +7,7 @@ import type { LanguageCode } from "../i18n/languages";
 import { useEcoMode } from "../context/EcoModeContext";
 import ScanCard from "./ScanCard";
 import * as Astronomy from "astronomy-engine";
+import { isWebGLAvailable } from "./cinematicShared";
 
 const HEADER_PAGES = PAGES_CONFIG.filter((p) => p.showInHeader).sort((a, b) => a.order - b.order);
 
@@ -35,8 +36,36 @@ function helioLongitude(body: Astronomy.Body, date: Date): number {
   }
 }
 
+/* ---- Optional Saturn-style ring overlay (SVG), shared by the 2D fallback
+   disc and the 3D-mode overlay stack. ---- */
+const PlanetRings = ({ color, size }: { color: string; size: number }) => (
+  <>
+    <svg
+      viewBox="0 0 120 60"
+      width={size * 1.7}
+      height={size * 0.9}
+      fill="none"
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] pointer-events-none"
+    >
+      <ellipse cx="60" cy="30" rx="56" ry="16" stroke={color} strokeWidth="3" opacity="0.95" />
+      <ellipse cx="60" cy="30" rx="48" ry="11" stroke={color} strokeWidth="1.5" opacity="0.5" />
+    </svg>
+    <svg
+      viewBox="0 0 120 60"
+      width={size * 1.7}
+      height={size * 0.9}
+      fill="none"
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] pointer-events-none"
+    >
+      <path d="M 16 37 Q 60 58 104 37" stroke={color} strokeWidth="2.5" opacity="0.75" fill="none" />
+    </svg>
+  </>
+);
+
 /* ---- Planet disc: real NASA-based surface texture in a shaded circle,
-   with an optional SVG ring overlay (Saturn). Kept tiny (256px maps). ---- */
+   with an optional SVG ring overlay (Saturn). Kept tiny (256px maps).
+   Used for the small thumbnails in cards and as the static fallback when the
+   3D WebGL layer is unavailable (eco mode / no WebGL / reduced motion). ---- */
 const PlanetDisc = ({
   planet,
   size,
@@ -53,18 +82,7 @@ const PlanetDisc = ({
     style={{ width: size * 1.25, height: size * 1.25 }}
     aria-hidden="true"
   >
-    {ring && (
-      <svg
-        viewBox="0 0 120 60"
-        width={size * 1.7}
-        height={size * 0.9}
-        fill="none"
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg]"
-      >
-        <ellipse cx="60" cy="30" rx="56" ry="16" stroke={planet.color} strokeWidth="3" opacity="0.95" />
-        <ellipse cx="60" cy="30" rx="48" ry="11" stroke={planet.color} strokeWidth="1.5" opacity="0.5" />
-      </svg>
-    )}
+    {ring && <PlanetRings color={planet.color} size={size} />}
     <span className="relative block rounded-full overflow-hidden shadow-[0_2px_14px_rgba(0,0,0,0.55)]" style={{ width: size, height: size }}>
       {/* real surface map */}
       <span
@@ -84,18 +102,6 @@ const PlanetDisc = ({
         }}
       />
     </span>
-    {/* front arc of the ring, drawn above the disc */}
-    {ring && (
-      <svg
-        viewBox="0 0 120 60"
-        width={size * 1.7}
-        height={size * 0.9}
-        fill="none"
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] pointer-events-none"
-      >
-        <path d="M 16 37 Q 60 58 104 37" stroke={planet.color} strokeWidth="2.5" opacity="0.75" fill="none" />
-      </svg>
-    )}
   </span>
 );
 
@@ -418,26 +424,10 @@ export default function ExplorePagesSection() {
   const [cardPos, setCardPos] = useState<{ x: number; y: number } | null>(null);
   const solarRef = useRef<HTMLDivElement>(null);
   const [solarW, setSolarW] = useState(0);
-  // Hide the info card 0.25s after the pointer leaves a planet / the solar system,
-  // so a quick pass-over doesn't flash it; re-entering cancels the timer.
-  const hideTimerRef = useRef<number | null>(null);
-  const scheduleCardHide = () => {
-    if (hideTimerRef.current !== null) window.clearTimeout(hideTimerRef.current);
-    hideTimerRef.current = window.setTimeout(() => {
-      hideTimerRef.current = null;
-      setHoveredPageId(null);
-      setCardPos(null);
-    }, 250);
+  const hideCard = () => {
+    setHoveredPageId(null);
+    setCardPos(null);
   };
-  const cancelCardHide = () => {
-    if (hideTimerRef.current !== null) {
-      window.clearTimeout(hideTimerRef.current);
-      hideTimerRef.current = null;
-    }
-  };
-  useEffect(() => () => {
-    if (hideTimerRef.current !== null) window.clearTimeout(hideTimerRef.current);
-  }, []);
 
   const [reduceMotion] = useState(
     () => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -508,10 +498,176 @@ export default function ExplorePagesSection() {
   const hoveredPage = visiblePages.find((p) => p.id === hoveredPageId);
   const halfW = solarW / 2;
 
+  // ---- Shared-WebGL planet layer: one cheap orthographic context renders the
+  //      7 real planets as slowly-spinning lit spheres, aligned to the exact
+  //      pixel positions the DOM hit-area buttons use. DOM stays hoverable;
+  //      the 2D disc is the static fallback (eco / reduced-motion / no WebGL).
+  const [webglEnabled] = useState(() => isWebGLAvailable());
+  const use3D = webglEnabled && !motionless && solarW > 0;
+  const solarCanvasRef = useRef<HTMLCanvasElement>(null);
+  // Refs so the rAF loop never depends on React state.
+  const dataRef = useRef(PLANET_DATA);
+  const solarWRef = useRef(solarW);
+  solarWRef.current = solarW;
+  const visiblePagesRef = useRef(visiblePages);
+  visiblePagesRef.current = visiblePages;
+  const positionsRef = useRef(positions);
+  positionsRef.current = positions;
+  const hoverRef = useRef<string | null>(null);
+  hoverRef.current = hoveredPageId;
+
+  useEffect(() => {
+    if (!use3D) return;
+    const canvas = solarCanvasRef.current;
+    if (!canvas) return;
+    let cancelled = false;
+    let raf = 0;
+    let renderer: import("three").WebGLRenderer | null = null;
+    let scene: import("three").Scene | null = null;
+    let camera: import("three").OrthographicCamera | null = null;
+    let meshes: Array<{ id: string; mesh: import("three").Mesh; ring?: import("three").Mesh; spinRate: number }> = [];
+
+    const boot = async () => {
+      const THREE = await import("three");
+      if (cancelled) return;
+      const hw = solarWRef.current / 2;
+      scene = new THREE.Scene();
+      camera = new THREE.OrthographicCamera(-hw, hw, hw, -hw, -100, 100);
+      camera.position.z = 5;
+
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "low-power" });
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      renderer.setPixelRatio(dpr);
+      renderer.setSize(Math.round(solarWRef.current), Math.round(solarWRef.current), false);
+
+      // Soft fill + a single key light from the top-left (real sphere shading).
+      const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+      const key = new THREE.DirectionalLight(0xffffff, 0.95);
+      key.position.set(-1, 1, 1.2);
+      const rim = new THREE.DirectionalLight(0x88bbff, 0.2);
+      rim.position.set(1, -0.5, 1);
+      scene.add(ambient, key, rim);
+
+      const loader = new THREE.TextureLoader();
+      meshes = visiblePagesRef.current.map((page) => {
+        const data = dataRef.current[page.id];
+        if (!data) return null;
+        // Gentle spin: ~30s (Mercury) → ~2min for the gas giants.
+        const spinRate = (Math.PI * 2) / (30 + (data.sizePx - 30) * 3);
+        const geo = new THREE.SphereGeometry(data.sizePx / 2, 32, 24);
+        const mat = new THREE.MeshStandardMaterial({
+          color: data.color,
+          roughness: 1,
+          metalness: 0,
+          transparent: true,
+          opacity: 1,
+        });
+        loader.load(
+          `${import.meta.env.BASE_URL}${data.textureUrl}`,
+          (tex) => {
+            tex.colorSpace = THREE.SRGBColorSpace;
+            mat.map = tex;
+            mat.color.set(0xffffff);
+            mat.needsUpdate = true;
+          },
+          undefined,
+          () => {
+            /* keep tinted fallback */
+          }
+        );
+        const mesh = new THREE.Mesh(geo, mat);
+        scene!.add(mesh);
+
+        // Saturn (or any ringed body): a thin tilted ring as a child of the
+        // sphere so it spins with the planet.
+        let ring: import("three").Mesh | undefined;
+        if (data.hasRings) {
+          const ringGeo = new THREE.RingGeometry(data.sizePx * 0.72, data.sizePx * 1.08, 64);
+          const ringMat = new THREE.MeshBasicMaterial({
+            color: data.color,
+            transparent: true,
+            opacity: 0.85,
+            side: THREE.DoubleSide,
+          });
+          ring = new THREE.Mesh(ringGeo, ringMat);
+          ring.rotation.x = -1.05;
+          ring.position.z = 0;
+          mesh.add(ring);
+        }
+
+        return { id: page.id, mesh, ring, spinRate };
+      }).filter((item): item is NonNullable<typeof item> => item !== null);
+
+      let last = performance.now();
+      let lastSizeW = -1;
+      const frame = (now: number) => {
+        if (cancelled) return;
+        raf = requestAnimationFrame(frame);
+        const dt = Math.min(0.05, (now - last) / 1000);
+        last = now;
+
+        const hw2 = solarWRef.current / 2;
+        if (renderer && Math.round(solarWRef.current) !== lastSizeW) {
+          lastSizeW = Math.round(solarWRef.current);
+          renderer.setSize(lastSizeW, lastSizeW, false);
+        }
+
+        const pos = positionsRef.current;
+        const hovered = hoverRef.current;
+        for (const { id, mesh, spinRate } of meshes) {
+          const angle = ((pos[id] ?? 0) * Math.PI) / 180;
+          const R = dataRef.current[id]?.radiusPct ?? 0.5;
+          mesh.position.set(Math.cos(angle) * R * hw2, -Math.sin(angle) * R * hw2, 0);
+          const mat = mesh.material as import("three").MeshStandardMaterial;
+          if (hovered) {
+            mesh.scale.setScalar(id === hovered ? 1.15 : 1);
+            mat.opacity = id === hovered ? 1 : 0.35;
+          } else {
+            mesh.scale.setScalar(1);
+            mat.opacity = 1;
+          }
+          // Pause the hovered planet so the cursor isn't chasing it.
+          if (id !== hovered) mesh.rotation.y += dt * spinRate;
+        }
+
+        if (camera) {
+          camera.left = -hw2;
+          camera.right = hw2;
+          camera.top = hw2;
+          camera.bottom = -hw2;
+          camera.updateProjectionMatrix();
+        }
+        renderer?.render(scene!, camera!);
+      };
+      raf = requestAnimationFrame(frame);
+    };
+
+    void boot();
+    return () => {
+      cancelled = true;
+      if (raf) cancelAnimationFrame(raf);
+      meshes.forEach(({ mesh, ring }) => {
+        if (ring) {
+          ring.geometry.dispose();
+          (ring.material as import("three").Material).dispose();
+        }
+        mesh.geometry.dispose();
+        const mat = mesh.material as import("three").Material;
+        mat.dispose();
+        (mat as import("three").MeshStandardMaterial).map?.dispose();
+      });
+      renderer?.dispose();
+      renderer = null;
+      scene = null;
+      camera = null;
+      meshes = [];
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [use3D]);
+
   // Place the info card beside the hovered planet, opening "towards the
   // centre" of the container, clamped to its bounds.
   const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
-    cancelCardHide();
     setHoveredPageId(id);
     const cont = solarRef.current;
     if (!cont) return;
@@ -691,10 +847,16 @@ export default function ExplorePagesSection() {
         <div
           className="hidden lg:block w-full"
           onMouseLeave={() => {
-            scheduleCardHide();
+            hideCard();
           }}
         >
           <div ref={solarRef} className="relative aspect-square w-full max-w-[920px] mx-auto">
+            {/* shared 3D planet canvas — sits behind the DOM hit-area buttons */}
+            <canvas
+              ref={solarCanvasRef}
+              className="absolute inset-0 w-full h-full pointer-events-none z-[3]"
+              aria-hidden="true"
+            />
             {/* starfield */}
             <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
               {stars.map((s, i) => (
@@ -765,7 +927,7 @@ export default function ExplorePagesSection() {
                         animate={{ opacity: dimmed ? 0.35 : 1, scale: active ? 1.12 : 1 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
                         onMouseEnter={(e) => handlePlanetEnter(page.id, e)}
-                        onMouseLeave={() => scheduleCardHide()}
+                        onMouseLeave={() => hideCard()}
                         onFocus={() => setHoveredPageId(page.id)}
                         onClick={() => {
                           if (hoveredPageId === page.id) navigateTo(page.id);
@@ -785,12 +947,12 @@ export default function ExplorePagesSection() {
                           style={{
                             width: data.sizePx + 16,
                             height: data.sizePx + 16,
-                            borderColor: `${color}40`,
-                            backgroundColor: `${color}0A`,
+                            borderColor: active ? `${color}80` : "transparent",
+                            backgroundColor: "transparent",
                             boxShadow: active ? `0 0 24px ${color}40` : undefined,
                           }}
                         >
-                          <PlanetDisc planet={data} size={data.sizePx} ring={data.hasRings} />
+                          {use3D ? null : <PlanetDisc planet={data} size={data.sizePx} ring={data.hasRings} />}
                         </span>
                         <span
                           className="font-mono text-[9px] tracking-widest uppercase whitespace-nowrap"
@@ -814,7 +976,6 @@ export default function ExplorePagesSection() {
                   key={hoveredPageId}
                   className="absolute z-30 w-[340px] max-w-[calc(100%-36px)] rounded-3xl border bg-[#0A0A0B]/95 backdrop-blur-md p-5 shadow-[0_8px_40px_rgba(0,0,0,0.7)]"
                   style={{ left: cardPos.x, top: cardPos.y, borderColor: `${hoveredPlanet.color}55` }}
-                  onMouseEnter={() => cancelCardHide()}
                   initial={{ opacity: 0, y: 8, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8, scale: 0.97 }}
