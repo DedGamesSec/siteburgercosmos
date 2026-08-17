@@ -611,9 +611,8 @@ export default function ExplorePagesSection() {
   const computeCardPos = (px: number, py: number, cW: number, cH: number, planetRadius = 0) => {
     const CARD_W = 340;
     const CARD_H = 540;
-    // Keep a generous gap between the planet and its card so the planet (even
-    // at its hover scale / glow) stays fully visible next to the card instead
-    // of slipping behind it.
+    // Keep a generous gap between the planet and its card so the frozen planet
+    // stays fully visible next to the card instead of slipping behind it.
     const gap = 36 + planetRadius * 1.15;
     const fitsRight = px + gap + CARD_W <= cW - 18;
     const fitsLeft = px - gap - CARD_W >= 18;
@@ -629,13 +628,13 @@ export default function ExplorePagesSection() {
     return { x: left, y: top };
   };
 
-  // ---- Item 7 (rewrite): in-place hover animation. A hovered planet never
-  //      leaves its orbit — 3D sphere, DOM hit zone and 2D fallback all stay
-  //      glued to the exact same `positions`-derived point, so no displaced
-  //      body can ever touch the Sun, a neighbour, the info card or the
-  //      container rim. There is no direction/distance math at all: feedback
-  //      is a size pulse (scale 1 → 1.12, eased in the render loop) plus a
-  //      sustained, brighter glow while a planet is hovered.
+  // ---- Item 7 (final): hover leaves the planets completely frozen. 3D
+  //      sphere, DOM hit zone and 2D fallback all stay glued to the exact
+  //      same `positions`-derived point, and the hovered planet neither
+  //      moves, grows nor glows — no displacement, no scale pulse, no halo,
+  //      so nothing can be read as motion. There is no direction/distance
+  //      math at all. The only hover feedback is the side info card, the
+  //      dimming of the other planets and the pinned label tint.
 
   const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
     setHoveredPageId(id);
@@ -701,18 +700,11 @@ export default function ExplorePagesSection() {
       modelDimmed?: boolean;
       label: import("three").Sprite;
       labelMat: import("three").SpriteMaterial;
-      /** Soft radial glow that stays bright while the planet is hovered and
-          glints a little brighter the moment it is selected. */
-      glow?: import("three").Sprite;
-      glowMat?: import("three").SpriteMaterial;
       spinRate: number;
       direction: number;
-      /** Eased dynamic fields: current spin speed, hovered scale and the
-          fading selection flash (1 = just selected, decays to 0). */
+      /** Eased dynamic field: current spin speed (decelerated to 0 while the
+          planet is hovered). */
       spinVel: number;
-      scaleCur: number;
-      flash: number;
-      wasHovered: boolean;
     }> = [];
 
     const applyCamera = () => {
@@ -882,24 +874,7 @@ export default function ExplorePagesSection() {
         return { sprite, mat };
       };
 
-      // Soft selection glow: a radial-gradient sprite over the planet that
-      // flashes in when the planet is hovered/selected and decays quickly.
-      const glowTex = (() => {
-        const s = 128;
-        const c = document.createElement("canvas");
-        c.width = c.height = s;
-        const ctx = c.getContext("2d")!;
-        const g = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
-        g.addColorStop(0, "rgba(255,255,255,0.55)");
-        g.addColorStop(0.5, "rgba(255,255,255,0.25)");
-        g.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, s, s);
-        const tex = new THREE.CanvasTexture(c);
-        tex.colorSpace = THREE.SRGBColorSpace;
-        return tex;
-      })();
-      disposables.push(glowTex);
+      
 
       for (const { page, data } of planetsRef.current) {
         const motion = PLANET_MOTION[page.id];
@@ -998,26 +973,6 @@ export default function ExplorePagesSection() {
 
         const label = makeLabelTex(THREE, data.name[language].toUpperCase());
 
-        // Selection glow sprite, parented at the planet's orbit position. Its
-        // opacity is driven by the `flash` value each frame — a brief soft
-        // glint when the planet is picked, then it fades away.
-        const glowMat = new THREE.SpriteMaterial({
-          map: glowTex,
-          transparent: true,
-          depthTest: true,
-          depthWrite: false,
-          opacity: 0,
-          color: data.color,
-        });
-        const glow = new THREE.Sprite(glowMat);
-        const glowScale = data.sizePx * 1.3;
-        glow.scale.set(glowScale, glowScale, 1);
-        glow.renderOrder = 0;
-        disposables.push(glowMat);
-        // The glow is the very first thing drawn for this planet, so it sits
-        // behind the sphere/rings and reads as a soft halo instead of a burn.
-        scene!.add(glow);
-
         records.push({
           pageId: page.id,
           data,
@@ -1026,14 +981,9 @@ export default function ExplorePagesSection() {
           ...(mesh ? { mesh, mat } : {}),
           label: label.sprite,
           labelMat: label.mat,
-          glow,
-          glowMat,
           spinRate: (Math.PI * 2) / motion.spinSeconds,
           direction: motion.retrograde ? -1 : 1,
           spinVel: (Math.PI * 2) / motion.spinSeconds,
-          scaleCur: 1,
-          flash: 0,
-          wasHovered: false,
         });
       }
 
@@ -1066,30 +1016,11 @@ export default function ExplorePagesSection() {
 
           const isHovered = rec.pageId === hovered;
           const dim = hovered !== null && !isHovered;
-          const nowHovered = isHovered && !rec.wasHovered;
-          rec.wasHovered = isHovered;
-          if (nowHovered) rec.flash = 1;
-          // The flash is only a small extra glint; the sustained glow below
-          // is what actually advertises the hovered planet.
-          rec.flash = Math.max(0, rec.flash - dt * 1.4);
-
-          if (rec.glow && rec.glowMat) {
-            rec.glow.position.set(rec.group.position.x, rec.group.position.y, 0);
-            // Item 7 (rewrite): glow intensification on hover — a bright,
-            // steady halo while hovered (plus a short brighter glint on
-            // entry) that fades softly on leave.
-            const glowTarget = isHovered ? 0.5 + rec.flash * 0.18 : 0;
-            rec.glowMat.opacity += (glowTarget - rec.glowMat.opacity) * ease;
-          }
 
           // Smoothly ease the spin toward its target: full rate normally,
           // decelerated to 0 while hovered so the cursor doesn't chase.
           const targetSpin = isHovered ? 0 : rec.spinRate * rec.direction;
           rec.spinVel += (targetSpin - rec.spinVel) * ease;
-
-          // Smoothly ease the hover scale instead of an instant snap.
-          const targetScale = isHovered ? 1.12 : 1;
-          rec.scaleCur += (targetScale - rec.scaleCur) * ease;
 
           if (rec.modelBody) {
             // Dim adjacent planets: tweak material opacity once per state
@@ -1107,9 +1038,9 @@ export default function ExplorePagesSection() {
                 }
               });
             }
-            rec.modelHook?.scale.setScalar(rec.scaleCur);
+            rec.modelHook?.scale.setScalar(1);
           } else if (rec.mesh && rec.mat) {
-            rec.mesh.scale.setScalar(rec.scaleCur);
+            rec.mesh.scale.setScalar(1);
             rec.mat.opacity = isHovered ? 1 : dim ? 0.35 : 1;
           } else {
             rec.mesh?.scale.setScalar(1);
@@ -1493,8 +1424,10 @@ export default function ExplorePagesSection() {
                   const R = data.radiusPct * ORBIT_SCALE * halfW;
                   const x = Math.cos(rad) * R;
                   const y = Math.sin(rad) * R;
-                  // In-place hover (item 7, rewrite): scale pulse + glow accent only,
-                  // the orbit position itself never changes.
+                  // Frozen hover (item 7, rewrite): the planet never grows,
+                  // glows or shifts — position and size stay identical so
+                  // nothing can read as motion. Only the dim of neighbours,
+                  // the label tint and the side card signal the hover.
                   return (
                     <div
                       key={page.id}
@@ -1507,7 +1440,6 @@ export default function ExplorePagesSection() {
                           className="flex flex-col items-center gap-1.5 cursor-pointer outline-none"
                           animate={{
                             opacity: dimmed ? 0.35 : 1,
-                            scale: active ? 1.12 : 1,
                           }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
                           onMouseEnter={(e) => {
@@ -1534,7 +1466,6 @@ export default function ExplorePagesSection() {
                               height: data.sizePx + 16,
                               borderColor: `${color}38`,
                               backgroundColor: "#0A0A0B80",
-                              boxShadow: active ? `0 0 24px ${color}40` : undefined,
                             }}
                           >
                             <PlanetDisc
@@ -1548,7 +1479,6 @@ export default function ExplorePagesSection() {
                             className="font-mono text-[9px] tracking-widest uppercase whitespace-nowrap"
                             style={{
                               color: active ? color : "#8B8F9C",
-                              textShadow: active ? `0 0 12px ${color}80` : undefined,
                             }}
                           >
                             {data.name[language]}
