@@ -495,6 +495,14 @@ const MODEL_GLB: Record<string, string> = {
 
 /* Deterministic pseudo-random starfield layer. */
 const STAR_COUNT = 70;
+/* A couple of rare shooting stars crossing the starfield (item 8). They are
+   pure decoration: staggered delays keep them from firing in sync, and the
+   whole layer is disabled under eco-mode / prefers-reduced-motion. */
+const SHOOTING_STARS = [
+  { top: "12%", left: "4%", dist: "44vw", dur: 17, delay: 3 },
+  { top: "34%", left: "52%", dist: "40vw", dur: 21, delay: 11 },
+  { top: "58%", left: "10%", dist: "38vw", dur: 19, delay: 19 },
+];
 
 export default function ExplorePagesSection() {
   const { t, language } = useTranslation();
@@ -1123,7 +1131,7 @@ export default function ExplorePagesSection() {
     const cta = PAGE_CTA[page.id]?.[language] || "";
     return (
       <div
-        className="flex flex-col h-full cursor-pointer"
+        className="group flex flex-col h-full cursor-pointer"
         onClick={() => navigateTo(page.id)}
         role="button"
         tabIndex={0}
@@ -1145,7 +1153,7 @@ export default function ExplorePagesSection() {
         </div>
         <h4 className="font-display font-medium text-lg text-[#F5F5F0] mb-2">{t.pageNames[page.labelKey]}</h4>
         <p className="font-sans text-xs text-gray-400 leading-relaxed mb-4 flex-1">{desc}</p>
-        <span className="font-mono text-sm font-bold text-[#3B82F6]">{cta}</span>
+        <span className={`inline-block font-mono text-sm font-bold text-[#3B82F6] transition-transform duration-300 ${motionless ? "" : "group-hover:translate-x-1"}`}>{cta}</span>
         {renderFact(planet)}
       </div>
     );
@@ -1210,7 +1218,7 @@ export default function ExplorePagesSection() {
             </AnimatePresence>
           </div>
 
-          <span className="inline-flex justify-center w-full font-mono text-sm font-bold text-[#3B82F6] group-hover:text-white transition-all mt-4">
+          <span className={`inline-flex justify-center w-full font-mono text-sm font-bold text-[#3B82F6] group-hover:text-white transition-all mt-4 ${motionless ? "" : "group-hover:translate-x-1"}`}>
             {cta}
           </span>
         </ScanCard>
@@ -1270,6 +1278,22 @@ export default function ExplorePagesSection() {
                 }
               />
             ))}
+            {!motionless &&
+              SHOOTING_STARS.map((ss, i) => (
+                <span
+                  key={`shoot-${i}`}
+                  className="shooting-star star-shooting"
+                  style={
+                    {
+                      "--star-top": ss.top,
+                      "--star-left": ss.left,
+                      "--star-dist": ss.dist,
+                      "--star-dur": `${ss.dur}s`,
+                      "--star-delay": `${ss.delay}s`,
+                    } as React.CSSProperties
+                  }
+                />
+              ))}
           </div>
 
           <div ref={solarRef} className="relative aspect-square w-full max-w-[920px] mx-auto">
@@ -1305,14 +1329,24 @@ export default function ExplorePagesSection() {
               </div>
             )}
 
-            {/* orbit rings */}
-            {planets.map(({ page, data }) => (
-              <div
-                key={`ring-${page.id}`}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#3B82F6]/[0.08] pointer-events-none"
-                style={{ width: `${data.radiusPct * ORBIT_SCALE * 100}%`, height: `${data.radiusPct * ORBIT_SCALE * 100}%` }}
-              />
-            ))}
+            {/* orbit rings — the hovered planet's ring ignites in its own colour
+                 (pure glow on the ring, the planet itself stays frozen) */}
+            {planets.map(({ page, data }) => {
+              const lit = hoveredPageId === page.id;
+              return (
+                <div
+                  key={`ring-${page.id}`}
+                  className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#3B82F6]/[0.08] pointer-events-none transition-[opacity,border-color] duration-500 ${lit && !motionless ? "orbit-ignite" : ""}`}
+                  style={{
+                    width: `${data.radiusPct * ORBIT_SCALE * 100}%`,
+                    height: `${data.radiusPct * ORBIT_SCALE * 100}%`,
+                    borderColor: lit ? `${data.color}66` : undefined,
+                    opacity: lit ? (motionless ? 0.9 : 0.75) : undefined,
+                    "--orbit-color": lit ? data.color : undefined,
+                  } as React.CSSProperties}
+                />
+              );
+            })}
 
             {/* Sun — a soft halo behind the 3D sphere in WebGL mode, the
                  gradient sphere itself in the 2D fallback. */}

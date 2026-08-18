@@ -491,10 +491,64 @@
   animation: planet-spin 75s linear infinite;
 }
 
+/* Orbital ring ignition (item 8): a hovered planet's orbit slowly brightens
+   and pulses its glow. The pulse lives in a CSS variable so each ring uses
+   its own planet colour; position/size of planets is never touched. */
+@keyframes orbit-ignite {
+  0%, 100% { box-shadow: 0 0 10px var(--orbit-color, rgba(59,130,246,0.35)), 0 0 30px var(--orbit-color, rgba(59,130,246,0.18)); }
+  50%      { box-shadow: 0 0 16px var(--orbit-color, rgba(59,130,246,0.6)), 0 0 52px var(--orbit-color, rgba(59,130,246,0.35)); }
+}
+
+.orbit-ignite {
+  animation: orbit-ignite 2.4s ease-in-out infinite;
+}
+
+/* Shooting star (item 8): a bright head on a fading tail crossing the
+   starfield diagonally. Most of the cycle is invisible, so several stars can
+   share the same periodic keyframes with staggered delays. */
+.shooting-star {
+  position: absolute;
+  top: var(--star-top, 10%);
+  left: var(--star-left, 0%);
+  width: 150px;
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  opacity: 0;
+  transform: rotate(-32deg);
+  transform-origin: left center;
+}
+
+.shooting-star::after {
+  content: "";
+  position: absolute;
+  right: -7px;
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 0 10px 3px rgba(190, 205, 255, 0.85);
+}
+
+@keyframes shooting-star {
+  0%   { transform: rotate(-32deg) translateX(0); opacity: 0; }
+  2%   { opacity: 1; }
+  10%  { transform: rotate(-32deg) translateX(var(--star-dist, 45vw)); opacity: 0; }
+  100% { transform: rotate(-32deg) translateX(var(--star-dist, 45vw)); opacity: 0; }
+}
+
+.star-shooting {
+  animation: shooting-star var(--star-dur, 16s) linear infinite;
+  animation-delay: var(--star-delay, 0s);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sun-breathe,
   .star-twinkle,
-  .planet-spin {
+  .planet-spin,
+  .orbit-ignite,
+  .star-shooting {
     animation: none !important;
   }
 }
