@@ -586,6 +586,71 @@
   animation-delay: var(--star-delay, 0s);
 }
 
+/* ---- Reference polish (client request): layered Sun corona, travelling
+   orbit light pulses, planet atmospheric halos, hover ring lighting.
+   All motion gated on eco-mode / prefers-reduced-motion via class toggling
+   in the component. ---- */
+
+/* Sun corona (WebGL mode): a soft amber layer that slowly swells and fades
+   over the static base halo, so the star reads as alive, not a flat dot. */
+@keyframes sun-halo-pulse {
+  0%, 100% { opacity: 0.45; }
+  50%      { opacity: 0.9; }
+}
+
+.sun-halo-pulse {
+  animation: sun-halo-pulse 5s ease-in-out infinite;
+}
+
+/* Travelling light along an orbit: the wrapper is rotated very slowly in
+   place, so the single dot traces the ring circumference. The ring's border
+   itself stays untouched — pure decoration, no planet moves. */
+@keyframes orbit-drift {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.orbit-drift {
+  animation: orbit-drift var(--drift-dur, 100s) linear infinite;
+  animation-delay: var(--drift-delay, 0s);
+}
+
+.orbit-dot {
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0.5;
+  box-shadow: 0 0 8px 2px currentColor;
+}
+
+/* Planet atmospheric halo (2D fallback): a faint wash of the planet's own
+   colour behind each disc. Strength is driven by the hover state via two
+   classes (transition, not animation, so reduced-motion is safe). */
+.planet-halo {
+  opacity: 0.28;
+  transition: opacity 0.35s ease;
+}
+
+.planet-halo-on {
+  opacity: 0.85;
+}
+
+/* Ring lighting on hover (2D fallback): stroke-opacity overrides the SVG
+   presentation attributes, and the colour glow reuses the planet tint that
+   is already passed into the ring via a CSS variable. */
+.ring-lit {
+  filter: drop-shadow(0 0 6px var(--ring-glow, rgba(59, 130, 246, 0.8)));
+}
+
+.ring-lit ellipse {
+  stroke-opacity: 1 !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sun-breathe,
   .star-twinkle,
@@ -595,7 +660,9 @@
   .nebula-drift,
   .nebula-drift-slow,
   .star-bright,
-  .planet-breathe {
+  .planet-breathe,
+  .sun-halo-pulse,
+  .orbit-drift {
     animation: none !important;
   }
 }

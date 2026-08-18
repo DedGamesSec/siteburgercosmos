@@ -38,14 +38,15 @@ function helioLongitude(body: Astronomy.Body, date: Date): number {
 
 /* ---- Optional Saturn-style ring overlay (SVG), shared by the 2D fallback
    disc and the 3D-mode overlay stack. ---- */
-const PlanetRings = ({ color, size }: { color: string; size: number }) => (
+const PlanetRings = ({ color, size, lit = false }: { color: string; size: number; lit?: boolean }) => (
   <>
     <svg
       viewBox="0 0 120 60"
       width={size * 1.7}
       height={size * 0.9}
       fill="none"
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] pointer-events-none"
+      className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] pointer-events-none ${lit ? "ring-lit" : ""}`}
+      style={{ "--ring-glow": color } as React.CSSProperties}
     >
       <ellipse cx="60" cy="30" rx="56" ry="16" stroke={color} strokeWidth="3" opacity="0.95" />
       <ellipse cx="60" cy="30" rx="48" ry="11" stroke={color} strokeWidth="1.5" opacity="0.5" />
@@ -73,19 +74,33 @@ const PlanetDisc = ({
   ring = false,
   className = "",
   spin = false,
+  lit = false,
 }: {
   planet: { color: string; textureUrl: string };
   size: number;
   ring?: boolean;
   className?: string;
   spin?: boolean;
+  /** Hover state for the solar-system disc: strengthens the halo and lights
+      the ring. Plain thumbnails in cards stay passive (default false). */
+  lit?: boolean;
 }) => (
   <span
     className={`relative inline-flex items-center justify-center ${className}`}
     style={{ width: size * 1.25, height: size * 1.25 }}
     aria-hidden="true"
   >
-    {ring && <PlanetRings color={planet.color} size={size} />}
+    {ring && <PlanetRings color={planet.color} size={size} lit={lit} />}
+    {/* atmospheric halo — a faint wash of the planet's own colour behind the
+        disc; brightens on hover (reference request). Sized ~1.45x the disc. */}
+    <span
+      className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none ${lit ? "planet-halo-on" : "planet-halo"}`}
+      style={{
+        width: size * 1.45,
+        height: size * 1.45,
+        background: `radial-gradient(circle, ${planet.color}55 0%, ${planet.color}1f 45%, ${planet.color}00 70%)`,
+      }}
+    />
     <span className="relative block rounded-full overflow-hidden shadow-[0_2px_14px_rgba(0,0,0,0.55)]" style={{ width: size, height: size }}>
       {/* real surface map */}
       <span
@@ -502,6 +517,21 @@ const MODEL_GLB: Record<string, string> = {
    faint dots, a fifth are medium, a few are noticeably larger/bright and act
    as constellation anchors. Item 9 — denser, more varied sky. */
 const STAR_COUNT = 190;
+/* Depth layers (reference request): a far field of tiny dim dots and a near
+   field of a few bigger brighter ones. The three layers move at different
+   parallax speeds, so the sky reads as a volume instead of a flat sheet. */
+const DEEP_STAR_COUNT = 160;
+const NEAR_STAR_COUNT = 42;
+/* A single faint light pulse travelling along a few outer orbits (reference
+   request): per-planet rotation duration + delay. The relevant orbit ring is
+   the only moving thing — positions of planets stay real and frozen. */
+const ORBIT_DOTS: Record<string, { dur: number; delay: number }> = {
+  "how-it-works": { dur: 150, delay: 0 },
+  news: { dur: 120, delay: 18 },
+  tech: { dur: 100, delay: 34 },
+  about: { dur: 130, delay: 9 },
+  roadmap: { dur: 78, delay: 27 },
+};
 /* Constellation groups: indices of stars (within the `stars` array) linked by
    faint lines. Picked deterministically to spread across the field. */
 const CONSTELLATION_STARS = [5, 32, 41, 56, 61, 77, 83, 90, 104, 118, 129, 137, 148, 156, 165, 176];
@@ -522,6 +552,8 @@ export default function ExplorePagesSection() {
   const [cardPos, setCardPos] = useState<{ x: number; y: number } | null>(null);
   const solarRef = useRef<HTMLDivElement>(null);
   const starLayerRef = useRef<HTMLDivElement>(null);
+  const starDeepRef = useRef<HTMLDivElement>(null);
+  const starNearRef = useRef<HTMLDivElement>(null);
   const parallaxRef = useRef<HTMLDivElement>(null);
   const [solarW, setSolarW] = useState(0);
   const hideCard = () => {
@@ -618,6 +650,52 @@ export default function ExplorePagesSection() {
         size,
         delay: rnd() * 6,
         opacity,
+        bright,
+      });
+    }
+    return arr;
+  }, []);
+
+  // Deep background stars — tiny, dim, and almost static under the cursor
+  // parallax (they sit furthest away), so the field has real depth.
+  const deepStars = useMemo(() => {
+    type Star = { left: number; top: number; size: number; delay: number; opacity: number };
+    const arr: Star[] = [];
+    let seed = 31;
+    const rnd = () => {
+      seed = (seed * 16807) % 2147483647;
+      return seed / 2147483647;
+    };
+    for (let i = 0; i < DEEP_STAR_COUNT; i++) {
+      arr.push({
+        left: rnd() * 100,
+        top: rnd() * 100,
+        size: 0.6 + rnd() * 0.9,
+        delay: rnd() * 7,
+        opacity: 0.08 + rnd() * 0.22,
+      });
+    }
+    return arr;
+  }, []);
+
+  // Near stars — a few noticeably bigger, brighter points that move a bit
+  // more than the mid layer, reinforcing the volume of the scene.
+  const nearStars = useMemo(() => {
+    type Star = { left: number; top: number; size: number; delay: number; opacity: number; bright: boolean };
+    const arr: Star[] = [];
+    let seed = 47;
+    const rnd = () => {
+      seed = (seed * 16807) % 2147483647;
+      return seed / 2147483647;
+    };
+    for (let i = 0; i < NEAR_STAR_COUNT; i++) {
+      const bright = rnd() > 0.7;
+      arr.push({
+        left: rnd() * 100,
+        top: rnd() * 100,
+        size: bright ? 2.4 + rnd() * 1.6 : 1.2 + rnd() * 1.4,
+        delay: rnd() * 6,
+        opacity: bright ? 0.6 + rnd() * 0.35 : 0.2 + rnd() * 0.4,
         bright,
       });
     }
@@ -1097,6 +1175,11 @@ export default function ExplorePagesSection() {
           const targetSpin = isHovered ? 0 : rec.spinRate * rec.direction;
           rec.spinVel += (targetSpin - rec.spinVel) * ease;
 
+          // Gentle hover scale (client request): the planet stays on its
+          // orbit point, but its body eases up ~6% while hovered. Eased per
+          // frame from the current value so it never snaps.
+          const hoverTarget = isHovered ? 1.06 : 1;
+
           if (rec.modelBody) {
             // Dim adjacent planets: tweak material opacity once per state
             // change (3D models have several materials, so no per-frame sweep).
@@ -1113,12 +1196,19 @@ export default function ExplorePagesSection() {
                 }
               });
             }
-            rec.modelHook?.scale.setScalar(1);
+            if (rec.modelHook) {
+              const s = rec.modelHook.scale.x + (hoverTarget - rec.modelHook.scale.x) * ease;
+              rec.modelHook.scale.setScalar(s);
+            }
           } else if (rec.mesh && rec.mat) {
-            rec.mesh.scale.setScalar(1);
+            const s = rec.mesh.scale.x + (hoverTarget - rec.mesh.scale.x) * ease;
+            rec.mesh.scale.setScalar(s);
             rec.mat.opacity = isHovered ? 1 : dim ? 0.35 : 1;
           } else {
-            rec.mesh?.scale.setScalar(1);
+            if (rec.mesh) {
+              const s = rec.mesh.scale.x + (hoverTarget - rec.mesh.scale.x) * ease;
+              rec.mesh.scale.setScalar(s);
+            }
             if (rec.mat) rec.mat.opacity = 1;
           }
           // Smoothly easing spin replaces the hard pause of the hovered planet.
@@ -1331,13 +1421,41 @@ export default function ExplorePagesSection() {
             // Normalised cursor position inside the block (-1..1).
             const nx = ((e.clientX - r.left) / r.width) * 2 - 1;
             const ny = ((e.clientY - r.top) / r.height) * 2 - 1;
+            // Depth-aware parallax (reference request): far stars barely move,
+            // the mid layer drifts a touch, the near layer leads the cursor.
+            const deep = starDeepRef.current;
+            if (deep) deep.style.transform = `translate(${(-nx * 3).toFixed(2)}px, ${(-ny * 2.5).toFixed(2)}px)`;
             const layer = starLayerRef.current;
             if (layer) layer.style.transform = `translate(${(-nx * 10).toFixed(2)}px, ${(-ny * 8).toFixed(2)}px)`;
+            const near = starNearRef.current;
+            if (near) near.style.transform = `translate(${(-nx * 17).toFixed(2)}px, ${(-ny * 14).toFixed(2)}px)`;
           }}
         >
           {/* starfield — spans the full section width, so the planets keep
               their arrangement inside the square below while surrounding
               space extends out to the screen edges. */}
+          {/* deepest sky — tiny, dim stars that barely move under the cursor
+              parallax (reference request: the field reads as a volume) */}
+          <div ref={starDeepRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out" aria-hidden="true">
+            {deepStars.map((s, i) => (
+              <span
+                key={`deep-${i}`}
+                className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"}`}
+                style={
+                  {
+                    left: `${s.left}%`,
+                    top: `${s.top}%`,
+                    width: s.size,
+                    height: s.size,
+                    opacity: s.opacity,
+                    boxShadow: "0 0 3px rgba(255,255,255,0.4)",
+                    animationDelay: `${s.delay}s`,
+                    "--star-base": s.opacity,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
+          </div>
           <div ref={starLayerRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out" aria-hidden="true">
             {/* faint nebula haze — two soft colour patches, static unless motion
                  allowed, purely decorative */}
@@ -1413,6 +1531,33 @@ export default function ExplorePagesSection() {
               ))}
           </div>
 
+          {/* nearest sky — a few larger/bright stars that lead the cursor a
+              little (per-planet depth on the parallax stack) */}
+          <div ref={starNearRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out" aria-hidden="true">
+            {nearStars.map((s, i) => (
+              <span
+                key={`near-${i}`}
+                className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"} ${
+                  s.bright ? "star-bright" : ""
+                }`}
+                style={
+                  {
+                    left: `${s.left}%`,
+                    top: `${s.top}%`,
+                    width: s.size,
+                    height: s.size,
+                    opacity: s.opacity,
+                    boxShadow: s.bright
+                      ? "0 0 8px 2px rgba(255,255,255,0.45)"
+                      : "0 0 4px rgba(255,255,255,0.5)",
+                    animationDelay: `${s.delay}s`,
+                    "--star-base": s.opacity,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
+          </div>
+
           <div ref={solarRef} className="relative aspect-square w-full max-w-[920px] mx-auto">
 
             {/* Loading skeleton — shown while the shared GLB models are still
@@ -1450,6 +1595,7 @@ export default function ExplorePagesSection() {
                  (pure glow on the ring, the planet itself stays frozen) */}
             {planets.map(({ page, data }) => {
               const lit = hoveredPageId === page.id;
+              const dot = ORBIT_DOTS[page.id];
               return (
                 <div
                   key={`ring-${page.id}`}
@@ -1461,22 +1607,51 @@ export default function ExplorePagesSection() {
                     opacity: lit ? (motionless ? 0.9 : 0.75) : undefined,
                     "--orbit-color": lit ? data.color : undefined,
                   } as React.CSSProperties}
-                />
+                >
+                  {/* a single faint light travelling along this orbit (reference
+                       request): the wrapper rotates in place, the dot rides the
+                       rim. Static under eco-mode / reduced-motion. */}
+                  {dot && !motionless && (
+                    <div
+                      className="absolute inset-0 orbit-drift"
+                      style={{
+                        color: data.color,
+                        "--drift-dur": `${dot.dur}s`,
+                        "--drift-delay": `${dot.delay}s`,
+                      } as React.CSSProperties}
+                    >
+                      <span className="orbit-dot" />
+                    </div>
+                  )}
+                </div>
               );
             })}
 
-            {/* Sun — a soft halo behind the 3D sphere in WebGL mode, the
-                 gradient sphere itself in the 2D fallback. */}
+            {/* Sun — a layered halo behind the 3D sphere in WebGL mode (the
+                 outer corona slowly swells and fades so the star reads alive,
+                 reference request), the gradient sphere itself in 2D fallback. */}
             {use3D ? (
               <div
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgba(255,213,128,0.55) 0%, rgba(251,191,36,0.22) 45%, rgba(245,158,11,0) 70%)",
-                  filter: "blur(10px)",
-                }}
                 aria-hidden="true"
-              />
+              >
+                <div
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background:
+                      "radial-gradient(circle, rgba(255,213,128,0.55) 0%, rgba(251,191,36,0.22) 45%, rgba(245,158,11,0) 70%)",
+                    filter: "blur(10px)",
+                  }}
+                />
+                <div
+                  className={`absolute inset-0 rounded-full ${motionless ? "" : "sun-halo-pulse"}`}
+                  style={{
+                    background:
+                      "radial-gradient(circle, rgba(255,200,120,0.5) 0%, rgba(251,146,60,0.2) 40%, rgba(245,158,11,0) 68%)",
+                    filter: "blur(26px)",
+                  }}
+                />
+              </div>
             ) : (
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[5] pointer-events-none">
                 <div
@@ -1575,10 +1750,10 @@ export default function ExplorePagesSection() {
                   const R = data.radiusPct * ORBIT_SCALE * halfW;
                   const x = Math.cos(rad) * R;
                   const y = Math.sin(rad) * R;
-                  // Frozen hover (item 7, rewrite): the planet never grows,
-                  // glows or shifts — position and size stay identical so
-                  // nothing can read as motion. Only the dim of neighbours,
-                  // the label tint and the side card signal the hover.
+                  // Gentle hover (client request, reference-driven): the orbit
+                  // point is never touched, but the planet subtly scales up,
+                  // its atmospheric halo brightens, the ring lights and the
+                  // label tints/glows in its own colour. Neighbours dim.
                   return (
                     <div
                       key={page.id}
@@ -1591,8 +1766,9 @@ export default function ExplorePagesSection() {
                           className="flex flex-col items-center gap-1.5 cursor-pointer outline-none"
                           animate={{
                             opacity: dimmed ? 0.35 : 1,
+                            scale: active ? 1.06 : 1,
                           }}
-                          transition={{ duration: 0.3, ease: "easeOut" }}
+                          transition={{ duration: 0.35, ease: "easeOut" }}
                           onMouseEnter={(e) => {
                             handlePlanetEnter(page.id, e);
                           }}
@@ -1625,12 +1801,14 @@ export default function ExplorePagesSection() {
                               size={data.sizePx}
                               ring={data.hasRings}
                               spin={!motionless}
+                              lit={active}
                             />
                           </span>
                           <span
                             className="font-mono text-[9px] tracking-widest uppercase whitespace-nowrap"
                             style={{
                               color: active ? color : "#8B8F9C",
+                              textShadow: active ? `0 0 12px ${color}` : undefined,
                             }}
                           >
                             {data.name[language]}
