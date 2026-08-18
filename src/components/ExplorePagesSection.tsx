@@ -522,9 +522,16 @@ const STAR_COUNT = 190;
    parallax speeds, so the sky reads as a volume instead of a flat sheet. */
 const DEEP_STAR_COUNT = 160;
 const NEAR_STAR_COUNT = 42;
-/* Constellation groups: indices of stars (within the `stars` array) linked by
-   faint lines. Picked deterministically to spread across the field. */
-const CONSTELLATION_STARS = [5, 32, 41, 56, 61, 77, 83, 90, 104, 118, 129, 137, 148, 156, 165, 176];
+/* A single faint light pulse travelling along a few outer orbits (reference
+   request): per-planet rotation duration + delay. The relevant orbit ring is
+   the only moving thing — positions of planets stay real and frozen. */
+const ORBIT_DOTS: Record<string, { dur: number; delay: number }> = {
+  "how-it-works": { dur: 150, delay: 0 },
+  news: { dur: 120, delay: 18 },
+  tech: { dur: 100, delay: 34 },
+  about: { dur: 130, delay: 9 },
+  roadmap: { dur: 78, delay: 27 },
+};
 /* A couple of rare shooting stars crossing the starfield (item 8). They are
    pure decoration: staggered delays keep them from firing in sync, and the
    whole layer is disabled under eco-mode / prefers-reduced-motion. */
@@ -681,26 +688,6 @@ export default function ExplorePagesSection() {
     }
     return arr;
   }, []);
-
-  // Faint constellation lines drawn between selected anchor stars (item 9):
-  // a purely decorative layer behind the planets, linking the brightest
-  // stars into loose figures. Coordinates use the same % space as the stars.
-  const constellations = useMemo(() => {
-    const links: Array<[number, number, number, number]> = [];
-    let seed = 101;
-    const rnd = () => {
-      seed = (seed * 16807) % 2147483647;
-      return seed / 2147483647;
-    };
-    for (let k = 0; k < CONSTELLATION_STARS.length - 1; k++) {
-      if (rnd() > 0.28) {
-        const a = CONSTELLATION_STARS[k];
-        const b = CONSTELLATION_STARS[k + 1];
-        links.push([stars[a].left, stars[a].top, stars[b].left, stars[b].top]);
-      }
-    }
-    return links;
-  }, [stars]);
 
   const visiblePages = HEADER_PAGES.filter((p) => p.id !== activePage);
   const planets = visiblePages
@@ -1468,20 +1455,6 @@ export default function ExplorePagesSection() {
                 filter: "blur(34px)",
               }}
             />
-            {/* constellation lines between anchor stars */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-              {constellations.map(([x1, y1, x2, y2], i) => (
-                <line
-                  key={`const-${i}`}
-                  x1={x1}
-                  y1={y1}
-                  x2={x2}
-                  y2={y2}
-                  stroke="rgba(139,143,156,0.14)"
-                  strokeWidth="0.06"
-                />
-              ))}
-            </svg>
             {stars.map((s, i) => (
               <span
                 key={i}
@@ -1581,6 +1554,42 @@ export default function ExplorePagesSection() {
                 </span>
               </div>
             )}
+
+            {/* orbit rings — the hovered planet's ring ignites in its own colour
+                 (pure glow on the ring, the planet itself stays frozen) */}
+            {planets.map(({ page, data }) => {
+              const lit = hoveredPageId === page.id;
+              const dot = ORBIT_DOTS[page.id];
+              return (
+                <div
+                  key={`ring-${page.id}`}
+                  className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#3B82F6]/[0.08] pointer-events-none transition-[opacity,border-color] duration-500 ${lit && !motionless ? "orbit-ignite" : ""}`}
+                  style={{
+                    width: `${data.radiusPct * ORBIT_SCALE * 100}%`,
+                    height: `${data.radiusPct * ORBIT_SCALE * 100}%`,
+                    borderColor: lit ? `${data.color}66` : undefined,
+                    opacity: lit ? (motionless ? 0.9 : 0.75) : undefined,
+                    "--orbit-color": lit ? data.color : undefined,
+                  } as React.CSSProperties}
+                >
+                  {/* a single faint light travelling along this orbit (reference
+                       request): the wrapper rotates in place, the dot rides the
+                       rim. Static under eco-mode / reduced-motion. */}
+                  {dot && !motionless && (
+                    <div
+                      className="absolute inset-0 orbit-drift"
+                      style={{
+                        color: data.color,
+                        "--drift-dur": `${dot.dur}s`,
+                        "--drift-delay": `${dot.delay}s`,
+                      } as React.CSSProperties}
+                    >
+                      <span className="orbit-dot" />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
             {/* Sun — a layered halo behind the 3D sphere in WebGL mode (the
                  outer corona slowly swells and fades so the star reads alive,
