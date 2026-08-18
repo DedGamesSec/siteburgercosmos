@@ -594,12 +594,39 @@ const SHOOTING_STARS = [
   { top: "58%", left: "10%", dist: "38vw", dur: 19, delay: 19 },
 ];
 
+/* ---- Comets: rare background events on a truly random 30-60s cadence.
+   Each comet gets its own entry point, travel angle, speed and tail length;
+   the animation is finite (it flies once and is unmounted). Skipped entirely
+   under eco-mode / prefers-reduced-motion. ---- */
+type CometFx = {
+  key: number;
+  top: string;
+  left: string;
+  ang: string;
+  dist: string;
+  len: string;
+  dur: string;
+};
+const rand = (min: number, max: number) => min + Math.random() * (max - min);
+function makeComet(key: number): CometFx {
+  return {
+    key,
+    top: `${Math.round(rand(8, 82))}%`,
+    left: `${Math.round(rand(-14, 18))}%`,
+    ang: `${Math.round(rand(-62, -24))}deg`,
+    dist: `${Math.round(rand(520, 920))}px`,
+    len: `${Math.round(rand(90, 190))}px`,
+    dur: `${rand(3.8, 5.2).toFixed(1)}s`,
+  };
+}
+
 export default function ExplorePagesSection() {
   const { t, language } = useTranslation();
   const { activePage, navigateTo } = useNavigation();
   const { ecoMode } = useEcoMode();
   const [hoveredPageId, setHoveredPageId] = useState<string | null>(null);
   const [cardPos, setCardPos] = useState<{ x: number; y: number } | null>(null);
+  const [comet, setComet] = useState<CometFx | null>(null);
   const solarRef = useRef<HTMLDivElement>(null);
   const starLayerRef = useRef<HTMLDivElement>(null);
   const starDeepRef = useRef<HTMLDivElement>(null);
@@ -667,6 +694,31 @@ export default function ExplorePagesSection() {
   const motionless = ecoMode || reduceMotion;
   const motionlessRef = useRef(motionless);
   motionlessRef.current = motionless;
+
+  // Comet scheduler: one comet every ~35-65s — its 4-5s flight plus a random
+  // 30-60s gap. Frozen under eco-mode / prefers-reduced-motion (no timers).
+  useEffect(() => {
+    if (motionless) return;
+    let alive = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const later = (ms: number) => {
+      timer = setTimeout(step, ms);
+    };
+    const step = () => {
+      if (!alive) return;
+      setComet(makeComet(Date.now()));
+      timer = setTimeout(() => {
+        if (alive) setComet(null);
+        later(rand(30000, 60000));
+      }, 4600);
+    };
+    later(rand(4000, 9000)); // a first comet shortly after load, then 30-60s apart
+    return () => {
+      alive = false;
+      if (timer) clearTimeout(timer);
+      setComet(null); // never leave a half-flown comet when eco/motion toggles
+    };
+  }, [motionless]);
 
   // Planets are completely frozen (client request): positions are computed
   // once on mount and never re-synced, so nothing ever moves or jumps.
@@ -1843,6 +1895,24 @@ if (!motionlessRef.current) {
             />
           ))}
         </div>
+
+        {/* comet — the rare background event, mounted for its one 4-5s flight */}
+        {comet && (
+          <div
+            key={comet.key}
+            className="comet"
+            style={
+              {
+                top: comet.top,
+                left: comet.left,
+                "--comet-ang": comet.ang,
+                "--comet-dist": comet.dist,
+                "--comet-len": comet.len,
+                animationDuration: comet.dur,
+              } as React.CSSProperties
+            }
+          />
+        )}
       </div>
 
       <div className="w-full flex flex-col items-center">

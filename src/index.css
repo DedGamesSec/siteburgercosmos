@@ -598,6 +598,44 @@
   animation-delay: var(--star-delay, 0s);
 }
 
+/* Comet (background event): a bright icy head on a cyan tail sweeping across
+   the sky. Spawned by the component on a random 30-60s cadence (eco-mode /
+   prefers-reduced-motion skips the scheduler entirely), so the flight runs
+   once with a finite animation instead of a periodic loop. */
+.comet {
+  position: absolute;
+  pointer-events: none;
+  width: var(--comet-len, 150px);
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(196, 214, 255, 0.95), rgba(196, 214, 255, 0.35) 55%, rgba(196, 214, 255, 0));
+  opacity: 0;
+  transform: rotate(var(--comet-ang, -38deg));
+  transform-origin: left center;
+  animation: comet-flight 4.6s cubic-bezier(0.2, 0.6, 0.35, 1) forwards;
+}
+
+.comet::before {
+  content: "";
+  position: absolute;
+  right: -8px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow:
+    0 0 12px 4px rgba(196, 214, 255, 0.9),
+    0 0 28px 10px rgba(130, 175, 255, 0.45);
+}
+
+@keyframes comet-flight {
+  0% { transform: rotate(var(--comet-ang, -38deg)) translateX(0); opacity: 0; }
+  7% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { transform: rotate(var(--comet-ang, -38deg)) translateX(var(--comet-dist, 850px)); opacity: 0; }
+}
+
 /* ---- Reference polish (client request): layered Sun corona, travelling
    orbit light pulses, planet atmospheric halos, hover ring lighting.
    All motion gated on eco-mode / prefers-reduced-motion via class toggling
