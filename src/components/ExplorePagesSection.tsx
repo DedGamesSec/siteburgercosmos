@@ -1561,7 +1561,7 @@ export default function ExplorePagesSection() {
                 </ul>
               </>
             ) : (
-                planets.map(({ page, data }) => {
+                planets.map(({ page, data }, i) => {
                   const active = hoveredPageId === page.id;
                   const dimmed = !ecoMode && hoveredPageId !== null && !active;
                   const color = data.color;
@@ -1606,13 +1606,14 @@ export default function ExplorePagesSection() {
                           aria-expanded={active}
                         >
                           <span
-                            className="rounded-full flex items-center justify-center border transition-all"
+                            className={`rounded-full flex items-center justify-center border transition-all ${motionless ? "" : "planet-breathe"}`}
                             style={{
                               width: data.sizePx + 16,
                               height: data.sizePx + 16,
                               borderColor: `${color}38`,
                               backgroundColor: "#0A0A0B80",
-                            }}
+                              "--breathe-delay": `${(i * 0.9) % 6}s`,
+                            } as React.CSSProperties}
                           >
                             <PlanetDisc
                               planet={data}

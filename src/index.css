@@ -470,6 +470,19 @@
   animation: sun-breathe 5s ease-in-out infinite;
 }
 
+/* Planet idle "breathing" (item 8.6): a barely-there glow pulse via
+   box-shadow only — size and position stay frozen, so nothing reads as
+   motion. Different phase per planet via inline animation-delay. */
+@keyframes planet-breathe {
+  0%, 100% { box-shadow: 0 0 6px rgba(59, 130, 246, 0.12); }
+  50%      { box-shadow: 0 0 16px rgba(59, 130, 246, 0.28); }
+}
+
+.planet-breathe {
+  animation: planet-breathe var(--breathe-dur, 6s) ease-in-out infinite;
+  animation-delay: var(--breathe-delay, 0s);
+}
+
 /* Subtle, cheap starfield twinkle (per-star opacity + delay set inline). */
 @keyframes star-twinkle {
   0%, 100% { opacity: var(--star-base, 0.5); }
@@ -581,7 +594,8 @@
   .star-shooting,
   .nebula-drift,
   .nebula-drift-slow,
-  .star-bright {
+  .star-bright,
+  .planet-breathe {
     animation: none !important;
   }
 }
