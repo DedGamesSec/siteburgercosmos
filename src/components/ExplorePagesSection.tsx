@@ -968,9 +968,14 @@ export default function ExplorePagesSection() {
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       sunLight.castShadow = true;
-      sunLight.shadow.mapSize.set(1024, 1024);
+      // Higher-resolution cube shadow map: 1024 -> 2048 gives the on-planet sun
+      // shadows a noticeably cleaner edge, and the bias/normalBias tuning kills
+      // the acne shimmer that reads as flicker on the lit hemisphere.
+      sunLight.shadow.mapSize.set(2048, 2048);
       sunLight.shadow.camera.near = 10;
       sunLight.shadow.camera.far = 900;
+      sunLight.shadow.bias = -0.0002;
+      sunLight.shadow.normalBias = 0.02;
 
       // The Sun sphere itself (unlit).
       const sunGeo = new THREE.SphereGeometry(52, 32, 32);
@@ -1130,7 +1135,11 @@ export default function ExplorePagesSection() {
         if (cancelled) return;
         composer = new EffectComposer(renderer);
         composer.addPass(new RenderPass(scene, camera));
-        bloomPass = new UnrealBloomPass(new THREE.Vector2(w, w), 0.4, 0.8, 0.45);
+        // Bloom threshold lifted high enough that only the Sun (and the
+        // hottest pixels) glow while planet surfaces — bright cloud bands,
+        // ice caps — stay under it, so the lit areas never overexpose or
+        // shimmer from per-frame bloom instability.
+        bloomPass = new UnrealBloomPass(new THREE.Vector2(w, w), 0.55, 0.8, 0.5);
         composer.addPass(bloomPass);
         composer.addPass(new OutputPass());
       } catch {
@@ -1199,8 +1208,11 @@ export default function ExplorePagesSection() {
           // for Saturn, their own rings — skip the procedural extras).
           axis.add(model.body);
         } else {
-          // Procedural sphere with the real surface map.
-          const geo = new THREE.SphereGeometry(data.sizePx / 2, 32, 24);
+          // Procedural sphere with the real surface map. 64x48 segments (up
+          // from 32x24) so the sun terminator and lit gradient stay smooth
+          // instead of resolving to flat faced polygons as the planet spins
+          // (faceting was the last visible shimmer on the bright hemisphere).
+          const geo = new THREE.SphereGeometry(data.sizePx / 2, 64, 48);
           mat = new THREE.MeshStandardMaterial({ color: data.color, roughness: 1, metalness: 0, transparent: true });
           loader.load(
             `${import.meta.env.BASE_URL}${data.textureUrlHi ?? data.textureUrl}`,
@@ -1224,7 +1236,7 @@ export default function ExplorePagesSection() {
 
           // Venus: translucent cloud shell over the surface map for depth.
           if (data.atmosphereTextureUrl) {
-            const cloudGeo = new THREE.SphereGeometry((data.sizePx / 2) * 1.012, 32, 24);
+            const cloudGeo = new THREE.SphereGeometry((data.sizePx / 2) * 1.012, 64, 48);
             const cloudMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.85, depthWrite: false });
             loader.load(
               `${import.meta.env.BASE_URL}${data.atmosphereTextureUrl}`,
