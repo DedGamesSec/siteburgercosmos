@@ -92,7 +92,12 @@ const PlanetDisc = ({
         className={`absolute inset-0 ${spin ? "planet-spin" : ""}`}
         style={{
           backgroundImage: `url(${import.meta.env.BASE_URL}${planet.textureUrl})`,
-          backgroundSize: "cover",
+          // Mars's 2:1 map carries near-white polar caps on its top/bottom
+          // rows; with `cover` on the round disc those edges land exactly on
+          // the circle's poles and read as a broken texture at thumbnail size.
+          // Slightly overscaled height crops those rows out (kept for Mars
+          // only — every other map's poles are dark and look fine).
+          backgroundSize: planet.textureUrl.includes("mars") ? "200% 118%" : "cover",
           backgroundPosition: "center",
         }}
       />
