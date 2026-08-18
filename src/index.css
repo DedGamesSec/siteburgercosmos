@@ -456,18 +456,30 @@
    breathing glow and a light starfield twinkle, both gated on eco-mode /
    prefers-reduced-motion (noving removed via class toggling in the component). */
 
-/* Sun breathing glow (4-6s cycle). */
+/* Sun breathing glow. Deliberately subtle (a few percent, ~7s cycle) so the
+   bright core never flickers hard — just enough to read the star as alive. */
 @keyframes sun-breathe {
   0%, 100% {
     box-shadow: 0 0 40px rgba(251, 191, 36, 0.55), 0 0 90px rgba(245, 158, 11, 0.35), 0 0 140px rgba(245, 158, 11, 0.18);
   }
   50% {
-    box-shadow: 0 0 56px rgba(251, 191, 36, 0.75), 0 0 115px rgba(245, 158, 11, 0.5), 0 0 175px rgba(245, 158, 11, 0.28);
+    box-shadow: 0 0 44px rgba(251, 191, 36, 0.59), 0 0 98px rgba(245, 158, 11, 0.38), 0 0 152px rgba(245, 158, 11, 0.20);
   }
 }
 
 .sun-breathe {
-  animation: sun-breathe 5s ease-in-out infinite;
+  animation: sun-breathe 7s ease-in-out infinite;
+}
+
+/* Slow turn of the granulated surface layer inside the 2D Sun disc — only
+   the texture rotates, the gradient/glow underneath stays still. */
+@keyframes sun-surface-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.sun-surface-rot {
+  animation: sun-surface-spin 160s linear infinite;
 }
 
 /* Planet idle "breathing" (item 8.6): a barely-there glow pulse via
@@ -592,14 +604,14 @@
    in the component. ---- */
 
 /* Sun corona (WebGL mode): a soft amber layer that slowly swells and fades
-   over the static base halo, so the star reads as alive, not a flat dot. */
+   over the static base halo. Kept subtle so the bright region stays stable. */
 @keyframes sun-halo-pulse {
-  0%, 100% { opacity: 0.45; }
-  50%      { opacity: 0.9; }
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 0.62; }
 }
 
 .sun-halo-pulse {
-  animation: sun-halo-pulse 5s ease-in-out infinite;
+  animation: sun-halo-pulse 7s ease-in-out infinite;
 }
 
 /* Planet atmospheric halo (2D fallback): a faint wash of the planet's own
@@ -635,7 +647,8 @@
   .nebula-drift-slow,
   .star-bright,
   .planet-breathe,
-  .sun-halo-pulse {
+  .sun-halo-pulse,
+  .sun-surface-rot {
     animation: none !important;
   }
 }

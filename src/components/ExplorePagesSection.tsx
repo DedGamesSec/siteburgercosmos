@@ -9,6 +9,50 @@ import ScanCard from "./ScanCard";
 import * as Astronomy from "astronomy-engine";
 import { isWebGLAvailable } from "./cinematicShared";
 
+/* ---- Layered living Sun ----
+   A shared granulated surface canvas is used both by the WebGL core sphere
+   (as a texture) and by the 2D fallback disc (as a background image):
+   warm core -> amber gradient rim, then many faint hot/cold granulation
+   cells. Generated once and cached so re-renders never rebuild it. */
+let sunSurfaceCache: HTMLCanvasElement | null = null;
+function buildSunSurface(): HTMLCanvasElement {
+  if (sunSurfaceCache) return sunSurfaceCache;
+  const size = 512;
+  const c = document.createElement("canvas");
+  c.width = size;
+  c.height = size;
+  const ctx = c.getContext("2d")!;
+  // The gradient core is centred exactly so the large-scale brightness stays
+  // put when the WebGL sphere rotates — only the fine granulation cells turn.
+  const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  g.addColorStop(0, "#FFF6C9");
+  g.addColorStop(0.16, "#FFE9A8");
+  g.addColorStop(0.42, "#FFC36B");
+  g.addColorStop(0.74, "#F59E0B");
+  g.addColorStop(1, "#B45309");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
+  // Granulation: faint hot/cold cells spread across the disc (kept away from
+  // the very bright core so the surface reads as textured without harsh
+  // per-frame flicker on the brightest region).
+  for (let i = 0; i < 340; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const rr = Math.sqrt(Math.random());
+    const x = size / 2 + Math.cos(a) * rr * size * 0.42;
+    const y = size / 2 + Math.sin(a) * rr * size * 0.42;
+    const rad = 1.5 + Math.random() * 5;
+    const hot = Math.random() > 0.5;
+    ctx.globalAlpha = 0.05 + Math.random() * 0.11;
+    ctx.fillStyle = hot ? "#FFF8E0" : "#7A3E08";
+    ctx.beginPath();
+    ctx.arc(x, y, rad, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  sunSurfaceCache = c;
+  return c;
+}
+
 const HEADER_PAGES = PAGES_CONFIG.filter((p) => p.showInHeader).sort((a, b) => a.order - b.order);
 
 type LangDict = Record<LanguageCode, string>;
@@ -702,6 +746,9 @@ export default function ExplorePagesSection() {
   const hoveredPlanet = hoveredPageId ? PLANET_DATA[hoveredPageId] : null;
   const hoveredPage = visiblePages.find((p) => p.id === hoveredPageId);
   const halfW = solarW / 2;
+  // Shared granulated Sun surface as a data URL for the 2D fallback disc
+  // (the WebGL core reuses the same canvas as a texture).
+  const sunSurfaceUrl = useMemo(() => (typeof document !== "undefined" ? buildSunSurface().toDataURL() : ""), []);
 
   // Position the info card beside the hovered planet: open it outwards from
   // the planet (towards the centre of the composition), clamped to bounds so
@@ -977,12 +1024,46 @@ export default function ExplorePagesSection() {
       sunLight.shadow.bias = -0.0002;
       sunLight.shadow.normalBias = 0.02;
 
-      // The Sun sphere itself (unlit).
-      const sunGeo = new THREE.SphereGeometry(52, 32, 32);
-      const sunMat = new THREE.MeshBasicMaterial({ color: 0xffc36b });
+      // The Sun sphere itself (unlit — it IS the light source). A granulated
+      // CanvasTexture replaces the old flat disc: the surface slowly rotates
+      // in the render loop ("solar granulation") and breathes a few percent.
+      // A soft additive corona sprite layers the warm glow outward to just
+      // inside Mercury's orbit (radius 140 vs Mercury's 110), so the glow
+      // reads as deep space light, never washing the inner planets.
+      const sunGeo = new THREE.SphereGeometry(52, 48, 40);
+      const sunTex = new THREE.CanvasTexture(buildSunSurface());
+      sunTex.colorSpace = THREE.SRGBColorSpace;
+      sunTex.anisotropy = 4;
+      const sunMat = new THREE.MeshBasicMaterial({ map: sunTex, color: 0xffffff });
       const sun = new THREE.Mesh(sunGeo, sunMat);
       scene.add(sun);
-      disposables.push(sunGeo, sunMat);
+      disposables.push(sunGeo, sunMat, sunTex);
+
+      const coronaCanvas = document.createElement("canvas");
+      coronaCanvas.width = 256;
+      coronaCanvas.height = 256;
+      const cctx = coronaCanvas.getContext("2d")!;
+      const cg = cctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+      cg.addColorStop(0, "rgba(255,214,130,0.85)");
+      cg.addColorStop(0.28, "rgba(251,164,66,0.34)");
+      cg.addColorStop(0.6, "rgba(245,140,20,0.10)");
+      cg.addColorStop(1, "rgba(245,140,20,0)");
+      cctx.fillStyle = cg;
+      cctx.fillRect(0, 0, 256, 256);
+      const coronaTex = new THREE.CanvasTexture(coronaCanvas);
+      coronaTex.colorSpace = THREE.SRGBColorSpace;
+      const coronaMat = new THREE.SpriteMaterial({
+        map: coronaTex,
+        transparent: true,
+        opacity: 0.5,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      const corona = new THREE.Sprite(coronaMat);
+      corona.position.z = -2; // sits just behind the core plane, no rim z-fight
+      corona.scale.set(140, 140, 1);
+      scene.add(corona);
+      disposables.push(coronaTex, coronaMat);
 
       const loader = new THREE.TextureLoader();
 
@@ -1417,7 +1498,7 @@ export default function ExplorePagesSection() {
           // two independent transforms, both delta-time driven and both frozen
           // under eco-mode / prefers-reduced-motion. The negative z sign keeps
           // the on-screen layout identical to the 2D fallback.
-          if (!motionlessRef.current) {
+if (!motionlessRef.current) {
             rec.orbitDrift += dt * rec.orbitRate;
             rec.axis.rotation.y += dt * rec.direction * rec.spinRate;
           }
@@ -1481,6 +1562,21 @@ export default function ExplorePagesSection() {
         camera!.position.x = camX;
         camera!.position.y = camY;
         camera!.lookAt(0, 0, 0);
+
+        // ---- Living Sun: a slow granulation spin + gentle 3-4% breathing
+        // (this is the light source — the pulse lives on the sphere/corona
+        // only, never feeding back into the light). Frozen to base under
+        // eco-mode / prefers-reduced-motion.
+        if (!motionlessRef.current) {
+          const tS = now / 1000;
+          const breathe = 1 + 0.04 * Math.sin(tS * 0.7);
+          sun.scale.setScalar(breathe);
+          sun.rotation.y += dt * 0.06;
+          coronaMat.opacity = 0.5 * (1 + 0.06 * Math.sin(tS * 0.7 + 1.3));
+        } else {
+          sun.scale.setScalar(1);
+          coronaMat.opacity = 0.5;
+        }
 
         // eco-mode: drop the expensive bits (bloom + shadow mapping) live;
         // the sun light and the axial tilts always stay so weak devices don't
@@ -1920,7 +2016,18 @@ export default function ExplorePagesSection() {
                     boxShadow:
                       "0 0 40px rgba(251,191,36,0.55), 0 0 90px rgba(245,158,11,0.35), 0 0 140px rgba(245,158,11,0.18)",
                   }}
-                />
+                >
+                  {/* granulation layer — slowly turns inside the disc, the
+                      base gradient + glow stay put so only the texture moves */}
+                  <span
+                    className={`absolute inset-0 rounded-full ${motionless ? "" : "sun-surface-rot"}`}
+                    style={{
+                      backgroundImage: `url(${sunSurfaceUrl})`,
+                      backgroundSize: "cover",
+                    }}
+                    aria-hidden="true"
+                  />
+                </div>
               </div>
             )}
 
