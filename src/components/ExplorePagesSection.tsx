@@ -143,7 +143,7 @@ type PlanetData = {
 const PLANET_DATA: Record<string, PlanetData> = {
   "how-it-works": {
     color: "#3B82F6",
-    sizePx: 66,
+    sizePx: 82,
     radiusPct: 0.9,
     orbitalPeriodDays: 60182,
     textureUrl: "textures/planets/neptune.jpg",
@@ -165,7 +165,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   tech: {
     color: "#D97706",
-    sizePx: 84,
+    sizePx: 104,
     radiusPct: 0.64,
     orbitalPeriodDays: 4332.6,
     textureUrl: "textures/planets/jupiter.jpg",
@@ -187,7 +187,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   roadmap: {
     color: "#EF4444",
-    sizePx: 46,
+    sizePx: 58,
     radiusPct: 0.45,
     orbitalPeriodDays: 687,
     textureUrl: "textures/planets/mars.jpg",
@@ -209,7 +209,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   about: {
     color: "#EAB308",
-    sizePx: 78,
+    sizePx: 98,
     radiusPct: 0.74,
     orbitalPeriodDays: 10759.2,
     textureUrl: "textures/planets/saturn.jpg",
@@ -233,7 +233,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   comparison: {
     color: "#FDE68A",
-    sizePx: 54,
+    sizePx: 68,
     radiusPct: 0.34,
     orbitalPeriodDays: 224.7,
     textureUrl: "textures/planets/venus.jpg",
@@ -256,7 +256,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   news: {
     color: "#22D3EE",
-    sizePx: 68,
+    sizePx: 86,
     radiusPct: 0.84,
     orbitalPeriodDays: 30688.5,
     textureUrl: "textures/planets/uranus.jpg",
@@ -278,7 +278,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   download: {
     color: "#9CA3AF",
-    sizePx: 40,
+    sizePx: 52,
     radiusPct: 0.26,
     orbitalPeriodDays: 88,
     textureUrl: "textures/planets/mercury.jpg",
