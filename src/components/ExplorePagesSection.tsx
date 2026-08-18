@@ -716,6 +716,34 @@ export default function ExplorePagesSection() {
   hoverRef.current = hoveredPageId;
   const inViewRef = useRef(true);
 
+  // ---- Item 8: "warp" burst on card click. A short decorative flash fans out
+  //      from the click point, then navigation happens — never blocked for
+  //      long, and skipped entirely under eco-mode / reduced-motion.
+  const [warp, setWarp] = useState<{ x: number; y: number; key: number } | null>(null);
+  const warpTimer = useRef<number | null>(null);
+  useEffect(() => () => {
+    if (warpTimer.current !== null) window.clearTimeout(warpTimer.current);
+  }, []);
+  const warpNavigate = (id: string, e?: React.MouseEvent) => {
+    if (motionless || !e) {
+      navigateTo(id);
+      return;
+    }
+    const cont = solarRef.current;
+    if (!cont) {
+      navigateTo(id);
+      return;
+    }
+    const r = cont.getBoundingClientRect();
+    setWarp({ x: e.clientX - r.left, y: e.clientY - r.top, key: Date.now() });
+    if (warpTimer.current !== null) window.clearTimeout(warpTimer.current);
+    warpTimer.current = window.setTimeout(() => {
+      setWarp(null);
+      navigateTo(id);
+    }, 320);
+  };
+
+
   useEffect(() => {
     if (!use3D) return;
     setSceneReady(false);
@@ -1139,7 +1167,7 @@ export default function ExplorePagesSection() {
       e.preventDefault();
       return;
     }
-    navigateTo(page.id);
+    warpNavigate(page.id, e);
   };
 
   // Shared planet-fact block (inside the desktop overlay card and the expanded
@@ -1166,13 +1194,13 @@ export default function ExplorePagesSection() {
     return (
       <div
         className="group flex flex-col h-full cursor-pointer"
-        onClick={() => navigateTo(page.id)}
+        onClick={(e) => warpNavigate(page.id, e)}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            navigateTo(page.id);
+            warpNavigate(page.id);
           }
         }}
       >
@@ -1507,11 +1535,11 @@ export default function ExplorePagesSection() {
                       onFocus={() => {
                         setHoveredPageId(page.id);
                       }}
-                      onClick={() => navigateTo(page.id)}
+                      onClick={(e) => warpNavigate(page.id, e)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          navigateTo(page.id);
+                          warpNavigate(page.id);
                         }
                       }}
                     />
@@ -1567,11 +1595,11 @@ export default function ExplorePagesSection() {
                           onFocus={() => {
                             setHoveredPageId(page.id);
                           }}
-                          onClick={() => navigateTo(page.id)}
+                          onClick={(e) => warpNavigate(page.id, e)}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" || e.key === " ") {
                               e.preventDefault();
-                              navigateTo(page.id);
+                              warpNavigate(page.id);
                             }
                           }}
                           aria-label={t.pageNames[page.labelKey]}
@@ -1623,6 +1651,25 @@ export default function ExplorePagesSection() {
                   onPointerLeave={hideCardIfLeavingCard}
                 >
                   {renderOverlayCard(hoveredPage, hoveredPlanet)}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* warp flash (item 8): a short expanding ring + fading particles
+                 burst from the click point before the page transition */}
+            <AnimatePresence>
+              {warp && (
+                <motion.div
+                  key={warp.key}
+                  className="pointer-events-none absolute z-[50]"
+                  style={{ left: warp.x, top: warp.y }}
+                  initial={{ opacity: 0.9, scale: 0.15 }}
+                  animate={{ opacity: 0, scale: 4.2 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.32, ease: "easeOut" }}
+                >
+                  <div className="absolute -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full border-2 border-[#3B82F6] shadow-[0_0_18px_rgba(59,130,246,0.9)]" />
+                  <div className="absolute -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white" />
                 </motion.div>
               )}
             </AnimatePresence>
