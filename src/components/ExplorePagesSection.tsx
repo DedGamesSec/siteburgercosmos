@@ -493,8 +493,13 @@ const MODEL_GLB: Record<string, string> = {
   // "download": "models/planets/mercury.glb",
 };
 
-/* Deterministic pseudo-random starfield layer. */
-const STAR_COUNT = 70;
+/* Deterministic pseudo-random starfield layer. ~190 stars: the bulk is small
+   faint dots, a fifth are medium, a few are noticeably larger/bright and act
+   as constellation anchors. Item 9 — denser, more varied sky. */
+const STAR_COUNT = 190;
+/* Constellation groups: indices of stars (within the `stars` array) linked by
+   faint lines. Picked deterministically to spread across the field. */
+const CONSTELLATION_STARS = [5, 32, 41, 56, 61, 77, 83, 90, 104, 118, 129, 137, 148, 156, 165, 176];
 /* A couple of rare shooting stars crossing the starfield (item 8). They are
    pure decoration: staggered delays keep them from firing in sync, and the
    whole layer is disabled under eco-mode / prefers-reduced-motion. */
@@ -585,25 +590,52 @@ export default function ExplorePagesSection() {
     return () => window.clearInterval(id);
   }, [motionless]);
 
-  // Deterministic pseudo-random star field.
+  // Deterministic pseudo-random star field. Sizes/opacities are skewed so a
+  // few stars come out notably bigger and brighter (depth, not a uniform grid).
   const stars = useMemo(() => {
-    const arr: Array<{ left: number; top: number; size: number; delay: number; opacity: number }> = [];
+    type Star = { left: number; top: number; size: number; delay: number; opacity: number; bright: boolean };
+    const arr: Star[] = [];
     let seed = 7;
     const rnd = () => {
       seed = (seed * 16807) % 2147483647;
       return seed / 2147483647;
     };
     for (let i = 0; i < STAR_COUNT; i++) {
+      const r = rnd();
+      const bright = r > 0.93;
+      const size = bright ? 2.2 + rnd() * 1.8 : 0.6 + rnd() * (r > 0.7 ? 2.2 : 1.1);
+      const opacity = bright ? 0.65 + rnd() * 0.35 : 0.15 + rnd() * 0.55;
       arr.push({
         left: rnd() * 100,
         top: rnd() * 100,
-        size: 0.8 + rnd() * 1.6,
+        size,
         delay: rnd() * 6,
-        opacity: 0.2 + rnd() * 0.6,
+        opacity,
+        bright,
       });
     }
     return arr;
   }, []);
+
+  // Faint constellation lines drawn between selected anchor stars (item 9):
+  // a purely decorative layer behind the planets, linking the brightest
+  // stars into loose figures. Coordinates use the same % space as the stars.
+  const constellations = useMemo(() => {
+    const links: Array<[number, number, number, number]> = [];
+    let seed = 101;
+    const rnd = () => {
+      seed = (seed * 16807) % 2147483647;
+      return seed / 2147483647;
+    };
+    for (let k = 0; k < CONSTELLATION_STARS.length - 1; k++) {
+      if (rnd() > 0.28) {
+        const a = CONSTELLATION_STARS[k];
+        const b = CONSTELLATION_STARS[k + 1];
+        links.push([stars[a].left, stars[a].top, stars[b].left, stars[b].top]);
+      }
+    }
+    return links;
+  }, [stars]);
 
   const visiblePages = HEADER_PAGES.filter((p) => p.id !== activePage);
   const planets = visiblePages
@@ -1260,10 +1292,46 @@ export default function ExplorePagesSection() {
               their arrangement inside the square below while surrounding
               space extends out to the screen edges. */}
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+            {/* faint nebula haze — two soft colour patches, static unless motion
+                 allowed, purely decorative */}
+            <div
+              className={`absolute w-[420px] h-[240px] rounded-full ${motionless ? "" : "nebula-drift"}`}
+              style={{
+                left: "18%",
+                top: "22%",
+                background: "radial-gradient(ellipse, rgba(120,110,220,0.16) 0%, rgba(120,110,220,0) 70%)",
+                filter: "blur(30px)",
+              }}
+            />
+            <div
+              className={`absolute w-[380px] h-[220px] rounded-full ${motionless ? "" : "nebula-drift-slow"}`}
+              style={{
+                left: "58%",
+                top: "58%",
+                background: "radial-gradient(ellipse, rgba(60,170,220,0.13) 0%, rgba(60,170,220,0) 70%)",
+                filter: "blur(34px)",
+              }}
+            />
+            {/* constellation lines between anchor stars */}
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              {constellations.map(([x1, y1, x2, y2], i) => (
+                <line
+                  key={`const-${i}`}
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
+                  stroke="rgba(139,143,156,0.14)"
+                  strokeWidth="0.06"
+                />
+              ))}
+            </svg>
             {stars.map((s, i) => (
               <span
                 key={i}
-                className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"}`}
+                className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"} ${
+                  s.bright ? "star-bright" : ""
+                }`}
                 style={
                   {
                     left: `${s.left}%`,
@@ -1271,7 +1339,9 @@ export default function ExplorePagesSection() {
                     width: s.size,
                     height: s.size,
                     opacity: s.opacity,
-                    boxShadow: "0 0 4px rgba(255,255,255,0.5)",
+                    boxShadow: s.bright
+                      ? "0 0 8px 2px rgba(255,255,255,0.45)"
+                      : "0 0 4px rgba(255,255,255,0.5)",
                     animationDelay: `${s.delay}s`,
                     "--star-base": s.opacity,
                   } as React.CSSProperties

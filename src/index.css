@@ -480,6 +480,36 @@
   animation: star-twinkle 5s ease-in-out infinite;
 }
 
+/* Bright anchor stars (item 9): a soft pulsing halo so the few larger stars
+   read as distant glowing suns rather than flat dots. */
+@keyframes star-bright {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.5); }
+}
+
+.star-bright {
+  animation: star-bright 4.2s ease-in-out infinite;
+}
+
+/* Nebula haze (item 9): two faint colour patches drifting almost
+
+/* Nebula haze (item 9): two faint colour patches drifting almost
+   imperceptibly. Pure decoration behind the planets. */
+@keyframes nebula-drift-a {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(12px, -8px); }
+}
+@keyframes nebula-drift-b {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(-10px, 10px); }
+}
+.nebula-drift {
+  animation: nebula-drift-a 26s ease-in-out infinite;
+}
+.nebula-drift-slow {
+  animation: nebula-drift-b 34s ease-in-out infinite;
+}
+
 /* Slow planet self-rotation: only the surface texture turns, the radial
    shading stays fixed so the terminator does not wobble. */
 @keyframes planet-spin {
@@ -548,7 +578,10 @@
   .star-twinkle,
   .planet-spin,
   .orbit-ignite,
-  .star-shooting {
+  .star-shooting,
+  .nebula-drift,
+  .nebula-drift-slow,
+  .star-bright {
     animation: none !important;
   }
 }
