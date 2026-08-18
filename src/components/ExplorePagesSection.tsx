@@ -839,6 +839,7 @@ export default function ExplorePagesSection() {
     let scene: import("three").Scene | null = null;
     let camera: import("three").OrthographicCamera | null = null;
     let io: IntersectionObserver | null = null;
+    let onContextLost: ((e: Event) => void) | null = null;
     const disposables: Array<{ dispose: () => void }> = [];
     let records: Array<{
       pageId: string;
@@ -886,6 +887,15 @@ export default function ExplorePagesSection() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       renderer.setPixelRatio(dpr);
       renderer.setSize(w, w, false);
+      // If the GPU drops the context (tab switch, VRAM pressure, driver
+      // reset), a lost context leaves a permanently blank canvas — the scene
+      // would never recover and the planets would silently "disappear".
+      // Listen for it and fall back to the DOM disc layout instead.
+      onContextLost = (e: Event) => {
+        e.preventDefault();
+        if (!cancelled) setWebglFailed(true);
+      };
+      canvas.addEventListener("webglcontextlost", onContextLost, false);
 
       // The Sun at the centre is the main light source (real day/night
       // terminator). A modest top-left key light guarantees visible 3D
@@ -1176,9 +1186,10 @@ export default function ExplorePagesSection() {
           rec.spinVel += (targetSpin - rec.spinVel) * ease;
 
           // Gentle hover scale (client request): the planet stays on its
-          // orbit point, but its body eases up ~6% while hovered. Eased per
-          // frame from the current value so it never snaps.
-          const hoverTarget = isHovered ? 1.06 : 1;
+          // orbit point, but its body eases up ~5% while hovered (nothing
+          // translates — a pure in-place size pulse). Eased per frame from the
+          // current value so it never snaps.
+          const hoverTarget = isHovered ? 1.05 : 1;
 
           if (rec.modelBody) {
             // Dim adjacent planets: tweak material opacity once per state
@@ -1245,6 +1256,7 @@ export default function ExplorePagesSection() {
       cancelled = true;
       if (raf) cancelAnimationFrame(raf);
       io?.disconnect();
+      if (onContextLost) canvas.removeEventListener("webglcontextlost", onContextLost, false);
       disposables.forEach((d) => d.dispose());
       renderer?.dispose();
       renderer = null;
@@ -1750,10 +1762,11 @@ export default function ExplorePagesSection() {
                   const R = data.radiusPct * ORBIT_SCALE * halfW;
                   const x = Math.cos(rad) * R;
                   const y = Math.sin(rad) * R;
-                  // Gentle hover (client request, reference-driven): the orbit
-                  // point is never touched, but the planet subtly scales up,
-                  // its atmospheric halo brightens, the ring lights and the
-                  // label tints/glows in its own colour. Neighbours dim.
+                  // Gentle hover (client request): the orbit point is never
+                  // touched and nothing translates — only the planet's own
+                  // disc grows a few percent in place (the name label stays
+                  // pinned, so nothing reads as motion). The atmospheric halo
+                  // brightens, the ring lights, neighbours dim.
                   return (
                     <div
                       key={page.id}
@@ -1766,7 +1779,6 @@ export default function ExplorePagesSection() {
                           className="flex flex-col items-center gap-1.5 cursor-pointer outline-none"
                           animate={{
                             opacity: dimmed ? 0.35 : 1,
-                            scale: active ? 1.06 : 1,
                           }}
                           transition={{ duration: 0.35, ease: "easeOut" }}
                           onMouseEnter={(e) => {
@@ -1786,8 +1798,10 @@ export default function ExplorePagesSection() {
                           aria-label={t.pageNames[page.labelKey]}
                           aria-expanded={active}
                         >
-                          <span
+                          <motion.span
                             className={`rounded-full flex items-center justify-center border transition-all ${motionless ? "" : "planet-breathe"}`}
+                            animate={{ scale: active ? 1.05 : 1 }}
+                            transition={{ duration: 0.35, ease: "easeOut" }}
                             style={{
                               width: data.sizePx + 16,
                               height: data.sizePx + 16,
@@ -1803,7 +1817,7 @@ export default function ExplorePagesSection() {
                               spin={!motionless}
                               lit={active}
                             />
-                          </span>
+                          </motion.span>
                           <span
                             className="font-mono text-[9px] tracking-widest uppercase whitespace-nowrap"
                             style={{
