@@ -516,6 +516,8 @@ export default function ExplorePagesSection() {
   const [hoveredPageId, setHoveredPageId] = useState<string | null>(null);
   const [cardPos, setCardPos] = useState<{ x: number; y: number } | null>(null);
   const solarRef = useRef<HTMLDivElement>(null);
+  const starLayerRef = useRef<HTMLDivElement>(null);
+  const parallaxRef = useRef<HTMLDivElement>(null);
   const [solarW, setSolarW] = useState(0);
   const hideCard = () => {
     setHoveredPageId(null);
@@ -1283,15 +1285,27 @@ export default function ExplorePagesSection() {
         {/* ---- Desktop: Solar System — Sun at the centre, 7 planets on their
              real heliocentric positions (astronomy-engine). ---- */}
         <div
+          ref={parallaxRef}
           className="relative hidden lg:block w-full"
           onMouseLeave={() => {
             hideCard();
+          }}
+          onMouseMove={(e) => {
+            if (motionless) return;
+            const el = parallaxRef.current;
+            if (!el) return;
+            const r = el.getBoundingClientRect();
+            // Normalised cursor position inside the block (-1..1).
+            const nx = ((e.clientX - r.left) / r.width) * 2 - 1;
+            const ny = ((e.clientY - r.top) / r.height) * 2 - 1;
+            const layer = starLayerRef.current;
+            if (layer) layer.style.transform = `translate(${(-nx * 10).toFixed(2)}px, ${(-ny * 8).toFixed(2)}px)`;
           }}
         >
           {/* starfield — spans the full section width, so the planets keep
               their arrangement inside the square below while surrounding
               space extends out to the screen edges. */}
-          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div ref={starLayerRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out" aria-hidden="true">
             {/* faint nebula haze — two soft colour patches, static unless motion
                  allowed, purely decorative */}
             <div
