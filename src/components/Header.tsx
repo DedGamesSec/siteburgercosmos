@@ -263,12 +263,12 @@ export default function Header() {
                 rail ends, so the sidebar and its buttons stay visible. Tight
                 padding on phones so the big nav labels never clip horizontally. */}
             <div
-              className="relative z-10 flex flex-col flex-1 overflow-y-auto bg-[#0A0A0B]/30 pl-6 sm:pl-14 pr-3 sm:pr-10"
+              className="relative z-10 flex flex-col flex-1 overflow-y-auto pl-6 sm:pl-14 pr-3 sm:pr-10"
               style={{ paddingTop: "max(0px, env(safe-area-inset-top))", paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}
             >
-          {/* Overlay top row: brand (darkens to home). Solid-ish backdrop so
-              the company name is never hidden behind background stars. */}
-          <div className="flex items-center justify-between px-6 sm:px-12 py-4 border-b border-[#3C404A]/30 bg-[#0A0A0B]/70 backdrop-blur-md">
+          {/* Overlay top row: brand (darkens to home). No dark backdrop — the
+              star-sky field flows up right behind the company name. */}
+          <div className="flex items-center justify-between px-6 sm:px-12 py-4 border-b border-[#3C404A]/30">
             <button
               onClick={handleLogoHome}
               className="flex items-center gap-3 cursor-pointer select-none"
@@ -366,9 +366,9 @@ export default function Header() {
             </div>
           </nav>
 
-            {/* Overlay footer: tagline only (socials live in the sidebar). Solid-ish
-                backdrop so the tagline stays readable behind the stars. */}
-            <div className="px-6 sm:px-12 py-4 border-t border-[#3C404A]/30 bg-[#0A0A0B]/70 backdrop-blur-md">
+            {/* Overlay footer: tagline only (socials live in the sidebar). No
+                dark backdrop — the star-sky field stays visible around it. */}
+            <div className="px-6 sm:px-12 py-4 border-t border-[#3C404A]/30">
               <span className="menu-item-in font-mono text-[11px] text-gray-500 uppercase tracking-widest truncate" style={{ animationDelay: "0.95s" }}>
                 {t.brand.tagline}
               </span>
