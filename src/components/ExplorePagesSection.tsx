@@ -1162,49 +1162,10 @@ export default function ExplorePagesSection() {
         if (cancelled) return;
       }
 
-      // ---- Starfield: a single Points object far from the camera (in 3D mode
-      // this replaces the DOM star dots). Two layers keep the size/brightness
-      // variety the DOM field had — a deep dim field plus a few brighter
-      // anchors. Pure decoration, never animated. ----
-      const buildStars = (count: number, size: number, opacity: number, seed: number) => {
-        const positions = new Float32Array(count * 3);
-        const colors = new Float32Array(count * 3);
-        let s = seed;
-        const rnd = () => {
-          s = (s * 16807) % 2147483647;
-          return s / 2147483647;
-        };
-        const c = new THREE.Color();
-        for (let i = 0; i < count; i++) {
-          // Depth spread along z so the field reads as a volume, not a flat
-          // back wall — the camera parallax shifts near stars more than far.
-          positions[i * 3] = (rnd() * 2 - 1) * 1600;
-          positions[i * 3 + 1] = (rnd() * 2 - 1) * 1600;
-          positions[i * 3 + 2] = -1250 - rnd() * 550;
-          const w = 0.55 + rnd() * 0.45;
-          c.setRGB(w, w, w);
-          colors[i * 3] = c.r;
-          colors[i * 3 + 1] = c.g;
-          colors[i * 3 + 2] = c.b;
-        }
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-        geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-        const mat = new THREE.PointsMaterial({
-          size,
-          sizeAttenuation: false,
-          vertexColors: true,
-          transparent: true,
-          opacity,
-          depthWrite: false,
-        });
-        const pts = new THREE.Points(geo, mat);
-        scene!.add(pts);
-        disposables.push(geo, mat);
-      };
-      const eco = ecoModeRef.current;
-      buildStars(eco ? 140 : 300, 1.1, 0.7, 7);
-      buildStars(eco ? 30 : 70, 2.0, 0.8, 31);
+      // ---- Starfield: full-bleed sky is provided by the DOM layers on the
+      // section itself (they now span edge-to-edge in both modes), so the 3D
+      // canvas no longer draws its own Points stars — drawing them would
+      // double every star inside the square. ----
 
       // ---- Post-processing: UnrealBloom so the Sun and bright speculars glow
       // instead of clipping to a flat disc. The composer keeps the canvas's
@@ -1762,11 +1723,127 @@ if (!motionlessRef.current) {
 
   return (
     <section
-      className="relative w-full py-16 sm:py-20 px-4 bg-[#0A0A0B] select-none"
+      className="relative isolate w-full py-16 sm:py-20 px-4 bg-[#0A0A0B] select-none"
       id="explore-portal-section"
     >
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-72 h-72 rounded-full bg-[#3B82F6]/5 filter blur-[100px] pointer-events-none" />
       <div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full bg-[#3B82F6]/5 filter blur-[120px] pointer-events-none" />
+
+      {/* ---- Full-bleed starfield: spans the whole section edge-to-edge (both
+           modes). The three depth layers sit here so surrounding space reaches
+           the section borders while the solar-system square below keeps its
+           own layout untouched. ---- */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10" aria-hidden="true">
+        {/* deepest sky — tiny, dim stars that barely move under the cursor
+            parallax (reference request: the field reads as a volume). */}
+        <div ref={starDeepRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out">
+          {deepStars.map((s, i) => (
+            <span
+              key={`deep-${i}`}
+              className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"}`}
+              style={
+                {
+                  left: `${s.left}%`,
+                  top: `${s.top}%`,
+                  width: s.size,
+                  height: s.size,
+                  opacity: s.opacity,
+                  boxShadow: "0 0 3px rgba(255,255,255,0.4)",
+                  animationDelay: `${s.delay}s`,
+                  "--star-base": s.opacity,
+                } as React.CSSProperties
+              }
+            />
+          ))}
+        </div>
+        <div ref={starLayerRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out">
+          {/* faint nebula haze — two soft colour patches, static unless motion
+               allowed, purely decorative */}
+          <div
+            className={`absolute w-[420px] h-[240px] rounded-full ${motionless ? "" : "nebula-drift"}`}
+            style={{
+              left: "18%",
+              top: "22%",
+              background: "radial-gradient(ellipse, rgba(120,110,220,0.16) 0%, rgba(120,110,220,0) 70%)",
+              filter: "blur(30px)",
+            }}
+          />
+          <div
+            className={`absolute w-[380px] h-[220px] rounded-full ${motionless ? "" : "nebula-drift-slow"}`}
+            style={{
+              left: "58%",
+              top: "58%",
+              background: "radial-gradient(ellipse, rgba(60,170,220,0.13) 0%, rgba(60,170,220,0) 70%)",
+              filter: "blur(34px)",
+            }}
+          />
+          {stars.map((s, i) => (
+            <span
+              key={i}
+              className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"} ${
+                s.bright ? "star-bright" : ""
+              }`}
+              style={
+                {
+                  left: `${s.left}%`,
+                  top: `${s.top}%`,
+                  width: s.size,
+                  height: s.size,
+                  opacity: s.opacity,
+                  boxShadow: s.bright
+                    ? "0 0 8px 2px rgba(255,255,255,0.45)"
+                    : "0 0 4px rgba(255,255,255,0.5)",
+                  animationDelay: `${s.delay}s`,
+                  "--star-base": s.opacity,
+                } as React.CSSProperties
+              }
+            />
+          ))}
+          {!motionless &&
+            SHOOTING_STARS.map((ss, i) => (
+              <span
+                key={`shoot-${i}`}
+                className="shooting-star star-shooting"
+                style={
+                  {
+                    "--star-top": ss.top,
+                    "--star-left": ss.left,
+                    "--star-dist": ss.dist,
+                    "--star-dur": `${ss.dur}s`,
+                    "--star-delay": `${ss.delay}s`,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
+        </div>
+
+        {/* nearest sky — a few larger/bright stars that lead the cursor a
+            little (per-planet depth on the parallax stack). */}
+        <div ref={starNearRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out">
+          {nearStars.map((s, i) => (
+            <span
+              key={`near-${i}`}
+              className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"} ${
+                s.bright ? "star-bright" : ""
+              }`}
+              style={
+                {
+                  left: `${s.left}%`,
+                  top: `${s.top}%`,
+                  width: s.size,
+                  height: s.size,
+                  opacity: s.opacity,
+                  boxShadow: s.bright
+                    ? "0 0 8px 2px rgba(255,255,255,0.45)"
+                    : "0 0 4px rgba(255,255,255,0.5)",
+                  animationDelay: `${s.delay}s`,
+                  "--star-base": s.opacity,
+                } as React.CSSProperties
+              }
+            />
+          ))}
+        </div>
+      </div>
 
       <div className="w-full flex flex-col items-center">
         <div className="text-center max-w-2xl mb-12 sm:mb-16">
@@ -1811,127 +1888,6 @@ if (!motionlessRef.current) {
             if (near) near.style.transform = `translate(${(-nx * 17).toFixed(2)}px, ${(-ny * 14).toFixed(2)}px)`;
           }}
         >
-          {/* starfield — spans the full section width, so the planets keep
-              their arrangement inside the square below while surrounding
-              space extends out to the screen edges. */}
-          {/* deepest sky — tiny, dim stars that barely move under the cursor
-              parallax (reference request: the field reads as a volume).
-              Hidden in 3D mode — the canvas starfield (Points) replaces the
-              DOM dots there. */}
-          {!use3D && (
-          <div ref={starDeepRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out" aria-hidden="true">
-            {deepStars.map((s, i) => (
-              <span
-                key={`deep-${i}`}
-                className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"}`}
-                style={
-                  {
-                    left: `${s.left}%`,
-                    top: `${s.top}%`,
-                    width: s.size,
-                    height: s.size,
-                    opacity: s.opacity,
-                    boxShadow: "0 0 3px rgba(255,255,255,0.4)",
-                    animationDelay: `${s.delay}s`,
-                    "--star-base": s.opacity,
-                  } as React.CSSProperties
-                }
-              />
-            ))}
-          </div>
-          )}
-          <div ref={starLayerRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out" aria-hidden="true">
-            {/* faint nebula haze — two soft colour patches, static unless motion
-                 allowed, purely decorative */}
-            <div
-              className={`absolute w-[420px] h-[240px] rounded-full ${motionless ? "" : "nebula-drift"}`}
-              style={{
-                left: "18%",
-                top: "22%",
-                background: "radial-gradient(ellipse, rgba(120,110,220,0.16) 0%, rgba(120,110,220,0) 70%)",
-                filter: "blur(30px)",
-              }}
-            />
-            <div
-              className={`absolute w-[380px] h-[220px] rounded-full ${motionless ? "" : "nebula-drift-slow"}`}
-              style={{
-                left: "58%",
-                top: "58%",
-                background: "radial-gradient(ellipse, rgba(60,170,220,0.13) 0%, rgba(60,170,220,0) 70%)",
-                filter: "blur(34px)",
-              }}
-            />
-            {!use3D &&
-              stars.map((s, i) => (
-              <span
-                key={i}
-                className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"} ${
-                  s.bright ? "star-bright" : ""
-                }`}
-                style={
-                  {
-                    left: `${s.left}%`,
-                    top: `${s.top}%`,
-                    width: s.size,
-                    height: s.size,
-                    opacity: s.opacity,
-                    boxShadow: s.bright
-                      ? "0 0 8px 2px rgba(255,255,255,0.45)"
-                      : "0 0 4px rgba(255,255,255,0.5)",
-                    animationDelay: `${s.delay}s`,
-                    "--star-base": s.opacity,
-                  } as React.CSSProperties
-                }
-              />
-            ))}
-            {!motionless &&
-              SHOOTING_STARS.map((ss, i) => (
-                <span
-                  key={`shoot-${i}`}
-                  className="shooting-star star-shooting"
-                  style={
-                    {
-                      "--star-top": ss.top,
-                      "--star-left": ss.left,
-                      "--star-dist": ss.dist,
-                      "--star-dur": `${ss.dur}s`,
-                      "--star-delay": `${ss.delay}s`,
-                    } as React.CSSProperties
-                  }
-                />
-              ))}
-          </div>
-
-          {/* nearest sky — a few larger/bright stars that lead the cursor a
-              little (per-planet depth on the parallax stack). Hidden in 3D
-              mode — the canvas starfield replaces the DOM dots. */}
-          {!use3D && (
-          <div ref={starNearRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out" aria-hidden="true">
-            {nearStars.map((s, i) => (
-              <span
-                key={`near-${i}`}
-                className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"} ${
-                  s.bright ? "star-bright" : ""
-                }`}
-                style={
-                  {
-                    left: `${s.left}%`,
-                    top: `${s.top}%`,
-                    width: s.size,
-                    height: s.size,
-                    opacity: s.opacity,
-                    boxShadow: s.bright
-                      ? "0 0 8px 2px rgba(255,255,255,0.45)"
-                      : "0 0 4px rgba(255,255,255,0.5)",
-                    animationDelay: `${s.delay}s`,
-                    "--star-base": s.opacity,
-                  } as React.CSSProperties
-                }
-              />
-            ))}
-          </div>
-          )}
-
           <div ref={solarRef} className="relative aspect-square w-full max-w-[920px] mx-auto">
 
             {/* Loading skeleton — shown while the shared GLB models are still
