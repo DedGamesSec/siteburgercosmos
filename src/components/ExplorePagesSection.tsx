@@ -7,7 +7,6 @@ import type { LanguageCode } from "../i18n/languages";
 import { useEcoMode } from "../context/EcoModeContext";
 import ScanCard from "./ScanCard";
 import * as Astronomy from "astronomy-engine";
-import { isWebGLAvailable } from "./cinematicShared";
 import { resolvePlanetCollisions } from "../utils/planetCollisions";
 
 /* ---- Layered living Sun ----
@@ -922,20 +921,15 @@ export default function ExplorePagesSection() {
   //      the spheres, so the rendered object IS the trigger — there is no DOM
   //      overlay that could drift from the visual. Falls back to flat 2D
   //      discs (DOM buttons) when WebGL or motion is unavailable.
-  const [webglOk] = useState(() => isWebGLAvailable());
   const [webglFailed, setWebglFailed] = useState(false);
   // True once boot() has loaded the shared GLB models and started rendering —
   // until then the canvas is empty, so a lightweight skeleton hints that the
   // orbits are being computed instead of showing a dead black square.
   const [sceneReady, setSceneReady] = useState(false);
-  // Feature flag (?solar2d=1) for a quick rollback to the legacy 2D/SVG
-  // scheme while the 3D renderer is being shaken out in production.
-  const [force2D] = useState(
-    () => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("solar2d") === "1"
-  );
-  // 3D renders even under ecoMode / prefers-reduced-motion — those only stop
-  // the rotation (orbital + axial), they never fall back to the flat discs.
-  const use3D = webglOk && !webglFailed && !force2D && solarW > 0;
+  // Client request: do away with the 3D flight. The flat 2D orbit discs are
+  // the scheme again; the WebGL boot path below is gated off and can no
+  // longer turn itself on at runtime.
+  const use3D = false;
   const visibleIds = useMemo(() => visiblePages.map((p) => p.id).join(","), [visiblePages]);
   const solarCanvasRef = useRef<HTMLCanvasElement>(null);
   const solarWRef = useRef(solarW);
