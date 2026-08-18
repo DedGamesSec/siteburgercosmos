@@ -1430,7 +1430,10 @@ export default function ExplorePagesSection() {
           // Real GLB model: add the normalised body in place of the
           // procedural sphere (Sketchfab models ship their own textures and,
           // for Saturn, their own rings — skip the procedural extras).
-          keepAxisKidsCentred(model.body); // centring lives in the body node
+          // NB: normaliseModel already centres the body and carries the
+          // sizePx scale on its own scale / position (root = the axis origin),
+          // so no keepAxisKidsCentred here — that guard would flatten the
+          // model's scale to 1 and throw the body off the orbit (item 12).
           axis.add(model.body);
         } else {
           // Procedural sphere with the real surface map. 64x48 segments (up
