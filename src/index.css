@@ -602,32 +602,6 @@
   animation: sun-halo-pulse 5s ease-in-out infinite;
 }
 
-/* Travelling light along an orbit: the wrapper is rotated very slowly in
-   place, so the single dot traces the ring circumference. The ring's border
-   itself stays untouched — pure decoration, no planet moves. */
-@keyframes orbit-drift {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-.orbit-drift {
-  animation: orbit-drift var(--drift-dur, 100s) linear infinite;
-  animation-delay: var(--drift-delay, 0s);
-}
-
-.orbit-dot {
-  position: absolute;
-  top: -3px;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  margin-left: -2.5px;
-  border-radius: 9999px;
-  background: currentColor;
-  opacity: 0.5;
-  box-shadow: 0 0 8px 2px currentColor;
-}
-
 /* Planet atmospheric halo (2D fallback): a faint wash of the planet's own
    colour behind each disc. Strength is driven by the hover state via two
    classes (transition, not animation, so reduced-motion is safe). */
@@ -661,8 +635,7 @@
   .nebula-drift-slow,
   .star-bright,
   .planet-breathe,
-  .sun-halo-pulse,
-  .orbit-drift {
+  .sun-halo-pulse {
     animation: none !important;
   }
 }
