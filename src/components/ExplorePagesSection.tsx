@@ -522,16 +522,6 @@ const STAR_COUNT = 190;
    parallax speeds, so the sky reads as a volume instead of a flat sheet. */
 const DEEP_STAR_COUNT = 160;
 const NEAR_STAR_COUNT = 42;
-/* A single faint light pulse travelling along a few outer orbits (reference
-   request): per-planet rotation duration + delay. The relevant orbit ring is
-   the only moving thing — positions of planets stay real and frozen. */
-const ORBIT_DOTS: Record<string, { dur: number; delay: number }> = {
-  "how-it-works": { dur: 150, delay: 0 },
-  news: { dur: 120, delay: 18 },
-  tech: { dur: 100, delay: 34 },
-  about: { dur: 130, delay: 9 },
-  roadmap: { dur: 78, delay: 27 },
-};
 /* Constellation groups: indices of stars (within the `stars` array) linked by
    faint lines. Picked deterministically to spread across the field. */
 const CONSTELLATION_STARS = [5, 32, 41, 56, 61, 77, 83, 90, 104, 118, 129, 137, 148, 156, 165, 176];
@@ -1591,42 +1581,6 @@ export default function ExplorePagesSection() {
                 </span>
               </div>
             )}
-
-            {/* orbit rings — the hovered planet's ring ignites in its own colour
-                 (pure glow on the ring, the planet itself stays frozen) */}
-            {planets.map(({ page, data }) => {
-              const lit = hoveredPageId === page.id;
-              const dot = ORBIT_DOTS[page.id];
-              return (
-                <div
-                  key={`ring-${page.id}`}
-                  className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#3B82F6]/[0.08] pointer-events-none transition-[opacity,border-color] duration-500 ${lit && !motionless ? "orbit-ignite" : ""}`}
-                  style={{
-                    width: `${data.radiusPct * ORBIT_SCALE * 100}%`,
-                    height: `${data.radiusPct * ORBIT_SCALE * 100}%`,
-                    borderColor: lit ? `${data.color}66` : undefined,
-                    opacity: lit ? (motionless ? 0.9 : 0.75) : undefined,
-                    "--orbit-color": lit ? data.color : undefined,
-                  } as React.CSSProperties}
-                >
-                  {/* a single faint light travelling along this orbit (reference
-                       request): the wrapper rotates in place, the dot rides the
-                       rim. Static under eco-mode / reduced-motion. */}
-                  {dot && !motionless && (
-                    <div
-                      className="absolute inset-0 orbit-drift"
-                      style={{
-                        color: data.color,
-                        "--drift-dur": `${dot.dur}s`,
-                        "--drift-delay": `${dot.delay}s`,
-                      } as React.CSSProperties}
-                    >
-                      <span className="orbit-dot" />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
 
             {/* Sun — a layered halo behind the 3D sphere in WebGL mode (the
                  outer corona slowly swells and fades so the star reads alive,

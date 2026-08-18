@@ -534,18 +534,6 @@
   animation: planet-spin 75s linear infinite;
 }
 
-/* Orbital ring ignition (item 8): a hovered planet's orbit slowly brightens
-   and pulses its glow. The pulse lives in a CSS variable so each ring uses
-   its own planet colour; position/size of planets is never touched. */
-@keyframes orbit-ignite {
-  0%, 100% { box-shadow: 0 0 10px var(--orbit-color, rgba(59,130,246,0.35)), 0 0 30px var(--orbit-color, rgba(59,130,246,0.18)); }
-  50%      { box-shadow: 0 0 16px var(--orbit-color, rgba(59,130,246,0.6)), 0 0 52px var(--orbit-color, rgba(59,130,246,0.35)); }
-}
-
-.orbit-ignite {
-  animation: orbit-ignite 2.4s ease-in-out infinite;
-}
-
 /* Shooting star (item 8): a bright head on a fading tail crossing the
    starfield diagonally. Most of the cycle is invisible, so several stars can
    share the same periodic keyframes with staggered delays. */
@@ -602,32 +590,6 @@
   animation: sun-halo-pulse 5s ease-in-out infinite;
 }
 
-/* Travelling light along an orbit: the wrapper is rotated very slowly in
-   place, so the single dot traces the ring circumference. The ring's border
-   itself stays untouched — pure decoration, no planet moves. */
-@keyframes orbit-drift {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-.orbit-drift {
-  animation: orbit-drift var(--drift-dur, 100s) linear infinite;
-  animation-delay: var(--drift-delay, 0s);
-}
-
-.orbit-dot {
-  position: absolute;
-  top: -3px;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  margin-left: -2.5px;
-  border-radius: 9999px;
-  background: currentColor;
-  opacity: 0.5;
-  box-shadow: 0 0 8px 2px currentColor;
-}
-
 /* Planet atmospheric halo (2D fallback): a faint wash of the planet's own
    colour behind each disc. Strength is driven by the hover state via two
    classes (transition, not animation, so reduced-motion is safe). */
@@ -655,14 +617,12 @@
   .sun-breathe,
   .star-twinkle,
   .planet-spin,
-  .orbit-ignite,
   .star-shooting,
   .nebula-drift,
   .nebula-drift-slow,
   .star-bright,
   .planet-breathe,
-  .sun-halo-pulse,
-  .orbit-drift {
+  .sun-halo-pulse {
     animation: none !important;
   }
 }
