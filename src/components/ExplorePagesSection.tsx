@@ -8,12 +8,18 @@ import { useEcoMode } from "../context/EcoModeContext";
 import ScanCard from "./ScanCard";
 import * as Astronomy from "astronomy-engine";
 import { isWebGLAvailable } from "./cinematicShared";
+import { resolvePlanetCollisions } from "../utils/planetCollisions";
 
 /* ---- Layered living Sun ----
    A shared granulated surface canvas is used both by the WebGL core sphere
-   (as a texture) and by the 2D fallback disc (as a background image):
-   warm core -> amber gradient rim, then many faint hot/cold granulation
-   cells. Generated once and cached so re-renders never rebuild it. */
+   (as a texture) and by the 2D fallback disc (as a background image to the
+   rotating granulation layer). Item 10: the surface is now UNIFORMLY bright —
+   the old radial gradient that darkened/oranged the edge is gone from this
+   texture, because a 2D radial gradient physically rotates with a sphere's
+   UV wrap and produced the periodic "yellowing". Limb darkening is instead
+   applied by a separate, non-rotating billboard overlay (WebGL) and by the
+   static base disc underneath the turning granulation layer (2D). Generated
+   once and cached so re-renders never rebuild it. */
 let sunSurfaceCache: HTMLCanvasElement | null = null;
 function buildSunSurface(): HTMLCanvasElement {
   if (sunSurfaceCache) return sunSurfaceCache;
@@ -22,15 +28,10 @@ function buildSunSurface(): HTMLCanvasElement {
   c.width = size;
   c.height = size;
   const ctx = c.getContext("2d")!;
-  // The gradient core is centred exactly so the large-scale brightness stays
-  // put when the WebGL sphere rotates — only the fine granulation cells turn.
-  const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-  g.addColorStop(0, "#FFF6C9");
-  g.addColorStop(0.16, "#FFE9A8");
-  g.addColorStop(0.42, "#FFC36B");
-  g.addColorStop(0.74, "#F59E0B");
-  g.addColorStop(1, "#B45309");
-  ctx.fillStyle = g;
+  // Flat, uniformly bright base (no baked radial gradient): rotating this
+  // texture can never swing a dark/orange phase past the camera — the whole
+  // disc is the same warm tone, only the granulation cells below vary.
+  ctx.fillStyle = "#FFE9A8";
   ctx.fillRect(0, 0, size, size);
   // Granulation: faint hot/cold cells spread across the disc (kept away from
   // the very bright core so the surface reads as textured without harsh
@@ -43,7 +44,7 @@ function buildSunSurface(): HTMLCanvasElement {
     const rad = 1.5 + Math.random() * 5;
     const hot = Math.random() > 0.5;
     ctx.globalAlpha = 0.05 + Math.random() * 0.11;
-    ctx.fillStyle = hot ? "#FFF8E0" : "#7A3E08";
+    ctx.fillStyle = hot ? "#FFF8E0" : "#B45309";
     ctx.beginPath();
     ctx.arc(x, y, rad, 0, Math.PI * 2);
     ctx.fill();
@@ -199,15 +200,36 @@ type PlanetData = {
   hasRings?: boolean;
 };
 
+/* Real diameters relative to Earth: Mercury 0.383 · Venus 0.950 · Mars 0.533
+   · Jupiter 11.22 · Saturn 9.46 · Uranus 4.01 · Neptune 3.89. `sizePx` is a
+   LOG-compressed curve: the small inner planets used to collapse to 4-9px dots
+   where no texture was readable. The curve was raised once (item 10) so
+   Mercury stayed at a readable 18px; item 11 re-bases it on Uranus — the NEW
+   minimum (78px) is the former size of Uranus, so Mercury itself is now drawn
+   that large and every other planet sits above it, preserving the relative
+   order (Jupiter largest, at the 164px anchor). */
+const DIAMETER_BY_PAGE: Record<string, number> = {
+  download: 0.383, // Mercury
+  comparison: 0.95, // Venus
+  roadmap: 0.533, // Mars
+  tech: 11.22, // Jupiter
+  about: 9.46, // Saturn
+  news: 4.01, // Uranus
+  "how-it-works": 3.89, // Neptune
+};
+function planetSizePx(diameter: number): number {
+  const MIN_PX = 78;
+  const MAX_PX = 164;
+  const minD = 0.383; // Mercury — the smallest body
+  const maxD = 11.22; // Jupiter — the largest body
+  const t = (Math.log(diameter) - Math.log(minD)) / (Math.log(maxD) - Math.log(minD));
+  return Math.round(MIN_PX + (MAX_PX - MIN_PX) * t);
+}
+
 const PLANET_DATA: Record<string, PlanetData> = {
-  /* Real relative sizes (diameter, Earth = 1): Mercury 0.383 · Venus 0.950
-     · Mars 0.533 · Jupiter 11.22 · Saturn 9.46 · Uranus 4.01 · Neptune 3.89.
-     `sizePx` keeps these exact proportions, anchored to Jupiter at 104px, so
-     the tiny inner planets read as bright dots (their raycast hit spheres stay
-     14px wider than the body, so hover/click remain comfortable). */
   "how-it-works": {
     color: "#3B82F6",
-    sizePx: 36,
+    sizePx: planetSizePx(DIAMETER_BY_PAGE["how-it-works"]),
     radiusPct: 0.9,
     orbitalPeriodDays: 60182,
     textureUrl: "textures/planets/neptune.jpg",
@@ -229,7 +251,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   tech: {
     color: "#D97706",
-    sizePx: 104,
+    sizePx: planetSizePx(DIAMETER_BY_PAGE.tech),
     radiusPct: 0.64,
     orbitalPeriodDays: 4332.6,
     textureUrl: "textures/planets/jupiter.jpg",
@@ -251,7 +273,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   roadmap: {
     color: "#EF4444",
-    sizePx: 5,
+    sizePx: planetSizePx(DIAMETER_BY_PAGE.roadmap),
     radiusPct: 0.45,
     orbitalPeriodDays: 687,
     textureUrl: "textures/planets/mars.jpg",
@@ -273,7 +295,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   about: {
     color: "#EAB308",
-    sizePx: 88,
+    sizePx: planetSizePx(DIAMETER_BY_PAGE.about),
     radiusPct: 0.74,
     orbitalPeriodDays: 10759.2,
     textureUrl: "textures/planets/saturn.jpg",
@@ -297,7 +319,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   comparison: {
     color: "#FDE68A",
-    sizePx: 9,
+    sizePx: planetSizePx(DIAMETER_BY_PAGE.comparison),
     radiusPct: 0.34,
     orbitalPeriodDays: 224.7,
     textureUrl: "textures/planets/venus.jpg",
@@ -320,7 +342,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   news: {
     color: "#22D3EE",
-    sizePx: 37,
+    sizePx: planetSizePx(DIAMETER_BY_PAGE.news),
     radiusPct: 0.84,
     orbitalPeriodDays: 30688.5,
     textureUrl: "textures/planets/uranus.jpg",
@@ -342,7 +364,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   download: {
     color: "#9CA3AF",
-    sizePx: 4,
+    sizePx: planetSizePx(DIAMETER_BY_PAGE.download),
     radiusPct: 0.26,
     orbitalPeriodDays: 88,
     textureUrl: "textures/planets/mercury.jpg",
@@ -606,9 +628,13 @@ type CometFx = {
   dist: string;
   len: string;
   dur: string;
+  /** Flight duration in milliseconds, kept in the object alongside the CSS
+      `dur` string so the cleanup timer can match THIS comet exactly (item 11). */
+  durMs: number;
 };
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
 function makeComet(key: number): CometFx {
+  const durMs = rand(3800, 5200);
   return {
     key,
     top: `${Math.round(rand(8, 82))}%`,
@@ -616,7 +642,8 @@ function makeComet(key: number): CometFx {
     ang: `${Math.round(rand(-62, -24))}deg`,
     dist: `${Math.round(rand(520, 920))}px`,
     len: `${Math.round(rand(90, 190))}px`,
-    dur: `${rand(3.8, 5.2).toFixed(1)}s`,
+    dur: `${(durMs / 1000).toFixed(1)}s`,
+    durMs,
   };
 }
 
@@ -706,11 +733,12 @@ export default function ExplorePagesSection() {
     };
     const step = () => {
       if (!alive) return;
-      setComet(makeComet(Date.now()));
+      const c = makeComet(Date.now());
+      setComet(c);
       timer = setTimeout(() => {
         if (alive) setComet(null);
         later(rand(30000, 60000));
-      }, 4600);
+      }, c.durMs + 200);
     };
     later(rand(4000, 9000)); // a first comet shortly after load, then 30-60s apart
     return () => {
@@ -803,6 +831,28 @@ export default function ExplorePagesSection() {
   const hoveredPlanet = hoveredPageId ? PLANET_DATA[hoveredPageId] : null;
   const hoveredPage = visiblePages.find((p) => p.id === hoveredPageId);
   const halfW = solarW / 2;
+
+  // Item 10: single source of truth for the layout. Real heliocentric angles
+  // (`positions`) become screen-space discs (orbit radius x size), run through
+  // the pure collision resolver, and come back as final angles. BOTH render
+  // paths (WebGL 3D + 2D DOM fallback) consume exactly these resolved angles,
+  // so the two can never disagree about where a planet sits.
+  const resolvedAngles = useMemo(() => {
+    const angles: Record<string, number> = {};
+    if (halfW <= 0) return angles;
+    const circles = planets.map(({ page, data }) => {
+      const rad = ((positions[page.id] ?? 0) * Math.PI) / 180;
+      const R = data.radiusPct * ORBIT_SCALE * halfW;
+      return { id: page.id, x: Math.cos(rad) * R, y: Math.sin(rad) * R, r: data.sizePx / 2 };
+    });
+    for (const c of resolvePlanetCollisions(circles, 8)) {
+      const orbitR = Math.hypot(c.x, c.y);
+      angles[c.id] = orbitR > 0 ? (Math.atan2(c.y, c.x) * 180) / Math.PI : 0;
+    }
+    return angles;
+  }, [planets, positions, halfW]);
+  const resolvedAnglesRef = useRef(resolvedAngles);
+  resolvedAnglesRef.current = resolvedAngles;
   // Shared granulated Sun surface as a data URL for the 2D fallback disc
   // (the WebGL core reuses the same canvas as a texture).
   const sunSurfaceUrl = useMemo(() => (typeof document !== "undefined" ? buildSunSurface().toDataURL() : ""), []);
@@ -1122,6 +1172,50 @@ export default function ExplorePagesSection() {
       scene.add(corona);
       disposables.push(coronaTex, coronaMat);
 
+      // Non-rotating limb-darkening overlay (item 10): the granulated surface
+      // texture is uniformly bright, so the classic "dimmer rim" is applied by
+      // a billboard that never rotates with the sphere. Sprite texture fades
+      // from fully transparent in the centre to a dark/orangeish edge, so the
+      // sun reads as a glowing ball instead of a flat disc — and since the
+      // sprite always faces the camera, the darkening never sweeps around.
+      const limbCanvas = document.createElement("canvas");
+      limbCanvas.width = 256;
+      limbCanvas.height = 256;
+      const lctx = limbCanvas.getContext("2d")!;
+      const lg = lctx.createRadialGradient(128, 128, 40, 128, 128, 128);
+      lg.addColorStop(0, "rgba(120,60,0,0)");
+      lg.addColorStop(0.55, "rgba(132,66,4,0)");
+      lg.addColorStop(0.82, "rgba(150,74,6,0.28)");
+      lg.addColorStop(0.94, "rgba(120,56,4,0.55)");
+      lg.addColorStop(1, "rgba(90,40,2,0.75)");
+      lctx.fillStyle = lg;
+      lctx.fillRect(0, 0, 256, 256);
+      // The radial gradient clamps past its outer radius, so without this the
+      // four square corners of the canvas keep the rim's dark opaque colour —
+      // that reads as a grey-black square hugging the Sun (item 11). Erase
+      // everything outside the inscribed circle so only the limp disc remains.
+      lctx.globalCompositeOperation = "destination-out";
+      lctx.beginPath();
+      lctx.rect(0, 0, 256, 256);
+      lctx.arc(128, 128, 128, 0, Math.PI * 2, true);
+      lctx.fillStyle = "#000";
+      lctx.fill("evenodd");
+      lctx.globalCompositeOperation = "source-over";
+      const limbTex = new THREE.CanvasTexture(limbCanvas);
+      limbTex.colorSpace = THREE.SRGBColorSpace;
+      const limbMat = new THREE.SpriteMaterial({
+        map: limbTex,
+        transparent: true,
+        depthWrite: false,
+      });
+      const limb = new THREE.Sprite(limbMat);
+      // Slightly larger than the 104px sun sphere (radius 52), so the dark rim
+      // wraps the visible disc edge; a Sprite is always camera-facing.
+      limb.scale.set(112, 112, 1);
+      limb.renderOrder = 6; // above the core sphere (default 0), below corona/sun
+      scene.add(limb);
+      disposables.push(limbTex, limbMat);
+
       const loader = new THREE.TextureLoader();
 
       // Pre-load any configured GLB planet models. Two modes: a single
@@ -1425,7 +1519,7 @@ export default function ExplorePagesSection() {
           spinRate: (Math.PI * 2) / motion.spinSeconds,
           direction: motion.retrograde ? -1 : 1,
           orbitRate: (Math.PI * 2) / orbitSeconds,
-          baseAngle: (positionsRef.current[page.id] ?? 0) * (Math.PI / 180),
+          baseAngle: (resolvedAnglesRef.current[page.id] ?? positionsRef.current[page.id] ?? 0) * (Math.PI / 180),
           orbitDrift: 0,
         });
       }
@@ -1518,7 +1612,12 @@ export default function ExplorePagesSection() {
           // the on-screen layout identical to the 2D fallback.
 if (!motionlessRef.current) {
             rec.orbitDrift += dt * rec.orbitRate;
-            rec.axis.rotation.y += dt * rec.direction * rec.spinRate;
+            // Axial self-rotation spins the BODY about its own local Y inside
+            // the tilted `axis` node (which carries the real tiltDeg). Spinning
+            // the axis group's rotation.y instead would precess the whole tilt
+            // around the screen-up axis, hiding Uranus' sideways roll (item 11).
+            const spinBody = rec.modelBody ?? rec.mesh;
+            if (spinBody) spinBody.rotation.y += dt * rec.direction * rec.spinRate;
           }
           rec.group.rotation.z = -(rec.baseAngle + rec.orbitDrift);
 
@@ -2094,7 +2193,7 @@ if (!motionlessRef.current) {
                   const active = hoveredPageId === page.id;
                   const dimmed = !ecoMode && hoveredPageId !== null && !active;
                   const color = data.color;
-                  const angleDeg = positions[page.id] ?? 0;
+                  const angleDeg = resolvedAngles[page.id] ?? positions[page.id] ?? 0;
                   const rad = (angleDeg * Math.PI) / 180;
                   const R = data.radiusPct * ORBIT_SCALE * halfW;
                   const x = Math.cos(rad) * R;
