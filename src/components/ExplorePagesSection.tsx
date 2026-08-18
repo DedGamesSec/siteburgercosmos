@@ -7,6 +7,7 @@ import type { LanguageCode } from "../i18n/languages";
 import { useEcoMode } from "../context/EcoModeContext";
 import ScanCard from "./ScanCard";
 import * as Astronomy from "astronomy-engine";
+import { isWebGLAvailable } from "./cinematicShared";
 import { resolvePlanetCollisions } from "../utils/planetCollisions";
 
 /* ---- Layered living Sun ----
@@ -921,15 +922,17 @@ export default function ExplorePagesSection() {
   //      the spheres, so the rendered object IS the trigger — there is no DOM
   //      overlay that could drift from the visual. Falls back to flat 2D
   //      discs (DOM buttons) when WebGL or motion is unavailable.
+  const webglOk = typeof window !== "undefined" && isWebGLAvailable();
   const [webglFailed, setWebglFailed] = useState(false);
   // True once boot() has loaded the shared GLB models and started rendering —
   // until then the canvas is empty, so a lightweight skeleton hints that the
   // orbits are being computed instead of showing a dead black square.
   const [sceneReady, setSceneReady] = useState(false);
-  // Client request: do away with the 3D flight. The flat 2D orbit discs are
-  // the scheme again; the WebGL boot path below is gated off and can no
-  // longer turn itself on at runtime.
-  const use3D = false;
+  // Client request: the planets stay 3D (textured, spinning globes that orbit
+  // the Sun), but the CAMERA is frozen — no pointer-driven wander, so the
+  // scene never "flies" across the screen. Only the axial spin and the slow
+  // orbital revolution move; see the frame loop below.
+  const use3D = webglOk && !webglFailed && solarW > 0;
   const visibleIds = useMemo(() => visiblePages.map((p) => p.id).join(","), [visiblePages]);
   const solarCanvasRef = useRef<HTMLCanvasElement>(null);
   const solarWRef = useRef(solarW);
@@ -1025,8 +1028,6 @@ export default function ExplorePagesSection() {
     }> = [];
 
     let camBaseZ = 1000;
-    let camX = 0;
-    let camY = 0;
     const applyCamera = () => {
       if (!camera) return;
       const w = Math.max(1, Math.round(solarWRef.current));
@@ -1701,19 +1702,12 @@ if (!motionlessRef.current) {
           rec.labelMat.opacity = hovered && rec.pageId !== hovered ? 0.35 : 1;
         }
 
-        // Subtle camera parallax (a couple of degrees, lerped) so the scene
-        // reads as a volume instead of a static postcard. Frozen back to the
-        // straight-on framing under eco-mode / prefers-reduced-motion — and the
-        // eased return means no jump on resume.
-        const p = pointerRef.current;
-        const prx = motionlessRef.current ? 0 : p.nx * 0.012;
-        const pry = motionlessRef.current ? 0 : -p.ny * 0.008;
-        const targetX = camBaseZ * Math.sin(prx);
-        const targetY = camBaseZ * Math.sin(pry);
-        camX += (targetX - camX) * ease;
-        camY += (targetY - camY) * ease;
-        camera!.position.x = camX;
-        camera!.position.y = camY;
+        // Camera is deliberately STATIC (client request): no pointer-driven
+        // parallax — that wander made the whole solar system "fly across the
+        // screen". The planets keep their axial spin + slow orbit revolution;
+        // the framing itself never moves, so nothing reads as flight.
+        camera!.position.x = 0;
+        camera!.position.y = 0;
         camera!.lookAt(0, 0, 0);
 
         // ---- Living Sun: a slow granulation spin + gentle 3-4% breathing
