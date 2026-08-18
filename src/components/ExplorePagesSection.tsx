@@ -403,16 +403,19 @@ const PLANET_MOTION: Record<string, { tiltDeg: number; spinSeconds: number; retr
 
 /* Compressed orbital periods (seconds for a full revolution around the Sun),
    preserving the real ordering (Mercury fastest, Neptune slowest) while the
-   whole system drifts at a gentle, watchable pace. The initial angle is the
-   real heliocentric longitude, so the layout starts true to today's sky. */
+   whole system drifts almost imperceptibly (item 12: the old values were x12
+   faster — Mercury completed an orbit every 90s, which read as active "flying"
+   instead of a slow drift; now the fastest planet takes ~18 minutes per orbit
+   and the giants hours). The initial angle is the real heliocentric longitude,
+   so the layout starts true to today's sky. */
 const ORBIT_MOTION: Record<string, number> = {
-  download: 90, // Mercury
-  comparison: 240, // Venus
-  roadmap: 480, // Mars
-  tech: 2400, // Jupiter
-  about: 4800, // Saturn
-  news: 7200, // Uranus
-  "how-it-works": 9600, // Neptune
+  download: 1080, // Mercury (18 min orbit)
+  comparison: 2880, // Venus (48 min)
+  roadmap: 5760, // Mars (96 min)
+  tech: 28800, // Jupiter (8 h)
+  about: 57600, // Saturn (16 h)
+  news: 86400, // Uranus (24 h)
+  "how-it-works": 115200, // Neptune (32 h)
 };
 
 const PAGE_DESCRIPTIONS: Record<string, LangDict> = {
@@ -660,6 +663,7 @@ export default function ExplorePagesSection() {
   const starNearRef = useRef<HTMLDivElement>(null);
   const parallaxRef = useRef<HTMLDivElement>(null);
   const [solarW, setSolarW] = useState(0);
+  const [solarH, setSolarH] = useState(0);
   const hideCard = () => {
     setHoveredPageId(null);
     setCardPos(null);
@@ -707,11 +711,17 @@ export default function ExplorePagesSection() {
     return map;
   });
 
-  // Measure the solar container so orbit radii are exact pixels.
+  // Measure the solar container so orbit radii are exact pixels. Item 12: the
+  // orbit radius must fit the SMALLER of width/height — a width-only radius
+  // lets the top/bottom of a circular orbit outgrow a horizontally-stretched
+  // section and visually "fly out" of the block.
   useEffect(() => {
     const el = solarRef.current;
     if (!el) return;
-    const update = () => setSolarW(el.clientWidth);
+    const update = () => {
+      setSolarW(el.clientWidth);
+      setSolarH(el.clientHeight);
+    };
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
@@ -831,6 +841,11 @@ export default function ExplorePagesSection() {
   const hoveredPlanet = hoveredPageId ? PLANET_DATA[hoveredPageId] : null;
   const hoveredPage = visiblePages.find((p) => p.id === hoveredPageId);
   const halfW = solarW / 2;
+  const halfH = solarH / 2;
+  // Shared orbit half-dimension (item 12): every orbit radius derives from the
+  // SMALLER of the two container halves, so a circular orbit always fits the
+  // block in BOTH axes — planets can never leave the visible area vertically.
+  const orbitHalf = Math.min(halfW, halfH) || 1;
 
   // Item 10: single source of truth for the layout. Real heliocentric angles
   // (`positions`) become screen-space discs (orbit radius x size), run through
@@ -842,7 +857,7 @@ export default function ExplorePagesSection() {
     if (halfW <= 0) return angles;
     const circles = planets.map(({ page, data }) => {
       const rad = ((positions[page.id] ?? 0) * Math.PI) / 180;
-      const R = data.radiusPct * ORBIT_SCALE * halfW;
+      const R = data.radiusPct * ORBIT_SCALE * orbitHalf;
       return { id: page.id, x: Math.cos(rad) * R, y: Math.sin(rad) * R, r: data.sizePx / 2 };
     });
     for (const c of resolvePlanetCollisions(circles, 8)) {
@@ -850,7 +865,7 @@ export default function ExplorePagesSection() {
       angles[c.id] = orbitR > 0 ? (Math.atan2(c.y, c.x) * 180) / Math.PI : 0;
     }
     return angles;
-  }, [planets, positions, halfW]);
+  }, [planets, positions, orbitHalf]);
   const resolvedAnglesRef = useRef(resolvedAngles);
   resolvedAnglesRef.current = resolvedAngles;
   // Shared granulated Sun surface as a data URL for the 2D fallback disc
@@ -925,6 +940,8 @@ export default function ExplorePagesSection() {
   const solarCanvasRef = useRef<HTMLCanvasElement>(null);
   const solarWRef = useRef(solarW);
   solarWRef.current = solarW;
+  const solarHRef = useRef(solarH);
+  solarHRef.current = solarH;
   const positionsRef = useRef(positions);
   positionsRef.current = positions;
   const planetsRef = useRef(planets);
@@ -1032,7 +1049,9 @@ export default function ExplorePagesSection() {
       if (cancelled) return;
       const w = Math.round(solarWRef.current);
       if (w <= 0) return;
-      const hw = w / 2;
+      // Orbit half-dimension (item 12): derive from the smaller side so every
+      // circular orbit stays inside the section in both axes.
+      const half = (Math.min(w, Math.max(1, Math.round(solarHRef.current)))) / 2;
       scene = new THREE.Scene();
       scene.background = null;
       // Perspective, but pulled back so the framing matches the flat 2D layout
@@ -1379,7 +1398,7 @@ export default function ExplorePagesSection() {
       for (const { page, data } of planetsRef.current) {
         const motion = PLANET_MOTION[page.id];
         if (!motion) continue;
-        const R = data.radiusPct * ORBIT_SCALE * hw;
+        const R = data.radiusPct * ORBIT_SCALE * half;
         // Orbit pivot at the Sun's centre: orbital revolution rotates this
         // group; the planet rides at distance R along +x.
         const group = new THREE.Group();
@@ -1390,6 +1409,18 @@ export default function ExplorePagesSection() {
         const axis = new THREE.Group();
         axis.position.x = R;
         axis.rotation.z = (motion.tiltDeg * Math.PI) / 180;
+
+        // Item 12: guarantees every axis child sits at the axis origin. The
+        // axial tilt rotates this group; any non-zero child offset would be
+        // tipped into a compounded precession that swings the body in front of
+        // the face ("flashing past the screen") as the orbit pivots. The model
+        // bodies are normalised to centre, and the procedural extras are born
+        // at the origin — but assert it so a future asset can't regress that.
+        const keepAxisKidsCentred = (obj: import("three").Object3D, isBody = false) => {
+          if (!isBody) obj.position.set(0, 0, 0);
+          obj.rotation.set(0, 0, 0);
+          obj.scale.set(1, 1, 1);
+        };
         group.add(axis);
 
         const model = modelByPage.get(page.id);
@@ -1399,6 +1430,7 @@ export default function ExplorePagesSection() {
           // Real GLB model: add the normalised body in place of the
           // procedural sphere (Sketchfab models ship their own textures and,
           // for Saturn, their own rings — skip the procedural extras).
+          keepAxisKidsCentred(model.body); // centring lives in the body node
           axis.add(model.body);
         } else {
           // Procedural sphere with the real surface map. 64x48 segments (up
@@ -1424,6 +1456,7 @@ export default function ExplorePagesSection() {
           mesh.userData.pageId = page.id;
           mesh.castShadow = true;
           mesh.receiveShadow = true;
+          keepAxisKidsCentred(mesh); // body sphere at the axis origin
           axis.add(mesh);
           disposables.push(geo, mat);
 
@@ -1444,6 +1477,7 @@ export default function ExplorePagesSection() {
               }
             );
             const clouds = new THREE.Mesh(cloudGeo, cloudMat);
+            keepAxisKidsCentred(clouds); // cloud shell concentric to the body
             axis.add(clouds);
             disposables.push(cloudGeo, cloudMat);
           }
@@ -1538,6 +1572,10 @@ export default function ExplorePagesSection() {
         const rect = canvas.getBoundingClientRect();
         ndc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
         ndc.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+        // Item 12: pointer events fire between frames, so the cached matrixWorld
+        // can describe a half-frame-old pose. Force a recomposition BEFORE
+        // raycasting so the hit test always sees the exact current layout.
+        scene?.updateMatrixWorld(true);
         raycaster.setFromCamera(ndc, camera!);
         const hits = raycaster.intersectObjects(hitMeshes, false);
         if (hits.length > 0) {
@@ -1568,6 +1606,7 @@ export default function ExplorePagesSection() {
         const rect = canvas.getBoundingClientRect();
         ndc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
         ndc.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+        scene?.updateMatrixWorld(true);
         raycaster.setFromCamera(ndc, camera!);
         const hits = raycaster.intersectObjects(hitMeshes, false);
         if (hits.length > 0) {
@@ -1595,11 +1634,11 @@ export default function ExplorePagesSection() {
           lastW = wCur;
           applyCamera();
         }
-        const hw2 = wCur / 2;
+        const half2 = Math.min(wCur, Math.max(1, Math.round(solarHRef.current))) / 2;
         const hovered = hoverRef.current;
         const ease = 1 - Math.pow(0.005, dt); // exponential smoothing factor
         for (const rec of records) {
-          const R = rec.data.radiusPct * ORBIT_SCALE * hw2;
+          const R = rec.data.radiusPct * ORBIT_SCALE * half2;
           // The pivot rides at distance R along +x; keep the offset in sync
           // with the container size (hit sphere + label ride the same pivot).
           rec.axis.position.x = R;
@@ -2195,7 +2234,7 @@ if (!motionlessRef.current) {
                   const color = data.color;
                   const angleDeg = resolvedAngles[page.id] ?? positions[page.id] ?? 0;
                   const rad = (angleDeg * Math.PI) / 180;
-                  const R = data.radiusPct * ORBIT_SCALE * halfW;
+                  const R = data.radiusPct * ORBIT_SCALE * orbitHalf;
                   const x = Math.cos(rad) * R;
                   const y = Math.sin(rad) * R;
                   // Gentle hover (client request): the orbit point is never
