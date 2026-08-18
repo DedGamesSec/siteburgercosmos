@@ -616,18 +616,8 @@ export default function ExplorePagesSection() {
 
   const motionless = ecoMode || reduceMotion;
 
-  // Periodically recompute real positions (every minute) unless motion is off.
-  useEffect(() => {
-    if (motionless) return;
-    const update = () => {
-      const now = new Date();
-      const map: Record<string, number> = {};
-      for (const [id, body] of Object.entries(BODY_BY_PAGE)) map[id] = helioLongitude(body, now);
-      setPositions(map);
-    };
-    const id = window.setInterval(update, 60_000);
-    return () => window.clearInterval(id);
-  }, [motionless]);
+  // Planets are completely frozen (client request): positions are computed
+  // once on mount and never re-synced, so nothing ever moves or jumps.
 
   // Deterministic pseudo-random star field. Sizes/opacities are skewed so a
   // few stars come out notably bigger and brighter (depth, not a uniform grid).
@@ -1180,10 +1170,9 @@ export default function ExplorePagesSection() {
           const isHovered = rec.pageId === hovered;
           const dim = hovered !== null && !isHovered;
 
-          // Smoothly ease the spin toward its target: full rate normally,
-          // decelerated to 0 while hovered so the cursor doesn't chase.
-          const targetSpin = isHovered ? 0 : rec.spinRate * rec.direction;
-          rec.spinVel += (targetSpin - rec.spinVel) * ease;
+          // Planets are fully frozen (client request): no axial self-rotation,
+          // no orbital drift — the body sits exactly on its orbit point and
+          // only the gentle hover scale below ever touches its geometry.
 
           // Gentle hover scale (client request): the planet stays on its
           // orbit point, but its body eases up ~5% while hovered (nothing
@@ -1222,8 +1211,8 @@ export default function ExplorePagesSection() {
             }
             if (rec.mat) rec.mat.opacity = 1;
           }
-          // Smoothly easing spin replaces the hard pause of the hovered planet.
-          if (inViewRef.current) rec.group.rotation.y += dt * rec.spinVel;
+          // Planets are frozen (client request) — the body never rotates on
+          // its own axis; only the pinned label below updates below.
 
           // Keep the name label pinned directly below its sphere (it is a
           // scene object, so it moves with the model; the tint drives the
@@ -1814,7 +1803,7 @@ export default function ExplorePagesSection() {
                               planet={data}
                               size={data.sizePx}
                               ring={data.hasRings}
-                              spin={!motionless}
+                              spin={false}
                               lit={active}
                             />
                           </motion.span>
