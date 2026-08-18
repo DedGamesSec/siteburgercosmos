@@ -788,6 +788,9 @@ export default function ExplorePagesSection() {
   const hoverRef = useRef<string | null>(null);
   hoverRef.current = hoveredPageId;
   const inViewRef = useRef(true);
+  const ecoModeRef = useRef(ecoMode);
+  ecoModeRef.current = ecoMode;
+  const pointerRef = useRef({ nx: 0, ny: 0 });
 
   // ---- Item 8: "warp" burst on card click. A short decorative flash fans out
   //      from the click point, then navigation happens — never blocked for
@@ -833,6 +836,8 @@ export default function ExplorePagesSection() {
     let onPointerMove: ((e: PointerEvent) => void) | null = null;
     let onPointerDown: ((e: PointerEvent) => void) | null = null;
     let onLeave: (() => void) | null = null;
+    let composer: import("three/examples/jsm/postprocessing/EffectComposer.js").EffectComposer | null = null;
+    let bloomPass: import("three/examples/jsm/postprocessing/UnrealBloomPass.js").UnrealBloomPass | null = null;
     const disposables: Array<{ dispose: () => void }> = [];
     let records: Array<{
       pageId: string;
@@ -864,13 +869,18 @@ export default function ExplorePagesSection() {
       orbitDrift: number;
     }> = [];
 
+    let camBaseZ = 1000;
+    let camX = 0;
+    let camY = 0;
     const applyCamera = () => {
       if (!camera) return;
       const w = Math.max(1, Math.round(solarWRef.current));
       camera.aspect = 1;
-      camera.position.z = w / (2 * Math.tan((camera.fov * Math.PI) / 360));
+      camBaseZ = w / (2 * Math.tan((camera.fov * Math.PI) / 360));
+      camera.position.z = camBaseZ;
       camera.updateProjectionMatrix();
       renderer?.setSize(w, w, false);
+      composer?.setSize(w, w);
     };
 
     const boot = async () => {
@@ -897,12 +907,41 @@ export default function ExplorePagesSection() {
       renderer.toneMappingExposure = 1.1;
       // Neutral image-based lighting so reflective/metal surfaces read as
       // lit instead of flat grey (models keep their own materials untouched).
+      // A bright room-like environment would give the models a plastic studio
+      // sheen — wrong for space — so a generated deep-space equirect (near-black
+      // gradient + a few star specks) is baked into the environment map instead.
       try {
-        const { RoomEnvironment } = await import("three/examples/jsm/environments/RoomEnvironment.js");
-        if (cancelled) return;
         const pmrem = new THREE.PMREMGenerator(renderer);
-        scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.06).texture;
+        const envCanvas = document.createElement("canvas");
+        envCanvas.width = 1024;
+        envCanvas.height = 512;
+        const ectx = envCanvas.getContext("2d")!;
+        const grad = ectx.createLinearGradient(0, 0, 0, 512);
+        grad.addColorStop(0, "#060814");
+        grad.addColorStop(0.5, "#0c1020");
+        grad.addColorStop(1, "#050610");
+        ectx.fillStyle = grad;
+        ectx.fillRect(0, 0, 1024, 512);
+        for (let i = 0; i < 90; i++) {
+          const x = Math.random() * 1024;
+          const y = Math.random() * 512;
+          const rr = 0.4 + Math.random() * 1.8;
+          ectx.fillStyle = `rgba(255,255,255,${(0.25 + Math.random() * 0.7).toFixed(2)})`;
+          ectx.beginPath();
+          ectx.arc(x, y, rr, 0, Math.PI * 2);
+          ectx.fill();
+        }
+        const envTex = new THREE.CanvasTexture(envCanvas);
+        envTex.colorSpace = THREE.SRGBColorSpace;
+        const envScene = new THREE.Scene();
+        const envGeo = new THREE.SphereGeometry(50, 32, 32);
+        const envMat = new THREE.MeshBasicMaterial({ map: envTex, side: THREE.BackSide });
+        envScene.add(new THREE.Mesh(envGeo, envMat));
+        scene.environment = pmrem.fromScene(envScene, 0.04).texture;
         pmrem.dispose();
+        envGeo.dispose();
+        envMat.dispose();
+        envTex.dispose();
       } catch {
         /* environment is optional — lights alone still give the terminator */
       }
@@ -916,23 +955,32 @@ export default function ExplorePagesSection() {
       };
       canvas.addEventListener("webglcontextlost", onContextLost, false);
 
-      // The Sun at the centre is the main light source (real day/night
-      // terminator). A modest top-left key light guarantees visible 3D
-      // shading even on GPUs where the point light behaves differently,
-      // plus a faint fill so no sphere ever reads as flat.
       // The Sun at the centre is the main light source — its PointLight gives
       // the real day/night terminator sweeping across each planet as it spins
       // (the signature cue that these are lit 3D bodies, not flat textures).
-      // Ambient stays low so the night side reads as night; two very faint
-      // directionals only keep silhouettes from collapsing on GPUs where the
-      // point light misbehaves.
-      const ambient = new THREE.AmbientLight(0xffffff, 0.18);
-      const sunLight = new THREE.PointLight(0xffe0b0, 3.0, 0, 0);
-      const key = new THREE.DirectionalLight(0xffffff, 0.12);
+      // Intensity is high and decay is 0 (no distance falloff) on purpose: in
+      // this pixel-scale world physical decay would plunge the outer planets
+      // into black. Ambient stays low so the night side reads as night, and
+      // two very faint directionals only keep silhouettes from collapsing on
+      // GPUs where the point light misbehaves. No light ever overrides the
+      // GLB materials themselves.
+      const ambient = new THREE.AmbientLight(0xffffff, 0.08);
+      const sunLight = new THREE.PointLight(0xfff0d6, 4.5, 0, 0);
+      const key = new THREE.DirectionalLight(0xffffff, 0.05);
       key.position.set(-1, 1, 1);
-      const fill = new THREE.DirectionalLight(0xffffff, 0.08);
+      const fill = new THREE.DirectionalLight(0xffffff, 0.035);
       fill.position.set(0, -0.5, 1);
       scene.add(ambient, sunLight, key, fill);
+
+      // Soft shadows from the sun make the planets sit in the scene instead of
+      // floating (a planet's own night side + the ring shadow on Saturn).
+      // Costly on weak GPUs — toggled off live under eco-mode in the loop.
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      sunLight.castShadow = true;
+      sunLight.shadow.mapSize.set(1024, 1024);
+      sunLight.shadow.camera.near = 10;
+      sunLight.shadow.camera.far = 900;
 
       // The Sun sphere itself (unlit).
       const sunGeo = new THREE.SphereGeometry(52, 32, 32);
@@ -965,6 +1013,10 @@ export default function ExplorePagesSection() {
         body.position.set(-c.x * s, -c.y * s, -c.z * s);
         body.traverse((o) => {
           o.frustumCulled = false;
+          if ((o as import("three").Mesh).isMesh) {
+            o.castShadow = true;
+            o.receiveShadow = true;
+          }
         });
         disposables.push({
           dispose: () => {
@@ -1043,9 +1095,11 @@ export default function ExplorePagesSection() {
         };
         const c = new THREE.Color();
         for (let i = 0; i < count; i++) {
+          // Depth spread along z so the field reads as a volume, not a flat
+          // back wall — the camera parallax shifts near stars more than far.
           positions[i * 3] = (rnd() * 2 - 1) * 1600;
           positions[i * 3 + 1] = (rnd() * 2 - 1) * 1600;
-          positions[i * 3 + 2] = -1400 + rnd() * 40;
+          positions[i * 3 + 2] = -1250 - rnd() * 550;
           const w = 0.55 + rnd() * 0.45;
           c.setRGB(w, w, w);
           colors[i * 3] = c.r;
@@ -1067,8 +1121,31 @@ export default function ExplorePagesSection() {
         scene!.add(pts);
         disposables.push(geo, mat);
       };
-      buildStars(300, 1.1, 0.7, 7);
-      buildStars(70, 2.0, 0.8, 31);
+      const eco = ecoModeRef.current;
+      buildStars(eco ? 140 : 300, 1.1, 0.7, 7);
+      buildStars(eco ? 30 : 70, 2.0, 0.8, 31);
+
+      // ---- Post-processing: UnrealBloom so the Sun and bright speculars glow
+      // instead of clipping to a flat disc. The composer keeps the canvas's
+      // transparent background (render targets clear to alpha 0). eco-mode
+      // disables the bloom pass live in the loop (cheap) and falls back to a
+      // plain render if the composer never initialised.
+      try {
+        const [{ EffectComposer }, { RenderPass }, { UnrealBloomPass }, { OutputPass }] = await Promise.all([
+          import("three/examples/jsm/postprocessing/EffectComposer.js"),
+          import("three/examples/jsm/postprocessing/RenderPass.js"),
+          import("three/examples/jsm/postprocessing/UnrealBloomPass.js"),
+          import("three/examples/jsm/postprocessing/OutputPass.js"),
+        ]);
+        if (cancelled) return;
+        composer = new EffectComposer(renderer);
+        composer.addPass(new RenderPass(scene, camera));
+        bloomPass = new UnrealBloomPass(new THREE.Vector2(w, w), 0.4, 0.8, 0.45);
+        composer.addPass(bloomPass);
+        composer.addPass(new OutputPass());
+      } catch {
+        /* post-processing is optional — the scene renders fine without it */
+      }
 
       // Planet name label: a white-text sprite that lives in the scene and is
       // parented to the planet's orbit position each frame (tied to the 3D
@@ -1150,6 +1227,8 @@ export default function ExplorePagesSection() {
           );
           mesh = new THREE.Mesh(geo, mat);
           mesh.userData.pageId = page.id;
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
           axis.add(mesh);
           disposables.push(geo, mat);
 
@@ -1206,6 +1285,8 @@ export default function ExplorePagesSection() {
             }
             const ring = new THREE.Mesh(ringGeo, ringMat);
             ring.rotation.x = -Math.PI / 2;
+            ring.castShadow = true;
+            ring.receiveShadow = true;
             axis.add(ring);
             disposables.push(ringGeo, ringMat);
           }
@@ -1383,7 +1464,34 @@ export default function ExplorePagesSection() {
           rec.labelMat.color.set(rec.pageId === hovered ? rec.data.color : "#8B8F9C");
           rec.labelMat.opacity = hovered && rec.pageId !== hovered ? 0.35 : 1;
         }
-        if (inViewRef.current) renderer?.render(scene!, camera!);
+
+        // Subtle camera parallax (a couple of degrees, lerped) so the scene
+        // reads as a volume instead of a static postcard. Frozen back to the
+        // straight-on framing under eco-mode / prefers-reduced-motion — and the
+        // eased return means no jump on resume.
+        const p = pointerRef.current;
+        const prx = motionlessRef.current ? 0 : p.nx * 0.012;
+        const pry = motionlessRef.current ? 0 : -p.ny * 0.008;
+        const targetX = camBaseZ * Math.sin(prx);
+        const targetY = camBaseZ * Math.sin(pry);
+        camX += (targetX - camX) * ease;
+        camY += (targetY - camY) * ease;
+        camera!.position.x = camX;
+        camera!.position.y = camY;
+        camera!.lookAt(0, 0, 0);
+
+        // eco-mode: drop the expensive bits (bloom + shadow mapping) live;
+        // the sun light and the axial tilts always stay so weak devices don't
+        // fall back to a flat look.
+        if (renderer) {
+          renderer.shadowMap.enabled = !ecoModeRef.current;
+          if (bloomPass) bloomPass.enabled = !ecoModeRef.current;
+        }
+
+        if (inViewRef.current) {
+          if (composer) composer.render();
+          else renderer?.render(scene!, camera!);
+        }
       };
       raf = requestAnimationFrame(frame);
       if (!cancelled) setSceneReady(true);
@@ -1587,6 +1695,9 @@ export default function ExplorePagesSection() {
             // Normalised cursor position inside the block (-1..1).
             const nx = ((e.clientX - r.left) / r.width) * 2 - 1;
             const ny = ((e.clientY - r.top) / r.height) * 2 - 1;
+            // Feed the 3D camera parallax (WebGL mode) the same cursor vector.
+            pointerRef.current.nx = nx;
+            pointerRef.current.ny = ny;
             // Depth-aware parallax (reference request): far stars barely move,
             // the mid layer drifts a touch, the near layer leads the cursor.
             const deep = starDeepRef.current;
