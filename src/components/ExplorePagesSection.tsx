@@ -418,6 +418,23 @@ const ORBIT_MOTION: Record<string, number> = {
   "how-it-works": 115200, // Neptune (32 h)
 };
 
+/* Camera field of view (must match the PerspectiveCamera(40, ...) in boot). */
+const SUN_FOV = 40;
+
+/* Perspective stretch factor for a planet on its orbit. The CSS orbit rings
+   are true screen circles (no foreshortening), but the WebGL camera projects
+   off-centre points slightly TOWARD the screen centre (x_projected = x * z0 /
+   sqrt(x^2 + z0^2)). Because the camera distance z0 = half / tan(fov/2) with
+   the same half as the orbit radii, the shrink ratio per orbit is a constant
+   that depends only on radiusPct: R/z0 = radiusPct*ORBIT_SCALE*tan(fov/2).
+   Placing the orbit pivot at R / sqrt(1 - (R/z0)^2) makes its projected
+   radius land exactly ON the CSS ring (item 12: planets must sit on their
+   orbits). */
+const orbitFovComp = (radiusPct: number): number => {
+  const k = radiusPct * ORBIT_SCALE * Math.tan((SUN_FOV * Math.PI) / 360);
+  return 1 / Math.sqrt(Math.max(1e-9, 1 - k * k));
+};
+
 const PAGE_DESCRIPTIONS: Record<string, LangDict> = {
   home: {
     ru: "Обзор платформы TrustNode: локальный AI-антифрид, защита конфиденциальности и полный контроль над вашими данными.",
@@ -1393,7 +1410,12 @@ export default function ExplorePagesSection() {
       for (const { page, data } of planetsRef.current) {
         const motion = PLANET_MOTION[page.id];
         if (!motion) continue;
+        // R is the CSS-orbit radius (true screen px); the WebGL camera's
+        // perspective shrinks off-centre points toward the centre, so the
+        // pivot sits a touch farther out (R * comp) — its projected position
+        // lands exactly on the orbit ring (item: planets on their orbits).
         const R = data.radiusPct * ORBIT_SCALE * half;
+        const comp = orbitFovComp(data.radiusPct);
         // Orbit pivot at the Sun's centre: orbital revolution rotates this
         // group; the planet rides at distance R along +x.
         const group = new THREE.Group();
@@ -1402,7 +1424,7 @@ export default function ExplorePagesSection() {
         // transform node fully independent from the orbit pivot (scene
         // hierarchy: Orbit pivot -> axis -> model body -> hover hook).
         const axis = new THREE.Group();
-        axis.position.x = R;
+        axis.position.x = R * comp;
         axis.rotation.z = (motion.tiltDeg * Math.PI) / 180;
 
         // Item 12: guarantees every axis child sits at the axis origin. The
@@ -1525,7 +1547,7 @@ export default function ExplorePagesSection() {
         const hitGeo = new THREE.SphereGeometry(data.sizePx / 2 + 14, 16, 12);
         const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
         const hit = new THREE.Mesh(hitGeo, hitMat);
-        hit.position.x = R;
+        hit.position.x = R * comp;
         hit.userData.pageId = page.id;
         group.add(hit);
         hitMeshes.push(hit);
@@ -1534,7 +1556,7 @@ export default function ExplorePagesSection() {
         // Name label pinned to the planet's orbit point (rides the pivot, so
         // it can never drift from the moving body).
         const label = makeLabelTex(THREE, data.name[language].toUpperCase());
-        label.sprite.position.set(R, -(data.sizePx / 2 + 22), 0);
+        label.sprite.position.set(R * comp, -(data.sizePx / 2 + 22), 0);
         group.add(label.sprite);
 
         const orbitSeconds = ORBIT_MOTION[page.id] ?? 2400;
@@ -1637,11 +1659,14 @@ export default function ExplorePagesSection() {
         const ease = 1 - Math.pow(0.005, dt); // exponential smoothing factor
         for (const rec of records) {
           const R = rec.data.radiusPct * ORBIT_SCALE * half2;
+          const comp = orbitFovComp(rec.data.radiusPct);
           // The pivot rides at distance R along +x; keep the offset in sync
           // with the container size (hit sphere + label ride the same pivot).
-          rec.axis.position.x = R;
-          rec.hit.position.x = R;
-          rec.label.position.x = R;
+          // The *comp factor counteracts the camera's perspective shrink so
+          // the projected body sits exactly on its CSS orbit ring.
+          rec.axis.position.x = R * comp;
+          rec.hit.position.x = R * comp;
+          rec.label.position.x = R * comp;
 
           // Orbital revolution (around the Sun) and axial self-rotation are
           // two independent transforms, both delta-time driven and both frozen
