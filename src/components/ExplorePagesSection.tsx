@@ -330,6 +330,20 @@ const PLANET_MOTION: Record<string, { tiltDeg: number; spinSeconds: number; retr
   "how-it-works": { tiltDeg: 28.3, spinSeconds: 20 },
 };
 
+/* Compressed orbital periods (seconds for a full revolution around the Sun),
+   preserving the real ordering (Mercury fastest, Neptune slowest) while the
+   whole system drifts at a gentle, watchable pace. The initial angle is the
+   real heliocentric longitude, so the layout starts true to today's sky. */
+const ORBIT_MOTION: Record<string, number> = {
+  download: 90, // Mercury
+  comparison: 240, // Venus
+  roadmap: 480, // Mars
+  tech: 2400, // Jupiter
+  about: 4800, // Saturn
+  news: 7200, // Uranus
+  "how-it-works": 9600, // Neptune
+};
+
 const PAGE_DESCRIPTIONS: Record<string, LangDict> = {
   home: {
     ru: "Обзор платформы TrustNode: локальный AI-антифрид, защита конфиденциальности и полный контроль над вашими данными.",
@@ -612,6 +626,8 @@ export default function ExplorePagesSection() {
   }, []);
 
   const motionless = ecoMode || reduceMotion;
+  const motionlessRef = useRef(motionless);
+  motionlessRef.current = motionless;
 
   // Planets are completely frozen (client request): positions are computed
   // once on mount and never re-synced, so nothing ever moves or jumps.
@@ -753,7 +769,14 @@ export default function ExplorePagesSection() {
   // until then the canvas is empty, so a lightweight skeleton hints that the
   // orbits are being computed instead of showing a dead black square.
   const [sceneReady, setSceneReady] = useState(false);
-  const use3D = webglOk && !webglFailed && !motionless && solarW > 0;
+  // Feature flag (?solar2d=1) for a quick rollback to the legacy 2D/SVG
+  // scheme while the 3D renderer is being shaken out in production.
+  const [force2D] = useState(
+    () => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("solar2d") === "1"
+  );
+  // 3D renders even under ecoMode / prefers-reduced-motion — those only stop
+  // the rotation (orbital + axial), they never fall back to the flat discs.
+  const use3D = webglOk && !webglFailed && !force2D && solarW > 0;
   const visibleIds = useMemo(() => visiblePages.map((p) => p.id).join(","), [visiblePages]);
   const solarCanvasRef = useRef<HTMLCanvasElement>(null);
   const solarWRef = useRef(solarW);
@@ -774,8 +797,8 @@ export default function ExplorePagesSection() {
   useEffect(() => () => {
     if (warpTimer.current !== null) window.clearTimeout(warpTimer.current);
   }, []);
-  const warpNavigate = (id: string, e?: React.MouseEvent) => {
-    if (motionless || !e) {
+  const warpNavigate = (id: string, pt?: { clientX: number; clientY: number }) => {
+    if (motionless || !pt) {
       navigateTo(id);
       return;
     }
@@ -785,7 +808,7 @@ export default function ExplorePagesSection() {
       return;
     }
     const r = cont.getBoundingClientRect();
-    setWarp({ x: e.clientX - r.left, y: e.clientY - r.top, key: Date.now() });
+    setWarp({ x: pt.clientX - r.left, y: pt.clientY - r.top, key: Date.now() });
     if (warpTimer.current !== null) window.clearTimeout(warpTimer.current);
     warpTimer.current = window.setTimeout(() => {
       setWarp(null);
@@ -804,14 +827,25 @@ export default function ExplorePagesSection() {
     let raf = 0;
     let renderer: import("three").WebGLRenderer | null = null;
     let scene: import("three").Scene | null = null;
-    let camera: import("three").OrthographicCamera | null = null;
+    let camera: import("three").PerspectiveCamera | null = null;
     let io: IntersectionObserver | null = null;
     let onContextLost: ((e: Event) => void) | null = null;
+    let onPointerMove: ((e: PointerEvent) => void) | null = null;
+    let onPointerDown: ((e: PointerEvent) => void) | null = null;
+    let onLeave: (() => void) | null = null;
     const disposables: Array<{ dispose: () => void }> = [];
     let records: Array<{
       pageId: string;
       data: PlanetData;
+      /** Orbit pivot at the Sun's centre — orbital revolution rotates this.
+          The model itself never sits directly on it (see `axis`). */
       group: import("three").Group;
+      /** Model wrapper offset by the orbit radius and carrying the axial tilt
+          + self-rotation — two independent transform nodes by design. */
+      axis: import("three").Group;
+      /** Invisible sphere used for raycast hover/click (same tolerance as the
+          old DOM hit zones — never smaller than the rendered planet). */
+      hit: import("three").Mesh;
       mesh?: import("three").Mesh;
       mat?: import("three").MeshStandardMaterial;
       /** When a GLB model is configured: the normalised group added to the
@@ -823,19 +857,18 @@ export default function ExplorePagesSection() {
       labelMat: import("three").SpriteMaterial;
       spinRate: number;
       direction: number;
-      /** Eased dynamic field: current spin speed (decelerated to 0 while the
-          planet is hovered). */
-      spinVel: number;
+      orbitRate: number;
+      /** Initial real heliocentric longitude (radians), frozen on mount. */
+      baseAngle: number;
+      /** Accumulated orbital drift (radians), delta-time driven. */
+      orbitDrift: number;
     }> = [];
 
     const applyCamera = () => {
       if (!camera) return;
       const w = Math.max(1, Math.round(solarWRef.current));
-      const hw = w / 2;
-      camera.left = -hw;
-      camera.right = hw;
-      camera.top = hw;
-      camera.bottom = -hw;
+      camera.aspect = 1;
+      camera.position.z = w / (2 * Math.tan((camera.fov * Math.PI) / 360));
       camera.updateProjectionMatrix();
       renderer?.setSize(w, w, false);
     };
@@ -847,13 +880,32 @@ export default function ExplorePagesSection() {
       if (w <= 0) return;
       const hw = w / 2;
       scene = new THREE.Scene();
-      camera = new THREE.OrthographicCamera(-hw, hw, hw, -hw, -100, 100);
-      camera.position.z = 5;
+      scene.background = null;
+      // Perspective, but pulled back so the framing matches the flat 2D layout
+      // (near-orthographic appearance at this distance — no jarring re-angle).
+      camera = new THREE.PerspectiveCamera(40, 1, 100, 8000);
+      camera.position.z = w / (2 * Math.tan((40 * Math.PI) / 360));
 
       renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "low-power" });
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       renderer.setPixelRatio(dpr);
       renderer.setSize(w, w, false);
+      // Colour-accurate output for imported GLB materials (Sketchfab models
+      // ship sRGB textures + PBR maps — without this they look washed out).
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.1;
+      // Neutral image-based lighting so reflective/metal surfaces read as
+      // lit instead of flat grey (models keep their own materials untouched).
+      try {
+        const { RoomEnvironment } = await import("three/examples/jsm/environments/RoomEnvironment.js");
+        if (cancelled) return;
+        const pmrem = new THREE.PMREMGenerator(renderer);
+        scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.06).texture;
+        pmrem.dispose();
+      } catch {
+        /* environment is optional — lights alone still give the terminator */
+      }
       // If the GPU drops the context (tab switch, VRAM pressure, driver
       // reset), a lost context leaves a permanently blank canvas — the scene
       // would never recover and the planets would silently "disappear".
@@ -868,11 +920,17 @@ export default function ExplorePagesSection() {
       // terminator). A modest top-left key light guarantees visible 3D
       // shading even on GPUs where the point light behaves differently,
       // plus a faint fill so no sphere ever reads as flat.
-      const ambient = new THREE.AmbientLight(0xffffff, 0.4);
-      const sunLight = new THREE.PointLight(0xffe0b0, 3.2, 0, 0);
-      const key = new THREE.DirectionalLight(0xffffff, 0.45);
+      // The Sun at the centre is the main light source — its PointLight gives
+      // the real day/night terminator sweeping across each planet as it spins
+      // (the signature cue that these are lit 3D bodies, not flat textures).
+      // Ambient stays low so the night side reads as night; two very faint
+      // directionals only keep silhouettes from collapsing on GPUs where the
+      // point light misbehaves.
+      const ambient = new THREE.AmbientLight(0xffffff, 0.18);
+      const sunLight = new THREE.PointLight(0xffe0b0, 3.0, 0, 0);
+      const key = new THREE.DirectionalLight(0xffffff, 0.12);
       key.position.set(-1, 1, 1);
-      const fill = new THREE.DirectionalLight(0xffffff, 0.18);
+      const fill = new THREE.DirectionalLight(0xffffff, 0.08);
       fill.position.set(0, -0.5, 1);
       scene.add(ambient, sunLight, key, fill);
 
@@ -971,6 +1029,47 @@ export default function ExplorePagesSection() {
         if (cancelled) return;
       }
 
+      // ---- Starfield: a single Points object far from the camera (in 3D mode
+      // this replaces the DOM star dots). Two layers keep the size/brightness
+      // variety the DOM field had — a deep dim field plus a few brighter
+      // anchors. Pure decoration, never animated. ----
+      const buildStars = (count: number, size: number, opacity: number, seed: number) => {
+        const positions = new Float32Array(count * 3);
+        const colors = new Float32Array(count * 3);
+        let s = seed;
+        const rnd = () => {
+          s = (s * 16807) % 2147483647;
+          return s / 2147483647;
+        };
+        const c = new THREE.Color();
+        for (let i = 0; i < count; i++) {
+          positions[i * 3] = (rnd() * 2 - 1) * 1600;
+          positions[i * 3 + 1] = (rnd() * 2 - 1) * 1600;
+          positions[i * 3 + 2] = -1400 + rnd() * 40;
+          const w = 0.55 + rnd() * 0.45;
+          c.setRGB(w, w, w);
+          colors[i * 3] = c.r;
+          colors[i * 3 + 1] = c.g;
+          colors[i * 3 + 2] = c.b;
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+        const mat = new THREE.PointsMaterial({
+          size,
+          sizeAttenuation: false,
+          vertexColors: true,
+          transparent: true,
+          opacity,
+          depthWrite: false,
+        });
+        const pts = new THREE.Points(geo, mat);
+        scene!.add(pts);
+        disposables.push(geo, mat);
+      };
+      buildStars(300, 1.1, 0.7, 7);
+      buildStars(70, 2.0, 0.8, 31);
+
       // Planet name label: a white-text sprite that lives in the scene and is
       // parented to the planet's orbit position each frame (tied to the 3D
       // model — it can never drift from the sphere). Material colour tints it
@@ -1006,12 +1105,23 @@ export default function ExplorePagesSection() {
 
       
 
+      const hitMeshes: import("three").Mesh[] = [];
+
       for (const { page, data } of planetsRef.current) {
         const motion = PLANET_MOTION[page.id];
         if (!motion) continue;
+        const R = data.radiusPct * ORBIT_SCALE * hw;
+        // Orbit pivot at the Sun's centre: orbital revolution rotates this
+        // group; the planet rides at distance R along +x.
         const group = new THREE.Group();
-        group.rotation.z = (motion.tiltDeg * Math.PI) / 180;
         scene.add(group);
+        // Model wrapper: carries the axial tilt and the self-rotation — a
+        // transform node fully independent from the orbit pivot (scene
+        // hierarchy: Orbit pivot -> axis -> model body -> hover hook).
+        const axis = new THREE.Group();
+        axis.position.x = R;
+        axis.rotation.z = (motion.tiltDeg * Math.PI) / 180;
+        group.add(axis);
 
         const model = modelByPage.get(page.id);
         let mesh: import("three").Mesh | undefined;
@@ -1020,7 +1130,7 @@ export default function ExplorePagesSection() {
           // Real GLB model: add the normalised body in place of the
           // procedural sphere (Sketchfab models ship their own textures and,
           // for Saturn, their own rings — skip the procedural extras).
-          group.add(model.body);
+          axis.add(model.body);
         } else {
           // Procedural sphere with the real surface map.
           const geo = new THREE.SphereGeometry(data.sizePx / 2, 32, 24);
@@ -1040,7 +1150,7 @@ export default function ExplorePagesSection() {
           );
           mesh = new THREE.Mesh(geo, mat);
           mesh.userData.pageId = page.id;
-          group.add(mesh);
+          axis.add(mesh);
           disposables.push(geo, mat);
 
           // Venus: translucent cloud shell over the surface map for depth.
@@ -1060,7 +1170,7 @@ export default function ExplorePagesSection() {
               }
             );
             const clouds = new THREE.Mesh(cloudGeo, cloudMat);
-            group.add(clouds);
+            axis.add(clouds);
             disposables.push(cloudGeo, cloudMat);
           }
 
@@ -1096,29 +1206,106 @@ export default function ExplorePagesSection() {
             }
             const ring = new THREE.Mesh(ringGeo, ringMat);
             ring.rotation.x = -Math.PI / 2;
-            group.add(ring);
+            axis.add(ring);
             disposables.push(ringGeo, ringMat);
           }
         }
 
-        const label = makeLabelTex(THREE, data.name[language].toUpperCase());
+        // Invisible hit sphere — the raycast target for hover/click. Radius is
+        // sizePx/2 + 14px, the same tolerance the DOM hit zones used, so the
+        // clickable area never shrinks on the GLB bodies.
+        const hitGeo = new THREE.SphereGeometry(data.sizePx / 2 + 14, 16, 12);
+        const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+        const hit = new THREE.Mesh(hitGeo, hitMat);
+        hit.position.x = R;
+        hit.userData.pageId = page.id;
+        group.add(hit);
+        hitMeshes.push(hit);
+        disposables.push(hitGeo, hitMat);
 
+        // Name label pinned to the planet's orbit point (rides the pivot, so
+        // it can never drift from the moving body).
+        const label = makeLabelTex(THREE, data.name[language].toUpperCase());
+        label.sprite.position.set(R, -(data.sizePx / 2 + 22), 0);
+        group.add(label.sprite);
+
+        const orbitSeconds = ORBIT_MOTION[page.id] ?? 2400;
         records.push({
           pageId: page.id,
           data,
           group,
+          axis,
+          hit,
           ...(model ? { modelBody: model.body, modelHook: model.hook } : {}),
           ...(mesh ? { mesh, mat } : {}),
           label: label.sprite,
           labelMat: label.mat,
           spinRate: (Math.PI * 2) / motion.spinSeconds,
           direction: motion.retrograde ? -1 : 1,
-          spinVel: (Math.PI * 2) / motion.spinSeconds,
+          orbitRate: (Math.PI * 2) / orbitSeconds,
+          baseAngle: (positionsRef.current[page.id] ?? 0) * (Math.PI / 180),
+          orbitDrift: 0,
         });
       }
 
       // Warm up shaders before the first visible frame (no first-frame stutter).
       renderer.compile(scene, camera);
+
+      // ---- Raycast hover/click: hit detection on the rendered 3D bodies
+      // instead of DOM overlays. The tolerance matches the old DOM hit zones —
+      // the invisible hit sphere is sizePx/2 + 14px, never smaller than the
+      // planet. Hover only tints/scales/glows; it never moves the pivot. ----
+      const raycaster = new THREE.Raycaster();
+      const ndc = new THREE.Vector2();
+      let rayHover: string | null = null;
+      const pick = (e: PointerEvent) => {
+        const rect = canvas.getBoundingClientRect();
+        ndc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        ndc.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+        raycaster.setFromCamera(ndc, camera!);
+        const hits = raycaster.intersectObjects(hitMeshes, false);
+        if (hits.length > 0) {
+          const id = hits[0].object.userData.pageId as string;
+          if (rayHover !== id) {
+            rayHover = id;
+            setHoveredPageId(id);
+            // Position the info card beside the planet's projected screen spot.
+            const rec = records.find((r) => r.pageId === id);
+            const cont = solarRef.current;
+            if (rec && cont) {
+              const v = new THREE.Vector3();
+              rec.axis.getWorldPosition(v);
+              v.project(camera!);
+              const cRect = cont.getBoundingClientRect();
+              const px = (v.x * 0.5 + 0.5) * cRect.width;
+              const py = (-v.y * 0.5 + 0.5) * cRect.height;
+              setCardPos(computeCardPos(px, py, cRect.width, cRect.height, rec.data.sizePx / 2));
+            }
+          }
+        } else if (rayHover !== null) {
+          rayHover = null;
+          hideCard();
+        }
+      };
+      onPointerMove = (e: PointerEvent) => pick(e);
+      onPointerDown = (e: PointerEvent) => {
+        const rect = canvas.getBoundingClientRect();
+        ndc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        ndc.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+        raycaster.setFromCamera(ndc, camera!);
+        const hits = raycaster.intersectObjects(hitMeshes, false);
+        if (hits.length > 0) {
+          const id = hits[0].object.userData.pageId as string;
+          warpNavigate(id, { clientX: e.clientX, clientY: e.clientY });
+        }
+      };
+      onLeave = () => {
+        rayHover = null;
+        hideCard();
+      };
+      canvas.addEventListener("pointermove", onPointerMove, { passive: true });
+      canvas.addEventListener("pointerdown", onPointerDown);
+      container.addEventListener("pointerleave", onLeave);
       let last = performance.now();
       let lastW = -1;
       const frame = (now: number) => {
@@ -1133,28 +1320,31 @@ export default function ExplorePagesSection() {
           applyCamera();
         }
         const hw2 = wCur / 2;
-        const pos = positionsRef.current;
         const hovered = hoverRef.current;
         const ease = 1 - Math.pow(0.005, dt); // exponential smoothing factor
         for (const rec of records) {
-          const angle = ((pos[rec.pageId] ?? 0) * Math.PI) / 180;
           const R = rec.data.radiusPct * ORBIT_SCALE * hw2;
-          const baseX = Math.cos(angle) * R;
-          const baseY = -Math.sin(angle) * R;
-          // In-place hover (item 7, rewrite): the planet never leaves its orbit point.
-          rec.group.position.set(baseX, baseY, 0);
+          // The pivot rides at distance R along +x; keep the offset in sync
+          // with the container size (hit sphere + label ride the same pivot).
+          rec.axis.position.x = R;
+          rec.hit.position.x = R;
+          rec.label.position.x = R;
+
+          // Orbital revolution (around the Sun) and axial self-rotation are
+          // two independent transforms, both delta-time driven and both frozen
+          // under eco-mode / prefers-reduced-motion. The negative z sign keeps
+          // the on-screen layout identical to the 2D fallback.
+          if (!motionlessRef.current) {
+            rec.orbitDrift += dt * rec.orbitRate;
+            rec.axis.rotation.y += dt * rec.direction * rec.spinRate;
+          }
+          rec.group.rotation.z = -(rec.baseAngle + rec.orbitDrift);
 
           const isHovered = rec.pageId === hovered;
           const dim = hovered !== null && !isHovered;
 
-          // Planets are fully frozen (client request): no axial self-rotation,
-          // no orbital drift — the body sits exactly on its orbit point and
-          // only the gentle hover scale below ever touches its geometry.
-
-          // Gentle hover scale (client request): the planet stays on its
-          // orbit point, but its body eases up ~5% while hovered (nothing
-          // translates — a pure in-place size pulse). Eased per frame from the
-          // current value so it never snaps.
+          // Gentle hover: the body eases ~5% in place (scale/glow only — the
+          // orbit point and pivot rotation are never touched by hover).
           const hoverTarget = isHovered ? 1.05 : 1;
 
           if (rec.modelBody) {
@@ -1188,13 +1378,8 @@ export default function ExplorePagesSection() {
             }
             if (rec.mat) rec.mat.opacity = 1;
           }
-          // Planets are frozen (client request) — the body never rotates on
-          // its own axis; only the pinned label below updates below.
-
-          // Keep the name label pinned directly below its sphere (it is a
-          // scene object, so it moves with the model; the tint drives the
-          // hover/dim states instead of a full DOM redraw).
-          rec.label.position.set(rec.group.position.x, rec.group.position.y - (rec.data.sizePx / 2 + 22), 0);
+          // The name label is parented to the orbit pivot (so it rides the
+          // moving body and can never drift); only its tint updates per frame.
           rec.labelMat.color.set(rec.pageId === hovered ? rec.data.color : "#8B8F9C");
           rec.labelMat.opacity = hovered && rec.pageId !== hovered ? 0.35 : 1;
         }
@@ -1223,6 +1408,9 @@ export default function ExplorePagesSection() {
       if (raf) cancelAnimationFrame(raf);
       io?.disconnect();
       if (onContextLost) canvas.removeEventListener("webglcontextlost", onContextLost, false);
+      if (onPointerMove) canvas.removeEventListener("pointermove", onPointerMove);
+      if (onPointerDown) canvas.removeEventListener("pointerdown", onPointerDown);
+      if (onLeave) container.removeEventListener("pointerleave", onLeave);
       disposables.forEach((d) => d.dispose());
       renderer?.dispose();
       renderer = null;
@@ -1413,7 +1601,10 @@ export default function ExplorePagesSection() {
               their arrangement inside the square below while surrounding
               space extends out to the screen edges. */}
           {/* deepest sky — tiny, dim stars that barely move under the cursor
-              parallax (reference request: the field reads as a volume) */}
+              parallax (reference request: the field reads as a volume).
+              Hidden in 3D mode — the canvas starfield (Points) replaces the
+              DOM dots there. */}
+          {!use3D && (
           <div ref={starDeepRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out" aria-hidden="true">
             {deepStars.map((s, i) => (
               <span
@@ -1434,6 +1625,7 @@ export default function ExplorePagesSection() {
               />
             ))}
           </div>
+          )}
           <div ref={starLayerRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out" aria-hidden="true">
             {/* faint nebula haze — two soft colour patches, static unless motion
                  allowed, purely decorative */}
@@ -1455,7 +1647,8 @@ export default function ExplorePagesSection() {
                 filter: "blur(34px)",
               }}
             />
-            {stars.map((s, i) => (
+            {!use3D &&
+              stars.map((s, i) => (
               <span
                 key={i}
                 className={`absolute rounded-full bg-white ${motionless ? "" : "star-twinkle"} ${
@@ -1496,7 +1689,9 @@ export default function ExplorePagesSection() {
           </div>
 
           {/* nearest sky — a few larger/bright stars that lead the cursor a
-              little (per-planet depth on the parallax stack) */}
+              little (per-planet depth on the parallax stack). Hidden in 3D
+              mode — the canvas starfield replaces the DOM dots. */}
+          {!use3D && (
           <div ref={starNearRef} className="absolute inset-0 pointer-events-none transition-transform duration-700 ease-out" aria-hidden="true">
             {nearStars.map((s, i) => (
               <span
@@ -1521,6 +1716,7 @@ export default function ExplorePagesSection() {
               />
             ))}
           </div>
+          )}
 
           <div ref={solarRef} className="relative aspect-square w-full max-w-[920px] mx-auto">
 
@@ -1642,54 +1838,9 @@ export default function ExplorePagesSection() {
                   className="absolute inset-0 w-full h-full touch-none z-[3]"
                   aria-hidden="true"
                 />
-                {/* invisible DOM hit zones — positioned with the exact same orbit
-                     math as the 3D spheres, so hover/focus/click work reliably
-                     even where GPU acceleration misbehaves. The WebGL sphere in
-                     front is always the visual, and its in-canvas sprite label
-                     is pinned to the same orbit point. The zones are static —
-                     in-place hover (item 7) means the planet never leaves its
-                     orbit, so there is nothing to follow. */}
-                {planets.map(({ page, data }) => {
-                  const angleDeg = positions[page.id] ?? 0;
-                  const rad = (angleDeg * Math.PI) / 180;
-                  const R = data.radiusPct * ORBIT_SCALE * halfW;
-                  const x = Math.cos(rad) * R;
-                  // CSS `top` grows downward while three.js y grows upward, so
-                  // the hit zone must mirror the scene's y sign to sit exactly
-                  // on the rendered sphere.
-                  const y = Math.sin(rad) * R;
-                  const box = Math.max(48, data.sizePx + 28);
-                  return (
-                    <button
-                      key={page.id}
-                      type="button"
-                      className="absolute z-[4] rounded-full p-0 cursor-pointer outline-none border-0 -translate-x-1/2 -translate-y-1/2"
-                      style={{
-                        left: `calc(50% + ${x}px)`,
-                        top: `calc(50% + ${y}px)`,
-                        width: box,
-                        height: box,
-                        background: "transparent",
-                      }}
-                      aria-label={t.pageNames[page.labelKey]}
-                      onMouseEnter={(e) => {
-                        handlePlanetEnter(page.id, e);
-                      }}
-                      onMouseLeave={hideCardIfLeavingPlanet}
-                      onFocus={() => {
-                        setHoveredPageId(page.id);
-                      }}
-                      onClick={(e) => warpNavigate(page.id, e)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          warpNavigate(page.id);
-                        }
-                      }}
-                    />
-                  );
-                })}
-                {/* keyboard / assistive-tech access to the same pages */}
+                {/* mouse hover/click ride the 3D raycast inside boot() — the
+                     rendered bodies are the triggers. This list keeps keyboard
+                     / assistive-tech access to the same pages. */}
                 <ul className="sr-only pointer-events-none">
                   {planets.map(({ page }) => (
                     <li key={page.id}>
