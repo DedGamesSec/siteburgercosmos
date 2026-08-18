@@ -200,9 +200,14 @@ type PlanetData = {
 };
 
 const PLANET_DATA: Record<string, PlanetData> = {
+  /* Real relative sizes (diameter, Earth = 1): Mercury 0.383 · Venus 0.950
+     · Mars 0.533 · Jupiter 11.22 · Saturn 9.46 · Uranus 4.01 · Neptune 3.89.
+     `sizePx` keeps these exact proportions, anchored to Jupiter at 104px, so
+     the tiny inner planets read as bright dots (their raycast hit spheres stay
+     14px wider than the body, so hover/click remain comfortable). */
   "how-it-works": {
     color: "#3B82F6",
-    sizePx: 82,
+    sizePx: 36,
     radiusPct: 0.9,
     orbitalPeriodDays: 60182,
     textureUrl: "textures/planets/neptune.jpg",
@@ -246,7 +251,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   roadmap: {
     color: "#EF4444",
-    sizePx: 58,
+    sizePx: 5,
     radiusPct: 0.45,
     orbitalPeriodDays: 687,
     textureUrl: "textures/planets/mars.jpg",
@@ -268,7 +273,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   about: {
     color: "#EAB308",
-    sizePx: 98,
+    sizePx: 88,
     radiusPct: 0.74,
     orbitalPeriodDays: 10759.2,
     textureUrl: "textures/planets/saturn.jpg",
@@ -292,7 +297,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   comparison: {
     color: "#FDE68A",
-    sizePx: 68,
+    sizePx: 9,
     radiusPct: 0.34,
     orbitalPeriodDays: 224.7,
     textureUrl: "textures/planets/venus.jpg",
@@ -315,7 +320,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   news: {
     color: "#22D3EE",
-    sizePx: 86,
+    sizePx: 37,
     radiusPct: 0.84,
     orbitalPeriodDays: 30688.5,
     textureUrl: "textures/planets/uranus.jpg",
@@ -337,7 +342,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
   download: {
     color: "#9CA3AF",
-    sizePx: 52,
+    sizePx: 4,
     radiusPct: 0.26,
     orbitalPeriodDays: 88,
     textureUrl: "textures/planets/mercury.jpg",
