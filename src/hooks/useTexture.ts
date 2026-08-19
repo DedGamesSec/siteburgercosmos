@@ -27,6 +27,8 @@ export function useTexture(src: string, fallbackColor = "#3a2e26"): THREE.Textur
       src,
       (t) => {
         t.colorSpace = THREE.SRGBColorSpace;
+        t.generateMipmaps = true;
+        t.minFilter = THREE.LinearMipmapLinearFilter;
         if (alive) setMap(t);
       },
       undefined,

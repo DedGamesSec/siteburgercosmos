@@ -1,32 +1,51 @@
 import * as THREE from "three";
 import { useTexture } from "../hooks/useTexture";
 
-/* Saturn's rings — a real ring (annulus) instead of a flat quad, so the
-   planet never shows as a bare sphere. The alpha PNG drives the bands via
-   alphaMap (white = ring, black = gap) on a beige base, and a dark Cassini
-   division band sits between the A and B systems. */
+/* Saturn's rings — four real annulus layers (promt4 item 2):
+   · C inner crepe (faint, dusty),
+   · B dense bright bands,
+   · A outer textured ring driven by the Solar System Scope alpha map,
+   · the dark Cassini division cut between the A and B systems.
+   Every layer is a real ringGeometry in the planet's equatorial plane; the
+   shell doubles-inside the visible sphere so silhouette stays realistic. */
 export default function SaturnRings({ radius }: { radius: number }) {
   const alpha = useTexture(`${import.meta.env.BASE_URL}textures/planets/2k_saturn_ring_alpha.png`, "#77706a");
+  const plane = [Math.PI / 2, 0, 0] as const;
   return (
-    <group rotation={[-Math.PI / 2, 0, 0]}>
-      <mesh renderOrder={2}>
-        <ringGeometry args={[radius * 1.25, radius * 2.35, 128]} />
+    <group>
+      {/* Ring C — inner, misty */}
+      <mesh rotation={plane} renderOrder={1}>
+        <ringGeometry args={[radius * 1.1, radius * 1.3, 64]} />
+        <meshStandardMaterial color="#c4b490" transparent opacity={0.4} side={THREE.DoubleSide} depthWrite={false} />
+      </mesh>
+
+      {/* Ring B — dense, medium */}
+      <mesh rotation={plane} renderOrder={2}>
+        <ringGeometry args={[radius * 1.5, radius * 1.9, 64]} />
+        <meshStandardMaterial color="#d4c4a0" transparent opacity={0.6} side={THREE.DoubleSide} depthWrite={false} />
+      </mesh>
+
+      {/* Ring A — outer, textured */}
+      <mesh rotation={plane} renderOrder={3}>
+        <ringGeometry args={[radius * 1.25, radius * 2.2, 64]} />
         <meshStandardMaterial
-          color="#c8c0b6"
+          map={alpha}
           alphaMap={alpha}
+          color="#c8c0b6"
           transparent
-          opacity={0.92}
-          alphaTest={0.04}
+          opacity={0.85}
+          alphaTest={0.05}
           side={THREE.DoubleSide}
+          depthWrite={false}
           roughness={0.7}
           metalness={0.05}
-          depthWrite={false}
         />
       </mesh>
-      {/* Cassini division — a thin dark gap between the bright A and B rings */}
-      <mesh renderOrder={3}>
-        <ringGeometry args={[radius * 1.72, radius * 1.88, 128]} />
-        <meshBasicMaterial color="#14141a" transparent opacity={0.5} side={THREE.DoubleSide} depthWrite={false} />
+
+      {/* Cassini division — a dark gap cut behind the bright A band */}
+      <mesh rotation={plane} renderOrder={4}>
+        <ringGeometry args={[radius * 1.95, radius * 2.0, 64]} />
+        <meshBasicMaterial color="#1a1510" transparent opacity={0.7} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
     </group>
   );

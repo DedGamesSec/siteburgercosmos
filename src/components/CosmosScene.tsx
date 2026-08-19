@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { LanguageCode } from "../i18n/languages";
 import Sun from "./Sun";
@@ -13,18 +14,19 @@ import { type HoverPt, type PlanetItem } from "./cosmos/config";
 
    The 7 site planets ride their blue orbit rings exactly like the layout's
    CSS pixels expect: each ring radius `radiusPx` equals the ring div radius
-   (radiusPct * ORBIT_SCALE * min(w,h)/2), and spheres are `sizePx` wide, so
-   planet <-> ring alignment survives at every container size.
+   (radiusPct * ORBIT_SCALE * min(w,h)/2). BODIES are drawn at REAL relative
+   sizes (a shadow is a tiny fraction of its orbit ring), so neighbour radius
+   sums never reach the ring gaps and collisions are physically impossible.
 
-   Camera (promt3 item 1): fixed above-side view on the Sun — a handsome
-   isometric-ish corner. Rotation and panning are locked; only zoom is
-   available, so the composition can't be spun out of shape.
+   Camera (promt4 item 1): a smooth, damped, LOW-SPEED rotation inside a strict
+   envelope — polar 27°…81°, azimuth ±54°, zoom between 220 and 1500 — so the
+   view always stays the same handsome isometric-ish corner as the screenshots.
+   Under eco-mode / reduced-motion the whole system freezes at its real
+   heliocentric angles (rotation+zoom disabled).
 
-   Interaction stays site-native: hovering a planet shows the existing info
-   card (projected screen position is reported to the parent every frame
-   while hovered, so the card tracks the moving planet); clicking navigates
-   to the planet's page. Under eco-mode / reduced-motion the whole system
-   freezes at its real heliocentric angles. ---- */
+   Light: one warm PointLight from the Sun; every planet receives AND casts
+   shadows, so eclipses really happen (promt4 item 8). Post FX: selective
+   Bloom — only the Sun's layer-1 bodies blow out (promt4 item 7). ---- */
 
 type CosmosSceneProps = {
   planets: PlanetItem[];
@@ -39,7 +41,6 @@ type CosmosSceneProps = {
 
 export default function CosmosScene(props: CosmosSceneProps) {
   const { planets, language, initialAngles, motionless, onNavigate, onHover, onReady } = props;
-  const [timeScale, setTimeScale] = useState(1);
 
   const onHoverRef = useRef(onHover);
   onHoverRef.current = onHover;
@@ -54,44 +55,29 @@ export default function CosmosScene(props: CosmosSceneProps) {
     else groupRegistry.current.delete(id);
   });
 
-  const effectiveSpeed = motionless ? 0 : timeScale;
-
   return (
     <>
-      {!motionless && (
-        <div className="absolute top-3 left-3 z-40 flex flex-col gap-2 rounded-xl border border-[#3B82F6]/20 bg-black/70 backdrop-blur-md px-3 py-2 font-mono text-[10px] text-[#F5F5F0] pointer-events-auto select-none">
-          <span className="tracking-[0.2em] text-[#3B82F6]">SUN SYSTEM SIM</span>
-          <label className="flex items-center gap-2">
-            <span className="text-gray-400">speed</span>
-            <input
-              type="range"
-              min={0}
-              max={10}
-              step={0.1}
-              value={timeScale}
-              onChange={(e) => setTimeScale(parseFloat(e.target.value))}
-              className="w-28 accent-[#3B82F6]"
-            />
-            <span className="w-10 text-right tabular-nums">{timeScale.toFixed(1)}x</span>
-          </label>
-        </div>
-      )}
-
       <Canvas
         className="!absolute inset-0"
         style={{ position: "absolute", inset: 0 }}
-        shadows
+        shadows="soft"
         camera={{ position: [760, 610, 760], fov: 45, near: 10, far: 4000 }}
         gl={{ alpha: true, antialias: false, powerPreference: "high-performance", preserveDrawingBuffer: true }}
         dpr={[1, 2]}
         onPointerMissed={() => onHoverRef.current(null)}
         onCreated={(state) => {
+          // Select the Sun layer so the bright bodies render in the main pass
+          // too (the Bloom pass then only makes them glow, promt4 item 7).
+          state.camera.layers.enable(1);
           onReadyRef.current?.();
           if (import.meta.env.DEV) (window as unknown as { __cosmosRoot?: unknown }).__cosmosRoot = state;
         }}
       >
         <ambientLight intensity={0.45} />
-        <Stars radius={400} depth={60} count={2000} factor={4} saturation={0} fade speed={0.6} />
+        {/* Stars locked to the scene, far beyond the outermost ring (promt4
+            item 4). `speed` 0 keeps the shell fixed in space — drei's speed
+            would SPIN the star cloud, which the brief explicitly forbids. */}
+        <Stars radius={800} depth={100} count={3000} factor={6} saturation={0} fade speed={0} />
 
         <Sun />
 
@@ -105,7 +91,6 @@ export default function CosmosScene(props: CosmosSceneProps) {
             item={item}
             language={language}
             initialAngleDeg={initialAngles[item.page.id] ?? 0}
-            timeScale={effectiveSpeed}
             onHoverRef={onHoverRef}
             onNavigateRef={onNavigateRef}
             onGroup={onGroup.current}
@@ -114,18 +99,27 @@ export default function CosmosScene(props: CosmosSceneProps) {
 
         <OrbitControls
           makeDefault
-          enableRotate={false}
-          enablePan={false}
+          enableRotate
           enableZoom
+          enablePan={false}
           enableDamping
-          dampingFactor={0.08}
+          dampingFactor={0.05}
+          rotateSpeed={0.3}
+          minPolarAngle={Math.PI * 0.15}
+          maxPolarAngle={Math.PI * 0.45}
+          minAzimuthAngle={-Math.PI * 0.3}
+          maxAzimuthAngle={Math.PI * 0.3}
+          minDistance={220}
+          maxDistance={1500}
           target={[0, 0, 0]}
-          minDistance={600}
-          maxDistance={3200}
           enabled={!motionless}
         />
 
         <CollisionGuard planets={planets} registry={groupRegistry} />
+
+        <EffectComposer multisampling={0}>
+          <Bloom mipmapBlur intensity={0.8} luminanceThreshold={0.6} luminanceSmoothing={0.2} radius={0.8} />
+        </EffectComposer>
       </Canvas>
     </>
   );

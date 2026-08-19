@@ -61,8 +61,11 @@ function useSunTexture(): THREE.Texture {
 }
 
 /* The real source of warmth: a warm PointLight that reaches every planet and
-   casts shadows, an emissive sun sphere (it lights itself via basic material)
-   and two BackSide glow shells for the corona. */
+   casts soft eclipsing shadows, an emissive sun sphere (it lights itself via
+   basic material), additive corona shells and a selective-bloom layer. All the
+   bright bodies sit on layer 1, which the camera enables (CosmosScene) and the
+   Bloom pass of the postprocessor uses to make only the Sun bloom (promt4
+   item 7). */
 export default function Sun() {
   const map = useSunTexture();
   const sunRef = useRef<THREE.Mesh>(null);
@@ -73,29 +76,57 @@ export default function Sun() {
     <group>
       <pointLight
         position={[0, 0, 0]}
-        color="#ffc680"
-        intensity={2.6}
-        decay={0}
+        color="#ffaa33"
+        intensity={800}
+        decay={1.5}
         castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
         shadow-camera-near={1}
         shadow-camera-far={1400}
-        shadow-bias={-0.0001}
+        shadow-bias={-0.001}
+        shadow-radius={4}
       />
-      <mesh ref={sunRef}>
+      {/* Sun body — layer 1 keeps it in the selective-bloom pass */}
+      <mesh ref={sunRef} layers={1}>
         <sphereGeometry args={[SUN_RADIUS, 32, 32]} />
         <meshBasicMaterial map={map} toneMapped={false} />
       </mesh>
-      {/* inner glow */}
-      <mesh>
-        <sphereGeometry args={[SUN_RADIUS * 1.08, 32, 32]} />
-        <meshBasicMaterial color="#ffb23e" transparent opacity={0.18} toneMapped={false} side={THREE.BackSide} />
+      {/* inner aura */}
+      <mesh layers={1}>
+        <sphereGeometry args={[SUN_RADIUS * 1.2, 32, 32]} />
+        <meshBasicMaterial
+          color="#ffaa00"
+          transparent
+          opacity={0.25}
+          toneMapped={false}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+        />
       </mesh>
-      {/* corona */}
-      <mesh>
-        <sphereGeometry args={[SUN_RADIUS * 1.35, 32, 32]} />
-        <meshBasicMaterial color="#ff7a1f" transparent opacity={0.08} toneMapped={false} side={THREE.BackSide} />
+      {/* mid aura */}
+      <mesh layers={1}>
+        <sphereGeometry args={[SUN_RADIUS * 1.47, 32, 32]} />
+        <meshBasicMaterial
+          color="#ff8800"
+          transparent
+          opacity={0.12}
+          toneMapped={false}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      {/* outer corona */}
+      <mesh layers={1}>
+        <sphereGeometry args={[SUN_RADIUS * 2, 32, 32]} />
+        <meshBasicMaterial
+          color="#ff4400"
+          transparent
+          opacity={0.05}
+          toneMapped={false}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+        />
       </mesh>
     </group>
   );
