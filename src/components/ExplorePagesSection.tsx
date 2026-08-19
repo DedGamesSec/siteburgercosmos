@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useTranslation } from "../i18n/LanguageContext";
-import { useNavigation } from "../navigation/NavigationContext";
+import { useNavigation, type PageId } from "../navigation/NavigationContext";
 import { PAGES_CONFIG } from "../navigation/pages.config";
 import { motion, AnimatePresence } from "motion/react";
 import type { LanguageCode } from "../i18n/languages";
@@ -8,8 +8,7 @@ import { useEcoMode } from "../context/EcoModeContext";
 import ScanCard from "./ScanCard";
 import * as Astronomy from "astronomy-engine";
 import { resolvePlanetCollisions } from "../utils/planetCollisions";
-import { isWebGLAvailable } from "./cinematicShared";
-import Orbit3DModels from "./Orbit3DModels";
+import CosmosScene from "./CosmosScene";
 
 /* ---- Layered living Sun ----
    A shared granulated surface canvas is used both by the WebGL core sphere
@@ -387,37 +386,10 @@ const PLANET_DATA: Record<string, PlanetData> = {
   },
 };
 
-/* Real axial tilt (°) and compressed sidereal rotation timings per planet
-   (item 9). spinSeconds = a full self-rotation at a comfortable animation
-   speed, keeping the true ordering (Jupiter fastest, Venus slowest) and
-   direction (Venus and Uranus rotate retrograde). Ring config scales against
-   the planet's radius. */
-const PLANET_MOTION: Record<string, { tiltDeg: number; spinSeconds: number; retrograde?: boolean; ring?: { inner: number; outer: number; opacity: number } }> = {
-  download: { tiltDeg: 0.03, spinSeconds: 120 },
-  comparison: { tiltDeg: 177.4, spinSeconds: 240, retrograde: true },
-  roadmap: { tiltDeg: 25.2, spinSeconds: 30 },
-  tech: { tiltDeg: 3.1, spinSeconds: 14 },
-  about: { tiltDeg: 26.7, spinSeconds: 16, ring: { inner: 0.78, outer: 1.18, opacity: 0.95 } },
-  news: { tiltDeg: 97.8, spinSeconds: 22, retrograde: true, ring: { inner: 0.98, outer: 1.26, opacity: 0.6 } },
-  "how-it-works": { tiltDeg: 28.3, spinSeconds: 20 },
-};
-
-/* Compressed orbital periods (seconds for a full revolution around the Sun),
-   preserving the real ordering (Mercury fastest, Neptune slowest) while the
-   whole system drifts almost imperceptibly (item 12: the old values were x12
-   faster — Mercury completed an orbit every 90s, which read as active "flying"
-   instead of a slow drift; now the fastest planet takes ~18 minutes per orbit
-   and the giants hours). The initial angle is the real heliocentric longitude,
-   so the layout starts true to today's sky. */
-const ORBIT_MOTION: Record<string, number> = {
-  download: 1080, // Mercury (18 min orbit)
-  comparison: 2880, // Venus (48 min)
-  roadmap: 5760, // Mars (96 min)
-  tech: 28800, // Jupiter (8 h)
-  about: 57600, // Saturn (16 h)
-  news: 86400, // Uranus (24 h)
-  "how-it-works": 115200, // Neptune (32 h)
-};
+/* Real axial tilt (°) and compressed sidereal rotation timings per planet are
+   owned by CosmosScene now (the 3D rework). The flat 2D discs keep their
+   spin-free look — only the layout constants below (orbit radii, angles)
+   stay here, because they are the single source of truth for positions. */
 
 const PAGE_DESCRIPTIONS: Record<string, LangDict> = {
   home: {
@@ -671,25 +643,25 @@ export default function ExplorePagesSection() {
   };
 
   const cardRef = useRef<HTMLDivElement>(null);
-  // Hide the preview card immediately when the pointer leaves a planet — but
-  // not while it is heading toward the card itself (the card has a narrow
-  // buffer envelope around it), so the card stays open while it is being
-  // read/clicked.
-  const hideCardIfLeavingPlanet = (e: React.MouseEvent) => {
-    const el = cardRef.current;
-    if (el) {
-      const r = el.getBoundingClientRect();
-      const pad = 60;
-      if (
-        e.clientX >= r.left - pad &&
-        e.clientX <= r.right + pad &&
-        e.clientY >= r.top - pad &&
-        e.clientY <= r.bottom + pad
-      ) {
-        return;
-      }
+  // The 3D scene feeds hover here: the projected planet position (already
+  // relative to this container) drives the info card so it tracks the moving
+  // planet. Clearing on pointer-leave / pointer-missed hides the card.
+  const handleSceneHover = (id: string | null, pt?: { x: number; y: number }) => {
+    setHoveredPageId(id);
+    if (id && pt) {
+      const cont = solarRef.current;
+      const planet = PLANET_DATA[id];
+      const pos = computeCardPos(
+        pt.x,
+        pt.y,
+        cont?.clientWidth ?? solarW,
+        cont?.clientHeight ?? solarH,
+        planet ? planet.sizePx / 2 : 0
+      );
+      setCardPos(pos);
+    } else {
+      setCardPos(null);
     }
-    hideCard();
   };
   const hideCardIfLeavingCard = (e: React.PointerEvent) => {
     const rt = e.relatedTarget;
@@ -870,21 +842,17 @@ export default function ExplorePagesSection() {
   const resolvedAnglesRef = useRef(resolvedAngles);
   resolvedAnglesRef.current = resolvedAngles;
 
-  // Single source of truth for the 3D layer: each planet's parked position on
-  // its ring, in centre-relative CSS pixels — the same numbers the DOM discs
-  // are laid out at below. The planets do NOT orbit the Sun; they sit on the
-  // blue rings, so poseRef is filled once and stays constant.
-  const poseRef = useRef<Record<string, { x: number; y: number }>>({});
-  useEffect(() => {
-    for (const { page, data } of planets) {
-      const rad = ((resolvedAngles[page.id] ?? positions[page.id] ?? 0) * Math.PI) / 180;
-      const R = data.radiusPct * ORBIT_SCALE * orbitHalf;
-      poseRef.current[page.id] = { x: Math.cos(rad) * R, y: Math.sin(rad) * R };
+  // Starting angles for the 3D scene: the real heliocentric longitudes, run
+  // through the same collision resolver as the 2D layout, so the orbiting
+  // models begin parked where the rings point today (frozen under
+  // eco-mode / reduced-motion).
+  const initialAngles = useMemo(() => {
+    const angles: Record<string, number> = {};
+    for (const { page } of planets) {
+      angles[page.id] = resolvedAngles[page.id] ?? positions[page.id] ?? 0;
     }
-  }, [planets, resolvedAngles, positions, orbitHalf]);
-  // Shared granulated Sun surface as a data URL for the 2D fallback disc
-  // (the WebGL core reuses the same canvas as a texture).
-  const sunSurfaceUrl = useMemo(() => (typeof document !== "undefined" ? buildSunSurface().toDataURL() : ""), []);
+    return angles;
+  }, [planets, resolvedAngles, positions]);
 
   // Position the info card beside the hovered planet: open it outwards from
   // the planet (towards the centre of the composition), clamped to bounds so
@@ -909,76 +877,25 @@ export default function ExplorePagesSection() {
     return { x: left, y: top };
   };
 
-  // ---- Item 7 (final): hover leaves the planets completely frozen. 3D
-  //      sphere, DOM hit zone and 2D fallback all stay glued to the exact
-  //      same `positions`-derived point, and the hovered planet neither
-  //      moves, grows nor glows — no displacement, no scale pulse, no halo,
-  //      so nothing can be read as motion. There is no direction/distance
-  //      math at all. The only hover feedback is the side info card, the
-  //      dimming of the other planets and the pinned label tint.
+  // ---- Item 7 (final): hover leaves the planets completely frozen. The 3D
+  //      scene reports the hovered planet's projected position to the card
+  //      below, and nothing else reacts to the cursor.
 
-  const handlePlanetEnter = (id: string, e: React.MouseEvent<HTMLElement>) => {
-    setHoveredPageId(id);
-    const cont = solarRef.current;
-    if (!cont) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const cRect = cont.getBoundingClientRect();
-    const px = rect.left - cRect.left + rect.width / 2;
-    const py = rect.top - cRect.top + rect.height / 2;
-    const planet = PLANET_DATA[id];
-    const pos = computeCardPos(px, py, cRect.width, cRect.height, planet ? planet.sizePx / 2 : 0);
-    setCardPos(pos);
-  };
-
-  // ---- Item 9: real 3D planets — one shared three.js canvas. Each planet is
-  //      a textured, slowly-spinning sphere with its real axial tilt; Saturn
-  //      / Uranus get ring geometry. Hover/click use raycasting directly on
-  //      the spheres, so the rendered object IS the trigger — there is no DOM
-  //      overlay that could drift from the visual. Falls back to flat 2D
-  //      discs (DOM buttons) when WebGL or motion is unavailable.
-  const [webglFailed, setWebglFailed] = useState(false);
-  // True once boot() has loaded the shared GLB models and started rendering —
-  // until then the canvas is empty, so a lightweight skeleton hints that the
-  // orbits are being computed instead of showing a dead black square.
-  const [sceneReady, setSceneReady] = useState(false);
-  // Static 3D planet models (client request): the companion <Orbit3DModels />
-  // canvas draws each planet's real GLB model parked exactly on its blue ring,
-  // replacing the flat 2D disc (the DOM button underneath stays as the hit
-  // area + label). Enabled when WebGL works; if WebGL or a model fails, that
-  // planet simply keeps its flat 2D disc.
-  const webglOk = useMemo(() => typeof window !== "undefined" && isWebGLAvailable(), []);
-  const [ready3DIds, setReady3DIds] = useState<Set<string>>(new Set());
-  const web3DActive = webglOk && !webglFailed && solarW > 0;
-  // Client request: do away with the 3D flight. The flat 2D orbit discs are
-  // the scheme again; the WebGL boot path below is gated off and can no
-  // longer turn itself on at runtime.
-  const use3D = false;
-  const visibleIds = useMemo(() => visiblePages.map((p) => p.id).join(","), [visiblePages]);
-  const solarCanvasRef = useRef<HTMLCanvasElement>(null);
-  const solarWRef = useRef(solarW);
-  solarWRef.current = solarW;
-  const solarHRef = useRef(solarH);
-  solarHRef.current = solarH;
-  const positionsRef = useRef(positions);
-  positionsRef.current = positions;
-  const planetsRef = useRef(planets);
-  planetsRef.current = planets;
-  const hoverRef = useRef<string | null>(null);
-  hoverRef.current = hoveredPageId;
-  const inViewRef = useRef(true);
-  const ecoModeRef = useRef(ecoMode);
-  ecoModeRef.current = ecoMode;
-  const pointerRef = useRef({ nx: 0, ny: 0 });
+  // ---- Item 9: real 3D planets — the R3F CosmosScene renders the 7
+  //      textured spheres on their blue orbit rings; hover/click ride the
+  //      scene's own raycast, so the rendered object IS the trigger. There is
+  //      no DOM overlay that could drift from the visual.
 
   // ---- Item 8: "warp" burst on card click. A short decorative flash fans out
   //      from the click point, then navigation happens — never blocked for
   //      long, and skipped entirely under eco-mode / reduced-motion.
+  const pointerRef = useRef({ nx: 0, ny: 0 });
   const [warp, setWarp] = useState<{ x: number; y: number; key: number } | null>(null);
   const warpTimer = useRef<number | null>(null);
   useEffect(() => () => {
     if (warpTimer.current !== null) window.clearTimeout(warpTimer.current);
   }, []);
-  const warpNavigate = (id: string, pt?: { clientX: number; clientY: number }) => {
+  const warpNavigate = (id: PageId, pt?: { clientX: number; clientY: number }) => {
     if (motionless || !pt) {
       navigateTo(id);
       return;
@@ -998,819 +915,15 @@ export default function ExplorePagesSection() {
   };
 
 
-  useEffect(() => {
-    if (!use3D) return;
-    setSceneReady(false);
-    const canvas = solarCanvasRef.current;
-    const container = solarRef.current;
-    if (!canvas || !container) return;
-    let cancelled = false;
-    let raf = 0;
-    let renderer: import("three").WebGLRenderer | null = null;
-    let scene: import("three").Scene | null = null;
-    let camera: import("three").PerspectiveCamera | null = null;
-    let io: IntersectionObserver | null = null;
-    let onContextLost: ((e: Event) => void) | null = null;
-    let onPointerMove: ((e: PointerEvent) => void) | null = null;
-    let onPointerDown: ((e: PointerEvent) => void) | null = null;
-    let onLeave: (() => void) | null = null;
-    let composer: import("three/examples/jsm/postprocessing/EffectComposer.js").EffectComposer | null = null;
-    let bloomPass: import("three/examples/jsm/postprocessing/UnrealBloomPass.js").UnrealBloomPass | null = null;
-    const disposables: Array<{ dispose: () => void }> = [];
-    let records: Array<{
-      pageId: string;
-      data: PlanetData;
-      /** Orbit pivot at the Sun's centre — orbital revolution rotates this.
-          The model itself never sits directly on it (see `axis`). */
-      group: import("three").Group;
-      /** Model wrapper offset by the orbit radius and carrying the axial tilt
-          + self-rotation — two independent transform nodes by design. */
-      axis: import("three").Group;
-      /** Invisible sphere used for raycast hover/click (same tolerance as the
-          old DOM hit zones — never smaller than the rendered planet). */
-      hit: import("three").Mesh;
-      mesh?: import("three").Mesh;
-      mat?: import("three").MeshStandardMaterial;
-      /** When a GLB model is configured: the normalised group added to the
-          orbit group. `modelHook` is the inner node hover-scaled each frame. */
-      modelBody?: import("three").Group;
-      modelHook?: import("three").Group;
-      modelDimmed?: boolean;
-      label: import("three").Sprite;
-      labelMat: import("three").SpriteMaterial;
-      spinRate: number;
-      direction: number;
-      orbitRate: number;
-      /** Initial real heliocentric longitude (radians), frozen on mount. */
-      baseAngle: number;
-      /** Accumulated orbital drift (radians), delta-time driven. */
-      orbitDrift: number;
-    }> = [];
-
-    let camBaseZ = 1000;
-    let camX = 0;
-    let camY = 0;
-    const applyCamera = () => {
-      if (!camera) return;
-      const w = Math.max(1, Math.round(solarWRef.current));
-      camera.aspect = 1;
-      camBaseZ = w / (2 * Math.tan((camera.fov * Math.PI) / 360));
-      camera.position.z = camBaseZ;
-      camera.updateProjectionMatrix();
-      renderer?.setSize(w, w, false);
-      composer?.setSize(w, w);
-    };
-
-    const boot = async () => {
-      const THREE = await import("three");
-      if (cancelled) return;
-      const w = Math.round(solarWRef.current);
-      if (w <= 0) return;
-      // Orbit half-dimension (item 12): derive from the smaller side so every
-      // circular orbit stays inside the section in both axes.
-      const half = (Math.min(w, Math.max(1, Math.round(solarHRef.current)))) / 2;
-      scene = new THREE.Scene();
-      scene.background = null;
-      // Perspective, but pulled back so the framing matches the flat 2D layout
-      // (near-orthographic appearance at this distance — no jarring re-angle).
-      camera = new THREE.PerspectiveCamera(40, 1, 100, 8000);
-      camera.position.z = w / (2 * Math.tan((40 * Math.PI) / 360));
-
-      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "low-power" });
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      renderer.setPixelRatio(dpr);
-      renderer.setSize(w, w, false);
-      // Colour-accurate output for imported GLB materials (Sketchfab models
-      // ship sRGB textures + PBR maps — without this they look washed out).
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.1;
-      // Neutral image-based lighting so reflective/metal surfaces read as
-      // lit instead of flat grey (models keep their own materials untouched).
-      // A bright room-like environment would give the models a plastic studio
-      // sheen — wrong for space — so a generated deep-space equirect (near-black
-      // gradient + a few star specks) is baked into the environment map instead.
-      try {
-        const pmrem = new THREE.PMREMGenerator(renderer);
-        const envCanvas = document.createElement("canvas");
-        envCanvas.width = 1024;
-        envCanvas.height = 512;
-        const ectx = envCanvas.getContext("2d")!;
-        const grad = ectx.createLinearGradient(0, 0, 0, 512);
-        grad.addColorStop(0, "#060814");
-        grad.addColorStop(0.5, "#0c1020");
-        grad.addColorStop(1, "#050610");
-        ectx.fillStyle = grad;
-        ectx.fillRect(0, 0, 1024, 512);
-        for (let i = 0; i < 90; i++) {
-          const x = Math.random() * 1024;
-          const y = Math.random() * 512;
-          const rr = 0.4 + Math.random() * 1.8;
-          ectx.fillStyle = `rgba(255,255,255,${(0.25 + Math.random() * 0.7).toFixed(2)})`;
-          ectx.beginPath();
-          ectx.arc(x, y, rr, 0, Math.PI * 2);
-          ectx.fill();
-        }
-        const envTex = new THREE.CanvasTexture(envCanvas);
-        envTex.colorSpace = THREE.SRGBColorSpace;
-        const envScene = new THREE.Scene();
-        const envGeo = new THREE.SphereGeometry(50, 32, 32);
-        const envMat = new THREE.MeshBasicMaterial({ map: envTex, side: THREE.BackSide });
-        envScene.add(new THREE.Mesh(envGeo, envMat));
-        scene.environment = pmrem.fromScene(envScene, 0.04).texture;
-        pmrem.dispose();
-        envGeo.dispose();
-        envMat.dispose();
-        envTex.dispose();
-      } catch {
-        /* environment is optional — lights alone still give the terminator */
-      }
-      // If the GPU drops the context (tab switch, VRAM pressure, driver
-      // reset), a lost context leaves a permanently blank canvas — the scene
-      // would never recover and the planets would silently "disappear".
-      // Listen for it and fall back to the DOM disc layout instead.
-      onContextLost = (e: Event) => {
-        e.preventDefault();
-        if (!cancelled) setWebglFailed(true);
-      };
-      canvas.addEventListener("webglcontextlost", onContextLost, false);
-
-      // The Sun at the centre is the main light source — its PointLight gives
-      // the real day/night terminator sweeping across each planet as it spins
-      // (the signature cue that these are lit 3D bodies, not flat textures).
-      // Intensity is high and decay is 0 (no distance falloff) on purpose: in
-      // this pixel-scale world physical decay would plunge the outer planets
-      // into black. Ambient stays low so the night side reads as night, and
-      // two very faint directionals only keep silhouettes from collapsing on
-      // GPUs where the point light misbehaves. No light ever overrides the
-      // GLB materials themselves.
-      const ambient = new THREE.AmbientLight(0xffffff, 0.08);
-      const sunLight = new THREE.PointLight(0xfff0d6, 4.5, 0, 0);
-      const key = new THREE.DirectionalLight(0xffffff, 0.05);
-      key.position.set(-1, 1, 1);
-      const fill = new THREE.DirectionalLight(0xffffff, 0.035);
-      fill.position.set(0, -0.5, 1);
-      scene.add(ambient, sunLight, key, fill);
-
-      // Soft shadows from the sun make the planets sit in the scene instead of
-      // floating (a planet's own night side + the ring shadow on Saturn).
-      // Costly on weak GPUs — toggled off live under eco-mode in the loop.
-      renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-      sunLight.castShadow = true;
-      // Higher-resolution cube shadow map: 1024 -> 2048 gives the on-planet sun
-      // shadows a noticeably cleaner edge, and the bias/normalBias tuning kills
-      // the acne shimmer that reads as flicker on the lit hemisphere.
-      sunLight.shadow.mapSize.set(2048, 2048);
-      sunLight.shadow.camera.near = 10;
-      sunLight.shadow.camera.far = 900;
-      sunLight.shadow.bias = -0.0002;
-      sunLight.shadow.normalBias = 0.02;
-
-      // The Sun sphere itself (unlit — it IS the light source). A granulated
-      // CanvasTexture replaces the old flat disc: the surface slowly rotates
-      // in the render loop ("solar granulation") and breathes a few percent.
-      // A soft additive corona sprite layers the warm glow outward to just
-      // inside Mercury's orbit (radius 140 vs Mercury's 110), so the glow
-      // reads as deep space light, never washing the inner planets.
-      const sunGeo = new THREE.SphereGeometry(52, 48, 40);
-      const sunTex = new THREE.CanvasTexture(buildSunSurface());
-      sunTex.colorSpace = THREE.SRGBColorSpace;
-      sunTex.anisotropy = 4;
-      const sunMat = new THREE.MeshBasicMaterial({ map: sunTex, color: 0xffffff });
-      const sun = new THREE.Mesh(sunGeo, sunMat);
-      scene.add(sun);
-      disposables.push(sunGeo, sunMat, sunTex);
-
-      const coronaCanvas = document.createElement("canvas");
-      coronaCanvas.width = 256;
-      coronaCanvas.height = 256;
-      const cctx = coronaCanvas.getContext("2d")!;
-      const cg = cctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-      cg.addColorStop(0, "rgba(255,214,130,0.85)");
-      cg.addColorStop(0.28, "rgba(251,164,66,0.34)");
-      cg.addColorStop(0.6, "rgba(245,140,20,0.10)");
-      cg.addColorStop(1, "rgba(245,140,20,0)");
-      cctx.fillStyle = cg;
-      cctx.fillRect(0, 0, 256, 256);
-      const coronaTex = new THREE.CanvasTexture(coronaCanvas);
-      coronaTex.colorSpace = THREE.SRGBColorSpace;
-      const coronaMat = new THREE.SpriteMaterial({
-        map: coronaTex,
-        transparent: true,
-        opacity: 0.5,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      });
-      const corona = new THREE.Sprite(coronaMat);
-      corona.position.z = -2; // sits just behind the core plane, no rim z-fight
-      corona.scale.set(140, 140, 1);
-      scene.add(corona);
-      disposables.push(coronaTex, coronaMat);
-
-      // Non-rotating limb-darkening overlay (item 10): the granulated surface
-      // texture is uniformly bright, so the classic "dimmer rim" is applied by
-      // a billboard that never rotates with the sphere. Sprite texture fades
-      // from fully transparent in the centre to a dark/orangeish edge, so the
-      // sun reads as a glowing ball instead of a flat disc — and since the
-      // sprite always faces the camera, the darkening never sweeps around.
-      const limbCanvas = document.createElement("canvas");
-      limbCanvas.width = 256;
-      limbCanvas.height = 256;
-      const lctx = limbCanvas.getContext("2d")!;
-      const lg = lctx.createRadialGradient(128, 128, 40, 128, 128, 128);
-      lg.addColorStop(0, "rgba(120,60,0,0)");
-      lg.addColorStop(0.55, "rgba(132,66,4,0)");
-      lg.addColorStop(0.82, "rgba(150,74,6,0.28)");
-      lg.addColorStop(0.94, "rgba(120,56,4,0.55)");
-      lg.addColorStop(1, "rgba(90,40,2,0.75)");
-      lctx.fillStyle = lg;
-      lctx.fillRect(0, 0, 256, 256);
-      // The radial gradient clamps past its outer radius, so without this the
-      // four square corners of the canvas keep the rim's dark opaque colour —
-      // that reads as a grey-black square hugging the Sun (item 11). Erase
-      // everything outside the inscribed circle so only the limp disc remains.
-      lctx.globalCompositeOperation = "destination-out";
-      lctx.beginPath();
-      lctx.rect(0, 0, 256, 256);
-      lctx.arc(128, 128, 128, 0, Math.PI * 2, true);
-      lctx.fillStyle = "#000";
-      lctx.fill("evenodd");
-      lctx.globalCompositeOperation = "source-over";
-      const limbTex = new THREE.CanvasTexture(limbCanvas);
-      limbTex.colorSpace = THREE.SRGBColorSpace;
-      const limbMat = new THREE.SpriteMaterial({
-        map: limbTex,
-        transparent: true,
-        depthWrite: false,
-      });
-      const limb = new THREE.Sprite(limbMat);
-      // Slightly larger than the 104px sun sphere (radius 52), so the dark rim
-      // wraps the visible disc edge; a Sprite is always camera-facing.
-      limb.scale.set(112, 112, 1);
-      limb.renderOrder = 6; // above the core sphere (default 0), below corona/sun
-      scene.add(limb);
-      disposables.push(limbTex, limbMat);
-
-      const loader = new THREE.TextureLoader();
-
-      // Pre-load any configured GLB planet models. Two modes: a single
-      // combined solar-system model (loaded once, planets extracted by node
-      // name) or one file per planet. Each result is normalised — `body` is
-      // scaled so the model's bounding box matches the planet's `sizePx` and
-      // is centred on the orbit; `hook` is the inner node hover/scale is
-      // applied to each frame without disturbing the centring offset.
-      const modelByPage = new Map<string, { body: import("three").Group; hook: import("three").Group }>();
-      const normaliseModel = (root: import("three").Object3D, sizePx: number) => {
-        const hook = new THREE.Group();
-        hook.add(root);
-        const body = new THREE.Group();
-        body.add(hook);
-        body.updateMatrixWorld(true);
-        const box = new THREE.Box3().setFromObject(body);
-        const size = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z) || 1;
-        const s = sizePx / maxDim;
-        const c = box.getCenter(new THREE.Vector3());
-        body.scale.setScalar(s);
-        body.position.set(-c.x * s, -c.y * s, -c.z * s);
-        body.traverse((o) => {
-          o.frustumCulled = false;
-          if ((o as import("three").Mesh).isMesh) {
-            o.castShadow = true;
-            o.receiveShadow = true;
-          }
-        });
-        disposables.push({
-          dispose: () => {
-            body.traverse((o) => {
-              const m = o as import("three").Mesh;
-              if (!m.isMesh) return;
-              m.geometry?.dispose();
-              const mats = Array.isArray(m.material) ? m.material : [m.material];
-              for (const mm of mats) {
-                const withMap = mm as import("three").Material & { map?: import("three").Texture };
-                if (withMap.map) withMap.map.dispose();
-                mm.dispose();
-              }
-            });
-          },
-        });
-        return { body, hook };
-      };
-
-      if (SOLAR_SYSTEM_GLB) {
-        try {
-          const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
-          const gltf = await new Promise<{ scene: import("three").Group }>((res, rej) => {
-            new GLTFLoader().load(`${import.meta.env.BASE_URL}${SOLAR_SYSTEM_GLB}`, (g) => res(g), undefined, (err) => rej(err));
-          });
-          if (cancelled) return;
-          // Detach every node whose name starts with that planet's prefix
-          // (e.g. `Saturn_5` and `SaturnRing_14` => the Saturn subtree), so
-          // the planet's own rings/moons travel with it after auto-normalising.
-          for (const { page, data } of planetsRef.current) {
-            const prefix = MODEL_NODE_PREFIX[page.id];
-            if (!prefix) continue;
-            const matches: import("three").Object3D[] = [];
-            gltf.scene.traverse((o) => {
-              const nm = o.name.toLowerCase();
-              if (nm && nm.startsWith(prefix.toLowerCase())) matches.push(o);
-            });
-            if (matches.length === 0) continue;
-            const group = new THREE.Group();
-            for (const m of matches) group.add(m);
-            modelByPage.set(page.id, normaliseModel(group, data.sizePx));
-          }
-        } catch {
-          /* Combined model failed to load — planets stay procedural. */
-        }
-      } else {
-        await Promise.all(
-          (Object.entries(MODEL_GLB) as Array<[string, string]>)
-            .filter(([id]) => planetsRef.current.some(({ page }) => page.id === id))
-            .map(async ([id, url]) => {
-              try {
-                const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
-                const gltf = await new Promise<{ scene: import("three").Group }>((res, rej) => {
-                  new GLTFLoader().load(`${import.meta.env.BASE_URL}${url}`, (g) => res(g), undefined, (err) => rej(err));
-                });
-                modelByPage.set(id, normaliseModel(gltf.scene, PLANET_DATA[id].sizePx));
-              } catch {
-                /* GLB failed to load — the planet stays fully procedural. */
-              }
-            })
-        );
-        if (cancelled) return;
-      }
-
-      // ---- Starfield: full-bleed sky is provided by the DOM layers on the
-      // section itself (they now span edge-to-edge in both modes), so the 3D
-      // canvas no longer draws its own Points stars — drawing them would
-      // double every star inside the square. ----
-
-      // ---- Post-processing: UnrealBloom so the Sun and bright speculars glow
-      // instead of clipping to a flat disc. The composer keeps the canvas's
-      // transparent background (render targets clear to alpha 0). eco-mode
-      // disables the bloom pass live in the loop (cheap) and falls back to a
-      // plain render if the composer never initialised.
-      try {
-        const [{ EffectComposer }, { RenderPass }, { UnrealBloomPass }, { OutputPass }] = await Promise.all([
-          import("three/examples/jsm/postprocessing/EffectComposer.js"),
-          import("three/examples/jsm/postprocessing/RenderPass.js"),
-          import("three/examples/jsm/postprocessing/UnrealBloomPass.js"),
-          import("three/examples/jsm/postprocessing/OutputPass.js"),
-        ]);
-        if (cancelled) return;
-        composer = new EffectComposer(renderer);
-        composer.addPass(new RenderPass(scene, camera));
-        // Bloom threshold lifted high enough that only the Sun (and the
-        // hottest pixels) glow while planet surfaces — bright cloud bands,
-        // ice caps — stay under it, so the lit areas never overexpose or
-        // shimmer from per-frame bloom instability.
-        bloomPass = new UnrealBloomPass(new THREE.Vector2(w, w), 0.55, 0.8, 0.5);
-        composer.addPass(bloomPass);
-        composer.addPass(new OutputPass());
-      } catch {
-        /* post-processing is optional — the scene renders fine without it */
-      }
-
-      // Planet name label: a white-text sprite that lives in the scene and is
-      // parented to the planet's orbit position each frame (tied to the 3D
-      // model — it can never drift from the sphere). Material colour tints it
-      // so hover/dim states are handled in the render loop.
-      const makeLabelTex = (THREE_MOD: typeof import("three"), text: string) => {
-        const font = "600 12px 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
-        const probe = document.createElement("canvas");
-        const pctx = probe.getContext("2d")!;
-        pctx.font = font;
-        const tw = Math.ceil(pctx.measureText(text).width);
-        const w = tw + 12;
-        const h = 18;
-        const c = document.createElement("canvas");
-        c.width = Math.ceil(w * dpr);
-        c.height = Math.ceil(h * dpr);
-        const ctx = c.getContext("2d")!;
-        ctx.scale(dpr, dpr);
-        ctx.font = font;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = "#ffffff";
-        ctx.fillText(text, w / 2, h / 2 + 1);
-        const tex = new THREE_MOD.CanvasTexture(c);
-        tex.colorSpace = THREE_MOD.SRGBColorSpace;
-        const mat = new THREE_MOD.SpriteMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false });
-        const sprite = new THREE_MOD.Sprite(mat);
-        sprite.scale.set(w, h, 1);
-        sprite.renderOrder = 10;
-        scene!.add(sprite);
-        disposables.push(tex, mat);
-        return { sprite, mat };
-      };
-
-      
-
-      const hitMeshes: import("three").Mesh[] = [];
-
-      for (const { page, data } of planetsRef.current) {
-        const motion = PLANET_MOTION[page.id];
-        if (!motion) continue;
-        const R = data.radiusPct * ORBIT_SCALE * half;
-        // Orbit pivot at the Sun's centre: orbital revolution rotates this
-        // group; the planet rides at distance R along +x.
-        const group = new THREE.Group();
-        scene.add(group);
-        // Model wrapper: carries the axial tilt and the self-rotation — a
-        // transform node fully independent from the orbit pivot (scene
-        // hierarchy: Orbit pivot -> axis -> model body -> hover hook).
-        const axis = new THREE.Group();
-        axis.position.x = R;
-        axis.rotation.z = (motion.tiltDeg * Math.PI) / 180;
-
-        // Item 12: guarantees every axis child sits at the axis origin. The
-        // axial tilt rotates this group; any non-zero child offset would be
-        // tipped into a compounded precession that swings the body in front of
-        // the face ("flashing past the screen") as the orbit pivots. The model
-        // bodies are normalised to centre, and the procedural extras are born
-        // at the origin — but assert it so a future asset can't regress that.
-        const keepAxisKidsCentred = (obj: import("three").Object3D, isBody = false) => {
-          if (!isBody) obj.position.set(0, 0, 0);
-          obj.rotation.set(0, 0, 0);
-          obj.scale.set(1, 1, 1);
-        };
-        group.add(axis);
-
-        const model = modelByPage.get(page.id);
-        let mesh: import("three").Mesh | undefined;
-        let mat: import("three").MeshStandardMaterial | undefined;
-        if (model) {
-          // Real GLB model: add the normalised body in place of the
-          // procedural sphere (Sketchfab models ship their own textures and,
-          // for Saturn, their own rings — skip the procedural extras).
-          // NB: normaliseModel already centres the body and carries the
-          // sizePx scale on its own scale / position (root = the axis origin),
-          // so no keepAxisKidsCentred here — that guard would flatten the
-          // model's scale to 1 and throw the body off the orbit (item 12).
-          axis.add(model.body);
-        } else {
-          // Procedural sphere with the real surface map. 64x48 segments (up
-          // from 32x24) so the sun terminator and lit gradient stay smooth
-          // instead of resolving to flat faced polygons as the planet spins
-          // (faceting was the last visible shimmer on the bright hemisphere).
-          const geo = new THREE.SphereGeometry(data.sizePx / 2, 64, 48);
-          mat = new THREE.MeshStandardMaterial({ color: data.color, roughness: 1, metalness: 0, transparent: true });
-          loader.load(
-            `${import.meta.env.BASE_URL}${data.textureUrlHi ?? data.textureUrl}`,
-            (tex) => {
-              tex.colorSpace = THREE.SRGBColorSpace;
-              mat.map = tex;
-              mat.color.set(0xffffff);
-              mat.needsUpdate = true;
-            },
-            undefined,
-            () => {
-              /* keep the tinted colour as fallback */
-            }
-          );
-          mesh = new THREE.Mesh(geo, mat);
-          mesh.userData.pageId = page.id;
-          mesh.castShadow = true;
-          mesh.receiveShadow = true;
-          keepAxisKidsCentred(mesh); // body sphere at the axis origin
-          axis.add(mesh);
-          disposables.push(geo, mat);
-
-          // Venus: translucent cloud shell over the surface map for depth.
-          if (data.atmosphereTextureUrl) {
-            const cloudGeo = new THREE.SphereGeometry((data.sizePx / 2) * 1.012, 64, 48);
-            const cloudMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.85, depthWrite: false });
-            loader.load(
-              `${import.meta.env.BASE_URL}${data.atmosphereTextureUrl}`,
-              (tex) => {
-                tex.colorSpace = THREE.SRGBColorSpace;
-                cloudMat.map = tex;
-                cloudMat.needsUpdate = true;
-              },
-              undefined,
-              () => {
-                /* keep invisible fallback */
-              }
-            );
-            const clouds = new THREE.Mesh(cloudGeo, cloudMat);
-            keepAxisKidsCentred(clouds); // cloud shell concentric to the body
-            axis.add(clouds);
-            disposables.push(cloudGeo, cloudMat);
-          }
-
-          if (data.hasRings) {
-            const cfg = motion.ring ?? { inner: 0.78, outer: 1.15, opacity: 0.9 };
-            const ringGeo = new THREE.RingGeometry((data.sizePx / 2) * cfg.inner, (data.sizePx / 2) * cfg.outer, 128);
-            const ringMat = new THREE.MeshBasicMaterial({
-              color: data.color,
-              transparent: true,
-              opacity: cfg.opacity,
-              side: THREE.DoubleSide,
-              depthWrite: false,
-            });
-            if (data.ringTextureUrl) {
-              // Saturn: real ring map (Solar System Scope alpha strip). The
-              // strip's radial banding maps across the ring band; the alpha
-              // channel keeps the gaps (Cassini division) transparent.
-              loader.load(
-                `${import.meta.env.BASE_URL}${data.ringTextureUrl}`,
-                (tex) => {
-                  tex.colorSpace = THREE.SRGBColorSpace;
-                  ringMat.map = tex;
-                  ringMat.color.set(0xffffff);
-                  ringMat.opacity = 1; // the map's own alpha drives visibility
-                  ringMat.depthWrite = false;
-                  ringMat.needsUpdate = true;
-                },
-                undefined,
-                () => {
-                  /* keep the tinted colour as fallback */
-                }
-              );
-            }
-            const ring = new THREE.Mesh(ringGeo, ringMat);
-            ring.rotation.x = -Math.PI / 2;
-            ring.castShadow = true;
-            ring.receiveShadow = true;
-            axis.add(ring);
-            disposables.push(ringGeo, ringMat);
-          }
-        }
-
-        // Invisible hit sphere — the raycast target for hover/click. Radius is
-        // sizePx/2 + 14px, the same tolerance the DOM hit zones used, so the
-        // clickable area never shrinks on the GLB bodies.
-        const hitGeo = new THREE.SphereGeometry(data.sizePx / 2 + 14, 16, 12);
-        const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
-        const hit = new THREE.Mesh(hitGeo, hitMat);
-        hit.position.x = R;
-        hit.userData.pageId = page.id;
-        group.add(hit);
-        hitMeshes.push(hit);
-        disposables.push(hitGeo, hitMat);
-
-        // Name label pinned to the planet's orbit point (rides the pivot, so
-        // it can never drift from the moving body).
-        const label = makeLabelTex(THREE, data.name[language].toUpperCase());
-        label.sprite.position.set(R, -(data.sizePx / 2 + 22), 0);
-        group.add(label.sprite);
-
-        const orbitSeconds = ORBIT_MOTION[page.id] ?? 2400;
-        records.push({
-          pageId: page.id,
-          data,
-          group,
-          axis,
-          hit,
-          ...(model ? { modelBody: model.body, modelHook: model.hook } : {}),
-          ...(mesh ? { mesh, mat } : {}),
-          label: label.sprite,
-          labelMat: label.mat,
-          spinRate: (Math.PI * 2) / motion.spinSeconds,
-          direction: motion.retrograde ? -1 : 1,
-          orbitRate: (Math.PI * 2) / orbitSeconds,
-          baseAngle: (resolvedAnglesRef.current[page.id] ?? positionsRef.current[page.id] ?? 0) * (Math.PI / 180),
-          orbitDrift: 0,
-        });
-      }
-
-      // Warm up shaders before the first visible frame (no first-frame stutter).
-      renderer.compile(scene, camera);
-
-      // ---- Raycast hover/click: hit detection on the rendered 3D bodies
-      // instead of DOM overlays. The tolerance matches the old DOM hit zones —
-      // the invisible hit sphere is sizePx/2 + 14px, never smaller than the
-      // planet. Hover only tints/scales/glows; it never moves the pivot. ----
-      const raycaster = new THREE.Raycaster();
-      const ndc = new THREE.Vector2();
-      let rayHover: string | null = null;
-      const pick = (e: PointerEvent) => {
-        const rect = canvas.getBoundingClientRect();
-        ndc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-        ndc.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-        // Item 12: pointer events fire between frames, so the cached matrixWorld
-        // can describe a half-frame-old pose. Force a recomposition BEFORE
-        // raycasting so the hit test always sees the exact current layout.
-        scene?.updateMatrixWorld(true);
-        raycaster.setFromCamera(ndc, camera!);
-        const hits = raycaster.intersectObjects(hitMeshes, false);
-        if (hits.length > 0) {
-          const id = hits[0].object.userData.pageId as string;
-          if (rayHover !== id) {
-            rayHover = id;
-            setHoveredPageId(id);
-            // Position the info card beside the planet's projected screen spot.
-            const rec = records.find((r) => r.pageId === id);
-            const cont = solarRef.current;
-            if (rec && cont) {
-              const v = new THREE.Vector3();
-              rec.axis.getWorldPosition(v);
-              v.project(camera!);
-              const cRect = cont.getBoundingClientRect();
-              const px = (v.x * 0.5 + 0.5) * cRect.width;
-              const py = (-v.y * 0.5 + 0.5) * cRect.height;
-              setCardPos(computeCardPos(px, py, cRect.width, cRect.height, rec.data.sizePx / 2));
-            }
-          }
-        } else if (rayHover !== null) {
-          rayHover = null;
-          hideCard();
-        }
-      };
-      onPointerMove = (e: PointerEvent) => pick(e);
-      onPointerDown = (e: PointerEvent) => {
-        const rect = canvas.getBoundingClientRect();
-        ndc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-        ndc.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-        scene?.updateMatrixWorld(true);
-        raycaster.setFromCamera(ndc, camera!);
-        const hits = raycaster.intersectObjects(hitMeshes, false);
-        if (hits.length > 0) {
-          const id = hits[0].object.userData.pageId as string;
-          warpNavigate(id, { clientX: e.clientX, clientY: e.clientY });
-        }
-      };
-      onLeave = () => {
-        rayHover = null;
-        hideCard();
-      };
-      canvas.addEventListener("pointermove", onPointerMove, { passive: true });
-      canvas.addEventListener("pointerdown", onPointerDown);
-      container.addEventListener("pointerleave", onLeave);
-      let last = performance.now();
-      let lastW = -1;
-      const frame = (now: number) => {
-        if (cancelled) return;
-        raf = requestAnimationFrame(frame);
-        const dt = Math.min(0.05, (now - last) / 1000);
-        last = now;
-
-        const wCur = Math.max(1, Math.round(solarWRef.current));
-        if (renderer && lastW !== wCur) {
-          lastW = wCur;
-          applyCamera();
-        }
-        const half2 = Math.min(wCur, Math.max(1, Math.round(solarHRef.current))) / 2;
-        const hovered = hoverRef.current;
-        const ease = 1 - Math.pow(0.005, dt); // exponential smoothing factor
-        for (const rec of records) {
-          const R = rec.data.radiusPct * ORBIT_SCALE * half2;
-          // The pivot rides at distance R along +x; keep the offset in sync
-          // with the container size (hit sphere + label ride the same pivot).
-          rec.axis.position.x = R;
-          rec.hit.position.x = R;
-          rec.label.position.x = R;
-
-          // Orbital revolution (around the Sun) and axial self-rotation are
-          // two independent transforms, both delta-time driven and both frozen
-          // under eco-mode / prefers-reduced-motion. The negative z sign keeps
-          // the on-screen layout identical to the 2D fallback.
-if (!motionlessRef.current) {
-            rec.orbitDrift += dt * rec.orbitRate;
-            // Axial self-rotation spins the BODY about its own local Y inside
-            // the tilted `axis` node (which carries the real tiltDeg). Spinning
-            // the axis group's rotation.y instead would precess the whole tilt
-            // around the screen-up axis, hiding Uranus' sideways roll (item 11).
-            const spinBody = rec.modelBody ?? rec.mesh;
-            if (spinBody) spinBody.rotation.y += dt * rec.direction * rec.spinRate;
-          }
-          rec.group.rotation.z = -(rec.baseAngle + rec.orbitDrift);
-
-          const isHovered = rec.pageId === hovered;
-          const dim = hovered !== null && !isHovered;
-
-          // Gentle hover: the body eases ~5% in place (scale/glow only — the
-          // orbit point and pivot rotation are never touched by hover).
-          const hoverTarget = isHovered ? 1.05 : 1;
-
-          if (rec.modelBody) {
-            // Dim adjacent planets: tweak material opacity once per state
-            // change (3D models have several materials, so no per-frame sweep).
-            if (rec.modelDimmed !== dim) {
-              rec.modelDimmed = dim;
-              rec.modelBody.traverse((o) => {
-                const node = o as import("three").Mesh;
-                if (!node.isMesh) return;
-                const mats = Array.isArray(node.material) ? node.material : [node.material];
-                for (const mm of mats) {
-                  mm.transparent = true;
-                  mm.opacity = dim ? 0.35 : 1;
-                  mm.needsUpdate = true;
-                }
-              });
-            }
-            if (rec.modelHook) {
-              const s = rec.modelHook.scale.x + (hoverTarget - rec.modelHook.scale.x) * ease;
-              rec.modelHook.scale.setScalar(s);
-            }
-          } else if (rec.mesh && rec.mat) {
-            const s = rec.mesh.scale.x + (hoverTarget - rec.mesh.scale.x) * ease;
-            rec.mesh.scale.setScalar(s);
-            rec.mat.opacity = isHovered ? 1 : dim ? 0.35 : 1;
-          } else {
-            if (rec.mesh) {
-              const s = rec.mesh.scale.x + (hoverTarget - rec.mesh.scale.x) * ease;
-              rec.mesh.scale.setScalar(s);
-            }
-            if (rec.mat) rec.mat.opacity = 1;
-          }
-          // The name label is parented to the orbit pivot (so it rides the
-          // moving body and can never drift); only its tint updates per frame.
-          rec.labelMat.color.set(rec.pageId === hovered ? rec.data.color : "#8B8F9C");
-          rec.labelMat.opacity = hovered && rec.pageId !== hovered ? 0.35 : 1;
-        }
-
-        // Subtle camera parallax (a couple of degrees, lerped) so the scene
-        // reads as a volume instead of a static postcard. Frozen back to the
-        // straight-on framing under eco-mode / prefers-reduced-motion — and the
-        // eased return means no jump on resume.
-        const p = pointerRef.current;
-        const prx = motionlessRef.current ? 0 : p.nx * 0.012;
-        const pry = motionlessRef.current ? 0 : -p.ny * 0.008;
-        const targetX = camBaseZ * Math.sin(prx);
-        const targetY = camBaseZ * Math.sin(pry);
-        camX += (targetX - camX) * ease;
-        camY += (targetY - camY) * ease;
-        camera!.position.x = camX;
-        camera!.position.y = camY;
-        camera!.lookAt(0, 0, 0);
-
-        // ---- Living Sun: a slow granulation spin + gentle 3-4% breathing
-        // (this is the light source — the pulse lives on the sphere/corona
-        // only, never feeding back into the light). Frozen to base under
-        // eco-mode / prefers-reduced-motion.
-        if (!motionlessRef.current) {
-          const tS = now / 1000;
-          const breathe = 1 + 0.04 * Math.sin(tS * 0.7);
-          sun.scale.setScalar(breathe);
-          sun.rotation.y += dt * 0.06;
-          coronaMat.opacity = 0.5 * (1 + 0.06 * Math.sin(tS * 0.7 + 1.3));
-        } else {
-          sun.scale.setScalar(1);
-          coronaMat.opacity = 0.5;
-        }
-
-        // eco-mode: drop the expensive bits (bloom + shadow mapping) live;
-        // the sun light and the axial tilts always stay so weak devices don't
-        // fall back to a flat look.
-        if (renderer) {
-          renderer.shadowMap.enabled = !ecoModeRef.current;
-          if (bloomPass) bloomPass.enabled = !ecoModeRef.current;
-        }
-
-        if (inViewRef.current) {
-          if (composer) composer.render();
-          else renderer?.render(scene!, camera!);
-        }
-      };
-      raf = requestAnimationFrame(frame);
-      if (!cancelled) setSceneReady(true);
-    };
-
-    io = new IntersectionObserver(
-      ([entry]) => {
-        inViewRef.current = entry.isIntersecting;
-      },
-      { rootMargin: "120px" }
-    );
-    io.observe(container);
-
-    void boot().catch(() => {
-      // If the WebGL scene fails to initialise for any reason, drop back to
-      // the DOM disc fallback instead of leaving an empty canvas with only
-      // the HTML labels floating over it.
-      if (!cancelled) setWebglFailed(true);
-    });
-    return () => {
-      cancelled = true;
-      if (raf) cancelAnimationFrame(raf);
-      io?.disconnect();
-      if (onContextLost) canvas.removeEventListener("webglcontextlost", onContextLost, false);
-      if (onPointerMove) canvas.removeEventListener("pointermove", onPointerMove);
-      if (onPointerDown) canvas.removeEventListener("pointerdown", onPointerDown);
-      if (onLeave) container.removeEventListener("pointerleave", onLeave);
-      disposables.forEach((d) => d.dispose());
-      renderer?.dispose();
-      renderer = null;
-      scene = null;
-      camera = null;
-      records = [];
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [use3D, visibleIds, language]);
 
   // Mobile: first tap reveals the fact, second tap navigates.
-  const handleCardClick = (page: (typeof HEADER_PAGES)[number]) => (e: React.MouseEvent) => {
+  const handleCardClick = (page: (typeof HEADER_PAGES)[number]) => (e?: React.MouseEvent) => {
     if (hoveredPageId !== page.id) {
       setHoveredPageId(page.id);
-      e.preventDefault();
+      e?.preventDefault();
       return;
     }
-    warpNavigate(page.id, e);
+    if (e) warpNavigate(page.id, e);
   };
 
   // Shared planet-fact block (inside the desktop overlay card and the expanded
@@ -2118,215 +1231,24 @@ if (!motionlessRef.current) {
         >
           <div ref={solarRef} className="relative aspect-square w-full max-w-[920px] mx-auto">
 
-            {/* Loading skeleton — shown while the 3D models are still being
-                 fetched & normalised (the canvas needs boot() to finish
-                 before it can draw anything). Popped as soon as the first
-                 model is ready, so it never overlaps the live planets. */}
-            {web3DActive && !sceneReady && (
-              <div
-                className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-5 pointer-events-none"
-                aria-hidden="true"
-              >
-                <div
-                  className="w-28 h-28 rounded-full relative animate-pulse"
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgba(59,130,246,0.18) 0%, rgba(59,130,246,0.06) 45%, rgba(59,130,246,0) 70%)",
-                  }}
-                >
-                  <div className="absolute inset-0 rounded-full border border-[#3B82F6]/20" />
-                  <div
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full"
-                    style={{
-                      background:
-                        "radial-gradient(circle at 50% 42%, #FFE9A8 0%, #FFC36B 40%, #F59E0B 80%, #B45309 100%)",
-                    }}
-                  />
-                </div>
-                <span className="font-mono text-[10px] sm:text-xs tracking-[0.25em] text-[#3B82F6]/70 animate-pulse">
-                  CALCULATING ORBITS…
-                </span>
-              </div>
-            )}
-
-            {/* orbit rings — the hovered planet's ring ignites in its own colour
-                 (pure glow on the ring, the planet itself stays frozen) */}
-            {planets.map(({ page, data }) => {
-              const lit = hoveredPageId === page.id;
-              return (
-                <div
-                  key={`ring-${page.id}`}
-                  className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#3B82F6]/[0.08] pointer-events-none transition-[opacity,border-color] duration-500 ${lit && !motionless ? "orbit-ignite" : ""}`}
-                  style={{
-                    width: `${data.radiusPct * ORBIT_SCALE * 100}%`,
-                    height: `${data.radiusPct * ORBIT_SCALE * 100}%`,
-                    borderColor: lit ? `${data.color}66` : undefined,
-                    opacity: lit ? (motionless ? 0.9 : 0.75) : undefined,
-                    "--orbit-color": lit ? data.color : undefined,
-                  } as React.CSSProperties}
-                />
-              );
-            })}
-
-            {/* Sun — a layered halo behind the 3D sphere in WebGL mode (the
-                 outer corona slowly swells and fades so the star reads alive,
-                 reference request), the gradient sphere itself in 2D fallback. */}
-            {use3D ? (
-              <div
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full pointer-events-none"
-                aria-hidden="true"
-              >
-                <div
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgba(255,213,128,0.55) 0%, rgba(251,191,36,0.22) 45%, rgba(245,158,11,0) 70%)",
-                    filter: "blur(10px)",
-                  }}
-                />
-                <div
-                  className={`absolute inset-0 rounded-full ${motionless ? "" : "sun-halo-pulse"}`}
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgba(255,200,120,0.5) 0%, rgba(251,146,60,0.2) 40%, rgba(245,158,11,0) 68%)",
-                    filter: "blur(26px)",
-                  }}
-                />
-              </div>
-            ) : (
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[5] pointer-events-none">
-                <div
-                  className={`relative rounded-full ${motionless ? "" : "sun-breathe"}`}
-                  style={{
-                    width: 88,
-                    height: 88,
-                    background:
-                      "radial-gradient(circle at 50% 42%, #FFE9A8 0%, #FFC36B 26%, #F59E0B 58%, #B45309 100%)",
-                    boxShadow:
-                      "0 0 40px rgba(251,191,36,0.55), 0 0 90px rgba(245,158,11,0.35), 0 0 140px rgba(245,158,11,0.18)",
-                  }}
-                >
-                  {/* granulation layer — slowly turns inside the disc, the
-                      base gradient + glow stay put so only the texture moves */}
-                  <span
-                    className={`absolute inset-0 rounded-full ${motionless ? "" : "sun-surface-rot"}`}
-                    style={{
-                      backgroundImage: `url(${sunSurfaceUrl})`,
-                      backgroundSize: "cover",
-                    }}
-                    aria-hidden="true"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Static 3D planet models: the companion canvas draws each planet's
-                 real GLB model parked exactly on its blue orbit ring. The canvas
-                 is pointer-events-none; the DOM buttons below keep hover/click/
-                 a11y and hide their disc only once that planet's model is ready.
-                 If WebGL or a model fails, that planet keeps its flat 2D disc. */}
-            {web3DActive && (
-              <Orbit3DModels
-                planets={planets}
-                width={solarW}
-                height={solarH}
-                activeId={hoveredPageId}
-                poseRef={poseRef}
-                inViewRef={inViewRef}
-                onReadyChange={(ids) => {
-                  setReady3DIds(new Set(ids));
-                  setSceneReady(true);
-                }}
-                onWebGLFailed={() => setWebglFailed(true)}
-              />
-            )}
-
-            {/* planets on real positions — flat 2D discs (DOM buttons) as the
-                 fallback / pre-ready state */}
-            {solarW > 0 &&
-                planets.map(({ page, data }, i) => {
-                  const active = hoveredPageId === page.id;
-                  const dimmed = !ecoMode && hoveredPageId !== null && !active;
-                  const hide2D = web3DActive && ready3DIds.has(page.id);
-                  const color = data.color;
-                  const angleDeg = resolvedAngles[page.id] ?? positions[page.id] ?? 0;
-                  const rad = (angleDeg * Math.PI) / 180;
-                  const R = data.radiusPct * ORBIT_SCALE * orbitHalf;
-                  const x = Math.cos(rad) * R;
-                  const y = Math.sin(rad) * R;
-                  // Gentle hover (client request): the orbit point is never
-                  // touched and nothing translates — only the planet's own
-                  // disc grows a few percent in place (the name label stays
-                  // pinned, so nothing reads as motion). The atmospheric halo
-                  // brightens, the ring lights, neighbours dim.
-                  return (
-                    <div
-                      key={page.id}
-                      className="absolute z-[30]"
-                      style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
-                    >
-                      <div className="absolute -translate-x-1/2 -translate-y-1/2">
-                        <motion.button
-                          type="button"
-                          className="flex flex-col items-center gap-1.5 cursor-pointer outline-none"
-                          animate={{
-                            opacity: dimmed ? 0.35 : 1,
-                          }}
-                          transition={{ duration: 0.35, ease: "easeOut" }}
-                          onMouseEnter={(e) => {
-                            handlePlanetEnter(page.id, e);
-                          }}
-                          onMouseLeave={hideCardIfLeavingPlanet}
-                          onFocus={() => {
-                            setHoveredPageId(page.id);
-                          }}
-                          onClick={(e) => warpNavigate(page.id, e)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              warpNavigate(page.id);
-                            }
-                          }}
-                          aria-label={t.pageNames[page.labelKey]}
-                          aria-expanded={active}
-                        >
-                          <motion.span
-                            className={`rounded-full flex items-center justify-center transition-all ${hide2D ? "" : "border"} ${motionless ? "" : "planet-breathe"}`}
-                            animate={{ scale: active ? 1.05 : 1 }}
-                            transition={{ duration: 0.35, ease: "easeOut" }}
-                            style={{
-                              width: data.sizePx + 16,
-                              height: data.sizePx + 16,
-                              borderColor: hide2D ? "transparent" : `${color}38`,
-                              backgroundColor: hide2D ? "transparent" : "#0A0A0B80",
-                              "--breathe-delay": `${(i * 0.9) % 6}s`,
-                            } as React.CSSProperties}
-                          >
-                            {!hide2D && (
-                            <PlanetDisc
-                              planet={data}
-                              size={data.sizePx}
-                              ring={data.hasRings}
-                              spin={false}
-                              lit={active}
-                            />
-                            )}
-                          </motion.span>
-                          <span
-                            className="font-mono text-[9px] tracking-widest uppercase whitespace-nowrap"
-                            style={{
-                              color: active ? color : "#8B8F9C",
-                              textShadow: active ? `0 0 12px ${color}` : undefined,
-                            }}
-                          >
-                            {data.name[language]}
-                          </span>
-                        </motion.button>
-                      </div>
-                    </div>
-                  );
-                })
-              }
+            {/* Orbiting 3D solar system (React Three Fiber): the 7 site
+                 planets on their blue orbit rings. Hover reports the
+                 projected planet position for the info card; click
+                 navigates to that planet's page. Eco / reduced-motion
+                 freezes the system at the real heliocentric angles. */}
+            <CosmosScene
+              planets={planets.map(({ page, data }) => ({
+                page,
+                data,
+                radiusPx: data.radiusPct * ORBIT_SCALE * orbitHalf,
+              }))}
+              language={language}
+              initialAngles={initialAngles}
+              motionless={motionless}
+              onNavigate={(id, e) => warpNavigate(id as PageId, e)}
+              onHover={handleSceneHover}
+              onReady={() => console.info("[cosmos] ready", planets.length, "planets")}
+            />
 
             {/* info card beside the hovered planet */}
             <AnimatePresence>
