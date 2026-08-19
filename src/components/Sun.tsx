@@ -59,17 +59,55 @@ function useSunTexture(): THREE.Texture {
   return map;
 }
 
-/* One bright emissive disc plus the real PointLight — no fake aura shells.
-   The Sun "glows like a lightbulb" the honest way: toneMapped=false keeps the
-   disc blinding bright, and the PointLight is what actually illuminates the
-   planets (bright warm side toward the Sun, night side toward shadow),
-   producing the eclipses. */
+/* Glow shells — stacked BackSide spheres with AdditiveBlending that build a
+   bright radial gradient around the core. `pulse` is the base sin frequency
+   (0 = static shell). */
+const SHELLS: Array<{ r: number; color: string; opacity: number; pulse: number }> = [
+  { r: 1.25, color: "#ffdd44", opacity: 0.5, pulse: 0.8 },
+  { r: 1.6, color: "#ffaa22", opacity: 0.32, pulse: 0.5 },
+  { r: 2.1, color: "#ff8800", opacity: 0.18, pulse: 0.3 },
+  { r: 2.8, color: "#ff6600", opacity: 0.09, pulse: 0 },
+  { r: 3.8, color: "#ff4400", opacity: 0.04, pulse: 0 },
+];
+
+const RAY_COUNT = 12;
+
+/* Bright bright Sun: the core is a blinding disc (toneMapped false), five
+   pulsing additive shells radiate the halo, and 12 additive rays (elongated
+   boxes in the orbital plane) shoot light beams across the scene. The
+   PointLight stays the real source — the same warm light that lights the
+   planets and casts the eclipsing shadows. */
 export default function Sun() {
   const map = useSunTexture();
-  const meshRef = useRef<THREE.Mesh>(null);
+  const coreRef = useRef<THREE.Mesh>(null);
+  const shellRefs = useRef<Array<THREE.Mesh | null>>(new Array(SHELLS.length).fill(null));
 
-  useFrame((_state, delta) => {
-    if (meshRef.current) meshRef.current.rotation.y += 0.03 * delta;
+  const rayMat = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: 0xffdd55,
+        transparent: true,
+        opacity: 0.1,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        toneMapped: false,
+        side: THREE.DoubleSide,
+      }),
+    []
+  );
+  useEffect(() => () => rayMat.dispose(), [rayMat]);
+
+  useFrame((state, delta) => {
+    const t = state.clock.elapsedTime;
+    if (coreRef.current) coreRef.current.rotation.y += 0.03 * delta;
+    for (let i = 0; i < SHELLS.length; i++) {
+      const shell = shellRefs.current[i];
+      if (!shell) continue;
+      if (SHELLS[i].pulse) {
+        shell.scale.setScalar(1 + Math.sin(t * SHELLS[i].pulse + i * 1.7) * 0.035);
+      }
+    }
+    rayMat.opacity = 0.09 + Math.sin(t * 0.6 + 1) * 0.045;
   });
 
   return (
@@ -77,7 +115,7 @@ export default function Sun() {
       <pointLight
         position={[0, 0, 0]}
         color={0xffcc66}
-        intensity={1200}
+        intensity={1500}
         distance={0}
         decay={2}
         castShadow
@@ -89,10 +127,45 @@ export default function Sun() {
         shadow-radius={4}
       />
 
-      <mesh ref={meshRef}>
+      {/* core */}
+      <mesh ref={coreRef}>
         <sphereGeometry args={[SUN_RADIUS, 32, 32]} />
         <meshBasicMaterial map={map} color={0xffffee} toneMapped={false} />
       </mesh>
+
+      {/* rays — 12 light beams in the orbital plane */}
+      {Array.from({ length: RAY_COUNT }).map((_, i) => {
+        const angle = (i / RAY_COUNT) * Math.PI * 2 + 0.26;
+        return (
+          <group key={i} rotation={[0, angle, 0]}>
+            <mesh position={[SUN_RADIUS * 2.2, 0, 0.02]}>
+              <boxGeometry args={[SUN_RADIUS * 2, SUN_RADIUS * 0.42, SUN_RADIUS * 0.42]} />
+              <primitive object={rayMat} attach="material" />
+            </mesh>
+          </group>
+        );
+      })}
+
+      {/* additive glow shells */}
+      {SHELLS.map((s, i) => (
+        <mesh
+          key={s.color + i}
+          ref={(el) => {
+            shellRefs.current[i] = el;
+          }}
+        >
+          <sphereGeometry args={[SUN_RADIUS * s.r, 32, 32]} />
+          <meshBasicMaterial
+            color={s.color}
+            transparent
+            opacity={s.opacity}
+            toneMapped={false}
+            side={THREE.BackSide}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+          />
+        </mesh>
+      ))}
     </group>
   );
 }
