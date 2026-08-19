@@ -7,7 +7,6 @@ import Sun from "./Sun";
 import Orbit from "./Orbit";
 import Planet from "./Planet";
 import CollisionGuard from "./CollisionGuard";
-import UnifiedBackground from "./UnifiedBackground";
 import { type HoverPt, type PlanetItem } from "./cosmos/config";
 
 /* ---- Orbiting 3D solar system (React Three Fiber).
@@ -18,15 +17,13 @@ import { type HoverPt, type PlanetItem } from "./cosmos/config";
    sizes (a shadow is a tiny fraction of its orbit ring), so neighbour radius
    sums never reach the ring gaps and collisions are physically impossible.
 
-   Background (promt5 items 2-3): one pure-black backdrop + ONE custom star
-   field (UnifiedBackground) — no drei <Stars>, no scene background <color>,
-   no double background anywhere. The stars are static in space, always inside
-   the 3000 far plane.
+   Background: the canvas is deliberately TRANSPARENT — the site's own
+   starfield (already present across the page edges) shows through instead of
+   a local star/colour layer, so there is no double background on this block.
 
    Camera: rotation is LOCKED to a ~±3° envelope around the screenshot corner
-   (azimuth 0.22π…0.28π, polar 0.32π…0.35π — the user asked to cut the range
-   down to ~10% of the old one), damping 0.05 so it glides but never strays.
-   Only zoom (220–1500) and that tiny tilt are available.
+   (azimuth 0.22π…0.28π, polar 0.32π…0.35π), damping 0.05 so it glides but
+   never strays. Only zoom (220–1500) and that tiny tilt are available.
 
    Light (promt5 item 1): one warm PointLight; the Sun's halo is only stacked
    AdditiveBlending shells — NO postprocessing/Bloom. Every planet receives
@@ -64,7 +61,7 @@ export default function CosmosScene(props: CosmosSceneProps) {
     <>
       <Canvas
         className="!absolute inset-0"
-        style={{ position: "absolute", inset: 0, background: "#000000" }}
+        style={{ position: "absolute", inset: 0 }}
         shadows="soft"
         camera={{ position: [760, 610, 760], fov: 45, near: 10, far: 3000 }}
         gl={{ alpha: true, antialias: false, powerPreference: "high-performance", preserveDrawingBuffer: true }}
@@ -76,7 +73,6 @@ export default function CosmosScene(props: CosmosSceneProps) {
         }}
       >
         <ambientLight intensity={0.45} />
-        <UnifiedBackground />
         <Sun />
 
         {planets.map((item) => (
