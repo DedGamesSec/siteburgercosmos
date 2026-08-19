@@ -8,6 +8,8 @@ import { useEcoMode } from "../context/EcoModeContext";
 import ScanCard from "./ScanCard";
 import * as Astronomy from "astronomy-engine";
 import { resolvePlanetCollisions } from "../utils/planetCollisions";
+import { isWebGLAvailable } from "./cinematicShared";
+import Orbit3DModels from "./Orbit3DModels";
 
 /* ---- Layered living Sun ----
    A shared granulated surface canvas is used both by the WebGL core sphere
@@ -179,7 +181,7 @@ const PlanetDisc = ({
 // Multiplier applied to every orbit so the whole system sits a touch closer
 // together and no planet reaches the very edges of the block.
 const ORBIT_SCALE = 0.92;
-type PlanetData = {
+export type PlanetData = {
   name: LangDict;
   fact: LangDict;
   color: string;
@@ -867,6 +869,19 @@ export default function ExplorePagesSection() {
   }, [planets, positions, orbitHalf]);
   const resolvedAnglesRef = useRef(resolvedAngles);
   resolvedAnglesRef.current = resolvedAngles;
+
+  // Single source of truth for the 3D layer: each planet's parked position on
+  // its ring, in centre-relative CSS pixels — the same numbers the DOM discs
+  // are laid out at below. The planets do NOT orbit the Sun; they sit on the
+  // blue rings, so poseRef is filled once and stays constant.
+  const poseRef = useRef<Record<string, { x: number; y: number }>>({});
+  useEffect(() => {
+    for (const { page, data } of planets) {
+      const rad = ((resolvedAngles[page.id] ?? positions[page.id] ?? 0) * Math.PI) / 180;
+      const R = data.radiusPct * ORBIT_SCALE * orbitHalf;
+      poseRef.current[page.id] = { x: Math.cos(rad) * R, y: Math.sin(rad) * R };
+    }
+  }, [planets, resolvedAngles, positions, orbitHalf]);
   // Shared granulated Sun surface as a data URL for the 2D fallback disc
   // (the WebGL core reuses the same canvas as a texture).
   const sunSurfaceUrl = useMemo(() => (typeof document !== "undefined" ? buildSunSurface().toDataURL() : ""), []);
@@ -926,6 +941,14 @@ export default function ExplorePagesSection() {
   // until then the canvas is empty, so a lightweight skeleton hints that the
   // orbits are being computed instead of showing a dead black square.
   const [sceneReady, setSceneReady] = useState(false);
+  // Static 3D planet models (client request): the companion <Orbit3DModels />
+  // canvas draws each planet's real GLB model parked exactly on its blue ring,
+  // replacing the flat 2D disc (the DOM button underneath stays as the hit
+  // area + label). Enabled when WebGL works; if WebGL or a model fails, that
+  // planet simply keeps its flat 2D disc.
+  const webglOk = useMemo(() => typeof window !== "undefined" && isWebGLAvailable(), []);
+  const [ready3DIds, setReady3DIds] = useState<Set<string>>(new Set());
+  const web3DActive = webglOk && !webglFailed && solarW > 0;
   // Client request: do away with the 3D flight. The flat 2D orbit discs are
   // the scheme again; the WebGL boot path below is gated off and can no
   // longer turn itself on at runtime.
@@ -2095,11 +2118,11 @@ if (!motionlessRef.current) {
         >
           <div ref={solarRef} className="relative aspect-square w-full max-w-[920px] mx-auto">
 
-            {/* Loading skeleton — shown while the shared GLB models are still
-                 being fetched & normalised (the canvas needs boot() to finish
+            {/* Loading skeleton — shown while the 3D models are still being
+                 fetched & normalised (the canvas needs boot() to finish
                  before it can draw anything). Popped as soon as the first
-                 frame is scheduled, so it never overlaps the live planets. */}
-            {use3D && !sceneReady && (
+                 model is ready, so it never overlaps the live planets. */}
+            {web3DActive && !sceneReady && (
               <div
                 className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-5 pointer-events-none"
                 aria-hidden="true"
@@ -2197,37 +2220,34 @@ if (!motionlessRef.current) {
               </div>
             )}
 
-            {/* planets on real positions — 3D spheres (WebGL + raycast triggers)
-                 or flat 2D discs (DOM buttons) in fallback */}
-{solarW > 0 &&
-            (use3D ? (
-              <>
-                <canvas
-                  ref={solarCanvasRef}
-                  className="absolute inset-0 w-full h-full touch-none z-[3]"
-                  aria-hidden="true"
-                />
-                {/* mouse hover/click ride the 3D raycast inside boot() — the
-                     rendered bodies are the triggers. This list keeps keyboard
-                     / assistive-tech access to the same pages. */}
-                <ul className="sr-only pointer-events-none">
-                  {planets.map(({ page }) => (
-                    <li key={page.id}>
-                      <button
-                        type="button"
-                        onClick={() => navigateTo(page.id)}
-                        onFocus={() => setHoveredPageId(page.id)}
-                      >
-                        {t.pageNames[page.labelKey]}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : (
+            {/* Static 3D planet models: the companion canvas draws each planet's
+                 real GLB model parked exactly on its blue orbit ring. The canvas
+                 is pointer-events-none; the DOM buttons below keep hover/click/
+                 a11y and hide their disc only once that planet's model is ready.
+                 If WebGL or a model fails, that planet keeps its flat 2D disc. */}
+            {web3DActive && (
+              <Orbit3DModels
+                planets={planets}
+                width={solarW}
+                height={solarH}
+                activeId={hoveredPageId}
+                poseRef={poseRef}
+                inViewRef={inViewRef}
+                onReadyChange={(ids) => {
+                  setReady3DIds(new Set(ids));
+                  setSceneReady(true);
+                }}
+                onWebGLFailed={() => setWebglFailed(true)}
+              />
+            )}
+
+            {/* planets on real positions — flat 2D discs (DOM buttons) as the
+                 fallback / pre-ready state */}
+            {solarW > 0 &&
                 planets.map(({ page, data }, i) => {
                   const active = hoveredPageId === page.id;
                   const dimmed = !ecoMode && hoveredPageId !== null && !active;
+                  const hide2D = web3DActive && ready3DIds.has(page.id);
                   const color = data.color;
                   const angleDeg = resolvedAngles[page.id] ?? positions[page.id] ?? 0;
                   const rad = (angleDeg * Math.PI) / 180;
@@ -2271,17 +2291,18 @@ if (!motionlessRef.current) {
                           aria-expanded={active}
                         >
                           <motion.span
-                            className={`rounded-full flex items-center justify-center border transition-all ${motionless ? "" : "planet-breathe"}`}
+                            className={`rounded-full flex items-center justify-center transition-all ${hide2D ? "" : "border"} ${motionless ? "" : "planet-breathe"}`}
                             animate={{ scale: active ? 1.05 : 1 }}
                             transition={{ duration: 0.35, ease: "easeOut" }}
                             style={{
                               width: data.sizePx + 16,
                               height: data.sizePx + 16,
-                              borderColor: `${color}38`,
-                              backgroundColor: "#0A0A0B80",
+                              borderColor: hide2D ? "transparent" : `${color}38`,
+                              backgroundColor: hide2D ? "transparent" : "#0A0A0B80",
                               "--breathe-delay": `${(i * 0.9) % 6}s`,
                             } as React.CSSProperties}
                           >
+                            {!hide2D && (
                             <PlanetDisc
                               planet={data}
                               size={data.sizePx}
@@ -2289,6 +2310,7 @@ if (!motionlessRef.current) {
                               spin={false}
                               lit={active}
                             />
+                            )}
                           </motion.span>
                           <span
                             className="font-mono text-[9px] tracking-widest uppercase whitespace-nowrap"
@@ -2304,7 +2326,7 @@ if (!motionlessRef.current) {
                     </div>
                   );
                 })
-              ))}
+              }
 
             {/* info card beside the hovered planet */}
             <AnimatePresence>
