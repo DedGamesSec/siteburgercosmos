@@ -76,13 +76,13 @@ export default function CosmosScene(props: CosmosSceneProps) {
           if (import.meta.env.DEV) (window as unknown as { __cosmosRoot?: unknown }).__cosmosRoot = state;
         }}
       >
-        {/* minimal ambient — only so the night-side is never pitch-black, and a
-            very weak hemisphere imitates scattered space light; the Sun's
-            PointLight (inside Sun.tsx, intensity 10000, decay 1) is the
-            SINGLE strong light source — one light = true terminator shadows
-            with strong contrast (corrected prompt v2) */}
-        <ambientLight intensity={0.15} color={0x333333} />
-        <hemisphereLight color={0x222222} groundColor={0x111111} intensity={0.2} />
+        {/* balanced ambient — night side is dark-grey but never pitch-black, a
+            moderate hemisphere gives soft scattered light while the Sun's
+            PointLight (inside Sun.tsx, intensity 12000, decay 1) stays the
+            single strong light source — contrast preserved but shadows are
+            lighter (corrected prompt v5) */}
+        <ambientLight intensity={0.35} color={0x555555} />
+        <hemisphereLight color={0x444444} groundColor={0x222222} intensity={0.35} />
         <Sun />
 
         {planets.map((item) => (
