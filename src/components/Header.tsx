@@ -366,6 +366,19 @@ export default function Header() {
             </div>
           </nav>
 
+            {/* Accent Download CTA — the menu's separate action (per item 2);
+                distinct from the numbered page list (Download is also the 8th
+                small item). Animated with the rest of the staggered items. */}
+            <div className="flex justify-center px-6 sm:px-12 pb-6">
+              <button
+                onClick={() => handlePageNavigation("download")}
+                style={{ animationDelay: "0.8s" }}
+                className="menu-item-in inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[#3B82F6] text-white font-sans font-bold text-sm sm:text-base hover:bg-[#3B82F6]/85 transition-all cursor-pointer shadow-glow-md hover:shadow-glow-lg"
+              >
+                {getPageLabel("download")}
+              </button>
+            </div>
+
             {/* Overlay footer: tagline only (socials live in the sidebar). No
                 dark backdrop — the star-sky field stays visible around it. */}
             <div className="px-6 sm:px-12 py-4 border-t border-[#3C404A]/30">

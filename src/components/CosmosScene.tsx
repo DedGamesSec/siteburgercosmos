@@ -76,17 +76,19 @@ export default function CosmosScene(props: CosmosSceneProps) {
           if (import.meta.env.DEV) (window as unknown as { __cosmosRoot?: unknown }).__cosmosRoot = state;
         }}
       >
-        <ambientLight intensity={0.45} />
+        <ambientLight intensity={0.5} color={0xffe9c9} />
+        {/* soft warm fill that gently tints the space around the Sun */}
+        <hemisphereLight intensity={0.3} color={0xffffff} groundColor={0x33261a} />
         <Sun />
 
         {!motionless && (
           <EffectComposer multisampling={0}>
             <Bloom
-              intensity={1.15}
+              intensity={1.25}
               luminanceThreshold={1.0}
-              luminanceSmoothing={0.9}
+              luminanceSmoothing={1.0}
               mipmapBlur
-              radius={0.8}
+              radius={1.1}
             />
           </EffectComposer>
         )}

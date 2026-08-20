@@ -1267,17 +1267,29 @@ export default function ExplorePagesSection() {
         {/* ---- Mobile / tablet: decorative Sun + vertical list, tap to expand. ---- */}
         <div className="w-full lg:hidden">
           <div className="flex flex-col items-center mb-8 pointer-events-none select-none">
-            <div
-              className={`relative rounded-full ${motionless ? "" : "sun-breathe"}`}
-              style={{
-                width: 64,
-                height: 64,
-                background:
-                  "radial-gradient(circle at 50% 42%, #FFE9A8 0%, #FFC36B 26%, #F59E0B 58%, #B45309 100%)",
-                boxShadow:
-                  "0 0 32px rgba(251,191,36,0.5), 0 0 70px rgba(245,158,11,0.3)",
-              }}
-            />
+            {/* Decorative mobile sun (item 7): the disc uses a smooth 8-stop
+                gradient (oklab interpolation — no banding) and the glow lives
+                on its own backdrop layer instead of stacked box-shadows, so
+                there is no "aura ring" around the disc. */}
+            <div className="relative">
+              <div
+                aria-hidden="true"
+                className={`absolute -inset-[60px] rounded-full ${motionless ? "" : "sun-breathe"}`}
+                style={{
+                  background:
+                    "radial-gradient(circle, rgba(255,236,168,0.45) 0%, rgba(255,200,110,0.28) 22%, rgba(255,160,60,0.16) 46%, rgba(255,140,40,0.09) 62%, rgba(255,120,30,0.045) 78%, rgba(255,110,25,0) 100%)",
+                }}
+              />
+              <div
+                className={`relative rounded-full ${motionless ? "" : "sun-surface-rot"}`}
+                style={{
+                  width: 64,
+                  height: 64,
+                  background:
+                    "radial-gradient(circle at 50% 42% in oklab, #FFF6D8 0%, #FFE9A8 12%, #FFD97A 26%, #FFC36B 40%, #F5A44A 54%, #E8932E 68%, #D07B1F 82%, #B45309 100%)",
+                }}
+              />
+            </div>
             <span className="mt-3 font-mono text-[10px] tracking-[0.18em] text-[#8B8F9C]">
               {t.explore.hintTap}
             </span>

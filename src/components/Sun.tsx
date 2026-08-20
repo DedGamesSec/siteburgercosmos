@@ -59,12 +59,24 @@ function useSunTexture(): THREE.Texture {
   return map;
 }
 
-/* Glow shells — just 1-2 very soft BackSide spheres (AdditiveBlending) that
-   densify the innermost corona. The smooth outer glow is produced by Bloom in
-   the EffectComposer (see CosmosScene), so these are NOT the main halo. */
+/* Glow shells — two very soft BackSide spheres (AdditiveBlending) that densify
+   the innermost corona, plus one far larger, almost transparent warm layer that
+   tints the surrounding space (item 11 — the glow should spread well past the
+   disc, not just cap at the corona). Bloom in the EffectComposer (CosmosScene)
+   is still the main halo source. */
 const SHELLS: Array<{ r: number; color: string; opacity: number; pulse: number }> = [
   { r: 1.35, color: "#ffcc55", opacity: 0.28, pulse: 0.7 },
   { r: 1.8, color: "#ff9922", opacity: 0.12, pulse: 0.45 },
+];
+
+/* Wide ambient space-glow layer — a huge, very faint warm sphere behind the
+   solar system. It does NOT bloom (luminance is far below the EffectComposer
+   threshold) but reads as a soft warm atmosphere across the whole region,
+   which is what makes the scene feel warm and "lit by the star" rather than a
+   bare disc with a halo. */
+const SPACE_GLOW: Array<{ r: number; color: string; opacity: number }> = [
+  { r: 9, color: "#ffdd88", opacity: 0.055 },
+  { r: 16, color: "#ffa84d", opacity: 0.03 },
 ];
 
 /* Bright Sun: the core is a blinding emissive sphere (toneMapped false and a
@@ -116,6 +128,23 @@ export default function Sun() {
         <sphereGeometry args={[SUN_RADIUS, 32, 32]} />
         <meshBasicMaterial map={map} color={new THREE.Color(0xfff0c0).multiplyScalar(2.2)} toneMapped={false} />
       </mesh>
+
+      {/* wide ambient space-glow — a huge faint warm sphere tinting the whole
+          region (does NOT bloom: far below the composer's luminance threshold) */}
+      {SPACE_GLOW.map((g, i) => (
+        <mesh key={`space-glow-${i}`} raycast={noRaycast}>
+          <sphereGeometry args={[SUN_RADIUS * g.r, 32, 32]} />
+          <meshBasicMaterial
+            color={g.color}
+            transparent
+            opacity={g.opacity}
+            toneMapped={false}
+            side={THREE.BackSide}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+          />
+        </mesh>
+      ))}
 
       {/* soft corona supplements */}
       {SHELLS.map((s, i) => (

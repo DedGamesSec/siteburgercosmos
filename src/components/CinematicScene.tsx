@@ -701,7 +701,12 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
 
     // ECI/TEME frame: +z = north celestial pole. The scene frame has +y = north
     // (matching raDecDir below), so swap y/z when converting to scene coordinates.
-    const toSceneDir = (x: number, y: number, z: number) => new THREE.Vector3(x, z, y).normalize();
+    // `out` is optional: when given, the vector is reused (no per-call allocation),
+    // which keeps the satellite fallback tick allocation-free.
+    function toSceneDir(x: number, y: number, z: number, out?: THREE.Vector3): THREE.Vector3 {
+      const v = out ?? new THREE.Vector3();
+      return v.set(x, z, y).normalize();
+    }
 
     // Satellite point swarm. SGP4 propagation for the whole catalog (deep-space
     // GEO/MEO sats are ~200x more expensive than LEO ones) runs in a Web Worker
@@ -897,29 +902,35 @@ const loadSized = (path: string, onReady?: () => void, onAdopt?: (tex: THREE.Tex
     // when the download is slow it still bounds each main-thread tick.
     const FALLBACK_BUDGET = 100;
     let fallbackIndex = 0;
+    // Reused per-call sim clock + scratch vector: the fallback tick runs up to
+    // every 250ms and the previous `new Date(...)` + `toSceneDir` allocations
+    // were the standing GC source found by the CPU-throttle profile (~440ms of
+    // incremental GC over one flight). Both are now cached instances.
+    const simNowDate = new Date();
+    const scratchDir = new THREE.Vector3();
     const updateSatellitesFallback = () => {
       const sats = cachedSatellites;
       if (!sats || sats.length === 0) {
         commitSatCount(0);
         return;
       }
-      const simNow = new Date(realNowBase.getTime() + (performance.now() - startTime) * SAT_TIME_MULT);
+      simNowDate.setTime(realNowBase.getTime() + (performance.now() - startTime) * SAT_TIME_MULT);
       let n = 0;
       const total = sats.length;
       for (let k = 0; k < FALLBACK_BUDGET && n < MAX_SATS; k++) {
         const s = sats[(fallbackIndex + k) % total];
         try {
-          const pv = satellite.propagate(s.satrec, simNow);
+          const pv = satellite.propagate(s.satrec, simNowDate);
           if (!pv.position || typeof pv.position === "boolean") continue;
           const pos = pv.position;
           const rKm = Math.hypot(pos.x, pos.y, pos.z);
           const altKm = rKm - 6371;
           if (altKm < ALT_MIN || altKm > ALT_MAX) continue;
-          const dir = toSceneDir(pos.x, pos.y, pos.z);
+          toSceneDir(pos.x, pos.y, pos.z, scratchDir);
           const sceneR = EARTH_R * (1.07 + (altKm / 4000) * 0.55);
-          satPositions[n * 3] = EARTH_POS.x + dir.x * sceneR;
-          satPositions[n * 3 + 1] = EARTH_POS.y + dir.y * sceneR;
-          satPositions[n * 3 + 2] = EARTH_POS.z + dir.z * sceneR;
+          satPositions[n * 3] = EARTH_POS.x + scratchDir.x * sceneR;
+          satPositions[n * 3 + 1] = EARTH_POS.y + scratchDir.y * sceneR;
+          satPositions[n * 3 + 2] = EARTH_POS.z + scratchDir.z * sceneR;
           n++;
         } catch {
           // skip invalid TLE
