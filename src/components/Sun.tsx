@@ -59,29 +59,21 @@ function useSunTexture(): THREE.Texture {
   return map;
 }
 
-/* Overriding glow shell (promt6 iteration 6, STEP 6): ONE layer, radius at most
-   10–20% above the disc, opacity ≤ 0.05 — just enough to keep the star from
-   looking flat, never big enough to tint the background. No Bloom, no
-   AdditiveBlending auras, no pulse. */
-const CORONA: { r: number; color: string; opacity: number } = {
-  r: 1.15,
-  color: "#ffdd88",
-  opacity: 0.03,
-};
-
-/* Sun (promt6 iteration 6): the Sun is a LIGHT SOURCE, not a glowing object on
-   the background. Just the PointLight plus a small self-lit (meshBasicMaterial)
-   sphere — no glow shells (the halo is optional one thin layer at most), no
+/* Sun (promt7 iteration 7): the Sun is a LIGHT SOURCE. Just the PointLight
+   plus a small self-lit (meshBasicMaterial) sphere — no glow shells, no
    Bloom/PostProcessing anywhere in the scene (see CosmosScene), so light falls
-   ONTO the planets instead of washing the space. The PointLight illuminates
-   every planet and casts the eclipse shadows. All decoration is raycast-excluded
-   so hover always reaches the planet meshes underneath. */
+   ONTO the planets instead of washing the space. decay=1 (linear falloff) with
+   a strong intensity reaches the far planets (orbits up to ~460 world units):
+   3000 / 460 ≈ 6.5 — comfortably visible; a quadratic decay=2 would leave them
+   pitch black (3000/460² ≈ 0.014). The PointLight illuminates every planet and
+   casts the eclipse shadows. The mesh is raycast-excluded so hover always
+   reaches the planet meshes underneath. */
 export default function Sun() {
   const map = useSunTexture();
   const coreRef = useRef<THREE.Mesh>(null);
 
-  /* raycast={() => null} — decorative meshes never intercept pointer events,
-     otherwise a shell could swallow a hover aimed at a nearby planet. */
+  /* raycast={() => null} — the light is a light, the mesh is decoration and
+     must never intercept pointer events aimed at the planets. */
   const noRaycast = useMemo(() => () => null, []);
 
   useFrame((state, delta) => {
@@ -94,9 +86,9 @@ export default function Sun() {
       <pointLight
         position={[0, 0, 0]}
         color={0xffeedd}
-        intensity={1500}
+        intensity={3000}
         distance={0}
-        decay={2}
+        decay={1}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -110,19 +102,6 @@ export default function Sun() {
       <mesh ref={coreRef} raycast={noRaycast}>
         <sphereGeometry args={[SUN_RADIUS, 64, 64]} />
         <meshBasicMaterial map={map} color={0xffffee} />
-      </mesh>
-
-      {/* one optional THIN corona, radius +15% / opacity 0.03 (STEP 6) */}
-      <mesh raycast={noRaycast}>
-        <sphereGeometry args={[SUN_RADIUS * CORONA.r, 32, 32]} />
-        <meshBasicMaterial
-          color={CORONA.color}
-          transparent
-          opacity={CORONA.opacity}
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
-        />
       </mesh>
     </group>
   );
