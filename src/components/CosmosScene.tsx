@@ -77,8 +77,8 @@ export default function CosmosScene(props: CosmosSceneProps) {
         }}
       >
         {/* faint ambient only — keeps the night-side from pure black; the Sun's
-            PointLight does all the real illumination (promt7 iteration 7) */}
-        <ambientLight intensity={0.1} color={0x404040} />
+            PointLight does all the real illumination (promt8 iteration 8) */}
+        <ambientLight intensity={0.2} color={0x333333} />
         <Sun />
 
         {planets.map((item) => (

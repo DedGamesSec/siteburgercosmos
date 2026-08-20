@@ -129,7 +129,7 @@ export default function Planet({
       <group rotation={[THREE.MathUtils.degToRad(cfg.axialTilt), 0, 0]}>
         <mesh ref={meshRef} castShadow receiveShadow>
           <sphereGeometry args={[visualRadius, 32, 32]} />
-          <meshStandardMaterial map={texture} roughness={0.8} metalness={0.1} />
+          <meshStandardMaterial map={texture} color={0xffffff} roughness={0.8} metalness={0.05} />
         </mesh>
         {data.hasRings && data.ringTextureUrl && <SaturnRings radius={visualRadius} />}
       </group>

@@ -38,7 +38,7 @@ export default function SaturnRings({ radius }: { radius: number }) {
           side={THREE.DoubleSide}
           depthWrite={false}
           roughness={0.7}
-          metalness={0.05}
+          metalness={0.3}
         />
       </mesh>
 
