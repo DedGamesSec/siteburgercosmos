@@ -13,28 +13,28 @@ import { createGlowTexture } from "./glowTexture";
 
 const CORONA_LAYERS = [
   {
-    scale: 2.5,
-    opacity: 0.7,
-    falloff: 2.8,
-    inner: "rgba(255, 245, 200, 1.0)",
-    mid: "rgba(255, 220, 130, 0.6)",
-    outer: "rgba(255, 190, 90, 0)",
+    scale: 4.0,
+    opacity: 0.8,
+    falloff: 2.2,
+    inner: "rgba(255, 250, 220, 1.0)",
+    mid: "rgba(255, 230, 150, 0.6)",
+    outer: "rgba(255, 200, 100, 0)",
   },
   {
-    scale: 4.5,
+    scale: 8.0,
     opacity: 0.4,
-    falloff: 2.4,
-    inner: "rgba(255, 240, 180, 0.9)",
-    mid: "rgba(255, 210, 120, 0.4)",
-    outer: "rgba(255, 170, 70, 0)",
+    falloff: 1.8,
+    inner: "rgba(255, 245, 200, 0.9)",
+    mid: "rgba(255, 220, 140, 0.4)",
+    outer: "rgba(255, 180, 80, 0)",
   },
   {
-    scale: 7.0,
+    scale: 15.0,
     opacity: 0.15,
-    falloff: 2.0,
-    inner: "rgba(255, 235, 170, 0.6)",
-    mid: "rgba(255, 200, 110, 0.2)",
-    outer: "rgba(255, 160, 60, 0)",
+    falloff: 1.5,
+    inner: "rgba(255, 240, 190, 0.6)",
+    mid: "rgba(255, 210, 130, 0.25)",
+    outer: "rgba(255, 170, 70, 0)",
   },
 ];
 
@@ -77,10 +77,10 @@ export default function Sun() {
       {/* the single light source — warm white bulb, real eclipse shadows */}
       <pointLight
         position={[0, 0, 0]}
-        color={0xfff5dd}
-        intensity={12000}
+        color={0xffeebb}
+        intensity={8}
         distance={0}
-        decay={1}
+        decay={0}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -91,10 +91,10 @@ export default function Sun() {
       />
 
       {/* the visible Sun — bright, warm, with a crisp edge; toneMapped off
-            keeps it luminous like a bulb (corrected prompt v5) */}
+            keeps it luminous like a bulb (corrected prompt v7) */}
       <mesh raycast={noRaycast}>
         <sphereGeometry args={[SUN_RADIUS, 64, 64]} />
-        <meshBasicMaterial color={0xffffee} toneMapped={false} />
+        <meshBasicMaterial color={0xfffff5} toneMapped={false} />
       </mesh>
 
       {/* corona = 3 billboard sprites with the band-free gradient texture */}

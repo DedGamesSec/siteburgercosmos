@@ -34,7 +34,7 @@ export const PLANET_MOTION: Record<string, PlanetMotion> = {
    down from there keeping the real ordering. */
 export const ORBIT_CYCLE = 60;
 
-export const SUN_RADIUS = 44;
+export const SUN_RADIUS = 30;
 
 /* Daily VISUAL radius of every planet (px). Real proportions: the shadow of
    a body is a tiny fraction of its orbit, so neighbour radius sums stay well
