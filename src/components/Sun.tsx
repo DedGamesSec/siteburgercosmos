@@ -13,28 +13,28 @@ import { createGlowTexture } from "./glowTexture";
 
 const CORONA_LAYERS = [
   {
-    scale: 5.0,
-    opacity: 0.7,
+    scale: 1.8,
+    opacity: 0.9,
+    falloff: 2.5,
+    inner: "rgba(255, 235, 170, 1.0)",
+    mid: "rgba(255, 210, 110, 0.6)",
+    outer: "rgba(255, 180, 70, 0)",
+  },
+  {
+    scale: 4.0,
+    opacity: 0.6,
     falloff: 2.0,
-    inner: "rgba(255, 245, 190, 1.0)",
-    mid: "rgba(255, 210, 100, 0.55)",
-    outer: "rgba(255, 160, 50, 0)",
+    inner: "rgba(255, 225, 150, 0.9)",
+    mid: "rgba(255, 195, 95, 0.4)",
+    outer: "rgba(255, 165, 60, 0)",
   },
   {
-    scale: 9.0,
-    opacity: 0.35,
-    falloff: 1.8,
-    inner: "rgba(255, 235, 160, 0.9)",
-    mid: "rgba(255, 195, 80, 0.35)",
-    outer: "rgba(255, 150, 40, 0)",
-  },
-  {
-    scale: 16.0,
-    opacity: 0.12,
-    falloff: 1.5,
-    inner: "rgba(255, 220, 140, 0.6)",
-    mid: "rgba(255, 180, 70, 0.2)",
-    outer: "rgba(255, 140, 30, 0)",
+    scale: 8.0,
+    opacity: 0.25,
+    falloff: 1.6,
+    inner: "rgba(255, 215, 140, 0.6)",
+    mid: "rgba(255, 185, 85, 0.25)",
+    outer: "rgba(255, 155, 50, 0)",
   },
 ];
 
@@ -74,11 +74,11 @@ export default function Sun() {
 
   return (
     <group>
-      {/* YELLOW light — warm amber bulb; decay=0/intensity=8 keeps every
-          planet lit regardless of orbit distance (v7 balance, verified) */}
+      {/* warm golden light; decay=0/intensity=8 keeps every planet lit
+          regardless of orbit distance (v7 balance, verified) */}
       <pointLight
         position={[0, 0, 0]}
-        color={0xffdd88}
+        color={0xffcc77}
         intensity={8}
         distance={0}
         decay={0}
@@ -91,11 +91,11 @@ export default function Sun() {
         shadow-radius={8}
       />
 
-      {/* the visible Sun — a SMALL bright-YELLOW disc with a crisp edge
-            (corrected prompt v8) */}
+      {/* the visible Sun — LARGER warm-golden disc, no harsh "yolk" contrast
+            against the corona (corrected prompt v9) */}
       <mesh raycast={noRaycast}>
         <sphereGeometry args={[SUN_RADIUS, 64, 64]} />
-        <meshBasicMaterial color={0xffee88} toneMapped={false} />
+        <meshBasicMaterial color={0xffdd88} toneMapped={false} />
       </mesh>
 
       {/* corona = 3 billboard sprites with the band-free gradient texture */}
