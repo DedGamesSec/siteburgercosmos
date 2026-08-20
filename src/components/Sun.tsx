@@ -13,28 +13,28 @@ import { createGlowTexture } from "./glowTexture";
 
 const CORONA_LAYERS = [
   {
-    scale: 2.8,
-    opacity: 0.85,
+    scale: 3.5,
+    opacity: 0.9,
     falloff: 2.4,
-    inner: "rgba(255,255,245,1)",
-    mid: "rgba(255,238,180,0.5)",
-    outer: "rgba(255,200,110,0)",
+    inner: "rgba(255, 250, 220, 1.0)",
+    mid: "rgba(255, 230, 160, 0.55)",
+    outer: "rgba(255, 200, 100, 0)",
   },
   {
-    scale: 5.0,
-    opacity: 0.45,
+    scale: 6.5,
+    opacity: 0.5,
     falloff: 2.2,
-    inner: "rgba(255,250,220,0.8)",
-    mid: "rgba(255,220,140,0.35)",
-    outer: "rgba(255,180,80,0)",
+    inner: "rgba(255, 245, 200, 0.8)",
+    mid: "rgba(255, 215, 130, 0.35)",
+    outer: "rgba(255, 175, 70, 0)",
   },
   {
-    scale: 8.5,
-    opacity: 0.18,
+    scale: 10.0,
+    opacity: 0.2,
     falloff: 2.0,
-    inner: "rgba(255,240,200,0.5)",
-    mid: "rgba(255,200,120,0.2)",
-    outer: "rgba(255,160,60,0)",
+    inner: "rgba(255, 240, 180, 0.5)",
+    mid: "rgba(255, 200, 110, 0.2)",
+    outer: "rgba(255, 160, 50, 0)",
   },
 ];
 
@@ -94,7 +94,7 @@ export default function Sun() {
           toneMapped off so the core stays white-hot like a bulb */}
       <mesh raycast={noRaycast}>
         <sphereGeometry args={[SUN_RADIUS, 64, 64]} />
-        <meshBasicMaterial color={0xfffff5} toneMapped={false} />
+        <meshBasicMaterial color={0xffffee} toneMapped={false} />
       </mesh>
 
       {/* corona = 3 billboard sprites with the band-free gradient texture */}
