@@ -59,36 +59,26 @@ function useSunTexture(): THREE.Texture {
   return map;
 }
 
-/* Glow shells — two very soft BackSide spheres (AdditiveBlending) that densify
-   the innermost corona, plus one far larger, almost transparent warm layer that
-   tints the surrounding space (item 11 — the glow should spread well past the
-   disc, not just cap at the corona). Bloom in the EffectComposer (CosmosScene)
-   is still the main halo source. */
-const SHELLS: Array<{ r: number; color: string; opacity: number; pulse: number }> = [
-  { r: 1.35, color: "#ffcc55", opacity: 0.28, pulse: 0.7 },
-  { r: 1.8, color: "#ff9922", opacity: 0.12, pulse: 0.45 },
+/* Glow — exactly two very thin BackSide spheres (promt6: "max 2 layers, opacity
+   ≤ 0.04"). No pulse (it reads as a bug) and no big warm SPACE_GLOW auras:
+   the smooth halo is produced by Bloom in the EffectComposer (CosmosScene), so
+   these shells only densify the corona right around the bright disc. */
+const SHELLS: Array<{ r: number; color: string; opacity: number }> = [
+  { r: 1.25, color: "#ffcc44", opacity: 0.04 },
+  { r: 1.6, color: "#ffaa22", opacity: 0.02 },
 ];
 
-/* Wide ambient space-glow layer — a huge, very faint warm sphere behind the
-   solar system. It does NOT bloom (luminance is far below the EffectComposer
-   threshold) but reads as a soft warm atmosphere across the whole region,
-   which is what makes the scene feel warm and "lit by the star" rather than a
-   bare disc with a halo. */
-const SPACE_GLOW: Array<{ r: number; color: string; opacity: number }> = [
-  { r: 9, color: "#ffdd88", opacity: 0.055 },
-  { r: 16, color: "#ffa84d", opacity: 0.03 },
-];
-
-/* Bright Sun: the core is a blinding emissive sphere (toneMapped false and a
-   2.2x HDR colour boost keep it above the Bloom threshold so ONLY the Sun
-   blooms, not the lit planets). Two soft additive shells thicken the corona.
-   The PointLight stays the real physical source — it lights the planets and
-   casts the eclipsing shadows. All decoration is raycast-excluded so hover
-   always reaches the planet meshes underneath. */
+/* Bright Sun (promt6): the core is a self-lit (meshBasicMaterial) warm-white
+   disc — the one true light source for the whole system. A gentle HDR boost
+   (toneMapped false) keeps only the Sun above the Bloom threshold, so the
+   EffectComposer halo is the soft yellow glow from the reference — no fake
+   "donut" auras. Two thin additive shells thicken the corona (opacity ≤ 0.04),
+   and the PointLight really illuminates every planet and casts the eclipse
+   shadows. All decoration is raycast-excluded so hover always reaches the
+   planet meshes underneath. */
 export default function Sun() {
   const map = useSunTexture();
   const coreRef = useRef<THREE.Mesh>(null);
-  const shellRefs = useRef<Array<THREE.Mesh | null>>(new Array(SHELLS.length).fill(null));
 
   /* raycast={() => null} — decorative meshes never intercept pointer events,
      otherwise a shell could swallow a hover aimed at a nearby planet. */
@@ -97,62 +87,35 @@ export default function Sun() {
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
     if (coreRef.current) coreRef.current.rotation.y += 0.03 * delta;
-    for (let i = 0; i < SHELLS.length; i++) {
-      const shell = shellRefs.current[i];
-      if (!shell) continue;
-      if (SHELLS[i].pulse) {
-        shell.scale.setScalar(1 + Math.sin(t * SHELLS[i].pulse + i * 1.4) * 0.03);
-      }
-    }
   });
 
   return (
     <group>
       <pointLight
         position={[0, 0, 0]}
-        color={0xffcc66}
-        intensity={1500}
+        color={0xffdd88}
+        intensity={2000}
         distance={0}
         decay={2}
         castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
         shadow-camera-near={1}
         shadow-camera-far={600}
-        shadow-bias={-0.001}
-        shadow-radius={4}
+        shadow-bias={-0.0001}
+        shadow-radius={8}
       />
 
       {/* core — bright emissive disc, no fake layers */}
       <mesh ref={coreRef} raycast={noRaycast}>
-        <sphereGeometry args={[SUN_RADIUS, 32, 32]} />
-        <meshBasicMaterial map={map} color={new THREE.Color(0xfff0c0).multiplyScalar(2.2)} toneMapped={false} />
+        <sphereGeometry args={[SUN_RADIUS, 64, 64]} />
+        <meshBasicMaterial map={map} color={new THREE.Color(0xffffee).multiplyScalar(1.8)} toneMapped={false} />
       </mesh>
-
-      {/* wide ambient space-glow — a huge faint warm sphere tinting the whole
-          region (does NOT bloom: far below the composer's luminance threshold) */}
-      {SPACE_GLOW.map((g, i) => (
-        <mesh key={`space-glow-${i}`} raycast={noRaycast}>
-          <sphereGeometry args={[SUN_RADIUS * g.r, 32, 32]} />
-          <meshBasicMaterial
-            color={g.color}
-            transparent
-            opacity={g.opacity}
-            toneMapped={false}
-            side={THREE.BackSide}
-            blending={THREE.AdditiveBlending}
-            depthWrite={false}
-          />
-        </mesh>
-      ))}
 
       {/* soft corona supplements */}
       {SHELLS.map((s, i) => (
         <mesh
           key={s.color + i}
-          ref={(el) => {
-            shellRefs.current[i] = el;
-          }}
           raycast={noRaycast}
         >
           <sphereGeometry args={[SUN_RADIUS * s.r, 32, 32]} />

@@ -21,13 +21,13 @@ export type HoverPt = { x: number; y: number };
 export type PlanetMotion = { orbitSpeed: number; rotationSpeed: number; axialTilt: number };
 
 export const PLANET_MOTION: Record<string, PlanetMotion> = {
-  download: { orbitSpeed: 4.15, rotationSpeed: 0.005, axialTilt: 0.03 },
-  comparison: { orbitSpeed: 1.62, rotationSpeed: -0.002, axialTilt: 177.4 },
-  roadmap: { orbitSpeed: 0.53, rotationSpeed: 0.009, axialTilt: 25.2 },
-  tech: { orbitSpeed: 0.084, rotationSpeed: 0.02, axialTilt: 3.1 },
-  about: { orbitSpeed: 0.034, rotationSpeed: 0.018, axialTilt: 26.7 },
-  news: { orbitSpeed: 0.012, rotationSpeed: 0.011, axialTilt: 97.8 },
-  "how-it-works": { orbitSpeed: 0.006, rotationSpeed: 0.012, axialTilt: 28.3 },
+  download: { orbitSpeed: 4.152, rotationSpeed: 0.017, axialTilt: 0.03 }, // Mercury
+  comparison: { orbitSpeed: 1.622, rotationSpeed: -0.004, axialTilt: 177.4 }, // Venus (retrograde)
+  roadmap: { orbitSpeed: 0.532, rotationSpeed: 0.009, axialTilt: 25.2 }, // Mars
+  tech: { orbitSpeed: 0.084, rotationSpeed: 0.02, axialTilt: 3.1 }, // Jupiter (fastest spin)
+  about: { orbitSpeed: 0.034, rotationSpeed: 0.018, axialTilt: 26.7 }, // Saturn
+  news: { orbitSpeed: 0.012, rotationSpeed: 0.011, axialTilt: 97.8 }, // Uranus (on its side)
+  "how-it-works": { orbitSpeed: 0.006, rotationSpeed: 0.012, axialTilt: 28.3 }, // Neptune
 };
 
 /* Mercury completes one orbit in ORBIT_CYCLE seconds at 1.0×; the rest scale

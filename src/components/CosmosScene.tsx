@@ -76,9 +76,11 @@ export default function CosmosScene(props: CosmosSceneProps) {
           if (import.meta.env.DEV) (window as unknown as { __cosmosRoot?: unknown }).__cosmosRoot = state;
         }}
       >
-        <ambientLight intensity={0.5} color={0xffe9c9} />
-        {/* soft warm fill that gently tints the space around the Sun */}
-        <hemisphereLight intensity={0.3} color={0xffffff} groundColor={0x33261a} />
+        {/* Minimal fill light (promt6): the Sun's PointLight is the real source
+            so planets have a bright day-side and a dark night-side, and the
+            ambient only keeps the unlit side from falling to pure black. */}
+        <ambientLight intensity={0.12} color={0xfff2cc} />
+        <hemisphereLight intensity={0.08} color={0xffffff} groundColor={0x2a2118} />
         <Sun />
 
         {!motionless && (
