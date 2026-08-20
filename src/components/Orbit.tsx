@@ -14,7 +14,7 @@ export default function Orbit({ radius }: { radius: number }) {
       points.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius));
     }
     const geo = new THREE.BufferGeometry().setFromPoints(points);
-    const mat = new THREE.LineBasicMaterial({ color: "#4a5568", transparent: true, opacity: 0.04 });
+    const mat = new THREE.LineBasicMaterial({ color: "#4a5568", transparent: true, opacity: 0.08 });
     return new THREE.Line(geo, mat);
   }, [radius]);
 

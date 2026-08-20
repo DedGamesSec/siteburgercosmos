@@ -132,10 +132,8 @@ export default function Planet({
           <meshStandardMaterial
             map={texture}
             color={0xffffff}
-            roughness={0.7}
+            roughness={0.85}
             metalness={0.0}
-            emissive={0x111111}
-            emissiveIntensity={0.15}
           />
         </mesh>
         {data.hasRings && data.ringTextureUrl && <SaturnRings radius={visualRadius} />}

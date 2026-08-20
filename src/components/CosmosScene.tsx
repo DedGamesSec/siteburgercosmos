@@ -26,12 +26,12 @@ import { type HoverPt, type PlanetItem } from "./cosmos/config";
    (azimuth 0.22π…0.28π, polar 0.32π…0.35π), damping 0.05 so it glides but
    never strays. Only zoom (220–1500) and that tiny tilt are available.
 
-   Light (promt6 iteration 6): one warm PointLight from the Sun is the ONLY
-   light source. No Bloom / postprocessing, no glow auras — planets get a real
-   illuminated hemisphere and a dark night-side, and eclipse shadows happen.
-   A faint ambient (0.03) keeps the dark side from pure black. Under eco-mode /
-   reduced-motion the system freezes at its real heliocentric angles. Every
-   planet receives AND casts shadows. ---- */
+   Light (shadow iterations): one warm PointLight from the Sun (decay 2) is
+   the main light — real eclipse shadows, soft edges (shadow-radius 4). A very
+   low hemisphere fill (0.15) lifts the night-side just enough so it reads,
+   never flattening the shadow contrast. Every planet receives AND casts
+   shadows. Under eco-mode / reduced-motion the system freezes at its real
+   heliocentric angles. ---- */
 
 type CosmosSceneProps = {
   planets: PlanetItem[];
@@ -77,10 +77,8 @@ export default function CosmosScene(props: CosmosSceneProps) {
           if (import.meta.env.DEV) (window as unknown as { __cosmosRoot?: unknown }).__cosmosRoot = state;
         }}
       >
-        {/* soft global fill — warm ambient + warm hemisphere lift the night-side
-            so planet details stay readable (corrected prompt) */}
-        <ambientLight intensity={0.25} color={0xffeedd} />
-        <hemisphereLight args={[0xffdd88, 0x1a1a2e, 0.5]} position={[0, 50, 0]} />
+        {/* low warm hemisphere fill — night-side readable, shadows stay visible */}
+        <hemisphereLight args={[0xffcc77, 0x050510, 0.12]} position={[0, 100, 0]} />
         <Sun />
 
         {planets.map((item) => (

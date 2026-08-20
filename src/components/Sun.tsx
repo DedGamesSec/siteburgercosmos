@@ -4,46 +4,33 @@ import * as THREE from "three";
 import { SUN_RADIUS } from "./cosmos/config";
 import { createGlowTexture } from "./glowTexture";
 
-/* Corona — 3 billboard sprites (corrected prompt v2). Sprites always face
-   the camera (Three.js does this automatically), so there is NO edge and the
-   layered gear-step rings are physically impossible at any camera angle.
-   Each sprite carries a 64-stop eased gradient texture (smooth Gaussian-ish
-   falloff) — the whole halo reads as one soft golden corona ~2.5–3× the
-   disc width, exactly like the reference screenshot. */
+/* Corona — 2 billboard sprites with a 64-stop eased gradient texture.
+   Compact: single layer ≈1.3× the disc, outer ≈2.0× — the aura no longer
+   swallows the inner planets. */
 
 const CORONA_LAYERS = [
   {
-    scale: 1.4,
-    opacity: 1.0,
-    falloff: 4.0,
-    inner: "rgba(255, 250, 230, 1.0)",
-    mid: "rgba(255, 230, 150, 0.8)",
-    outer: "rgba(255, 200, 80, 0)",
+    scale: 1.25,
+    opacity: 0.95,
+    falloff: 6.0,
+    inner: "rgba(255, 250, 220, 1.0)",
+    mid: "rgba(255, 230, 140, 0.5)",
+    outer: "rgba(255, 190, 60, 0)",
   },
   {
-    scale: 2.2,
-    opacity: 0.7,
-    falloff: 3.0,
-    inner: "rgba(255, 240, 200, 0.9)",
-    mid: "rgba(255, 210, 120, 0.5)",
-    outer: "rgba(255, 180, 60, 0)",
-  },
-  {
-    scale: 3.5,
-    opacity: 0.3,
-    falloff: 2.5,
-    inner: "rgba(255, 220, 160, 0.6)",
-    mid: "rgba(255, 190, 100, 0.25)",
-    outer: "rgba(255, 160, 40, 0)",
+    scale: 1.9,
+    opacity: 0.25,
+    falloff: 5.0,
+    inner: "rgba(255, 235, 180, 0.6)",
+    mid: "rgba(255, 210, 110, 0.2)",
+    outer: "rgba(255, 170, 40, 0)",
   },
 ];
 
-/* Sun (corrected prompt v2): a CLEAN pure-white disc (meshBasicMaterial
-   color 0xfffff5, toneMapped=false so it stays white-hot) — no spotty
-   procedural texture dirtying it — plus the 3-sprite corona. The PointLight
-   (intensity 10000, decay 1) is the ONLY light source and does all the real
-   illumination with real eclipse shadows. The disc keeps a slow roll; the
-   sprites breathe very gently. raycast is excluded so hover reaches planets. */
+/* Sun (shadow fix): clean warm disc (0xfff0cc) + 2-sprite compact corona
+   (1.25×/1.9×, tight falloff). hybrid light: pointLight decay=2 (near zone)
+   + directionalLight (outer planets), hemisphere fill keeps night-sides
+   readable. Sprites breathe gently; raycast excluded for hover. */
 export default function Sun() {
   const spriteRefs = useRef<THREE.Sprite[]>([]);
 
@@ -74,31 +61,37 @@ export default function Sun() {
 
   return (
     <group>
-      {/* warm golden light; decay controls natural falloff, distance covers
-          the whole system (corrected prompt) */}
+      {/* hybrid lighting (shadow-darkness fix):
+          pointLight — near zone (0–150): natural decay=2 falloff, hard
+          eclipse shadows for inner planets;
+          directionalLight — whole scene: uniform sun-parallel rays reach the
+          outer planets without 1/d² darkness, still casts shadows. */}
       <pointLight
         position={[0, 0, 0]}
+        color={0xffcc77}
+        intensity={8}
+        distance={150}
+        decay={2}
+        castShadow
+        shadow-bias={-0.0001}
+      />
+      <directionalLight
+        position={[0, 80, 120]}
         color={0xffddaa}
-        intensity={12}
-        distance={800}
-        decay={1.5}
+        intensity={1.2}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
-        shadow-camera-near={1}
-        shadow-camera-far={500}
         shadow-bias={-0.0001}
-        shadow-radius={8}
       />
 
-      {/* the visible Sun — LARGER warm-golden disc, no harsh "yolk" contrast
-            against the corona (corrected prompt v9) */}
+      {/* the visible Sun — warm disc, bright core */}
       <mesh raycast={noRaycast}>
         <sphereGeometry args={[SUN_RADIUS, 64, 64]} />
-        <meshBasicMaterial color={0xfff5dd} toneMapped={false} />
+        <meshBasicMaterial color={0xfff0cc} toneMapped={false} />
       </mesh>
 
-      {/* corona = 3 billboard sprites with the band-free gradient texture */}
+      {/* corona = 2 billboard sprites with the band-free gradient texture */}
       {CORONA_LAYERS.map((l, i) => (
         <sprite
           key={`corona-${i}`}

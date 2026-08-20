@@ -14,19 +14,19 @@ export default function SaturnRings({ radius }: { radius: number }) {
   return (
     <group>
       {/* Ring C — inner, misty */}
-      <mesh rotation={plane} renderOrder={1}>
+      <mesh rotation={plane} renderOrder={1} castShadow receiveShadow>
         <ringGeometry args={[radius * 1.1, radius * 1.3, 64]} />
         <meshStandardMaterial color="#d4b078" transparent opacity={0.45} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
 
       {/* Ring B — dense, medium (1.35–1.9, no overlap with C) */}
-      <mesh rotation={plane} renderOrder={2}>
+      <mesh rotation={plane} renderOrder={2} castShadow receiveShadow>
         <ringGeometry args={[radius * 1.35, radius * 1.9, 64]} />
         <meshStandardMaterial color="#e4c98a" transparent opacity={0.62} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
 
       {/* Ring A — outer, textured (2.05–2.5, outside the Cassini gap) */}
-      <mesh rotation={plane} renderOrder={4}>
+      <mesh rotation={plane} renderOrder={4} castShadow receiveShadow>
         <ringGeometry args={[radius * 2.05, radius * 2.5, 64]} />
         <meshStandardMaterial
           map={alpha}
