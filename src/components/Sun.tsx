@@ -13,24 +13,24 @@ import { createGlowTexture } from "./glowTexture";
 
 const CORONA_LAYERS = [
   {
-    scale: 3.5,
-    opacity: 0.9,
-    falloff: 2.4,
+    scale: 2.5,
+    opacity: 0.5,
+    falloff: 3.0,
     inner: "rgba(255, 250, 220, 1.0)",
     mid: "rgba(255, 230, 160, 0.55)",
     outer: "rgba(255, 200, 100, 0)",
   },
   {
-    scale: 6.5,
-    opacity: 0.5,
-    falloff: 2.2,
+    scale: 4.5,
+    opacity: 0.25,
+    falloff: 2.5,
     inner: "rgba(255, 245, 200, 0.8)",
     mid: "rgba(255, 215, 130, 0.35)",
     outer: "rgba(255, 175, 70, 0)",
   },
   {
-    scale: 10.0,
-    opacity: 0.2,
+    scale: 7.0,
+    opacity: 0.08,
     falloff: 2.0,
     inner: "rgba(255, 240, 180, 0.5)",
     mid: "rgba(255, 200, 110, 0.2)",
@@ -78,7 +78,7 @@ export default function Sun() {
       <pointLight
         position={[0, 0, 0]}
         color={0xfff5dd}
-        intensity={10000}
+        intensity={8000}
         distance={0}
         decay={1}
         castShadow
@@ -90,11 +90,12 @@ export default function Sun() {
         shadow-radius={8}
       />
 
-      {/* the visible Sun — a clean bright-white disc, no spotty texture,
-          toneMapped off so the core stays white-hot like a bulb */}
+      {/* the visible Sun — a soft pale-yellow disc; toneMapped stays ON
+            (default) so the disc is not blown out and its edge stays visible
+            against the corona (corrected prompt v4) */}
       <mesh raycast={noRaycast}>
         <sphereGeometry args={[SUN_RADIUS, 64, 64]} />
-        <meshBasicMaterial color={0xffffee} toneMapped={false} />
+        <meshBasicMaterial color={0xfff5dd} />
       </mesh>
 
       {/* corona = 3 billboard sprites with the band-free gradient texture */}
