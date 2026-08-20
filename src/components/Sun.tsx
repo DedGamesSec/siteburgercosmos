@@ -13,28 +13,28 @@ import { createGlowTexture } from "./glowTexture";
 
 const CORONA_LAYERS = [
   {
-    scale: 1.3,
-    opacity: 0.6,
-    falloff: 3.0,
-    inner: "rgba(255, 235, 170, 1.0)",
-    mid: "rgba(255, 210, 110, 0.6)",
-    outer: "rgba(255, 180, 70, 0)",
+    scale: 1.4,
+    opacity: 1.0,
+    falloff: 4.0,
+    inner: "rgba(255, 250, 230, 1.0)",
+    mid: "rgba(255, 230, 150, 0.8)",
+    outer: "rgba(255, 200, 80, 0)",
   },
   {
     scale: 2.2,
-    opacity: 0.35,
-    falloff: 2.5,
-    inner: "rgba(255, 235, 170, 1.0)",
-    mid: "rgba(255, 210, 110, 0.6)",
-    outer: "rgba(255, 180, 70, 0)",
+    opacity: 0.7,
+    falloff: 3.0,
+    inner: "rgba(255, 240, 200, 0.9)",
+    mid: "rgba(255, 210, 120, 0.5)",
+    outer: "rgba(255, 180, 60, 0)",
   },
   {
     scale: 3.5,
-    opacity: 0.12,
-    falloff: 2.0,
-    inner: "rgba(255, 235, 170, 1.0)",
-    mid: "rgba(255, 210, 110, 0.6)",
-    outer: "rgba(255, 180, 70, 0)",
+    opacity: 0.3,
+    falloff: 2.5,
+    inner: "rgba(255, 220, 160, 0.6)",
+    mid: "rgba(255, 190, 100, 0.25)",
+    outer: "rgba(255, 160, 40, 0)",
   },
 ];
 
@@ -74,14 +74,14 @@ export default function Sun() {
 
   return (
     <group>
-      {/* warm golden light; decay=0 keeps every planet lit regardless of
-          orbit distance, gentle intensity (v7 balance, verified) */}
+      {/* warm golden light; decay controls natural falloff, distance covers
+          the whole system (corrected prompt) */}
       <pointLight
         position={[0, 0, 0]}
-        color={0xffcc77}
-        intensity={5}
-        distance={0}
-        decay={0}
+        color={0xffddaa}
+        intensity={12}
+        distance={800}
+        decay={1.5}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -95,7 +95,7 @@ export default function Sun() {
             against the corona (corrected prompt v9) */}
       <mesh raycast={noRaycast}>
         <sphereGeometry args={[SUN_RADIUS, 64, 64]} />
-        <meshBasicMaterial color={0xffdd88} toneMapped={false} />
+        <meshBasicMaterial color={0xfff5dd} toneMapped={false} />
       </mesh>
 
       {/* corona = 3 billboard sprites with the band-free gradient texture */}

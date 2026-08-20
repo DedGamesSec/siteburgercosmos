@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { LanguageCode } from "../i18n/languages";
 import Sun from "./Sun";
@@ -76,11 +77,10 @@ export default function CosmosScene(props: CosmosSceneProps) {
           if (import.meta.env.DEV) (window as unknown as { __cosmosRoot?: unknown }).__cosmosRoot = state;
         }}
       >
-        {/* balanced warm light — the night-side stays readable and the warm
-            hemisphere adds soft scattered light; the Sun's PointLight (inside
-            Sun.tsx, yellow 0xffdd88, decay 0) is the single strong source */}
-        <ambientLight intensity={0.4} color={0x665544} />
-        <hemisphereLight color={0x554433} groundColor={0x332211} intensity={0.35} />
+        {/* soft global fill — warm ambient + warm hemisphere lift the night-side
+            so planet details stay readable (corrected prompt) */}
+        <ambientLight intensity={0.25} color={0xffeedd} />
+        <hemisphereLight args={[0xffdd88, 0x1a1a2e, 0.5]} position={[0, 50, 0]} />
         <Sun />
 
         {planets.map((item) => (
@@ -118,6 +118,15 @@ export default function CosmosScene(props: CosmosSceneProps) {
         />
 
         <CollisionGuard planets={planets} registry={groupRegistry} />
+
+        <EffectComposer>
+          <Bloom
+            intensity={0.8}
+            luminanceThreshold={0.85}
+            luminanceSmoothing={0.9}
+            mipmapBlur
+          />
+        </EffectComposer>
       </Canvas>
     </>
   );
