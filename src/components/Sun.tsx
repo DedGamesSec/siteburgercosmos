@@ -87,18 +87,21 @@ function useSunTexture(): THREE.Texture {
   return map;
 }
 
-/* Bright lightbulb glow (promt10 iteration 10) — five wide yellow BackSide
-   corona shells with a smooth white→yellow→warm-yellow falloff. Radii keep
-   the guide's 14/18/25/35/50 ratios (1.167 / 1.5 / 2.083 / 2.917 / 4.167 ×
-   the sun) mapped onto our SUN_RADIUS=44 world units. Brightest layer hugs
-   the disc (opacity 0.3), outer layers feather out — no Bloom /
-   PostProcessing anywhere (see CosmosScene). glow1 + glow2 breathe gently. */
+/* Bright lightbulb glow (corrected prompt) — EIGHT BackSide corona shells
+   with a smooth white→yellow→orange falloff. Radii are guide ratios × our
+   SUN_RADIUS=44; small radius steps (1.08→1.20→1.40→1.70→2.10→2.70→3.50→4.50)
+   and a gentle opacity ramp (0.35→0.006) make the transition seamless — with
+   the locked camera the shells read as one soft halo, not concentric rings.
+   AdditiveBlending + depthWrite=false; no Bloom / PostProcessing anywhere. */
 export const SUN_GLOW: Array<{ r: number; color: string; opacity: number }> = [
-  { r: 1.167, color: "#ffffee", opacity: 0.3 },
-  { r: 1.5, color: "#ffee88", opacity: 0.2 },
-  { r: 2.083, color: "#ffdd66", opacity: 0.12 },
-  { r: 2.917, color: "#ffcc55", opacity: 0.06 },
-  { r: 4.167, color: "#ffbb44", opacity: 0.025 },
+  { r: 1.08, color: "#fffff5", opacity: 0.35 },
+  { r: 1.2, color: "#ffffee", opacity: 0.25 },
+  { r: 1.4, color: "#ffee88", opacity: 0.18 },
+  { r: 1.7, color: "#ffdd66", opacity: 0.12 },
+  { r: 2.1, color: "#ffcc55", opacity: 0.07 },
+  { r: 2.7, color: "#ffbb44", opacity: 0.035 },
+  { r: 3.5, color: "#ffaa33", opacity: 0.015 },
+  { r: 4.5, color: "#ff9922", opacity: 0.006 },
 ];
 
 /* Sun (promt10 iteration 10): a bright white-yellow disc (meshBasicMaterial,
@@ -141,10 +144,11 @@ export default function Sun() {
         shadow-radius={8}
       />
 
-      {/* the visible Sun — a bright near-white disc */}
+      {/* the visible Sun — a bright near-white disc, toneMapped off so the
+          core stays white-hot like a bulb */}
       <mesh ref={coreRef} raycast={noRaycast}>
         <sphereGeometry args={[SUN_RADIUS, 64, 64]} />
-        <meshBasicMaterial map={map} color={0xfffff5} />
+        <meshBasicMaterial map={map} color={0xfffff5} toneMapped={false} />
       </mesh>
 
       {/* the four yellow halo layers (0.15 / 0.08 / 0.04 / 0.015) */}

@@ -76,14 +76,13 @@ export default function CosmosScene(props: CosmosSceneProps) {
           if (import.meta.env.DEV) (window as unknown as { __cosmosRoot?: unknown }).__cosmosRoot = state;
         }}
       >
-        {/* warm grey ambient keeps the night-side DARK-GREY (not black), a soft
-            hemisphere light imitates space's scattered light, and a dim side
-            light softens the terminator so shadows stay grey (promt10
-            iteration 10); the Sun's PointLight does the strong directional
-            illumination */}
-        <ambientLight intensity={0.7} color={0x666666} />
-        <hemisphereLight color={0x555555} groundColor={0x333333} intensity={0.4} />
-        <pointLight position={[200, 100, 200]} color={0x444444} intensity={500} distance={1000} decay={1} />
+        {/* faint ambient only — keeps the night-side DARK-GREY (never pitch-black,
+            never light-grey), a very weak hemisphere imitates scattered space
+            light; the Sun's PointLight (inside Sun.tsx, intensity 10000,
+            decay 1) is the SINGLE strong light source — one light = true
+            terminator shadows with dramatic contrast (corrected prompt) */}
+        <ambientLight intensity={0.2} color={0x444444} />
+        <hemisphereLight color={0x333333} groundColor={0x111111} intensity={0.3} />
         <Sun />
 
         {planets.map((item) => (

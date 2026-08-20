@@ -19,15 +19,15 @@ export default function SaturnRings({ radius }: { radius: number }) {
         <meshStandardMaterial color="#d4b078" transparent opacity={0.45} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
 
-      {/* Ring B — dense, medium */}
+      {/* Ring B — dense, medium (1.35–1.9, no overlap with C) */}
       <mesh rotation={plane} renderOrder={2}>
-        <ringGeometry args={[radius * 1.5, radius * 1.9, 64]} />
+        <ringGeometry args={[radius * 1.35, radius * 1.9, 64]} />
         <meshStandardMaterial color="#e4c98a" transparent opacity={0.62} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
 
-      {/* Ring A — outer, textured */}
-      <mesh rotation={plane} renderOrder={3}>
-        <ringGeometry args={[radius * 1.25, radius * 2.2, 64]} />
+      {/* Ring A — outer, textured (2.05–2.5, outside the Cassini gap) */}
+      <mesh rotation={plane} renderOrder={4}>
+        <ringGeometry args={[radius * 2.05, radius * 2.5, 64]} />
         <meshStandardMaterial
           map={alpha}
           alphaMap={alpha}
@@ -42,8 +42,8 @@ export default function SaturnRings({ radius }: { radius: number }) {
         />
       </mesh>
 
-      {/* Cassini division — a dark gap cut behind the bright A band */}
-      <mesh rotation={plane} renderOrder={4}>
+      {/* Cassini division — a dark gap cut between the B and A systems */}
+      <mesh rotation={plane} renderOrder={3}>
         <ringGeometry args={[radius * 1.95, radius * 2.0, 64]} />
         <meshBasicMaterial color="#2a2012" transparent opacity={0.7} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>

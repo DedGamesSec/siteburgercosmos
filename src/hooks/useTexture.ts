@@ -29,6 +29,8 @@ export function useTexture(src: string, fallbackColor = "#3a2e26"): THREE.Textur
         t.colorSpace = THREE.SRGBColorSpace;
         t.generateMipmaps = true;
         t.minFilter = THREE.LinearMipmapLinearFilter;
+        t.magFilter = THREE.LinearFilter;
+        t.anisotropy = 16;
         if (alive) setMap(t);
       },
       undefined,
