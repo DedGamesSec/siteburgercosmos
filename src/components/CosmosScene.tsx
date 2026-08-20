@@ -110,7 +110,7 @@ export default function CosmosScene(props: CosmosSceneProps) {
           minAzimuthAngle={Math.PI * -0.25}
           maxAzimuthAngle={Math.PI * 0.75}
           minDistance={686}
-          maxDistance={842}
+          maxDistance={1400}
           target={[0, 0, 0]}
           enabled={!motionless}
         />
