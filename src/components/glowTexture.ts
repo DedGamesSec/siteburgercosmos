@@ -24,9 +24,9 @@ function lerpColor(a: string, b: string, c: string, t: number): string {
 
 export function createGlowTexture({
   size = 512,
-  innerColor = "rgba(255, 245, 200, 1.0)",
-  midColor = "rgba(255, 220, 130, 0.6)",
-  outerColor = "rgba(255, 190, 90, 0)",
+  innerColor = "rgba(255, 250, 220, 1.0)",
+  midColor = "rgba(255, 215, 120, 0.6)",
+  outerColor = "rgba(255, 170, 60, 0)",
   falloff = 2.2,
 }: {
   size?: number;
