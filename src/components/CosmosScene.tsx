@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { LanguageCode } from "../i18n/languages";
 import Sun from "./Sun";
@@ -25,10 +26,13 @@ import { type HoverPt, type PlanetItem } from "./cosmos/config";
    (azimuth 0.22π…0.28π, polar 0.32π…0.35π), damping 0.05 so it glides but
    never strays. Only zoom (220–1500) and that tiny tilt are available.
 
-   Light (promt5 item 1): one warm PointLight; the Sun's halo is only stacked
-   AdditiveBlending shells — NO postprocessing/Bloom. Every planet receives
-   AND casts shadows, so eclipses really happen. Under eco-mode / reduced-
-   motion the system freezes at its real heliocentric angles. ---- */
+   Light (promt5 item 1, promt10 override): one warm PointLight; the Sun's glow
+   is now REAL postprocessing Bloom (EffectComposer) — the emissive core is
+   bright enough (toneMapped false, 2.2x boost) that only the Sun blooms, plus
+   two soft additive shells thicken the corona. Under eco-mode / reduced-motion
+   the composer is skipped (motionless) and the system freezes at its real
+   heliocentric angles. Every planet receives AND casts shadows, so eclipses
+   happen. ---- */
 
 type CosmosSceneProps = {
   planets: PlanetItem[];
@@ -74,6 +78,18 @@ export default function CosmosScene(props: CosmosSceneProps) {
       >
         <ambientLight intensity={0.45} />
         <Sun />
+
+        {!motionless && (
+          <EffectComposer multisampling={0}>
+            <Bloom
+              intensity={1.15}
+              luminanceThreshold={1.0}
+              luminanceSmoothing={0.9}
+              mipmapBlur
+              radius={0.8}
+            />
+          </EffectComposer>
+        )}
 
         {planets.map((item) => (
           <Orbit key={`orbit-${item.page.id}`} radius={item.radiusPx} />

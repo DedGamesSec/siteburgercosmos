@@ -18,5 +18,5 @@ export default function Orbit({ radius }: { radius: number }) {
     return new THREE.Line(geo, mat);
   }, [radius]);
 
-  return <primitive object={line} />;
+  return <primitive object={line} raycast={() => null} />;
 }

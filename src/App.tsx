@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, Suspense, lazy } from "react";
 const NetworkBackground = lazy(() => import("./components/NetworkBackground"));
 const CinematicScene = lazy(() => import("./components/CinematicScene"));
+const RealDevelopmentSection = lazy(() => import("./components/RealDevelopmentSection"));
 import { isWebGLAvailable, type CinematicPhases } from "./components/cinematicShared";
 import CinematicOverlays from "./components/CinematicOverlays";
 import { cinematicProgressRef, setCinematicProgressValue, subscribeCinematic, getCinematicProgress } from "./lib/cinematicStore";
@@ -39,7 +40,6 @@ import Header from "./components/Header";
 import ExplorePagesSection from "./components/ExplorePagesSection";
 import AppSecuritySection from "./components/AppSecuritySection";
 import KiraAssistantSection from "./components/KiraAssistantSection";
-import RealDevelopmentSection from "./components/RealDevelopmentSection";
 import ModelTesterSection from "./components/ModelTesterSection";
 import OriginStorySection from "./components/OriginStorySection";
 import LegalPage from "./components/LegalPage";
@@ -942,7 +942,9 @@ export default function App() {
             >
               <Breadcrumbs currentPage={activePage} />
               <div className="flex-1 flex flex-col bg-[#0A0A0B]/90 backdrop-blur-sm">
-                <RealDevelopmentSection onlyRoadmap={true} />
+                <Suspense fallback={<div className="min-h-[50vh]" />}>
+                  <RealDevelopmentSection onlyRoadmap={true} />
+                </Suspense>
               </div>
               <PageNavigationFooter currentPage={activePage} />
               <Footer />

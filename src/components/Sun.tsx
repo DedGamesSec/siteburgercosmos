@@ -59,43 +59,28 @@ function useSunTexture(): THREE.Texture {
   return map;
 }
 
-/* Glow shells — stacked BackSide spheres with AdditiveBlending that build a
-   bright radial gradient around the core. `pulse` is the base sin frequency
-   (0 = static shell). */
+/* Glow shells — just 1-2 very soft BackSide spheres (AdditiveBlending) that
+   densify the innermost corona. The smooth outer glow is produced by Bloom in
+   the EffectComposer (see CosmosScene), so these are NOT the main halo. */
 const SHELLS: Array<{ r: number; color: string; opacity: number; pulse: number }> = [
-  { r: 1.25, color: "#ffdd44", opacity: 0.5, pulse: 0.8 },
-  { r: 1.6, color: "#ffaa22", opacity: 0.32, pulse: 0.5 },
-  { r: 2.1, color: "#ff8800", opacity: 0.18, pulse: 0.3 },
-  { r: 2.8, color: "#ff6600", opacity: 0.09, pulse: 0 },
-  { r: 3.8, color: "#ff4400", opacity: 0.04, pulse: 0 },
+  { r: 1.35, color: "#ffcc55", opacity: 0.28, pulse: 0.7 },
+  { r: 1.8, color: "#ff9922", opacity: 0.12, pulse: 0.45 },
 ];
 
-const RAY_COUNT = 12;
-
-/* Bright bright Sun: the core is a blinding disc (toneMapped false), five
-   pulsing additive shells radiate the halo, and 12 additive rays (elongated
-   boxes in the orbital plane) shoot light beams across the scene. The
-   PointLight stays the real source — the same warm light that lights the
-   planets and casts the eclipsing shadows. */
+/* Bright Sun: the core is a blinding emissive sphere (toneMapped false and a
+   2.2x HDR colour boost keep it above the Bloom threshold so ONLY the Sun
+   blooms, not the lit planets). Two soft additive shells thicken the corona.
+   The PointLight stays the real physical source — it lights the planets and
+   casts the eclipsing shadows. All decoration is raycast-excluded so hover
+   always reaches the planet meshes underneath. */
 export default function Sun() {
   const map = useSunTexture();
   const coreRef = useRef<THREE.Mesh>(null);
   const shellRefs = useRef<Array<THREE.Mesh | null>>(new Array(SHELLS.length).fill(null));
 
-  const rayMat = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        color: 0xffdd55,
-        transparent: true,
-        opacity: 0.1,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-        toneMapped: false,
-        side: THREE.DoubleSide,
-      }),
-    []
-  );
-  useEffect(() => () => rayMat.dispose(), [rayMat]);
+  /* raycast={() => null} — decorative meshes never intercept pointer events,
+     otherwise a shell could swallow a hover aimed at a nearby planet. */
+  const noRaycast = useMemo(() => () => null, []);
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
@@ -104,10 +89,9 @@ export default function Sun() {
       const shell = shellRefs.current[i];
       if (!shell) continue;
       if (SHELLS[i].pulse) {
-        shell.scale.setScalar(1 + Math.sin(t * SHELLS[i].pulse + i * 1.7) * 0.035);
+        shell.scale.setScalar(1 + Math.sin(t * SHELLS[i].pulse + i * 1.4) * 0.03);
       }
     }
-    rayMat.opacity = 0.09 + Math.sin(t * 0.6 + 1) * 0.045;
   });
 
   return (
@@ -127,32 +111,20 @@ export default function Sun() {
         shadow-radius={4}
       />
 
-      {/* core */}
-      <mesh ref={coreRef}>
+      {/* core — bright emissive disc, no fake layers */}
+      <mesh ref={coreRef} raycast={noRaycast}>
         <sphereGeometry args={[SUN_RADIUS, 32, 32]} />
-        <meshBasicMaterial map={map} color={0xffffee} toneMapped={false} />
+        <meshBasicMaterial map={map} color={new THREE.Color(0xfff0c0).multiplyScalar(2.2)} toneMapped={false} />
       </mesh>
 
-      {/* rays — 12 light beams in the orbital plane */}
-      {Array.from({ length: RAY_COUNT }).map((_, i) => {
-        const angle = (i / RAY_COUNT) * Math.PI * 2 + 0.26;
-        return (
-          <group key={i} rotation={[0, angle, 0]}>
-            <mesh position={[SUN_RADIUS * 2.2, 0, 0.02]}>
-              <boxGeometry args={[SUN_RADIUS * 2, SUN_RADIUS * 0.42, SUN_RADIUS * 0.42]} />
-              <primitive object={rayMat} attach="material" />
-            </mesh>
-          </group>
-        );
-      })}
-
-      {/* additive glow shells */}
+      {/* soft corona supplements */}
       {SHELLS.map((s, i) => (
         <mesh
           key={s.color + i}
           ref={(el) => {
             shellRefs.current[i] = el;
           }}
+          raycast={noRaycast}
         >
           <sphereGeometry args={[SUN_RADIUS * s.r, 32, 32]} />
           <meshBasicMaterial

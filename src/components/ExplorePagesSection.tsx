@@ -533,47 +533,6 @@ const PAGE_CTA: Record<string, LangDict> = {
   },
 };
 
-/* ---- Optional real planet models (GLB) ----
-   The procedural SSS-textured spheres below are the default, but you can
-   render downloaded planet models instead. Two modes:
-
-   1. A single combined solar-system model (FyorDev "solar system REAL SCALE
-      2K", a 17MB GLB with a named node per body). Loaded once, and each
-      planet subtree is extracted by node-name prefix — e.g. node `Saturn_5`
-      + ring node `SaturnRing_14` both match the about page. Set
-      SOLAR_SYSTEM_GLB to its URL under public/ ("" disables it).
-   2. Individual per-planet files, one per page id, dropped into
-      `public/models/planets/` with the MODEL_GLB line uncommented.
-
-   Either way the loader normalises each model automatically: its bounding
-   box is scaled to the planet's configured `sizePx` and centred on its
-   orbit, so no hand-tuned scale/position constants are needed. The
-   procedural extras (Venus atmosphere / Saturn rings) are skipped for a
-   configured model on purpose — Sketchfab models carry their own. */
-const SOLAR_SYSTEM_GLB = "models/solar_system_real_scale_2k_textures.glb";
-
-/** Node-name prefix per page used to find that planet inside the combined
-    model (case-insensitive, trailing `_index` ignored). */
-const MODEL_NODE_PREFIX: Record<string, string> = {
-  "download": "Mercury",
-  comparison: "Venus",
-  news: "Uranus",
-  roadmap: "Mars",
-  tech: "Jupiter",
-  about: "Saturn",
-  "how-it-works": "Neptune",
-};
-
-const MODEL_GLB: Record<string, string> = {
-  // "about": "models/planets/saturn.glb",
-  // "tech": "models/planets/jupiter.glb",
-  // "roadmap": "models/planets/mars.glb",
-  // "how-it-works": "models/planets/neptune.glb",
-  // "comparison": "models/planets/venus.glb",
-  // "news": "models/planets/uranus.glb",
-  // "download": "models/planets/mercury.glb",
-};
-
 /* Deterministic pseudo-random starfield layer. ~190 stars: the bulk is small
    faint dots, a fifth are medium, a few are noticeably larger/bright and act
    as constellation anchors. Item 9 — denser, more varied sky. */
