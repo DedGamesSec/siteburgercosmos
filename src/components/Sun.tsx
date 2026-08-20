@@ -27,10 +27,11 @@ const CORONA_LAYERS = [
   },
 ];
 
-/* Sun (shadow fix): clean warm disc (0xfff0cc) + 2-sprite compact corona
-   (1.25×/1.9×, tight falloff). hybrid light: pointLight decay=2 (near zone)
-   + directionalLight (outer planets), hemisphere fill keeps night-sides
-   readable. Sprites breathe gently; raycast excluded for hover. */
+/* Sun (chiaroscuro): clean warm disc (0xfff0cc) + 2-sprite compact corona.
+   ONE radial pointLight (decay 1, distance 0 = unbounded) lights every planet
+   from the Sun's own direction, so the day/night terminator + eclipse shadows
+   read on all bodies; hemisphere fill only keeps night-sides from pure black.
+   Sprites breathe gently; raycast excluded for hover. */
 export default function Sun() {
   const spriteRefs = useRef<THREE.Sprite[]>([]);
 
@@ -61,27 +62,20 @@ export default function Sun() {
 
   return (
     <group>
-      {/* hybrid lighting (shadow-darkness fix):
-          pointLight — near zone (0–150): natural decay=2 falloff, hard
-          eclipse shadows for inner planets;
-          directionalLight — whole scene: uniform sun-parallel rays reach the
-          outer planets without 1/d² darkness, still casts shadows. */}
+      {/* single radial sun light — every planet is lit from the Sun's direction,
+          so the day/night terminator reads on every body (decay 1 keeps the
+          outer planets lit, no directional flatlight washing out contrast) */}
       <pointLight
         position={[0, 0, 0]}
         color={0xffcc77}
-        intensity={8}
-        distance={150}
-        decay={2}
-        castShadow
-        shadow-bias={-0.0001}
-      />
-      <directionalLight
-        position={[0, 80, 120]}
-        color={0xffddaa}
-        intensity={1.2}
+        intensity={190}
+        distance={0}
+        decay={0.75}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
+        shadow-camera-near={1}
+        shadow-camera-far={800}
         shadow-bias={-0.0001}
       />
 
