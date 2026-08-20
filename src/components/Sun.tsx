@@ -59,23 +59,23 @@ function useSunTexture(): THREE.Texture {
   return map;
 }
 
-/* Glow — exactly two very thin BackSide spheres (promt6: "max 2 layers, opacity
-   ≤ 0.04"). No pulse (it reads as a bug) and no big warm SPACE_GLOW auras:
-   the smooth halo is produced by Bloom in the EffectComposer (CosmosScene), so
-   these shells only densify the corona right around the bright disc. */
-const SHELLS: Array<{ r: number; color: string; opacity: number }> = [
-  { r: 1.25, color: "#ffcc44", opacity: 0.04 },
-  { r: 1.6, color: "#ffaa22", opacity: 0.02 },
-];
+/* Overriding glow shell (promt6 iteration 6, STEP 6): ONE layer, radius at most
+   10–20% above the disc, opacity ≤ 0.05 — just enough to keep the star from
+   looking flat, never big enough to tint the background. No Bloom, no
+   AdditiveBlending auras, no pulse. */
+const CORONA: { r: number; color: string; opacity: number } = {
+  r: 1.15,
+  color: "#ffdd88",
+  opacity: 0.03,
+};
 
-/* Bright Sun (promt6): the core is a self-lit (meshBasicMaterial) warm-white
-   disc — the one true light source for the whole system. A gentle HDR boost
-   (toneMapped false) keeps only the Sun above the Bloom threshold, so the
-   EffectComposer halo is the soft yellow glow from the reference — no fake
-   "donut" auras. Two thin additive shells thicken the corona (opacity ≤ 0.04),
-   and the PointLight really illuminates every planet and casts the eclipse
-   shadows. All decoration is raycast-excluded so hover always reaches the
-   planet meshes underneath. */
+/* Sun (promt6 iteration 6): the Sun is a LIGHT SOURCE, not a glowing object on
+   the background. Just the PointLight plus a small self-lit (meshBasicMaterial)
+   sphere — no glow shells (the halo is optional one thin layer at most), no
+   Bloom/PostProcessing anywhere in the scene (see CosmosScene), so light falls
+   ONTO the planets instead of washing the space. The PointLight illuminates
+   every planet and casts the eclipse shadows. All decoration is raycast-excluded
+   so hover always reaches the planet meshes underneath. */
 export default function Sun() {
   const map = useSunTexture();
   const coreRef = useRef<THREE.Mesh>(null);
@@ -93,8 +93,8 @@ export default function Sun() {
     <group>
       <pointLight
         position={[0, 0, 0]}
-        color={0xffdd88}
-        intensity={2000}
+        color={0xffeedd}
+        intensity={1500}
         distance={0}
         decay={2}
         castShadow
@@ -103,33 +103,27 @@ export default function Sun() {
         shadow-camera-near={1}
         shadow-camera-far={600}
         shadow-bias={-0.0001}
-        shadow-radius={8}
+        shadow-radius={6}
       />
 
-      {/* core — bright emissive disc, no fake layers */}
+      {/* the visible Sun — just a small self-lit sphere */}
       <mesh ref={coreRef} raycast={noRaycast}>
         <sphereGeometry args={[SUN_RADIUS, 64, 64]} />
-        <meshBasicMaterial map={map} color={new THREE.Color(0xffffee).multiplyScalar(1.8)} toneMapped={false} />
+        <meshBasicMaterial map={map} color={0xffffee} />
       </mesh>
 
-      {/* soft corona supplements */}
-      {SHELLS.map((s, i) => (
-        <mesh
-          key={s.color + i}
-          raycast={noRaycast}
-        >
-          <sphereGeometry args={[SUN_RADIUS * s.r, 32, 32]} />
-          <meshBasicMaterial
-            color={s.color}
-            transparent
-            opacity={s.opacity}
-            toneMapped={false}
-            side={THREE.BackSide}
-            blending={THREE.AdditiveBlending}
-            depthWrite={false}
-          />
-        </mesh>
-      ))}
+      {/* one optional THIN corona, radius +15% / opacity 0.03 (STEP 6) */}
+      <mesh raycast={noRaycast}>
+        <sphereGeometry args={[SUN_RADIUS * CORONA.r, 32, 32]} />
+        <meshBasicMaterial
+          color={CORONA.color}
+          transparent
+          opacity={CORONA.opacity}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
     </group>
   );
 }

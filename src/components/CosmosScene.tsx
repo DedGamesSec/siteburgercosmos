@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { LanguageCode } from "../i18n/languages";
 import Sun from "./Sun";
@@ -26,13 +25,12 @@ import { type HoverPt, type PlanetItem } from "./cosmos/config";
    (azimuth 0.22π…0.28π, polar 0.32π…0.35π), damping 0.05 so it glides but
    never strays. Only zoom (220–1500) and that tiny tilt are available.
 
-   Light (promt5 item 1, promt10 override): one warm PointLight; the Sun's glow
-   is now REAL postprocessing Bloom (EffectComposer) — the emissive core is
-   bright enough (toneMapped false, 2.2x boost) that only the Sun blooms, plus
-   two soft additive shells thicken the corona. Under eco-mode / reduced-motion
-   the composer is skipped (motionless) and the system freezes at its real
-   heliocentric angles. Every planet receives AND casts shadows, so eclipses
-   happen. ---- */
+   Light (promt6 iteration 6): one warm PointLight from the Sun is the ONLY
+   light source. No Bloom / postprocessing, no glow auras — planets get a real
+   illuminated hemisphere and a dark night-side, and eclipse shadows happen.
+   A faint ambient (0.03) keeps the dark side from pure black. Under eco-mode /
+   reduced-motion the system freezes at its real heliocentric angles. Every
+   planet receives AND casts shadows. ---- */
 
 type CosmosSceneProps = {
   planets: PlanetItem[];
@@ -72,28 +70,16 @@ export default function CosmosScene(props: CosmosSceneProps) {
         dpr={[1, 2]}
         onPointerMissed={() => onHoverRef.current(null)}
         onCreated={(state) => {
+          state.gl.shadowMap.enabled = true;
+          state.gl.shadowMap.type = THREE.PCFSoftShadowMap;
           onReadyRef.current?.();
           if (import.meta.env.DEV) (window as unknown as { __cosmosRoot?: unknown }).__cosmosRoot = state;
         }}
       >
-        {/* Minimal fill light (promt6): the Sun's PointLight is the real source
-            so planets have a bright day-side and a dark night-side, and the
-            ambient only keeps the unlit side from falling to pure black. */}
-        <ambientLight intensity={0.12} color={0xfff2cc} />
-        <hemisphereLight intensity={0.08} color={0xffffff} groundColor={0x2a2118} />
+        {/* faint ambient only — keeps the night-side from pure black; the Sun's
+            PointLight does all the real illumination (promt6 iteration 6) */}
+        <ambientLight intensity={0.03} />
         <Sun />
-
-        {!motionless && (
-          <EffectComposer multisampling={0}>
-            <Bloom
-              intensity={1.25}
-              luminanceThreshold={1.0}
-              luminanceSmoothing={1.0}
-              mipmapBlur
-              radius={1.1}
-            />
-          </EffectComposer>
-        )}
 
         {planets.map((item) => (
           <Orbit key={`orbit-${item.page.id}`} radius={item.radiusPx} />
