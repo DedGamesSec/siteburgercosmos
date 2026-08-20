@@ -3,29 +3,40 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { SUN_RADIUS } from "./cosmos/config";
 
-/* Procedural granulated sun surface. */
+/* Smooth procedural sun surface (promt9 iteration 9): a bright warm-white
+   radial gradient with soft blotches — NO granulation speckles (the old
+   dotted fallback read as "cheese holes"). */
 function buildSunTexture(): THREE.CanvasTexture {
-  const size = 256;
+  const size = 512;
   const c = document.createElement("canvas");
   c.width = size;
   c.height = size;
   const ctx = c.getContext("2d")!;
-  ctx.fillStyle = "#FFF2C0";
+
+  const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  gradient.addColorStop(0, "#ffffff");
+  gradient.addColorStop(0.25, "#fff4c2");
+  gradient.addColorStop(0.55, "#ffe28a");
+  gradient.addColorStop(0.85, "#ffd054");
+  gradient.addColorStop(1, "#ffc837");
+  ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, size, size);
-  for (let i = 0; i < 160; i++) {
-    const a = Math.random() * Math.PI * 2;
-    const rr = Math.sqrt(Math.random());
-    const x = size / 2 + Math.cos(a) * rr * size * 0.42;
-    const y = size / 2 + Math.sin(a) * rr * size * 0.42;
-    const rad = 1 + Math.random() * 4;
-    const hot = Math.random() > 0.5;
-    ctx.globalAlpha = 0.05 + Math.random() * 0.11;
-    ctx.fillStyle = hot ? "#FFFBEA" : "#B45309";
+
+  // A few very soft, larger blotches so the disc reads alive but stays smooth.
+  for (let i = 0; i < 60; i++) {
+    const x = Math.random() * size;
+    const y = Math.random() * size;
+    const r = 24 + Math.random() * 90;
+    const spot = ctx.createRadialGradient(x, y, 0, x, y, r);
+    const darker = Math.random() > 0.5;
+    spot.addColorStop(0, darker ? "rgba(255, 190, 60, 0.18)" : "rgba(255, 255, 240, 0.16)");
+    spot.addColorStop(1, "rgba(255, 190, 60, 0)");
+    ctx.fillStyle = spot;
     ctx.beginPath();
-    ctx.arc(x, y, rad, 0, Math.PI * 2);
+    ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fill();
   }
-  ctx.globalAlpha = 1;
+
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
@@ -34,8 +45,8 @@ function buildSunTexture(): THREE.CanvasTexture {
 const SUN_PATH = `${import.meta.env.BASE_URL}textures/planets/sun.jpg`;
 
 /* Prefer the 2K Solar System Scope map when it exists, fall back to the
-   procedural granulation otherwise. A HEAD probe avoids a noisy 404 in the
-   console before the file is added. */
+   smooth procedural gradient otherwise. A HEAD probe avoids a noisy 404 in
+   the console before the file is added. */
 function useSunTexture(): THREE.Texture {
   const procedural = useMemo(buildSunTexture, []);
   const [map, setMap] = useState<THREE.Texture>(procedural);
@@ -59,25 +70,27 @@ function useSunTexture(): THREE.Texture {
   return map;
 }
 
-/* Soft yellow sun glow (promt8 iteration 8) — three very thin BackSide corona
-   shells with YELLOW colours (never orange), tiny opacities (0.08/0.03/0.01)
-   and small radii (33% / 83% / 150% above the disc — scaled from the guide's
-   16/22/30 onto our SUN_RADIUS=44 world units). depthWrite=false and
-   AdditiveBlending make them a soft luminous wash right around the disc, never
-   a wide orange blotch. No Bloom / PostProcessing (see CosmosScene). */
+/* Bright lightbulb glow (promt9 iteration 9) — four wide yellow BackSide
+   corona shells. Radii keep the guide's 20/35/55/80 ratios (1.667 / 2.917 /
+   4.583 / 6.667 × the sun) mapped onto our SUN_RADIUS=44 world units, so the
+   halo reads as big as the reference photo (~40% of the screen). Pure yellow
+   colours (never orange), AdditiveBlending, depthWrite=false — no Bloom /
+   PostProcessing anywhere (see CosmosScene). glow1 + glow2 breathe gently so
+   the halo reads alive. */
 export const SUN_GLOW: Array<{ r: number; color: string; opacity: number }> = [
-  { r: 1.33, color: "#ffee88", opacity: 0.08 },
-  { r: 1.83, color: "#ffdd66", opacity: 0.03 },
-  { r: 2.5, color: "#ffcc44", opacity: 0.01 },
+  { r: 1.667, color: "#ffee88", opacity: 0.15 },
+  { r: 2.917, color: "#ffdd66", opacity: 0.08 },
+  { r: 4.583, color: "#ffcc44", opacity: 0.04 },
+  { r: 6.667, color: "#ffbb33", opacity: 0.015 },
 ];
 
-/* Sun (promt8 iteration 8): a bright warm-white disc (meshBasicMaterial,
-   color 0xfffff0) surrounded by three soft yellow glow layers, with the
-   PointLight doing the real illumination. decay=1 (linear falloff) and a
-   strong intensity reach every planet (orbits up to ~460 world units):
-   5000 / 460 ≈ 10.9 — comfortably lit; the light casts real eclipse shadows.
-   glow1 breathes very gently (±2%) so the corona reads alive, planet hover is
-   never blocked (raycast excluded) and the night-side stays dark. */
+/* Sun (promt9 iteration 9): a bright white-yellow disc (meshBasicMaterial,
+   color 0xfffff0) wrapped in the four-layer yellow halo, with the PointLight
+   doing the real illumination. decay=1 (linear falloff) and a strong
+   intensity reach every planet (orbits up to ~380 world units): 5000 / 380
+   ≈ 13 — brightly lit; the light casts real eclipse shadows. The halo is
+   opaque-planet-friendly (planets render in front of it) and never blocks
+   hover (raycast excluded). */
 export default function Sun() {
   const map = useSunTexture();
   const coreRef = useRef<THREE.Mesh>(null);
@@ -89,9 +102,9 @@ export default function Sun() {
     const t = state.clock.elapsedTime;
     if (coreRef.current) coreRef.current.rotation.y += 0.03 * delta;
     const g0 = glowRefs.current[0];
-    if (g0) {
-      g0.scale.setScalar(1 + Math.sin(t * 0.5) * 0.02);
-    }
+    if (g0) g0.scale.setScalar(1 + Math.sin(t * 0.5) * 0.02);
+    const g1 = glowRefs.current[1];
+    if (g1) g1.scale.setScalar(1 + Math.sin(t * 0.3 + 1) * 0.03);
   });
 
   return (
@@ -106,18 +119,18 @@ export default function Sun() {
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
         shadow-camera-near={1}
-        shadow-camera-far={600}
+        shadow-camera-far={500}
         shadow-bias={-0.0001}
         shadow-radius={8}
       />
 
-      {/* the visible Sun — a bright warm-white disc */}
+      {/* the visible Sun — a bright warm-white smooth disc */}
       <mesh ref={coreRef} raycast={noRaycast}>
         <sphereGeometry args={[SUN_RADIUS, 64, 64]} />
         <meshBasicMaterial map={map} color={0xfffff0} />
       </mesh>
 
-      {/* three soft yellow corona layers (0.08 / 0.03 / 0.01) */}
+      {/* the four yellow halo layers (0.15 / 0.08 / 0.04 / 0.015) */}
       {SUN_GLOW.map((g, i) => (
         <mesh
           key={`glow-${i}`}

@@ -76,9 +76,12 @@ export default function CosmosScene(props: CosmosSceneProps) {
           if (import.meta.env.DEV) (window as unknown as { __cosmosRoot?: unknown }).__cosmosRoot = state;
         }}
       >
-        {/* faint ambient only — keeps the night-side from pure black; the Sun's
-            PointLight does all the real illumination (promt8 iteration 8) */}
-        <ambientLight intensity={0.2} color={0x333333} />
+        {/* warm grey ambient keeps the night-side DARK-GREY (not black) and a
+            soft hemisphere light imitates space's scattered light so the
+            shadows stay soft (promt9 iteration 9); the Sun's PointLight does
+            the strong directional illumination */}
+        <ambientLight intensity={0.5} color={0x555555} />
+        <hemisphereLight color={0x444444} groundColor={0x222222} intensity={0.3} />
         <Sun />
 
         {planets.map((item) => (
