@@ -34,7 +34,7 @@ export const PLANET_MOTION: Record<string, PlanetMotion> = {
    down from there keeping the real ordering. */
 export const ORBIT_CYCLE = 60;
 
-export const SUN_RADIUS = 32;
+export const SUN_RADIUS = 38;
 
 /* Daily VISUAL radius of every planet (px). Real proportions: the shadow of
    a body is a tiny fraction of its orbit, so neighbour radius sums stay well
@@ -42,11 +42,11 @@ export const SUN_RADIUS = 32;
    ≈ 25px) and the runtime guard can never trip. The interactive hit area is
    much larger (data.sizePx) and lives on an invisible hover shell (Planet). */
 export const PLANET_VISUAL_RADIUS: Record<string, number> = {
-  download: 8, // Mercury
-  comparison: 11, // Venus
-  roadmap: 9, // Mars
-  tech: 19, // Jupiter
-  about: 17, // Saturn
-  news: 11, // Uranus
-  "how-it-works": 10, // Neptune
+  download: 14, // Mercury
+  comparison: 18, // Venus
+  roadmap: 15, // Mars
+  tech: 32, // Jupiter
+  about: 28, // Saturn
+  news: 18, // Uranus
+  "how-it-works": 16, // Neptune
 };

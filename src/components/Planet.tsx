@@ -145,7 +145,7 @@ export default function Planet({
       </mesh>
 
       {/* label stays upright, always faces the camera */}
-      <Label position={[0, visualRadius + 18, 0]} text={data.name[language]} />
+      <Label position={[0, visualRadius + 24, 0]} text={data.name[language]} />
     </group>
   );
 }

@@ -13,28 +13,28 @@ import { createGlowTexture } from "./glowTexture";
 
 const CORONA_LAYERS = [
   {
-    scale: 1.8,
-    opacity: 0.9,
+    scale: 1.3,
+    opacity: 0.6,
+    falloff: 3.0,
+    inner: "rgba(255, 235, 170, 1.0)",
+    mid: "rgba(255, 210, 110, 0.6)",
+    outer: "rgba(255, 180, 70, 0)",
+  },
+  {
+    scale: 2.2,
+    opacity: 0.35,
     falloff: 2.5,
     inner: "rgba(255, 235, 170, 1.0)",
     mid: "rgba(255, 210, 110, 0.6)",
     outer: "rgba(255, 180, 70, 0)",
   },
   {
-    scale: 4.0,
-    opacity: 0.6,
+    scale: 3.5,
+    opacity: 0.12,
     falloff: 2.0,
-    inner: "rgba(255, 225, 150, 0.9)",
-    mid: "rgba(255, 195, 95, 0.4)",
-    outer: "rgba(255, 165, 60, 0)",
-  },
-  {
-    scale: 8.0,
-    opacity: 0.25,
-    falloff: 1.6,
-    inner: "rgba(255, 215, 140, 0.6)",
-    mid: "rgba(255, 185, 85, 0.25)",
-    outer: "rgba(255, 155, 50, 0)",
+    inner: "rgba(255, 235, 170, 1.0)",
+    mid: "rgba(255, 210, 110, 0.6)",
+    outer: "rgba(255, 180, 70, 0)",
   },
 ];
 
@@ -74,12 +74,12 @@ export default function Sun() {
 
   return (
     <group>
-      {/* warm golden light; decay=0/intensity=8 keeps every planet lit
-          regardless of orbit distance (v7 balance, verified) */}
+      {/* warm golden light; decay=0 keeps every planet lit regardless of
+          orbit distance, gentle intensity (v7 balance, verified) */}
       <pointLight
         position={[0, 0, 0]}
         color={0xffcc77}
-        intensity={8}
+        intensity={5}
         distance={0}
         decay={0}
         castShadow
