@@ -83,30 +83,49 @@ function helioLongitude(body: Astronomy.Body, date: Date): number {
 
 /* ---- Optional Saturn-style ring overlay (SVG), shared by the 2D fallback
    disc and the 3D-mode overlay stack. ---- */
-const PlanetRings = ({ color, size, lit = false }: { color: string; size: number; lit?: boolean }) => (
-  <>
-    <svg
-      viewBox="0 0 120 60"
-      width={size * 1.7}
-      height={size * 0.9}
-      fill="none"
-      className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] pointer-events-none ${lit ? "ring-lit" : ""}`}
-      style={{ "--ring-glow": color } as React.CSSProperties}
-    >
-      <ellipse cx="60" cy="30" rx="56" ry="16" stroke={color} strokeWidth="3" opacity="0.95" />
-      <ellipse cx="60" cy="30" rx="48" ry="11" stroke={color} strokeWidth="1.5" opacity="0.5" />
-    </svg>
-    <svg
-      viewBox="0 0 120 60"
-      width={size * 1.7}
-      height={size * 0.9}
-      fill="none"
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] pointer-events-none"
-    >
-      <path d="M 16 37 Q 60 58 104 37" stroke={color} strokeWidth="2.5" opacity="0.75" fill="none" />
-    </svg>
-  </>
-);
+function PlanetRings2D({ planetId, color, size = 120 }: { planetId: string; color: string; size?: number }) {
+  const cx = size / 2;
+  const cy = size / 2;
+
+  switch (planetId) {
+    case 'about': // Saturn
+      return (
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+          <ellipse cx={cx} cy={cy} rx={size * 0.52} ry={size * 0.14} fill="none" stroke="#d4c8a8" strokeWidth="3" opacity="0.85" transform={`rotate(-15 ${cx} ${cy})`} />
+          <ellipse cx={cx} cy={cy} rx={size * 0.44} ry={size * 0.12} fill="none" stroke="#1a1a2e" strokeWidth="1.5" opacity="0.9" transform={`rotate(-15 ${cx} ${cy})`} />
+          <ellipse cx={cx} cy={cy} rx={size * 0.40} ry={size * 0.11} fill="none" stroke="#c4b896" strokeWidth="4" opacity="0.95" transform={`rotate(-15 ${cx} ${cy})`} />
+          <ellipse cx={cx} cy={cy} rx={size * 0.32} ry={size * 0.09} fill="none" stroke="#8a7a6a" strokeWidth="2" opacity="0.5" transform={`rotate(-15 ${cx} ${cy})`} />
+          <ellipse cx={cx} cy={cy} rx={size * 0.56} ry={size * 0.15} fill="none" stroke="#e8dcc8" strokeWidth="1" opacity="0.6" transform={`rotate(-15 ${cx} ${cy})`} />
+        </svg>
+      );
+    case 'tech': // Jupiter
+      return (
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+          <ellipse cx={cx} cy={cy} rx={size * 0.42} ry={size * 0.08} fill="none" stroke="#8a7a6a" strokeWidth="1.2" opacity="0.2" transform={`rotate(-8 ${cx} ${cy})`} />
+          <ellipse cx={cx} cy={cy} rx={size * 0.36} ry={size * 0.07} fill="none" stroke="#7a6a5a" strokeWidth="0.8" opacity="0.12" transform={`rotate(-8 ${cx} ${cy})`} />
+        </svg>
+      );
+    case 'news': // Uranus — on its side
+      return (
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+          <ellipse cx={cx} cy={cy} rx={size * 0.40} ry={size * 0.06} fill="none" stroke="#5a6a7a" strokeWidth="1.5" opacity="0.35" transform={`rotate(-82 ${cx} ${cy})`} />
+          <ellipse cx={cx} cy={cy} rx={size * 0.44} ry={size * 0.065} fill="none" stroke="#4a5a6a" strokeWidth="1" opacity="0.25" transform={`rotate(-82 ${cx} ${cy})`} />
+          <ellipse cx={cx} cy={cy} rx={size * 0.36} ry={size * 0.055} fill="none" stroke="#3a4a5a" strokeWidth="0.8" opacity="0.18" transform={`rotate(-82 ${cx} ${cy})`} />
+          <ellipse cx={cx} cy={cy} rx={size * 0.48} ry={size * 0.07} fill="none" stroke="#3a4a5a" strokeWidth="0.6" opacity="0.12" transform={`rotate(-82 ${cx} ${cy})`} />
+        </svg>
+      );
+    case 'how-it-works': // Neptune
+      return (
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+          <ellipse cx={cx} cy={cy} rx={size * 0.46} ry={size * 0.10} fill="none" stroke="#1a2a4a" strokeWidth="1.5" opacity="0.3" transform={`rotate(-20 ${cx} ${cy})`} />
+          <path d={`M ${cx - size * 0.35} ${cy - 2} A ${size * 0.46} ${size * 0.10} 0 0 0 ${cx + 5} ${cy + size * 0.08}`} fill="none" stroke="#4a6a9a" strokeWidth="2.5" opacity="0.7" strokeLinecap="round" transform={`rotate(-20 ${cx} ${cy})`} />
+          <path d={`M ${cx + size * 0.30} ${cy + 3} A ${size * 0.46} ${size * 0.10} 0 0 1 ${cx - 5} ${cy - size * 0.07}`} fill="none" stroke="#3a5a8a" strokeWidth="1.8" opacity="0.5" strokeLinecap="round" transform={`rotate(-20 ${cx} ${cy})`} />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
 
 /* ---- Planet disc: real NASA-based surface texture in a shaded circle,
    with an optional SVG ring overlay (Saturn) and an optional slow texture
@@ -116,6 +135,7 @@ const PlanetRings = ({ color, size, lit = false }: { color: string; size: number
 const PlanetDisc = ({
   planet,
   size,
+  pageId,
   ring = false,
   className = "",
   spin = false,
@@ -123,11 +143,10 @@ const PlanetDisc = ({
 }: {
   planet: { color: string; textureUrl: string };
   size: number;
+  pageId?: string;
   ring?: boolean;
   className?: string;
   spin?: boolean;
-  /** Hover state for the solar-system disc: strengthens the halo and lights
-      the ring. Plain thumbnails in cards stay passive (default false). */
   lit?: boolean;
 }) => (
   <span
@@ -135,7 +154,7 @@ const PlanetDisc = ({
     style={{ width: size * 1.25, height: size * 1.25 }}
     aria-hidden="true"
   >
-    {ring && <PlanetRings color={planet.color} size={size} lit={lit} />}
+    {ring && pageId && <PlanetRings2D planetId={pageId} color={planet.color} size={size * 1.7} />}
     {/* atmospheric halo — a faint wash of the planet's own colour behind the
         disc; brightens on hover (reference request). Sized ~1.45x the disc. */}
     <span
@@ -890,10 +909,10 @@ export default function ExplorePagesSection() {
 
   // Shared planet-fact block (inside the desktop overlay card and the expanded
   // mobile card).
-  const renderFact = (planet: PlanetData, compact = false) => (
+  const renderFact = (planet: PlanetData, compact = false, pageId?: string) => (
     <div className="mt-4 pt-4 border-t border-[#3C404A]/40 flex items-start gap-3">
       <div className="shrink-0 mt-0.5">
-        <PlanetDisc planet={planet} size={compact ? 30 : 34} ring={false} />
+        <PlanetDisc planet={planet} size={compact ? 30 : 34} pageId={pageId} ring={false} />
       </div>
       <div className="min-w-0">
         <span className="font-mono text-[10px] font-bold tracking-[0.18em] uppercase" style={{ color: planet.color }}>
@@ -923,7 +942,7 @@ export default function ExplorePagesSection() {
         }}
       >
         <div className="flex items-center justify-between mb-4">
-          <PlanetDisc planet={planet} size={48} ring={planet.hasRings} />
+          <PlanetDisc planet={planet} size={48} pageId={page.id} ring={planet.hasRings} />
           <span
             className="font-mono text-xs tracking-widest font-bold px-3 py-1.5 rounded border"
             style={{ color: planet.color, borderColor: `${planet.color}2E`, backgroundColor: `${planet.color}0D` }}
@@ -934,7 +953,7 @@ export default function ExplorePagesSection() {
         <h4 className="font-display font-medium text-lg text-[#F5F5F0] mb-2">{t.pageNames[page.labelKey]}</h4>
         <p className="font-sans text-xs text-gray-400 leading-relaxed mb-4 flex-1">{desc}</p>
         <span className={`inline-block font-mono text-sm font-bold text-[#3B82F6] transition-transform duration-300 ${motionless ? "" : "group-hover:translate-x-1"}`}>{cta}</span>
-        {renderFact(planet)}
+        {renderFact(planet, false, page.id)}
       </div>
     );
   };
@@ -969,7 +988,7 @@ export default function ExplorePagesSection() {
                 className="rounded-xl bg-[#0A0A0B]/80 border flex items-center justify-center overflow-hidden"
                 style={{ borderColor: `${planet.color}26` }}
               >
-                <PlanetDisc planet={planet} size={36} ring={planet.hasRings} />
+                <PlanetDisc planet={planet} size={36} pageId={page.id} ring={planet.hasRings} />
               </div>
               <span
                 className="font-mono text-xs tracking-widest font-bold px-3 py-1.5 rounded border"
@@ -992,7 +1011,7 @@ export default function ExplorePagesSection() {
                   transition={{ duration: 0.3, ease: "easeOut" }}
                   className="overflow-hidden"
                 >
-                  {renderFact(planet, true)}
+                  {renderFact(planet, true, page.id)}
                 </motion.div>
               )}
             </AnimatePresence>
