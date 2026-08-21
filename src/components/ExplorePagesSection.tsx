@@ -89,16 +89,19 @@ function PlanetRings2D({ planetId, color, size = 120 }: { planetId: string; colo
   const pos = { position: 'absolute' as const, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', pointerEvents: 'none' as const };
 
   switch (planetId) {
-    case 'about': // Saturn
+    case 'about': { // Saturn
+      const pad = size * 0.1;
+      const total = size + pad * 2;
       return (
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={pos}>
-          <ellipse cx={cx} cy={cy} rx={size * 0.52} ry={size * 0.14} fill="none" stroke="#d4c8a8" strokeWidth="3" opacity="0.85" transform={`rotate(-15 ${cx} ${cy})`} />
-          <ellipse cx={cx} cy={cy} rx={size * 0.44} ry={size * 0.12} fill="none" stroke="#1a1a2e" strokeWidth="1.5" opacity="0.9" transform={`rotate(-15 ${cx} ${cy})`} />
-          <ellipse cx={cx} cy={cy} rx={size * 0.40} ry={size * 0.11} fill="none" stroke="#c4b896" strokeWidth="4" opacity="0.95" transform={`rotate(-15 ${cx} ${cy})`} />
-          <ellipse cx={cx} cy={cy} rx={size * 0.32} ry={size * 0.09} fill="none" stroke="#8a7a6a" strokeWidth="2" opacity="0.5" transform={`rotate(-15 ${cx} ${cy})`} />
-          <ellipse cx={cx} cy={cy} rx={size * 0.56} ry={size * 0.15} fill="none" stroke="#e8dcc8" strokeWidth="1" opacity="0.6" transform={`rotate(-15 ${cx} ${cy})`} />
+        <svg width={total} height={total} viewBox={`0 0 ${total} ${total}`} style={pos}>
+          <ellipse cx={total / 2} cy={total / 2} rx={size * 0.52} ry={size * 0.14} fill="none" stroke="#d4c8a8" strokeWidth="3" opacity="0.85" transform={`rotate(-15 ${total / 2} ${total / 2})`} />
+          <ellipse cx={total / 2} cy={total / 2} rx={size * 0.44} ry={size * 0.12} fill="none" stroke="#1a1a2e" strokeWidth="1.5" opacity="0.9" transform={`rotate(-15 ${total / 2} ${total / 2})`} />
+          <ellipse cx={total / 2} cy={total / 2} rx={size * 0.40} ry={size * 0.11} fill="none" stroke="#c4b896" strokeWidth="4" opacity="0.95" transform={`rotate(-15 ${total / 2} ${total / 2})`} />
+          <ellipse cx={total / 2} cy={total / 2} rx={size * 0.32} ry={size * 0.09} fill="none" stroke="#8a7a6a" strokeWidth="2" opacity="0.5" transform={`rotate(-15 ${total / 2} ${total / 2})`} />
+          <ellipse cx={total / 2} cy={total / 2} rx={size * 0.56} ry={size * 0.15} fill="none" stroke="#e8dcc8" strokeWidth="1" opacity="0.6" transform={`rotate(-15 ${total / 2} ${total / 2})`} />
         </svg>
       );
+    }
     case 'tech': // Jupiter
       return (
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={pos}>
