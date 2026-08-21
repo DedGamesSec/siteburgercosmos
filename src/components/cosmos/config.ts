@@ -69,11 +69,10 @@ export const PLANET_RINGS: Record<string, RingLayer[]> = {
     { inner: 1.15, outer: 1.5, color: "#b0a090", opacity: 0.35 },
     { inner: 1.55, outer: 1.85, color: "#a09080", opacity: 0.25 },
   ],
-  about: [ // Saturn — bright ice rings + Cassini division (F Ring removed)
-    { inner: 1.1, outer: 1.3, color: "#d4b078", opacity: 0.45 },
-    { inner: 1.35, outer: 1.9, color: "#e4c98a", opacity: 0.62 },
+  about: [ // Saturn — C Ring + B Ring + Cassini division (A Ring removed)
+    { inner: 1.1, outer: 1.3, color: "#7a6a5a", opacity: 0.35 },
+    { inner: 1.35, outer: 1.9, color: "#c4b896", opacity: 0.62 },
     { inner: 1.95, outer: 2.0, color: "#2a2012", opacity: 0.7 },
-    { inner: 2.05, outer: 2.35, color: "#dcc088", opacity: 0.6, textured: true },
   ],
   news: [ // Uranus — light blue rings with dark stripe details
     { inner: 1.15, outer: 1.35, color: "#7a9aaa", opacity: 0.5 },
