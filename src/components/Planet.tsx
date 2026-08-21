@@ -8,6 +8,7 @@ import {
   ORBIT_CYCLE,
   PLANET_MOTION,
   PLANET_VISUAL_RADIUS,
+  PLANET_TINT,
   type HoverPt,
   type PlanetItem,
 } from "./cosmos/config";
@@ -131,7 +132,7 @@ export default function Planet({
           <sphereGeometry args={[visualRadius, 32, 32]} />
           <meshStandardMaterial
             map={texture}
-            color={0xffffff}
+            color={PLANET_TINT[page.id] ?? 0xffffff}
             roughness={0.85}
             metalness={0.0}
           />
