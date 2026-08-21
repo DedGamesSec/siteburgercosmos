@@ -67,7 +67,7 @@ export default function Sun() {
           outer planets lit, no directional flatlight washing out contrast) */}
       <pointLight
         position={[0, 0, 0]}
-        color={0xffcc77}
+        color={0xffd98a}
         intensity={190}
         distance={0}
         decay={0.75}

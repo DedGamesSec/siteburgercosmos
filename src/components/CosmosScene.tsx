@@ -77,8 +77,8 @@ export default function CosmosScene(props: CosmosSceneProps) {
           if (import.meta.env.DEV) (window as unknown as { __cosmosRoot?: unknown }).__cosmosRoot = state;
         }}
       >
-        {/* low warm hemisphere fill — night-side readable, shadows stay visible */}
-        <hemisphereLight args={[0xffcc77, 0x050510, 0.12]} position={[0, 100, 0]} />
+        {/* warm hemisphere fill — warm above, cool below for rim separation */}
+        <hemisphereLight args={[0xffd98a, 0x0a0a2e, 0.15]} position={[0, 100, 0]} />
         <Sun />
 
         {planets.map((item) => (

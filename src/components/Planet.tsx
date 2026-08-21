@@ -132,7 +132,7 @@ export default function Planet({
           <meshStandardMaterial
             map={texture}
             color={0xffffff}
-            roughness={0.85}
+            roughness={0.7}
             metalness={0.0}
           />
         </mesh>
