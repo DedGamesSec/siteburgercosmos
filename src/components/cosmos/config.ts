@@ -51,6 +51,4 @@ export const PLANET_VISUAL_RADIUS: Record<string, number> = {
   "how-it-works": 16, // Neptune
 };
 
-export const PLANET_TINT: Record<string, number> = {
-  news: 0xe0e8f5, // Uranus — subtle blue tint to counter greenish texture
-};
+export const PLANET_TINT: Record<string, number> = {};
