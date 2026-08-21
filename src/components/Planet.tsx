@@ -138,7 +138,7 @@ export default function Planet({
             metalness={0.0}
           />
         </mesh>
-        {PLANET_RINGS[page.id] && <PlanetRings radius={visualRadius} layers={PLANET_RINGS[page.id]} />}
+        {PLANET_RINGS[page.id] && <PlanetRings radius={visualRadius} layers={PLANET_RINGS[page.id]} planetId={page.id} />}
       </group>
 
       {/* invisible hover shell — wide, occludes nothing, receives the rays */}
