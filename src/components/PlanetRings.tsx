@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import * as THREE from "three";
+import { useTexture } from "../hooks/useTexture";
 import type { RingLayer } from "./cosmos/config";
 
 const PLANE = [Math.PI / 2, 0, 0] as const;
@@ -86,14 +87,16 @@ function generateRingTexture(
 }
 
 function RingLayer({ layer, inner, outer, planetId, ei }: { layer: RingLayer; inner: number; outer: number; planetId: string; ei: number }) {
-  const texture = useMemo(() => generateRingTexture(planetId, layer, 1024, 64), [planetId, layer]);
+  const proceduralTexture = useMemo(() => generateRingTexture(planetId, layer, 1024, 64), [planetId, layer]);
+  const alphaMap = useTexture(`${import.meta.env.BASE_URL}textures/planets/2k_saturn_ring_alpha.png`, "#c8a66a");
 
-  if (planetId === "about" || layer.textured) {
+  if (planetId === "about") {
     return (
       <mesh rotation={PLANE} castShadow receiveShadow>
         <ringGeometry args={[inner, outer, 64]} />
         <meshBasicMaterial
-          map={texture}
+          map={layer.textured ? alphaMap : proceduralTexture}
+          color={layer.textured ? layer.color : undefined}
           transparent
           opacity={layer.opacity}
           side={THREE.DoubleSide}
@@ -107,7 +110,7 @@ function RingLayer({ layer, inner, outer, planetId, ei }: { layer: RingLayer; in
     <mesh rotation={PLANE} castShadow receiveShadow>
       <ringGeometry args={[inner, outer, 64]} />
       <meshStandardMaterial
-        map={texture}
+        map={proceduralTexture}
         color={layer.color}
         emissive={new THREE.Color(layer.color)}
         emissiveIntensity={ei}
@@ -124,9 +127,9 @@ function RingLayer({ layer, inner, outer, planetId, ei }: { layer: RingLayer; in
 
 export default function PlanetRings({ radius, layers, planetId }: { radius: number; layers: RingLayer[]; planetId: string }) {
   const EMISSIVE: Record<string, number> = {
-    tech: 0.3,
-    news: 0.4,
-    "how-it-works": 0.45,
+    tech: 0.25,
+    news: 0.35,
+    "how-it-works": 0.4,
   };
   const ei = EMISSIVE[planetId] ?? 0;
 
