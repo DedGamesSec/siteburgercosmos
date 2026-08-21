@@ -54,11 +54,14 @@ export const PLANET_VISUAL_RADIUS: Record<string, number> = {
 export const PLANET_TINT: Record<string, number> = {};
 
 export interface RingLayer {
-  inner: number;   // inner radius as fraction of planet visualRadius
-  outer: number;   // outer radius as fraction of planet visualRadius
+  inner: number;
+  outer: number;
   color: string;
   opacity: number;
-  textured?: boolean; // uses Saturn ring alpha texture
+  textured?: boolean;
+  arcPosition?: number;   // Neptune arc center (radians)
+  arcWidth?: number;      // Neptune arc width (radians)
+  arcBrightness?: number; // Neptune arc brightness multiplier
 }
 
 export const PLANET_RINGS: Record<string, RingLayer[]> = {
@@ -82,8 +85,8 @@ export const PLANET_RINGS: Record<string, RingLayer[]> = {
   ],
   "how-it-works": [ // Neptune — dark rings with arcs
     { inner: 1.15, outer: 1.5, color: "#2a3a5a", opacity: 0.25 },
-    { inner: 1.55, outer: 1.75, color: "#4a6a9a", opacity: 0.5 },
-    { inner: 1.8, outer: 1.95, color: "#3a5a8a", opacity: 0.4 },
+    { inner: 1.55, outer: 1.75, color: "#4a6a9a", opacity: 0.5, arcPosition: Math.PI, arcWidth: Math.PI / 3, arcBrightness: 2.0 },
+    { inner: 1.8, outer: 1.95, color: "#3a5a8a", opacity: 0.4, arcPosition: 0, arcWidth: Math.PI / 4, arcBrightness: 1.5 },
     { inner: 2.0, outer: 2.3, color: "#1a2a4a", opacity: 0.15 },
   ],
 };
