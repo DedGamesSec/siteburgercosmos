@@ -52,3 +52,38 @@ export const PLANET_VISUAL_RADIUS: Record<string, number> = {
 };
 
 export const PLANET_TINT: Record<string, number> = {};
+
+export interface RingLayer {
+  inner: number;   // inner radius as fraction of planet visualRadius
+  outer: number;   // outer radius as fraction of planet visualRadius
+  color: string;
+  opacity: number;
+  textured?: boolean; // uses Saturn ring alpha texture
+}
+
+export const PLANET_RINGS: Record<string, RingLayer[]> = {
+  tech: [ // Jupiter — faint dust rings
+    { inner: 1.15, outer: 1.5, color: "#8a7a6a", opacity: 0.18 },
+    { inner: 1.55, outer: 1.85, color: "#7a6a5a", opacity: 0.12 },
+  ],
+  about: [ // Saturn — bright ice rings + Cassini division
+    { inner: 1.1, outer: 1.3, color: "#d4b078", opacity: 0.45 },
+    { inner: 1.35, outer: 1.9, color: "#e4c98a", opacity: 0.62 },
+    { inner: 1.95, outer: 2.0, color: "#2a2012", opacity: 0.7 },   // Cassini gap
+    { inner: 2.05, outer: 2.5, color: "#dcc088", opacity: 0.85, textured: true },
+  ],
+  news: [ // Uranus — faint dark rings (tilted 98°)
+    { inner: 1.15, outer: 1.35, color: "#3a4a5a", opacity: 0.2 },
+    { inner: 1.4, outer: 1.6, color: "#4a5a6a", opacity: 0.25 },
+    { inner: 1.65, outer: 1.85, color: "#3a4a5a", opacity: 0.2 },
+    { inner: 1.9, outer: 2.2, color: "#5a6a7a", opacity: 0.3 },
+    { inner: 2.25, outer: 2.55, color: "#4a5a6a", opacity: 0.2 },
+    { inner: 2.6, outer: 2.8, color: "#3a4a5a", opacity: 0.12 },
+  ],
+  "how-it-works": [ // Neptune — dark rings with arcs
+    { inner: 1.15, outer: 1.5, color: "#2a3a5a", opacity: 0.25 },
+    { inner: 1.55, outer: 1.75, color: "#4a6a9a", opacity: 0.5 },
+    { inner: 1.8, outer: 1.95, color: "#3a5a8a", opacity: 0.4 },
+    { inner: 2.0, outer: 2.3, color: "#1a2a4a", opacity: 0.15 },
+  ],
+};

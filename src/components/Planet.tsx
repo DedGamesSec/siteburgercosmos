@@ -9,11 +9,12 @@ import {
   PLANET_MOTION,
   PLANET_VISUAL_RADIUS,
   PLANET_TINT,
+  PLANET_RINGS,
   type HoverPt,
   type PlanetItem,
 } from "./cosmos/config";
 import Label from "./Label";
-import SaturnRings from "./Saturn";
+import PlanetRings from "./PlanetRings";
 
 /* A single orbiting planet:
    · perfect circle on its blue ring (no eccentricity — promt4 item 3);
@@ -137,7 +138,7 @@ export default function Planet({
             metalness={0.0}
           />
         </mesh>
-        {data.hasRings && data.ringTextureUrl && <SaturnRings radius={visualRadius} />}
+        {PLANET_RINGS[page.id] && <PlanetRings radius={visualRadius} layers={PLANET_RINGS[page.id]} />}
       </group>
 
       {/* invisible hover shell — wide, occludes nothing, receives the rays */}

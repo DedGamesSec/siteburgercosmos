@@ -234,6 +234,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
     orbitalPeriodDays: 60182,
     textureUrl: "textures/planets/neptune.jpg",
     textureUrlHi: "textures/planets/2k_neptune.jpg",
+    hasRings: true,
     name: { ru: "Нептун", en: "Neptune", es: "Neptuno", zh: "海王星", tr: "Neptün", hi: "नेपच्यून", ar: "نبتون", pt: "Netuno", fr: "Neptune", de: "Neptun", ja: "海王星" },
     fact: {
       ru: "Нептун был открыт математически до того, как его увидели – сначала предсказан расчетами, и только потом найден с помощью телескопа. Точно так же, как ML обнаруживает аномалию до того, как ее заметит человек.",
@@ -256,6 +257,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
     orbitalPeriodDays: 4332.6,
     textureUrl: "textures/planets/jupiter.jpg",
     textureUrlHi: "textures/planets/2k_jupiter.jpg",
+    hasRings: true,
     name: { ru: "Юпитер", en: "Jupiter", es: "Júpiter", zh: "木星", tr: "Jüpiter", hi: "बृहस्पति", ar: "كوكب المشتري", pt: "Júpiter", fr: "Jupiter", de: "Jupiter", ja: "木星" },
     fact: {
       ru: "Юпитер — гравитационный щит Солнечной системы: он притягивает и нейтрализует большинство комет и астероидов, точно так же, как купол TrustNode нейтрализует угрозы.",
@@ -347,6 +349,7 @@ const PLANET_DATA: Record<string, PlanetData> = {
     orbitalPeriodDays: 30688.5,
     textureUrl: "textures/planets/uranus.jpg",
     textureUrlHi: "textures/planets/2k_uranus.jpg",
+    hasRings: true,
     name: { ru: "Уран", en: "Uranus", es: "Urano", zh: "天王星", tr: "Uranüs", hi: "यूरेनस", ar: "أورانوس", pt: "Urano", fr: "Uranus", de: "Uranus", ja: "天王星" },
     fact: {
       ru: "Уран постоянно удивляет астрономов: он вращается, лежа на боку. Будьте первым, кто узнает о новинках TrustNode.",
