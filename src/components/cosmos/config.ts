@@ -24,7 +24,7 @@ export const PLANET_MOTION: Record<string, PlanetMotion> = {
   download: { orbitSpeed: 4.152, rotationSpeed: 0.017, axialTilt: 0.03 }, // Mercury
   comparison: { orbitSpeed: 1.622, rotationSpeed: -0.004, axialTilt: 177.4 }, // Venus (retrograde)
   roadmap: { orbitSpeed: 0.532, rotationSpeed: 0.009, axialTilt: 25.2 }, // Mars
-  tech: { orbitSpeed: 0.084, rotationSpeed: 0.008, axialTilt: 3.1 }, // Jupiter (spin slowed for visual comfort)
+  tech: { orbitSpeed: 0.084, rotationSpeed: 0.02, axialTilt: 3.1 }, // Jupiter (fastest spin)
   about: { orbitSpeed: 0.034, rotationSpeed: 0.018, axialTilt: 26.7 }, // Saturn
   news: { orbitSpeed: 0.012, rotationSpeed: 0.011, axialTilt: 97.8 }, // Uranus (on its side)
   "how-it-works": { orbitSpeed: 0.006, rotationSpeed: 0.012, axialTilt: 28.3 }, // Neptune
@@ -49,14 +49,4 @@ export const PLANET_VISUAL_RADIUS: Record<string, number> = {
   about: 28, // Saturn
   news: 18, // Uranus
   "how-it-works": 16, // Neptune
-};
-
-export const PLANET_LABEL_EXTRA_OFFSET: Record<string, number> = {
-  download: 0, // Mercury
-  comparison: 26, // Venus — выше, чтобы не пересекаться с Меркурием
-  roadmap: 0, // Mars
-  tech: 0, // Jupiter
-  about: 0, // Saturn
-  news: 0, // Uranus
-  "how-it-works": 0, // Neptune
 };

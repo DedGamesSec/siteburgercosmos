@@ -104,13 +104,13 @@ export default function CosmosScene(props: CosmosSceneProps) {
           enablePan={false}
           enableDamping
           dampingFactor={0.05}
-          rotateSpeed={0.28}
+          rotateSpeed={0.2}
           minPolarAngle={Math.PI * 0.32}
           maxPolarAngle={Math.PI * 0.35}
-          minAzimuthAngle={Math.PI * -0.25}
-          maxAzimuthAngle={Math.PI * 0.75}
-          minDistance={420}
-          maxDistance={950}
+          minAzimuthAngle={Math.PI * 0.22}
+          maxAzimuthAngle={Math.PI * 0.28}
+          minDistance={220}
+          maxDistance={1500}
           target={[0, 0, 0]}
           enabled={!motionless}
         />
