@@ -78,7 +78,7 @@ export default function CosmosScene(props: CosmosSceneProps) {
         }}
       >
         {/* warm hemisphere fill — warm above, cool below for rim separation */}
-        <hemisphereLight args={[0xffd98a, 0x0a0a2e, 0.15]} position={[0, 100, 0]} />
+        <hemisphereLight args={[0xffd98a, 0x0a0a2e, 0.08]} position={[0, 100, 0]} />
         <Sun />
 
         {planets.map((item) => (
@@ -119,9 +119,9 @@ export default function CosmosScene(props: CosmosSceneProps) {
 
         <EffectComposer>
           <Bloom
-            intensity={0.8}
-            luminanceThreshold={0.85}
-            luminanceSmoothing={0.9}
+            intensity={0.55}
+            luminanceThreshold={1.0}
+            luminanceSmoothing={0.6}
             mipmapBlur
           />
         </EffectComposer>

@@ -132,8 +132,22 @@ export default function Planet({
           <meshStandardMaterial
             map={texture}
             color={0xffffff}
-            roughness={0.7}
+            roughness={0.85}
             metalness={0.0}
+            onBeforeCompile={(shader) => {
+              shader.uniforms.rimColor = { value: new THREE.Color(0x3a4a6a) };
+              shader.uniforms.rimPower = { value: 2.5 };
+              shader.uniforms.rimStrength = { value: 0.35 };
+              shader.fragmentShader = shader.fragmentShader.replace(
+                "#include <dithering_fragment>",
+                `
+                float rimFactor = 1.0 - saturate(dot(normalize(vViewPosition), normal));
+                rimFactor = pow(rimFactor, rimPower) * rimStrength;
+                gl_FragColor.rgb += rimColor * rimFactor;
+                #include <dithering_fragment>
+                `
+              );
+            }}
           />
         </mesh>
         {data.hasRings && data.ringTextureUrl && <SaturnRings radius={visualRadius} />}

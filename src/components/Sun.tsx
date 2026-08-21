@@ -68,15 +68,16 @@ export default function Sun() {
       <pointLight
         position={[0, 0, 0]}
         color={0xffd98a}
-        intensity={190}
+        intensity={42}
         distance={0}
-        decay={0.75}
+        decay={1.6}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
         shadow-camera-near={1}
         shadow-camera-far={800}
         shadow-bias={-0.0001}
+        shadow-radius={4}
       />
 
       {/* the visible Sun — warm disc, bright core */}
