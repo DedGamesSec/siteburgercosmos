@@ -73,7 +73,7 @@ export const PLANET_RINGS: Record<string, RingLayer[]> = {
     { inner: 1.1, outer: 1.3, color: "#d4b078", opacity: 0.45 },
     { inner: 1.35, outer: 1.9, color: "#e4c98a", opacity: 0.62 },
     { inner: 1.95, outer: 2.0, color: "#2a2012", opacity: 0.7 },   // Cassini gap
-    { inner: 2.05, outer: 2.5, color: "#dcc088", opacity: 0.85, textured: true },
+    { inner: 2.05, outer: 2.35, color: "#dcc088", opacity: 0.6, textured: true },
   ],
   news: [ // Uranus — faint dark rings (tilted 98°)
     { inner: 1.15, outer: 1.35, color: "#3a4a5a", opacity: 0.2 },

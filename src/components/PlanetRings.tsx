@@ -127,9 +127,9 @@ function RingLayer({ layer, inner, outer, planetId, ei }: { layer: RingLayer; in
 
 export default function PlanetRings({ radius, layers, planetId }: { radius: number; layers: RingLayer[]; planetId: string }) {
   const EMISSIVE: Record<string, number> = {
-    tech: 0.25,
-    news: 0.35,
-    "how-it-works": 0.4,
+    tech: 0.5,
+    news: 0.6,
+    "how-it-works": 0.7,
   };
   const ei = EMISSIVE[planetId] ?? 0;
 
