@@ -86,11 +86,12 @@ function helioLongitude(body: Astronomy.Body, date: Date): number {
 function PlanetRings2D({ planetId, color, size = 120 }: { planetId: string; color: string; size?: number }) {
   const cx = size / 2;
   const cy = size / 2;
+  const pos = { position: 'absolute' as const, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', pointerEvents: 'none' as const };
 
   switch (planetId) {
     case 'about': // Saturn
       return (
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={pos}>
           <ellipse cx={cx} cy={cy} rx={size * 0.52} ry={size * 0.14} fill="none" stroke="#d4c8a8" strokeWidth="3" opacity="0.85" transform={`rotate(-15 ${cx} ${cy})`} />
           <ellipse cx={cx} cy={cy} rx={size * 0.44} ry={size * 0.12} fill="none" stroke="#1a1a2e" strokeWidth="1.5" opacity="0.9" transform={`rotate(-15 ${cx} ${cy})`} />
           <ellipse cx={cx} cy={cy} rx={size * 0.40} ry={size * 0.11} fill="none" stroke="#c4b896" strokeWidth="4" opacity="0.95" transform={`rotate(-15 ${cx} ${cy})`} />
@@ -100,14 +101,14 @@ function PlanetRings2D({ planetId, color, size = 120 }: { planetId: string; colo
       );
     case 'tech': // Jupiter
       return (
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={pos}>
           <ellipse cx={cx} cy={cy} rx={size * 0.42} ry={size * 0.08} fill="none" stroke="#8a7a6a" strokeWidth="1.2" opacity="0.2" transform={`rotate(-8 ${cx} ${cy})`} />
           <ellipse cx={cx} cy={cy} rx={size * 0.36} ry={size * 0.07} fill="none" stroke="#7a6a5a" strokeWidth="0.8" opacity="0.12" transform={`rotate(-8 ${cx} ${cy})`} />
         </svg>
       );
     case 'news': // Uranus — on its side
       return (
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={pos}>
           <ellipse cx={cx} cy={cy} rx={size * 0.40} ry={size * 0.06} fill="none" stroke="#5a6a7a" strokeWidth="1.5" opacity="0.35" transform={`rotate(-82 ${cx} ${cy})`} />
           <ellipse cx={cx} cy={cy} rx={size * 0.44} ry={size * 0.065} fill="none" stroke="#4a5a6a" strokeWidth="1" opacity="0.25" transform={`rotate(-82 ${cx} ${cy})`} />
           <ellipse cx={cx} cy={cy} rx={size * 0.36} ry={size * 0.055} fill="none" stroke="#3a4a5a" strokeWidth="0.8" opacity="0.18" transform={`rotate(-82 ${cx} ${cy})`} />
@@ -116,7 +117,7 @@ function PlanetRings2D({ planetId, color, size = 120 }: { planetId: string; colo
       );
     case 'how-it-works': // Neptune
       return (
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={pos}>
           <ellipse cx={cx} cy={cy} rx={size * 0.46} ry={size * 0.10} fill="none" stroke="#1a2a4a" strokeWidth="1.5" opacity="0.3" transform={`rotate(-20 ${cx} ${cy})`} />
           <path d={`M ${cx - size * 0.35} ${cy - 2} A ${size * 0.46} ${size * 0.10} 0 0 0 ${cx + 5} ${cy + size * 0.08}`} fill="none" stroke="#4a6a9a" strokeWidth="2.5" opacity="0.7" strokeLinecap="round" transform={`rotate(-20 ${cx} ${cy})`} />
           <path d={`M ${cx + size * 0.30} ${cy + 3} A ${size * 0.46} ${size * 0.10} 0 0 1 ${cx - 5} ${cy - size * 0.07}`} fill="none" stroke="#3a5a8a" strokeWidth="1.8" opacity="0.5" strokeLinecap="round" transform={`rotate(-20 ${cx} ${cy})`} />
