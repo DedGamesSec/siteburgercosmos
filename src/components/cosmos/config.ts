@@ -65,9 +65,9 @@ export interface RingLayer {
 }
 
 export const PLANET_RINGS: Record<string, RingLayer[]> = {
-  tech: [ // Jupiter — faint dust rings
-    { inner: 1.15, outer: 1.5, color: "#8a7a6a", opacity: 0.18 },
-    { inner: 1.55, outer: 1.85, color: "#7a6a5a", opacity: 0.12 },
+  tech: [ // Jupiter — faint dust rings (brightened)
+    { inner: 1.15, outer: 1.5, color: "#b0a090", opacity: 0.35 },
+    { inner: 1.55, outer: 1.85, color: "#a09080", opacity: 0.25 },
   ],
   about: [ // Saturn — bright ice rings + Cassini division
     { inner: 1.1, outer: 1.3, color: "#d4b078", opacity: 0.45 },
@@ -75,18 +75,18 @@ export const PLANET_RINGS: Record<string, RingLayer[]> = {
     { inner: 1.95, outer: 2.0, color: "#2a2012", opacity: 0.7 },   // Cassini gap
     { inner: 2.05, outer: 2.35, color: "#dcc088", opacity: 0.6, textured: true },
   ],
-  news: [ // Uranus — faint dark rings (tilted 98°)
-    { inner: 1.15, outer: 1.35, color: "#3a4a5a", opacity: 0.2 },
-    { inner: 1.4, outer: 1.6, color: "#4a5a6a", opacity: 0.25 },
-    { inner: 1.65, outer: 1.85, color: "#3a4a5a", opacity: 0.2 },
-    { inner: 1.9, outer: 2.2, color: "#5a6a7a", opacity: 0.3 },
-    { inner: 2.25, outer: 2.55, color: "#4a5a6a", opacity: 0.2 },
-    { inner: 2.6, outer: 2.8, color: "#3a4a5a", opacity: 0.12 },
+  news: [ // Uranus — light blue rings (brightened)
+    { inner: 1.15, outer: 1.35, color: "#7a9aaa", opacity: 0.5 },
+    { inner: 1.4, outer: 1.6, color: "#8aacbc", opacity: 0.45 },
+    { inner: 1.65, outer: 1.85, color: "#6a8a9a", opacity: 0.4 },
+    { inner: 1.9, outer: 2.2, color: "#9abccc", opacity: 0.55 },
+    { inner: 2.25, outer: 2.55, color: "#7a9aaa", opacity: 0.4 },
+    { inner: 2.6, outer: 2.8, color: "#6a8a9a", opacity: 0.3 },
   ],
-  "how-it-works": [ // Neptune — dark rings with arcs
-    { inner: 1.15, outer: 1.5, color: "#2a3a5a", opacity: 0.25 },
-    { inner: 1.55, outer: 1.75, color: "#4a6a9a", opacity: 0.5, arcPosition: Math.PI, arcWidth: Math.PI / 3, arcBrightness: 2.0 },
-    { inner: 1.8, outer: 1.95, color: "#3a5a8a", opacity: 0.4, arcPosition: 0, arcWidth: Math.PI / 4, arcBrightness: 1.5 },
-    { inner: 2.0, outer: 2.3, color: "#1a2a4a", opacity: 0.15 },
+  "how-it-works": [ // Neptune — dark rings with arcs (brightened)
+    { inner: 1.15, outer: 1.5, color: "#4a6aaa", opacity: 0.4 },
+    { inner: 1.55, outer: 1.75, color: "#3a5a8a", opacity: 0.35, arcPosition: 0, arcWidth: Math.PI / 3, arcBrightness: 3.0 },
+    { inner: 1.8, outer: 1.95, color: "#5a7aaa", opacity: 0.3, arcPosition: Math.PI, arcWidth: Math.PI / 4, arcBrightness: 2.5 },
+    { inner: 2.0, outer: 2.3, color: "#4a6aaa", opacity: 0.25 },
   ],
 };
