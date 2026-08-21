@@ -67,17 +67,16 @@ export default function Sun() {
           outer planets lit, no directional flatlight washing out contrast) */}
       <pointLight
         position={[0, 0, 0]}
-        color={0xffd98a}
-        intensity={42}
+        color={0xffcc77}
+        intensity={190}
         distance={0}
-        decay={1.6}
+        decay={0.75}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
         shadow-camera-near={1}
         shadow-camera-far={800}
         shadow-bias={-0.0001}
-        shadow-radius={4}
       />
 
       {/* the visible Sun — warm disc, bright core */}

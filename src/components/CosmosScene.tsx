@@ -77,8 +77,8 @@ export default function CosmosScene(props: CosmosSceneProps) {
           if (import.meta.env.DEV) (window as unknown as { __cosmosRoot?: unknown }).__cosmosRoot = state;
         }}
       >
-        {/* warm hemisphere fill — warm above, cool below for rim separation */}
-        <hemisphereLight args={[0xffd98a, 0x0a0a2e, 0.08]} position={[0, 100, 0]} />
+        {/* low warm hemisphere fill — night-side readable, shadows stay visible */}
+        <hemisphereLight args={[0xffcc77, 0x050510, 0.12]} position={[0, 100, 0]} />
         <Sun />
 
         {planets.map((item) => (
@@ -104,13 +104,13 @@ export default function CosmosScene(props: CosmosSceneProps) {
           enablePan={false}
           enableDamping
           dampingFactor={0.05}
-          rotateSpeed={0.28}
+          rotateSpeed={0.2}
           minPolarAngle={Math.PI * 0.32}
           maxPolarAngle={Math.PI * 0.35}
-          minAzimuthAngle={Math.PI * -0.25}
-          maxAzimuthAngle={Math.PI * 0.75}
-          minDistance={686}
-          maxDistance={1400}
+          minAzimuthAngle={Math.PI * 0.22}
+          maxAzimuthAngle={Math.PI * 0.28}
+          minDistance={220}
+          maxDistance={1500}
           target={[0, 0, 0]}
           enabled={!motionless}
         />
@@ -119,9 +119,9 @@ export default function CosmosScene(props: CosmosSceneProps) {
 
         <EffectComposer>
           <Bloom
-            intensity={0.55}
-            luminanceThreshold={1.0}
-            luminanceSmoothing={0.6}
+            intensity={0.8}
+            luminanceThreshold={0.85}
+            luminanceSmoothing={0.9}
             mipmapBlur
           />
         </EffectComposer>

@@ -136,42 +136,6 @@ export default function Planet({
             metalness={0.0}
           />
         </mesh>
-        {/* rim-подсветка тёмной стороны — отдельный меш, не трогает основной материал */}
-        <mesh scale={1.03} raycast={() => null}>
-          <sphereGeometry args={[visualRadius, 32, 32]} />
-          <shaderMaterial
-            transparent
-            depthWrite={false}
-            side={THREE.BackSide}
-            uniforms={{
-              rimColor: { value: new THREE.Color(0x3a4a6a) },
-              rimPower: { value: 2.5 },
-              rimStrength: { value: 0.35 },
-            }}
-            vertexShader={`
-              varying vec3 vNormal;
-              varying vec3 vViewDir;
-              void main() {
-                vNormal = normalize(normalMatrix * normal);
-                vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                vViewDir = normalize(-mvPosition.xyz);
-                gl_Position = projectionMatrix * mvPosition;
-              }
-            `}
-            fragmentShader={`
-              uniform vec3 rimColor;
-              uniform float rimPower;
-              uniform float rimStrength;
-              varying vec3 vNormal;
-              varying vec3 vViewDir;
-              void main() {
-                float rim = 1.0 - max(dot(vNormal, vViewDir), 0.0);
-                rim = pow(rim, rimPower) * rimStrength;
-                gl_FragColor = vec4(rimColor, rim);
-              }
-            `}
-          />
-        </mesh>
         {data.hasRings && data.ringTextureUrl && <SaturnRings radius={visualRadius} />}
       </group>
 
