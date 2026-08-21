@@ -50,3 +50,13 @@ export const PLANET_VISUAL_RADIUS: Record<string, number> = {
   news: 18, // Uranus
   "how-it-works": 16, // Neptune
 };
+
+export const PLANET_LABEL_EXTRA_OFFSET: Record<string, number> = {
+  download: 0, // Mercury
+  comparison: 26, // Venus — выше, чтобы не пересекаться с Меркурием
+  roadmap: 0, // Mars
+  tech: 0, // Jupiter
+  about: 0, // Saturn
+  news: 0, // Uranus
+  "how-it-works": 0, // Neptune
+};
