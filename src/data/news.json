@@ -1,11 +1,91 @@
 [
   {
+    "id": "tg-281",
+    "source": "telegram",
+    "date": "2026-09-10T09:46:25+00:00",
+    "text": "Разбираем, как работает схема — по шагам.\n\nВ топовых университетах начали всерьёз преподавать разработку AI-агентов\n\nЭтой осенью Carnegie Mellon University запустил новый курс 11-768 \"AI Agents\", и программа близка к тому, чем прямо сейчас занимаются разработчики агентных систем.\n🔍 Фейковый сотрудник\n• По-моему, сама последовательность хорошо показывает, как в 2026 году начали смотреть на разработку агентов\n• Работа с инструментами, управление контекстом, навыки, память, планирование\n• 🕗 p.s: также 23 сентября в Stanford стартует новый курс CS329Z Engineering AI Agents, материалы лекций также будут открыто…\n• Дальше идут агенты для программирования, работа с графическими интерфейсами, глубокий поиск, SFT и RL, изоляция среды и безопасность\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
+    "url": "https://t.me/TrustNode_team/281",
+    "imageUrl": "https://cdn4.telesco.pe/file/NIjV15ZejHIndrjCNO8WJ0DMHshKKDANmGBPRWSqZudwuuQghwyuUojlqn36ochR93NXhI5CVGc-z9A-gU2dHp3uVQMqKA-yLPs8QmvZEBV0iq_DBBfpCTbKPnS_J9qf8Ns9t8rKDjw6SkRiZ9T7pmo_SBwRZXKwglpaPMlRY5fgnuREQkPC69dDnn7XRmfTg7c8xWntyB2Qam5h_B66ZH_C3Hcoc-BLrkdU0_5M8SDL_vL6TlAgoq4yo4zEaFuk45LsFQ-fTU3PqaMqY1QmLWqoueM7ILclqAl5RFmnGhLxmoM3_mdJoH-v2IOe4KtVsWaHn6WoWsDjh4uOtQ0Yiw.jpg"
+  },
+  {
+    "id": "tg-280",
+    "source": "telegram",
+    "date": "2026-09-10T08:02:53+00:00",
+    "text": "Червь для WeChat заражает устройства через входящие звонки\n\nИсследователи обнаружили опасный эксплойт, позволяющий злоумышленникам захватить контроль над аккаунтами WeChat при помощи обычного входящего вызова. Для заражения пользователю достаточно получить звонок — ответ на него необязателен.\n\nЗахватив устройство, вредоносная программа автоматически совершает исходящие вызовы другим контактам жертвы, продолжая распространение угрозы.\n\nКомпания-разработчик Tencent быстро устранила проблему. Пользователям рекомендуется обновить приложение до актуальной версии.",
+    "url": "https://t.me/TrustNode_team/280",
+    "imageUrl": "https://cdn4.telesco.pe/file/Fr4m6Ltp4pdw1gZE8aCrvgfj2MkMgZV_IPjavczWv1psktQhhzYdMkfjE2YZ3KUuJqxVkpgwE5hc9CjeCsUlGor1kJ8M7FtcKRahsdOaGE6QnYxr20h48lzQigL1vIpApHeH4rCP8AtYF3B6rww92kzbifCNDmW4VB8XTT9fDSrCUWuhmnEcqOemP0vZd8c-WqoJdhGQaQu9bnsKu4S1Dcq1AnsPQmjDHxfa2NjCp32ZDKoGu62e0u1FhyhSgFAt9iiR35Qre4i0PLmpqxZED9Fz6HQkpZ2rC_72uhapg2QIHILzHV4bslrd_waIZn7Anfc4JeyaO0IyPWF-CgHTAQ.jpg"
+  },
+  {
+    "id": "tg-279",
+    "source": "telegram",
+    "date": "2026-09-10T07:01:30+00:00",
+    "text": "Коротко о главном.\n\nДело о мошенничестве в отношении бывших топ-менеджеров ГК \"Бор\" поступило в суд во…\n\nЗа этими цифрами — реальные люди, которые уже потеряли деньги.\n\n🔍 Суть\n• По версии следствия, обвиняемые с 2011 года по 2022 год, действуя в составе организованной группы, реализовали преступную схему…\n• С 2011 по 2022 годы фигуранты реализовали преступную схему по дроблению бизнеса\n• УК РФ (мошенничество, совершенное организованной группой, в особо крупном размере)\n• Благодаря этому со счетов компании вывели через офшоры около 240 млн рублей\n\n🛡️ Что делать\n• При малейшем сомнении перезвоните сами — по официальному номеру с карты или сайта\n• Расскажите о схеме близким: мошенники давят на доверие и страх\n\nИсточник: ссылка\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
+    "url": "https://t.me/TrustNode_team/279",
+    "imageUrl": "https://cdn4.telesco.pe/file/NUv6CGo023Z221NQ7v75DIexZ1Ki90czUJxk20_tCIERMW2a9hxlQtra08LuImarG3nwdWnOCVUJV19Hu4mruEJOEndWZDEq_Ceus113haLuz9jw_x3k4isDzR6KX-dDDgsxdSvtQs4W7825sV5nSU9FclKrCCMwSX0a-DlE0_QDkIIY5SEUJx_IPF5dI6AuIzjeWTDLD62hmlGDf6oRQQkvgqIxPygrUgvoHqhB4SxygXg4d7drtp90uIIQHEw4GmQlprCiyFpy9KDpx6cpFIo5t5CaJdVddWrRsdzfUw0fm6TSIHivki7Zb-Nzai14OMnDszonLe0N3-mez-3uHw.jpg"
+  },
+  {
+    "id": "tg-278",
+    "source": "telegram",
+    "date": "2026-09-10T06:21:49+00:00",
+    "text": "Сегодня исследователи показали, что новую версию искусственного интеллекта GPT-6 Astra удалось обойти всего за несколько часов.\n\n🔍 Что случилось:\nРазработчики заявили, что система прошла внутренние тесты без единого сбоя. Но хакеры быстро нашли способ заставить модель выполнять опасные задачи через скрытые инструкции.\n\n✅ Как защитить себя:\nПока угроза актуальна только специалистам, но стоит помнить простые правила:\n— Проверяйте обновления антивирусных программ;\n— Будьте внимательны к подозрительным ссылкам и файлам.\n\nМы продолжим следить за развитием событий.\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
+    "url": "https://t.me/TrustNode_team/278",
+    "imageUrl": "https://cdn4.telesco.pe/file/fV2pfC4cQV7_2HRtGWV9VYAYzKieAY9HQ6bIAH5_dUAua2f48bGDjfAz2uo_RyTqnuTUVMcgO2tZc04WEbFk2T1Q0UAhR0_YDrd_a4fylXULvaU4smYHqKf-n3MJG2N2VQ35coe-OnH8uyrTt8WndBRFqfQEY66kTgDeTFRV3v3RUf5cA82V_WCecfMQJj1dwtewWCQEajAhPQxZ5Sf7gIppMVkyX9E9LZxsmh_lxoKgoHs9GsTuw3fx5diClQ0kh-E3kIEF8cWKBiqchJpxVPPWAwT_l6-D8KchOe1cQEXTzK6Oh5EtpTg9h65QKKhtTePLGElSc3N1W-7JOSIEEg.jpg"
+  },
+  {
+    "id": "tg-277",
+    "source": "telegram",
+    "date": "2026-09-10T04:42:26+00:00",
+    "text": "❗️ Новая угроза: метод Crescendo. Мошенники используют нейросети, задавая сначала простые вопросы, чтобы потом незаметно вывести диалог на опасные темы.\n\n🔍 Как это происходит:\n1️⃣ Начинают с обычных запросов, создавая иллюзию безопасности.\n2️⃣ Постепенно переходят к более сложным вопросам, вызывая доверие.\n3️⃣ Наконец, пытаются получить доступ к конфиденциальной информации.\n\n🛡️ Что делать? Проверять каждое сообщение, особенно если оно кажется слишком простым или дружелюбным. Будьте внимательны и не доверяйте незнакомым чатам сразу.\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
+    "url": "https://t.me/TrustNode_team/277",
+    "imageUrl": "https://cdn4.telesco.pe/file/oKvlrrXRCLsXkfQjAHp1w0IL6meLIMhRM-P1glIf4dke1ZNu4vMgTLQJyDlE3i-xEUo9Z3RXMNudf0utygJWpvvd0eZK-aHfMm-flrjIHulvWu3_FVu_ZBV1NM2Tn8MZFBkG41lNuTNKl9-h3TO3W_73zgO2HEMCqYrLnTCnmmQCI8pZ-buJjeZnQm-v8IQl7MYOtTvaNSOcGGxYdLvVtn-gDuPHpTsD1TMycYMosu7kRWC95bZc6wz-gm95uH0UWPqt2lE4J077CDfwNJGR1uX5MOiXexrkSWSMeK-dbKwaQYPyeQCygIj922ejGrRlx-FWzaw82nsqqoC1WOvp5g.jpg"
+  },
+  {
+    "id": "tg-276",
+    "source": "telegram",
+    "date": "2026-09-10T03:01:27+00:00",
+    "text": "Разбираем, как работает схема — по шагам.\n\nРоссиянка показала свои авиабилеты в соцсетях и стала жертвой мошенников\n\nОдин звонок, одна просьба «продиктуйте код» — и доступ к вашему аккаунту уходит чужим людям\n🔍 Код из SMS\n1. На телефон приходит SMS с кодом подтверждения\n2. Тут же звонят «из банка/госуслуг» и просят продиктовать код\n3. Код открывает мошенникам доступ к вашему аккаунту\n\n🚩 Как распознать\n• Кто-то по телефону просит назвать код из SMS — это всегда мошенник\n• Сообщение о «подтверждении входа», которого вы не совершали\n• Звонок «из банка» ровно в момент, когда пришёл код\n\nИсточник: ссылка\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
+    "url": "https://t.me/TrustNode_team/276",
+    "imageUrl": "https://cdn4.telesco.pe/file/l0Z6L6cXHli9kjTXeGBUIfBp8gRo32mQ6vEvClzGUUJJuEtye-LQYy5H063MwsDQQElh4B9rGhpehetnyV7F0srDAYGuVJ_KDvmGdWMxGecEuZOe1ycBq5ZRzZv4_sQ05hM1c1oRfL98O2JQ-0_col18SZhZKtS2nX2tBrfb3VuP3KelwcoYD1V8DnXwIr9Dzub0GSz5jc9ZfunPHMDKnH_luYbXkiZG8XnPVZbjPNgNI5DJOFCgQDsdCvbJUjpbVU5xnnde9xOlB7dg6_-D-zsHv7Q9bu6wLyWXvtsbNfh33x2kk5mBSAasR196Ema5stVhlO_B_TJkIsq2NPOrpA.jpg"
+  },
+  {
+    "id": "tg-275",
+    "source": "telegram",
+    "date": "2026-09-09T19:41:48+00:00",
+    "text": "С этим можно столкнуться уже сегодня.\n\nКонцерт Канье Уэста в Москве отменен\n\nОрганизаторы мероприятия из агентства Say Agency удалили все публикации, подтверждавшие проведение концерта на «Газпром Арене».\n\nЭто не «где-то там» — с такой схемой можно столкнуться уже сегодня.\n\n🔍 Суть\n• Ранее представители компании заявляли о наличии всех необходимых документов и обвиняли площадку в провокации\n• На текущий момент официальные подтверждения проведения шоу отсутствуют\n• Информация о возврате средств за проданные билеты организаторами не публиковалась\n\n🛡️ Что делать\n• При малейшем сомнении перезвоните сами — по официальному номеру с карты или сайта\n• Расскажите о схеме близким: мошенники давят на доверие и страх\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
+    "url": "https://t.me/TrustNode_team/275",
+    "imageUrl": "https://cdn4.telesco.pe/file/TApuXHCVGUQe3elVoAUyDYZdogqCvYC2PFfjb9-uZoXjpB48HzaIfzX_hjB1H_FX9hBAgxis2VAR4IKSfhm8d1aKKzv1U1VAg3PKnOXuhIpVnIX_I2ORP0VHSYrnRxwgqbiXbxXwFGy87mnN330zwNgGDJ4mFRD7U8OaIoEZPtxODsYvI0ZosOrRMkauN7azyeTLgbwZgcrojAnfboWAf49I8h2vw68si-HcRyxa1tlv0ndJLws0dkjGpTNWH9sbvoIHywMcFUQNgVwdixnPGAeCrgFgxoikOAaiYvZvFvwd8uv9FxGll_lsoIjqzvnwC-ZrnXYd48ik5E8MWRqCmQ.jpg"
+  },
+  {
+    "id": "tg-274",
+    "source": "telegram",
+    "date": "2026-09-09T15:40:36+00:00",
+    "text": "Представьте: открываете Telegram, заходите в чат друга, и тут бац! Приложение резко закрывается. Вы пытаетесь снова зайти — та же история. Оказывается, друг отправил вам необычный стикер-звезду с миллионом точек внутри.\n\nЭта маленькая картинка весом всего 269 байт способна заставить Telegram падать каждые несколько минут. Даже простое открытие чата приводит к тому, что приложение зависает и уходит в перезагрузку.\n\nСамое неприятное: пока этот чат открыт, вы практически лишены доступа к мессенджеру. А ведь кто-то мог специально отправить вам такой \"подарочек\", зная, какой хаос он вызовет.\n\n✅ Что делать? Удаляйте такие сообщения сразу, отключайте уведомления от подозрительных контактов и будьте внимательны к необычным картинкам.\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
+    "url": "https://t.me/TrustNode_team/274",
+    "imageUrl": "https://cdn4.telesco.pe/file/LPkxT0WqBJv-9xK3SK9ettkogdxJ4LotdXmBka_f1FVcFNcZd_126AJNRe_4m8XFcA1WDutuuHHK1SEM_AivRI0IdNV08YFwS9guZL1ZApA2qxVlKGeYj-oyflB0eGcQGvKoVNSie2jap3bRiObP5a8kkErVslOdmsY38Zr3aJmH0bI7RkWt4nCjHgO0EZnAD2HQYMSN2CuFJNJiTp09xLcCVO5PbXFAIFjbHQrrWSIF5NrGYb_GVVzjevTYLSR-6k5nS0cUMOiX1tVHN2IRBHfTo80Svn3g11YnKJmJnsq_KYLta0a2NEWrmQsQwUYnZeWLgHb3_i1hm6t1gri9Iw.jpg"
+  },
+  {
+    "id": "tg-273",
+    "source": "telegram",
+    "date": "2026-09-09T14:22:36+00:00",
+    "text": "Сегодня ваша компания может стать жертвой простой ошибки сотрудника. По данным опроса академии Кибердома, почти треть руководителей и каждый пятый сотрудник признаются, что не успевают изучить даже основы цифровой безопасности.\n\nЧем это грозит? Любое действие без понимания рисков открывает дверь угрозам: фишингу, вирусам, утечке данных.\n\nЧто можно сделать уже завтра?\n✅ Выделить час на обучение персонала;\n✅ Провести тест на знание базовых правил;\n✅ Напомнить сотрудникам о важности бдительности.\n\nПомните: безопасность начинается с осведомлённости каждого.\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
+    "url": "https://t.me/TrustNode_team/273",
+    "imageUrl": "https://cdn4.telesco.pe/file/OIiULcJ0NHDe0QE3xb8BykRkjMSUFjltAMu1kRrxe_bU0BVNQ7Y0h7TVZQTSSjNp1z77H4sa1tKvlw3u2MV-t6lXixSeBW0OLuGxbC8UuTDDdpH78CVXIrr45npp0CB9XMw234gqVBjVsBRsDBHN8gzRzPNOlY5mw3FNsi0NOEvHPvYmbErzA6NJlp2pGDzRPKoVDyMsa9q_WsFk_bA8tKNS5UBNzKJ1Wz7lbi_ZNAgqG1SubK0VNOfVLCRixOx89Lhtie601nAvghSohf3pLwtTOs4oOPYIdBbEImaHYg-sqpfWzBdHGXP4Bq-zW8PO7TvPatbvCXabuSGSyHsKaw.jpg"
+  },
+  {
+    "id": "tg-272",
+    "source": "telegram",
+    "date": "2026-09-09T13:06:01+00:00",
+    "text": "❗ Северокорейские хакеры внедрили шпионский модуль в популярный балансировщик нагрузки HAProxy.\n\n🔍 Как это происходит:\n1. Хакеры пересобирают оригинальный код HAProxy, встраивая туда скрытый бэкдор \"Ted\".\n2. Они незаметно заменяют легитимный бинарник на заражённый файл на целевых серверах.\n3. Модуль начинает обрабатывать трафик, передавая данные третьим лицам.\n\n🛡️ Что делать системным администраторам:\n✅ Регулярно проверяйте целостность файлов критических сервисов.\n✅ Используйте системы мониторинга аномалий в трафике.\n✅ Обновляйте ПО только из проверенных репозиториев.\n\nИсточник: исследование компании Rapid7.\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
+    "url": "https://t.me/TrustNode_team/272",
+    "imageUrl": "https://cdn4.telesco.pe/file/CJySAlaRGWJ4YsIuiQFeWCnV1zIcaOQk15qFh51STO7QqOnVreE2mETKXj2OtSxlgmf1OgQTCu0rpQgXmlgjiEpBF9AKfv-KdwauNBUng6T46j-s986cDHqhxMC7bjtwF-QmFoOD-JogoC_4K8clfLwYsnGU8ZMlpEPdGfjb4f7iLFmemyZuiOTwPRCcGGYgJjXbzZOGRsEeQoYnkC2D1owrKaOt-BKVDxIVJA_laiLLOfKDOzbDuaeZMqZrCW7p8z_H0hqkxqdygmShOHET_QCNSdpAF0E8I65W6ngchD7CZxVyrXG6vTpMinvkTP_ridTz0n1ZY3iwx9mY1lVskw.jpg"
+  },
+  {
     "id": "tg-271",
     "source": "telegram",
     "date": "2026-09-09T08:00:40+00:00",
     "text": "Анна любила готовить и часто искала новые рецепты онлайн. Однажды ей попалась вкуснейшая идея пирога с клубникой. Но вместо PDF-рецепта девушка скачала архив, который потребовал ввода пароля.\n\nПосле нескольких попыток Анна поняла: это была ловушка. Её компьютер заразился вирусом, который похитил личные данные и доступ к банковскому счёту.\n\n✅ Совет: проверяйте расширения файлов перед скачиванием. Настоящие рецепты приходят в виде изображений или документов, а не архивов и тем более не требуют установки программ.\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
     "url": "https://t.me/TrustNode_team/271",
-    "imageUrl": "https://cdn4.telesco.pe/file/nmrIJY7Zz-JGMLkMaAuT6ZSZ6ZaxmwXoMNLh3vdOPgjrexpNxmKmPkONtcXqrXpztMeDueP_GneN1TB9oKNN58-CU3zibRiCwCkHGzeaVFCDcZJNlfEPPUIrNdQrUbHJcdbAsFVuG81tUySAdVacWlpV9VmDgR1V2lEqHoE4CSL_Cik-DOzT5wnHLuoGPpY9t67-0WeY2b2YjXylfvAmnLpEaPf8UbsLtj0en6WZy-Siyq3UKhmcIPYOjWfgh38th4Lm7EUB5UfB-sBbCo-i3Sc6YBaIBgDt5y43yIRJoIOqr57JSz6XnTv7hRzHVV1MRB18TaMjoJowtwN86YE5hA.jpg"
+    "imageUrl": "https://cdn4.telesco.pe/file/BYjjJvaqIH986P5FegW91-WE9Pr2JzxBHWdlxZPH9-WVtQ5gUjWwlM5c67BWbJj7saZo8S2aathendGHvUS3hPql3srM0YzzLEiO9tvjTZA6KkK3ZbIClc72fVzNp4gEVqSqQ_DcAFmw4mC2GJHQs-8DYokd2ShazE2SPJMxc3PcTKnP7kH-PmmpIOkLUvwbOzENXcGvRuTJFXnwrWOlBJGpxQjo0VpOA55Fcj2bdBdm3OCILEhF3hBnpD_-rXNgVDARGdJmfNflWaqYV8klI6N9vUQyxZb9OXDrGBPGP2aLdKRbtCyhDTkhbj_Qn1IRIvMu2n_2eOR-_7T7gK1WJQ.jpg"
   },
   {
     "id": "tg-270",
@@ -13,7 +93,7 @@
     "date": "2026-09-09T03:00:47+00:00",
     "text": "Разбираем, как работает схема — по шагам.\n\nСуд взыскал 114 млн рублей с мошенников, обманувших Долину с квартирой\n\nПароль из утёкшей базы может открыть мошенникам доступ к вашим аккаунтам\n🔍 Утечка данных\n1. База с логинами, паролями и телефонами попадает в открытый доступ\n2. Мошенники «пробивают» пароли через другие сервисы\n3. Совпадающий пароль открывает доступ к почте, банку, Госуслугам\n\n🚩 Как распознать\n• Сайт «проверьте себя» в утёкшей базе — бесплатно и без SMS\n• Уведомления о входах в сервисы, которыми вы не пользовались\n• Спам и фишинг на адрес/телефон, которые вы нигде не оставляли\n\nИсточник: ссылка\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
     "url": "https://t.me/TrustNode_team/270",
-    "imageUrl": "https://cdn4.telesco.pe/file/fiYuIZ4cSrsF05DPOFy96NJoipLU6h8nJeyoyLVvv-MHGvSKfKc3i64LGbPNIlA2ry4HeOuBIxD-60xxgnClikqdBd6Tn-pMBHY1lZnXO_8aPoGHPCztxiQmZ7wMcN_pamSy4yb1n_C876OMD61jeyMA0-vu8TeRncl2J3GsVjnIGOKex9s9I4XhFeDCr7b0eOWc01GWmCE2tB7xSDwmRXz2ex0n4qPv7su84hzd4lBr3mlvKhyZR0dOpqyAXIAqoZY5OCs_EAGuR2gkG6S1anB0DQw-KdSF7CgnoTvQZySxYPFHDB5us-72OFj905YCdaWMrDIkcjE4gZFSJZ_E2w.jpg"
+    "imageUrl": "https://cdn4.telesco.pe/file/QSdtr_eIDX_H1SA-wrzBRVr-OnxM9LUipHWTXVf6Vc9BNu5Y6M4XGJJ40eW0u8e18CQpLJv5sXmBHqQ-OvLE6PRCbHu7TzUttPXs9Jbazte1i9lj_-8j2OntMSqct_qoFm79EJvDn7YUs0Jz8NOgM0uZtuCZq3BtUllVInIUvzn64uVDeunKJeiK7SRRbLYdxvf1QLPjeucyJPNUhWi6IINSxEVBuk-fG7_ib3lAnNbjb08RXCXiMNzJraK0iGzlS7zL39JP57oVl0lqv8BBSmtPuElbJc2jjkGaUHbSB66RZoZHY3YedwBoYh_rsGkspQlVj5NJycYKb7g2HnpInQ.jpg"
   },
   {
     "id": "tg-269",
@@ -21,7 +101,7 @@
     "date": "2026-09-08T16:51:55+00:00",
     "text": "Представьте себе утро понедельника. Вы садитесь за компьютер, открываете любимый чат-бот, чтобы получить быстрый ответ на важный вопрос... А вместо диалога получаете тишину.\n\nИменно это сегодня переживают миллионы пользователей ChatGPT по всему миру. Нейросеть зависла, оставив своих поклонников в недоумении и раздражении.\n\n✅ Совет: сохраняйте спокойствие! Даже самые продвинутые технологии иногда дают сбой. Попробуйте позже ещё раз.\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
     "url": "https://t.me/TrustNode_team/269",
-    "imageUrl": "https://cdn4.telesco.pe/file/Bth5HxcP356Abl8WGkWVrXlfNIcwrXUKmTqInzAdlcfPI75sZTj1Yg_r9Y9bC1i61VTGyRMJpIPRk0f9VEqAcRMw8TlmGpGnNBe09CxlWVU3sGWHA9CZz3YcTD2Nq4uOEZHrPwoSzdkgn0qr_E0TdCL4YekmcUEQS2lCOduKDjbnde8eDgkymzqZ8ICBFhBfux1JanmblYXwoHpSaokarFHIsGdpZwMtfuA7IvHfqmHdTmYhtUU44K32fOyyQqE5Wp7fco5FDTrz4xyVOwuzpM0K-H6dGgJ0bXaVdDaOX8j_EWwclEfa6yaSHglgwnZ6ijgEHlT3CCrC4Mejc13ZpA.jpg"
+    "imageUrl": "https://cdn4.telesco.pe/file/WZ5OdnhxDAlXrfc4uhs3AjMGQEDNdFczPBlfOFpx9ktSms7V7NhKBf9qTcgaSRFBVaKQNcwQ34Kf7u7ZdOpZ9BI-3ffmCs_Ytx5nNx-bcyVj0b162nDWB9RfCPuyM7o1dvwOrpyOrwMtSIJUC6QncvHtIzvfvQhNfiWoqD8frc3QKDCJRpMcUW-3KtjflgNKTp3T1UjOSumCzmIdAZ5bWOwVRXbT1wZCd_fdhLF6p2aqWMdfDC2ujiz2JzB2rQTaCJc-wfBX2b_VhVaPBODsduVWEFORuMDdhXHhVlUVo25saA2m68VFceAJQc-3Xsl7zvm8J5iWwIqhM9bcKkhz5g.jpg"
   },
   {
     "id": "tg-268",
@@ -29,7 +109,7 @@
     "date": "2026-09-08T14:06:59+00:00",
     "text": "Проблемы с подключением к VPN\n\nПользователи сообщают о трудностях доступа к популярным VPN-сервисам уже второй день подряд.\n\nРекомендации:\n• Проверьте настройки VPN-клиента;\n• Обновите ПО до актуальной версии;\n• Обратитесь в техподдержку вашего провайдера.",
     "url": "https://t.me/TrustNode_team/268",
-    "imageUrl": "https://cdn4.telesco.pe/file/iBhZqpc31t5nobDLPPyoHv94Is6KCIt_pgluUQrq30A319eI26hV7VsQ9mS-6MR5_XR2AvdCm_B-0gXSDqg70vY5dypap2DmUCjiocGEXCPpLTG1KNeSa8oQtRWiQ3taA3pUY7bYW7GCIcHPyb_5HrEOym92xQ6FAuBFzMTEtzCIv_ENe4Yc8ai0HUKIKKX16tVsbNdb-JxrNPjBarFiwTxXAN_4PUHdTiFmO6SmdpjAfA9gSf7ggc1AUdEBoTH8Qxkmkd_y6P_tIXBhyfqj1zRl7_JRdyQHBfqFrGw_qRmq1fxySxPwt479hldBHPcDxOjyYjQY2N-IEIokXItKRQ.jpg"
+    "imageUrl": "https://cdn4.telesco.pe/file/F40kTllvUwOx03q6KxTm2cXGcZ-ReZXKURgdtOeERaHia0rmkzLiSEhHxx_JmcXhc9O7NTEcyXVFCfJcwa8RXqHMnC1N3JUNmUj3V4VzoTbvAV8H0wDQvWH2Yf5K0pON9DQ9WtvcWTBUSjKAlIP4JOQ4Icv8EejH8jO8BXfsq9VTOsn-hLXxfWQRATjgD6VrzS76MB8s6GckDQiHYsCHSi0NjBZmH3183dIOB9Oilesn_2_hXbjR5wkeAY9eGhRauRGS-3v0fjRE7rpsxGFi_hPCX64FsrhZVEbN3Hpz0WK5N5iAEWj7fMlkNQxfiNA9rRY1xrs0YsWcoVrAUK47hw.jpg"
   },
   {
     "id": "tg-267",
@@ -37,7 +117,7 @@
     "date": "2026-09-08T13:15:32+00:00",
     "text": "Случай из новости — как это выглядело на деле.\n\nВице-спикер ГД Чернышов: сообщения с использованными кодами лучше сразу удалять\n\nИсточник: ссылка\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
     "url": "https://t.me/TrustNode_team/267",
-    "imageUrl": "https://cdn4.telesco.pe/file/RNnwfymLzPKw3uIRq1ndJA61O4TOjyk6M2Z9UGw-Ri72zRfZobAZOYZSpDcqeS-k5m-nWnJbZyEkpzSpD-P0ewzLUdc7RnNz4RI4kl2juwO9s_xcUhyw57ewo1gnf0ljTtbuLp7_LVVRPvlMENdIhpJs_XBwUQQ-QQe_2F7nKcnPVm50jIDFxG17bfi69iu1Mm8i2Z1CsNLrqdt_VNMFkyZbxEW46XgdS6x0c78QmnIR9gCQke1nU_V4wUgzHICHUR3geY6GOT4NWZ7d_WQ12izB5yc0kejbMsh_dfcLYNnWXLTjPHx4pu8w-nlKhUzw26o3N7yYbRXU_iIzUoqEGA.jpg"
+    "imageUrl": "https://cdn4.telesco.pe/file/D2TdN4tNUMKSmRfS18gUChnmnvAwadcxDsVcrDam8jPO6bqwKj78f8LpIT3bh-Gs65lxWiBrPavri5ajBhuOh1PbtIA8-guCtILndcRskXjGfexq61KRHVdljmQZPs69CJxtIYm9Uhwzs6UW8CB7W6gSa6B0ozSLMoy7Gcb6fAJ4kMCSvpxpZO7B8rEF4hPgCsPEBJVYII3YsAlUoelfhgsQKBo9KJw-M1wqeOcOc5_6r0-lOai-S7BApMrg1J8J87r1DMldHvKFBgJaVgjKgA0SxOAuZgalulOCEUN2d_tHqNeTR20KTtw8_QrI-pXbhNhYe_YrhkUImK_rvnDLVw.jpg"
   },
   {
     "id": "tg-266",
@@ -45,7 +125,7 @@
     "date": "2026-09-08T08:45:32+00:00",
     "text": "Лефортовский суд обязал вернуть 114 млн рублей обманутой певице.\n\n🔍 Как работала схема:\n\n✅ Мошенники представились сотрудниками правоохранительных органов.\n✅ Создали иллюзию срочной необходимости продажи квартиры.\n✅ Обещали перевод денег на \"безопасные\" счета.\n\n⚠️ Ключевое действие жертвы: поверила в официальность обращения и поспешила с решением.\n\n🛡️ Что делать вам? Проверяйте информацию дважды, особенно если речь идёт о крупных суммах. Никогда не принимайте решений быстро под давлением неизвестных лиц.\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
     "url": "https://t.me/TrustNode_team/266",
-    "imageUrl": "https://cdn4.telesco.pe/file/jFePxpGRy-X_deEu8Gx-NNEn4YXIIfEjPNim7XON4QAKR0FmWuRufV1QsRfDCcF1K0fEiBdwMcyHEgpF5AVnHQlE0aKGaDSKFLr0w45rNIhjUxGHlruQZyE1fBj3Y6cWt5pp_wBRehzm4DlCzSFJBN0Q8-nNUjp4eme2DnrtSB0I7bnPcOkU6VL6hBCV-WSiz_CD4O4mamqL3UjCNVw2Aq3qtuicJJIYV1bGVOtv4t0RrPbfHt5GQBvn-ZulM7zcZpx0zLOz4yxo1DbYbIRjTWB3iei5JcnB7bMTUNvR3xEImK7etwdLN978aoR3_-P6QkVjQzDrbbw4kAvgSDyDyw.jpg"
+    "imageUrl": "https://cdn4.telesco.pe/file/uPFgxtLw7itNsJ69W-qulPl0rbDfvgktzywKlubvvPix-IpqGPS3LLMUoPITm8tcanKXEg3GK_MAwFuYj3FfAjbN2vK-2ZBxt91ZZCi5OO_A1o7jUAEvDi6894iEE3WoBG3NCWmSjp8ald0b6Ek4jhQRpRNKRusAwbIKKMxqTV4qTZGZ1-Jtnlh_2pTxV-kVtEwi3jjDrc-JlcMnQYgoHA7Z9clOyqmMyFx7WhGekFjC5Tv1kXsDuM9OLYHt8Uf_C33mFIo06rmJdIGYywevS7rFk7HIwWVQ3_cqQQPUGdWxqOJjIxVXRJRCqxfyXQjLQULH12e8MB7zGSbmg3BvTA.jpg"
   },
   {
     "id": "tg-265",
@@ -53,7 +133,7 @@
     "date": "2026-09-08T03:00:28+00:00",
     "text": "Коротко о главном.\n\nРоссийскую 71-летнюю пенсионерку заподозрили в работе на телефонных мошенников\n\nИсточник: ссылка\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
     "url": "https://t.me/TrustNode_team/265",
-    "imageUrl": "https://cdn4.telesco.pe/file/HNvRwtVsC9AkrFiUw9XjET2gPwwaWcS9kMvC6s3PtlVKy5QhPAPAcCR03BBUpV8SPm0aeBUAhSEamjKmQ8Ul5wjWhDj2hCIcWztkp-Sx1YST7fCpWBySa6K-GfRRFE7nfoPL02yaOzqXXcqygkikGbh5rZLj9Hs0LKXFXLDstVOQVfIyR4BJKToRsQYxqk6vnBNTiI-ZjgH3lDDcdwdvnQhj9_tTpRPF02S-ZBIreZPG_l8I7Wui7A8a2TtLh3r4_Kiqf-lT_Dr7jTsz1C166BnCwV7P8AXEqKckXH7zAjZgRlVVK1-IsbrEsSgL6chDqR5Qgw6HlJW7EUc3OlNDNA.jpg"
+    "imageUrl": "https://cdn4.telesco.pe/file/Q2KW4VgFTIUx3uMqoAe_ANNx18MWUKkyQzyTPXr_8uwDVh2jG3ZGrgxzpgvOJ5UNAc5MI82N_NHd4KwP8HmmK1uVzD7qnMpAxa-cm8Q389MMlcWLAiQSy8QYkOynCXJuL3w7Vunoz0SIUC4P6v8wTyVKAW68yyiygjfR8IBIQEfz-IE67s4Wx-wcmIB9A6mf8k-pHrX_1SEtDq8FgLjce9YLffS1fafXGAeEC5fz_XJrOYvLUQXFKzYgILfwwQ4iC15viYozooovefIQ3IYaJ9EK5qAYpAAO8WOwZSQIkkmnIFMHGT94T8RYsbU7xJ8kdvRbRHdJLNUYgm9bNSlsAw.jpg"
   },
   {
     "id": "tg-264",
@@ -61,7 +141,7 @@
     "date": "2026-09-07T17:01:57+00:00",
     "text": "Что на самом деле происходит — и где подвох.\n\nВам предлагают «безопасный счёт»? Повесьте трубку\n\nГлавное правило, которое забывают за паникой: у банков нет «безопасных счетов»\n\n«Я бы не повёлся» — именно на эту уверенность и рассчитывают мошенники.\n\n🔍 «Безопасный счёт»\n1. Звонок «сотрудника банка» или «службы безопасности» с тревогой о взломе\n2. Давят на страх и срочность: «деньги уже пытаются списать»\n3. Велят перевести всё на «безопасный счёт» — якобы для защиты\n\n🛡️ Что делать\n• Положите трубку и перезвоните в банк по номеру с карты — только так проверяется звонок\n• Никогда не переводите деньги на «безопасный счёт»: его не существует\n• Сотрудники банка не просят коды из SMS и не говорят «срочно переведите всё»\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
     "url": "https://t.me/TrustNode_team/264",
-    "imageUrl": "https://cdn4.telesco.pe/file/kvc2CpJT870I-4JG3t3Th8HTAjeUtrE_aHNjjdAQWqPZoATaQK0CmkJx6wsfdKw_z53M0hYkE9i6w7uJqCxP2IIwFSxmQWopLwu88SD99cjKC9wWigRKHDc5fOKPI2qvqvnuAzq3y862fkq-MwhKXjUxzOZZ2him5w9FYwGDtFneQ5sb-T0SpaP1ThTWUjiLGoMS_uDlXqyvr053ZwM82q2ihr25xp6lkrcuS7kAyfazoQAmDDqSNybA17yVI0LxNntoK-SAKXb-lBypvl2zE8DCpr0JU87jeOLRoxXwknpdaJQ4RFdxAAeS8ExHML_Rie3W-sISaO36RTXWFbESvg.jpg"
+    "imageUrl": "https://cdn4.telesco.pe/file/KMPo4PVlFU9eL4PLF7EZgpUTM8mDQhLTmZuy9pgNxJQxuk-e5mtN_nOwZ42HM-22WnQIOL1IKIjPyP3OPrywXIosUPt0K0zhbL3V9SkGwbRphnhMYSrXVfjs6c7f8xIaj5k7ViFjtwBm2Iq4FXu-QClIqtZJIHe4YbkkyObkC2lJdYaH0zNLtPCB8aE81ZW1kQBRIDeqVngHq4r0MvKFJYNMxKtaLKGbXUQ-Od8HSL5TTrzAdsT_EcemRvxq8homRpmXOKE5jY-PdOJjDxEI-UdUsGjBJbDzxJEcMkAoYv7qtQuV8ibV6FlLQXr8kLW7JZEDXiXCockFe59hZK6zkA.jpg"
   },
   {
     "id": "tg-263",
@@ -69,7 +149,7 @@
     "date": "2026-09-07T16:20:28+00:00",
     "text": "ChatGPT заблокировали в России\n\nТеперь сайты сервиса прекращают работу еще до подключения к серверам OpenAI. Ранее пользователи с российскими IP-адресами блокировались самой компанией OpenAI, но сейчас подключение разрывается на уровне сетевых соединений.\n\nЭто также повлияло на работоспособность мобильного приложения ChatGPT, так как оно использует тот же домен. Некоторые вспомогательные ресурсы OpenAI по-прежнему доступны.",
     "url": "https://t.me/TrustNode_team/263",
-    "imageUrl": "https://cdn4.telesco.pe/file/ulr2Ei8CZgZLuohap0rgQAJPzF9a2AZO2x1u6zutTIiCXOl55-lr-etWSyPnqsi7NhkpcQbk_ZXL7CwZ5dbsmmmfLRcHx5qR0lsJ1tuOzYIOh0p8vXOYwoEHZZv-oiPzyc5zNc_9TUfTF_m9VKdMKufPbCyIjVIQ9un8aCIHa9nYYH8NlD89mGP6AWv9HtRDimJwUFJFs8kqIMLkQJ7xRK_1w9BE4prE3eJP229I_d1B9vbsXNGHEHNyCRHBCH_fXWtVVJgNuk9YHlRH_tebaq3c20Ex61_N4iGeBcro1uaYVEDhUULCT0prZ4wKKcWgt-xT1GOdo_Fuc9W-d4mHcA.jpg"
+    "imageUrl": "https://cdn4.telesco.pe/file/Wg8OGnTWUM6-Hv_nHzfeXWkzs0DqYGI2xoaHrySmo-cIRsjh2xMSwvzHSnUzznc6IJBF1ZBjAMLfOBHmsPbLoIzgxsYuxGUe4BskzIhEE9dz3CAhEFGzgKlkwRky4n3pg2Tfv4vvse9mzcJxozaoY_i2Y3gwsBpM7iOyHzRfR5dsWR0MqFW1xtsNG0SfaF2202C_AQvtPsa-LRUVKQ8C90JbQWa0rtFT0Rz4jCPtsH-23ndnrJc-7eZHyfKBW8lY2AlsEt28HJ-XcR4D8b1Mhmpy4bHIncJk74Im-AM7PXk_g6yPUaBY3FF_AQyokeeU-oJsYMgRsAwfj_dzs0xmWA.jpg"
   },
   {
     "id": "tg-262",
@@ -77,7 +157,7 @@
     "date": "2026-09-07T11:05:30+00:00",
     "text": "Что на самом деле происходит — и где подвох.\n\nДоля успешных фишинговых атак на российские компании выросла до 43%\n\nМошенники копируют сайты банков и госуслуг до мелочей — ловушка срабатывает за секунду\n\n«Я бы не повёлся» — именно на эту уверенность и рассчитывают мошенники.\n\n🔍 Фишинг-ссылка\n1. Вам присылают ссылку или QR-код «на акцию, выплату или проверку»\n2. Ссылка ведёт на копию настоящего сайта, неотличимую от оригинала\n3. Вы вводите логин, пароль или данные карты — они уходят мошенникам\n\n🛡️ Что делать\n• Проверяйте адрес сайта вручную — не переходите по ссылкам из сообщений\n• Вводите данные карты и пароли только на официальном сайте сервиса\n• Включите двухфакторную аутентификацию: фишинг без кода — не фишинг\n\nИсточник: ссылка\n\n🛡️ TrustNode\n📱 Приложение: RuStore\n🌐 Сайт: trustnodelab.github.io",
     "url": "https://t.me/TrustNode_team/262",
-    "imageUrl": "https://cdn4.telesco.pe/file/qaGEHsdyUDZ4ec9NExk8aMHigl6KYGm4OKQ_9Vc4Gy3AgILIoI-TFdENABPbc655_z0IOJZeDdDff4aQAQWj9gtgLjCvFkJUWvDALVrl2fE3x6wSV9TNhZaIdChcSJpy0MCtu3iQJTaqkC6HSbPP3eeIzWveqo1Uy-ahyco0h3P_Uchra0zJva1cFS7yKpM7dwSWU-LXZyFxEDlLPAqPMSzzU8-MkJ5Ula9sWNuJMJ0nvNmm3KbaQYyckBfnsgENnHjX-a7A897zYlVSPDXx7x4VMru9PgIvKOu1OVq_S5cAgfMgHyvmzgquE1JPf_ta2V4EbFWL7g7-BP9rL-1mVA.jpg"
+    "imageUrl": "https://cdn4.telesco.pe/file/btDe7dOc2eZ78qbSmReEsLYUDiAujP_N9EalGGJmQPJoDzmkHHiwQyz3-L5vv-GorTWJ-ee_wq23mH-njTMf2vlU5Mp5rZON75xRJJ3WSsd9-wsg8stC_k6upunqDpb2AGXqWPZaxe9mZHoeh3371ZICHPnrFWZ0-WCZrXXNae_AjushG_pHgGcHwTc2jcdS3GN0uLFNPs5H2-QQOwvz71OdcLP8a3uas_bwNYTNafyRaqzRjzQASX3Gel2qgsENGQjxTXhRzJp-9fN0fajNDo-ra04yTBMCL8w6qpmRC0pvy0mhnSK_IfsvyNHBcl2KLgK6JThGEtIW8wkTD704OA.jpg"
   },
   {
     "id": "tg-261",
